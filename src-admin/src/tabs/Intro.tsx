@@ -865,7 +865,16 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     return currentPath === gp || currentPath.startsWith(gp);
                 }) || null;
         }
-        if (_urls.length === 1) {
+        // The same page can be served by more than one instance of another adapter: e.g., every web instance
+        // serves the pages of all onlyWWW adapters and of all web extensions. That is one and the same page,
+        // so the quick access shows only the URL of the first (lowest) of these instances. All other URLs are
+        // still listed on the "Instances" tab. See https://github.com/ioBroker/ioBroker.admin/issues/3602
+        if (_urls.length > 1) {
+            _urls.sort((a, b) => (a.instance || '').localeCompare(b.instance || '', undefined, { numeric: true }));
+            _urls.splice(1);
+        }
+
+        if (_urls.length) {
             instance.link = _urls[0].url;
             instance.port = _urls[0].port;
             instance.link =
@@ -878,19 +887,6 @@ class Intro extends React.Component<IntroProps, IntroState> {
             } else {
                 console.log(`Double links: "${instance.id}" and "${lll.id}"`);
             }
-        } else if (_urls.length > 1) {
-            _urls.forEach(url => {
-                const lll = introInstances.find(item => item.link === url.url);
-
-                if (!lll) {
-                    const item = { ...instance, link: url.url, port: url.port };
-                    item.link =
-                        applyReverseProxyToLink(item.link, instance.id, instances, webReverseProxyPath) || item.link;
-                    introInstances.push(item);
-                } else {
-                    console.log(`Double links: "${instance.id}" and "${lll.id}"`);
-                }
-            });
         }
     }
 

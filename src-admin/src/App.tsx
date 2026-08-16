@@ -2512,7 +2512,7 @@ class App extends Router<AppProps, AppState> {
                         files?: CommandFile[],
                     ) => this.executeCommand(cmd, host, callback, files)}
                     host={this.state.currentHost}
-                    socket={this.socket}
+                    socket={this.socket!}
                     themeName={this.state.themeName}
                     themeType={this.state.themeType}
                     toggleTheme={this.toggleTheme}

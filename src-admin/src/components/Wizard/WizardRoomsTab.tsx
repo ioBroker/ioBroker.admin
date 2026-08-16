@@ -1,23 +1,23 @@
 import React, { Component, type JSX } from 'react';
 
-import { Toolbar, Button, Paper, Typography, Checkbox, Box } from '@mui/material';
+import { Button, Typography, Box, ButtonBase, LinearProgress } from '@mui/material';
 
-import { Check as IconCheck, ArrowForward as IconNext } from '@mui/icons-material';
+import { Check as IconCheck, ArrowForward as IconNext, CheckCircle as IconSelected } from '@mui/icons-material';
 
 import { type AdminConnection, Icon, type Translate, Utils } from '@iobroker/gui-components';
 
-// Import room SVGs
-let typedRooms: {
+import WizardStepFrame from './WizardStepFrame';
+
+interface RoomTemplate {
     _id: string;
     name: ioBroker.StringOrTranslated;
     icon: string;
     iconSvg?: string;
     translatedName?: string;
-}[] = [];
+}
 
-const TOOLBAR_HEIGHT = 64;
-
-const VERY_IMPORTANT_ROOMS = [
+/** Rooms, which are shown before the user presses "Show more" */
+const DEFAULT_ROOMS: string[] = [
     'living_room',
     'bedroom',
     'bathroom',
@@ -36,6 +36,9 @@ const VERY_IMPORTANT_ROOMS = [
     'washroom',
 ];
 
+/** Rooms, which are selected if the user has no rooms yet */
+const PRESELECTED_ROOMS: string[] = ['living_room', 'bedroom', 'bathroom', 'kitchen'];
+
 function getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): string {
     return typeof text === 'string' ? text : text[lang] || text.en || '';
 }
@@ -43,105 +46,120 @@ function getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): s
 interface WizardRoomsTabProps {
     t: Translate;
     socket: AdminConnection;
+    /** Already selected rooms, so the step can be visited again */
+    rooms: string[] | null;
+    /** Go one step back */
+    onBack?: () => void;
+    /** Report an error to the wizard */
+    onError: (error: string) => void;
     onDone: (selectedRooms: string[]) => void;
     lang: ioBroker.Languages;
 }
 
 interface WizardRoomsTabState {
     selectedRooms: string[];
-    loading?: boolean;
+    loading: boolean;
+    /** Rooms, which existed as the step was opened. If nothing changed, no enums must be created */
     preSelected: string;
-    showMore?: boolean;
+    showMore: boolean;
+    creating: boolean;
 }
 
 export default class WizardRoomsTab extends Component<WizardRoomsTabProps, WizardRoomsTabState> {
+    /** All known room templates. It is an instance variable, as the list is extended by the existing enums */
+    private rooms: RoomTemplate[] = [];
+
+    /** Rooms, which are shown without "Show more" */
+    private importantRooms: string[] = [...DEFAULT_ROOMS];
+
     constructor(props: WizardRoomsTabProps) {
         super(props);
 
         this.state = {
-            selectedRooms: ['living_room', 'bedroom', 'bathroom', 'kitchen'], // Default selected rooms
+            selectedRooms: props.rooms || [...PRESELECTED_ROOMS],
             loading: true,
-            preSelected: '',
+            preSelected: JSON.stringify(props.rooms || []),
+            showMore: false,
+            creating: false,
         };
     }
 
-    componentDidMount(): void {
-        this.setState({ loading: true }, async () => {
-            let selectedRooms = [...this.state.selectedRooms];
-            const roomsPromise: Promise<{
-                default: typeof typedRooms;
-            }> = import(`../../assets/rooms/list.json`);
-            const json = await roomsPromise;
-            typedRooms = json.default;
+    async componentDidMount(): Promise<void> {
+        try {
+            const json: { default: RoomTemplate[] } = await import(`../../assets/rooms/list.json`);
+            // Work with a copy, as the templates are extended with the existing enums
+            this.rooms = json.default.map(room => ({ ...room }));
 
+            let selectedRooms = [...this.state.selectedRooms];
             const objects = await this.props.socket.getObjectViewSystem('enum');
+            const existingRooms = Object.keys(objects || {}).filter(id => id.startsWith('enum.rooms.'));
 
             // if some rooms already exist, select them
-            if (objects && Object.keys(objects).length) {
+            if (existingRooms.length) {
                 selectedRooms = [];
-                Object.keys(objects).forEach((roomId: string) => {
-                    if (objects[roomId] && roomId.startsWith('enum.rooms.')) {
-                        const shortRoomId = roomId.replace('enum.rooms.', '');
-                        const room = typedRooms.find(r => r._id === shortRoomId);
-                        selectedRooms.push(shortRoomId);
-                        if (!room) {
-                            const roomByName = typedRooms.findIndex(
-                                r =>
-                                    getText(r.name, this.props.lang) ===
-                                    getText(objects[roomId].common.name, this.props.lang),
-                            );
-                            if (roomByName !== -1) {
-                                const rId = VERY_IMPORTANT_ROOMS.indexOf(shortRoomId);
-                                // If the room is already in the predefined list, remove it
-                                if (rId !== -1) {
-                                    VERY_IMPORTANT_ROOMS.splice(rId, 1);
-                                }
+                for (const roomId of existingRooms) {
+                    const shortRoomId = roomId.replace('enum.rooms.', '');
+                    selectedRooms.push(shortRoomId);
 
-                                // If the room is in the predefined list, update its icon
-                                typedRooms[roomByName].iconSvg = objects[roomId].common.icon || '';
-                                typedRooms[roomByName]._id = shortRoomId;
-                                typedRooms[roomByName].translatedName = getText(
-                                    objects[roomId].common.name,
-                                    this.props.lang,
-                                );
-                            } else {
-                                // If the room is not in the predefined list, add it
-                                typedRooms.push({
-                                    _id: shortRoomId,
-                                    name: objects[roomId].common.name || shortRoomId,
-                                    icon: objects[roomId].common.icon || '',
-                                    iconSvg: objects[roomId].common.icon || '',
-                                    translatedName: getText(objects[roomId].common.name, this.props.lang),
-                                });
-                            }
-                            if (!VERY_IMPORTANT_ROOMS.includes(shortRoomId)) {
-                                VERY_IMPORTANT_ROOMS.push(shortRoomId);
-                            }
-                        }
+                    if (this.rooms.find(r => r._id === shortRoomId)) {
+                        continue;
                     }
-                });
-            }
 
-            const promises = typedRooms.map(async (template, i) => {
-                if (!typedRooms[i].iconSvg) {
-                    try {
-                        const image: Promise<{ default: string }> = import(`../../assets/rooms/${template.icon}.svg`);
-                        const im = await image;
-                        typedRooms[i].iconSvg = await Utils.getSvg(im.default);
-                    } catch {
-                        console.warn(`Icon for room ${template.icon} not found`);
+                    // The room does not exist in the predefined list, so try to find it by name
+                    const roomByName = this.rooms.findIndex(
+                        r => getText(r.name, this.props.lang) === getText(objects[roomId].common.name, this.props.lang),
+                    );
+
+                    if (roomByName !== -1) {
+                        // Use the ID and the icon of the existing enum
+                        this.importantRooms = this.importantRooms.filter(id => id !== this.rooms[roomByName]._id);
+                        this.rooms[roomByName].iconSvg = objects[roomId].common.icon || '';
+                        this.rooms[roomByName]._id = shortRoomId;
+                        this.rooms[roomByName].translatedName = getText(objects[roomId].common.name, this.props.lang);
+                    } else {
+                        // The room is unknown, so add it to the list
+                        this.rooms.push({
+                            _id: shortRoomId,
+                            name: objects[roomId].common.name || shortRoomId,
+                            icon: objects[roomId].common.icon || '',
+                            iconSvg: objects[roomId].common.icon || '',
+                            translatedName: getText(objects[roomId].common.name, this.props.lang),
+                        });
+                    }
+
+                    if (!this.importantRooms.includes(shortRoomId)) {
+                        this.importantRooms.push(shortRoomId);
                     }
                 }
-            });
-            selectedRooms.sort();
-            typedRooms.forEach(room => {
-                room.translatedName ||= getText(room.name, this.props.lang);
-            });
+                selectedRooms.sort();
+            }
 
-            void Promise.all(promises).then(() =>
-                this.setState({ loading: false, selectedRooms, preSelected: JSON.stringify(selectedRooms) }),
+            // Read the icons of all templates
+            await Promise.all(
+                this.rooms.map(async room => {
+                    room.translatedName ||= getText(room.name, this.props.lang);
+                    if (room.iconSvg) {
+                        return;
+                    }
+                    try {
+                        const image: { default: string } = await import(`../../assets/rooms/${room.icon}.svg`);
+                        room.iconSvg = await Utils.getSvg(image.default);
+                    } catch {
+                        console.warn(`Icon for room ${room.icon} not found`);
+                    }
+                }),
             );
-        });
+
+            this.setState({
+                loading: false,
+                selectedRooms,
+                // If the user was on this step already, the initial selection is kept
+                preSelected: this.props.rooms ? this.state.preSelected : JSON.stringify(selectedRooms),
+            });
+        } catch (e) {
+            this.setState({ loading: false });
+            this.props.onError((e as Error).message || (e as string).toString());
+        }
     }
 
     toggleRoom = (roomId: string): void => {
@@ -159,186 +177,166 @@ export default class WizardRoomsTab extends Component<WizardRoomsTabProps, Wizar
     };
 
     createRoomEnums = async (): Promise<void> => {
-        const selectedRooms = this.state.selectedRooms;
+        const { selectedRooms } = this.state;
+
+        this.setState({ creating: true });
 
         // Create room enums for each selected room
         for (const roomId of selectedRooms) {
-            const room = typedRooms.find(r => r._id === roomId);
-            if (room) {
-                const enumId = `enum.rooms.${roomId}`;
-                const roomEnum: ioBroker.EnumObject = {
-                    _id: enumId,
-                    type: 'enum',
-                    common: {
-                        name: room.name,
-                        members: [],
-                        icon: room.icon,
-                    },
-                    native: {},
-                };
+            const room = this.rooms.find(r => r._id === roomId);
+            if (!room) {
+                continue;
+            }
+            const enumId = `enum.rooms.${roomId}`;
 
-                try {
-                    // Check if the enum already exists
-                    const existingEnum = await this.props.socket.getObject(enumId);
-                    if (!existingEnum) {
-                        await this.props.socket.setObject(enumId, roomEnum);
-                    }
-                } catch (error) {
-                    console.error(`Error creating room enum ${enumId}:`, error);
+            try {
+                // Check if the enum already exists
+                const existingEnum = await this.props.socket.getObject(enumId);
+                if (!existingEnum) {
+                    await this.props.socket.setObject(enumId, {
+                        _id: enumId,
+                        type: 'enum',
+                        common: {
+                            name: room.name,
+                            members: [],
+                            icon: room.icon,
+                        },
+                        native: {},
+                    });
                 }
+            } catch (error) {
+                console.error(`Error creating room enum ${enumId}:`, error);
+                this.props.onError((error as Error).message || (error as string).toString());
             }
         }
+
+        this.setState({ creating: false });
 
         // Call onDone callback with selected rooms
         this.props.onDone(selectedRooms);
     };
 
-    render(): JSX.Element {
-        const roomList: string[] = this.state.showMore ? typedRooms.map(room => room._id) : VERY_IMPORTANT_ROOMS;
-        if (this.state.showMore) {
-            roomList.sort((a, b) => {
-                const roomA = typedRooms.find(room => room._id === a);
-                const roomB = typedRooms.find(room => room._id === b);
-                if (roomA?.translatedName && roomB?.translatedName) {
-                    return roomA.translatedName.localeCompare(roomB.translatedName);
-                }
-                return 0; // If either room is not found, maintain the original order
-            });
+    /** True if the selection was not changed by the user, so nothing must be created */
+    isUnchanged(): boolean {
+        return this.state.preSelected === JSON.stringify(this.state.selectedRooms);
+    }
+
+    renderRoom(roomId: string): JSX.Element | null {
+        const room = this.rooms.find(r => r._id === roomId);
+        if (!room) {
+            return null;
         }
+        const selected = this.state.selectedRooms.includes(roomId);
 
         return (
-            <Paper
-                style={{
-                    height: '100%',
-                    maxHeight: '100%',
-                    maxWidth: '100%',
-                    overflow: 'hidden',
+            <ButtonBase
+                key={roomId}
+                disabled={this.state.creating}
+                onClick={() => this.toggleRoom(roomId)}
+                sx={{
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    gap: 1,
+                    p: 1,
+                    height: 150,
+                    borderRadius: 2,
+                    border: '2px solid',
+                    borderColor: selected ? 'primary.main' : 'divider',
+                    backgroundColor: selected ? 'action.selected' : 'transparent',
+                    transition: 'border-color 0.2s, background-color 0.2s',
+                    '&:hover': { borderColor: selected ? 'primary.main' : 'text.disabled' },
                 }}
             >
-                <div
-                    style={{
-                        height: `calc(100% - ${TOOLBAR_HEIGHT}px)`,
-                        overflow: 'auto',
-                        padding: 16,
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }}
+                {selected ? (
+                    <IconSelected
+                        color="primary"
+                        sx={{ position: 'absolute', top: 6, right: 6, fontSize: 20 }}
+                    />
+                ) : null}
+                <Icon
+                    src={room.iconSvg}
+                    alt={room.translatedName}
+                    style={{ width: 72, height: 72, opacity: selected ? 1 : 0.7 }}
+                />
+                <Typography
+                    variant="body2"
+                    sx={{ textAlign: 'center', lineHeight: 1.2 }}
                 >
-                    <Box>
-                        <Typography
-                            variant="h5"
-                            style={{ marginBottom: 16 }}
-                        >
-                            {this.props.t('Select the rooms in your home')}
-                        </Typography>
-                        <Typography variant="body1">
-                            {this.props.t(
-                                'Please select the rooms that exist in your home. You can add or remove rooms later in the categories tab.',
-                            )}
-                        </Typography>
-                        {this.state.showMore ? (
-                            <Typography variant="body1">
-                                {this.props.t(
-                                    'If you do not see the room you want to add, please add it in the categories tab.',
-                                )}
-                            </Typography>
-                        ) : null}
-                    </Box>
-                    <Box
-                        style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            justifyContent: 'flex-start',
-                            marginTop: 20,
-                        }}
-                    >
-                        {roomList.map(roomId => {
-                            const roomObj = typedRooms.find(room => room._id === roomId);
-                            if (!roomObj) {
-                                return null; // Skip if a room object is not found
-                            }
-                            return (
-                                <Box
-                                    key={roomId}
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        margin: 8,
-                                        padding: 8,
-                                        width: 150,
-                                        height: 150,
-                                        cursor: 'pointer',
-                                        border: '1px solid #ccc',
-                                        borderRadius: 8,
-                                        ...(this.state.selectedRooms.includes(roomId)
-                                            ? {
-                                                  border: '2px solid #2196f3',
-                                                  backgroundColor: 'rgba(33, 150, 243, 0.1)',
-                                              }
-                                            : undefined),
-                                    }}
-                                    onClick={() => this.toggleRoom(roomId)}
-                                >
-                                    <Icon
-                                        src={roomObj.iconSvg}
-                                        alt={roomObj.translatedName}
-                                        style={{ width: 80, height: 80, marginBottom: 8 }}
-                                    />
-                                    <Typography variant="body2">{roomObj.translatedName}</Typography>
-                                    <Checkbox
-                                        checked={this.state.selectedRooms.includes(roomId)}
-                                        onChange={() => this.toggleRoom(roomId)}
-                                        onClick={e => e.stopPropagation()}
-                                    />
-                                </Box>
-                            );
-                        })}
-                        <Box
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                margin: 8,
-                                padding: 8,
-                                width: 150,
-                                height: 150,
-                                cursor: 'pointer',
-                                border: '1px solid #ccc',
-                                borderRadius: 8,
-                                fontSize: 20,
-                            }}
-                            onClick={() => this.setState({ showMore: !this.state.showMore })} // Show more rooms
-                        >
-                            {this.state.showMore ? this.props.t('Show less') : this.props.t('Show more')}
-                        </Box>
-                    </Box>
-                </div>
-                <Toolbar
-                    style={{
-                        height: TOOLBAR_HEIGHT,
-                        lineHeight: `${TOOLBAR_HEIGHT}px`,
-                        justifyContent: 'right',
-                    }}
-                >
+                    {room.translatedName}
+                </Typography>
+            </ButtonBase>
+        );
+    }
+
+    render(): JSX.Element {
+        const roomList: string[] = this.state.showMore
+            ? this.rooms
+                  .map(room => room._id)
+                  .sort((a, b) => {
+                      const roomA = this.rooms.find(room => room._id === a);
+                      const roomB = this.rooms.find(room => room._id === b);
+                      return (roomA?.translatedName || a).localeCompare(roomB?.translatedName || b, this.props.lang);
+                  })
+            : this.importantRooms;
+
+        const unchanged = this.isUnchanged();
+
+        return (
+            <WizardStepFrame
+                title={this.props.t('Select the rooms in your home')}
+                description={`${this.props.t(
+                    'Please select the rooms that exist in your home. You can add or remove rooms later in the categories tab.',
+                )}${
+                    this.state.showMore
+                        ? `\n${this.props.t('If you do not see the room you want to add, please add it in the categories tab.')}`
+                        : ''
+                }`}
+                onBack={this.props.onBack}
+                busy={this.state.creating}
+                actions={
                     <Button
                         variant="contained"
                         color="primary"
+                        loading={this.state.creating}
                         onClick={this.createRoomEnums}
-                        startIcon={
-                            this.state.preSelected === JSON.stringify(this.state.selectedRooms) ? (
-                                <IconNext />
-                            ) : (
-                                <IconCheck />
-                            )
-                        }
+                        startIcon={unchanged ? <IconNext /> : <IconCheck />}
                     >
-                        {this.state.preSelected === JSON.stringify(this.state.selectedRooms)
-                            ? this.props.t('Next')
-                            : this.props.t('Create rooms')}
+                        {unchanged ? this.props.t('Next') : this.props.t('Create rooms')}
                     </Button>
-                </Toolbar>
-            </Paper>
+                }
+            >
+                {this.state.loading ? (
+                    <LinearProgress />
+                ) : (
+                    <Box
+                        sx={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                            gap: 1.5,
+                        }}
+                    >
+                        {roomList.map(roomId => this.renderRoom(roomId))}
+                        <ButtonBase
+                            disabled={this.state.creating}
+                            onClick={() => this.setState({ showMore: !this.state.showMore })}
+                            sx={{
+                                height: 150,
+                                borderRadius: 2,
+                                border: '2px dashed',
+                                borderColor: 'divider',
+                                color: 'text.secondary',
+                                '&:hover': { borderColor: 'text.disabled' },
+                            }}
+                        >
+                            <Typography variant="body2">
+                                {this.state.showMore ? this.props.t('Show less') : this.props.t('Show more')}
+                            </Typography>
+                        </ButtonBase>
+                    </Box>
+                )}
+            </WizardStepFrame>
         );
     }
 }

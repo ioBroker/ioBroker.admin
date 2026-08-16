@@ -1,207 +1,104 @@
-import React, { createRef, Component, type JSX } from 'react';
+import React, { Component, type JSX } from 'react';
 
-import { TextField, Grid, Toolbar, Button, Paper, Box, Tooltip } from '@mui/material';
+import { TextField, Button, Box, Tooltip, IconButton, InputAdornment, Alert } from '@mui/material';
 
-import { Check as IconCheck } from '@mui/icons-material';
+import {
+    Check as IconCheck,
+    Visibility as IconVisibility,
+    VisibilityOff as IconVisibilityOff,
+} from '@mui/icons-material';
 
-import { type IobTheme, type Translate } from '@iobroker/gui-components';
+import { type Translate } from '@iobroker/gui-components';
 
 import AdminUtils from '../../helpers/AdminUtils';
 
 import backItUpIcon from '../../assets/backitup.png';
+import WizardStepFrame from './WizardStepFrame';
 
-const TOOLBAR_HEIGHT = 64;
-
-const styles: Record<string, any> = {
-    paper: {
-        height: '100%',
-        maxHeight: '100%',
-        maxWidth: '100%',
-        overflow: 'hidden',
-    },
-    title: (theme: IobTheme) => ({
-        color: theme.palette.secondary.main,
-    }),
-    form: {
-        height: `calc(100% - ${TOOLBAR_HEIGHT + 8}px)`,
-        overflow: 'auto',
-    },
-    input: {
-        width: 400,
-        marginBottom: 16,
-    },
-    grow: {
-        flexGrow: 1,
-    },
-    toolbar: {
-        height: TOOLBAR_HEIGHT,
-        lineHeight: `${TOOLBAR_HEIGHT}px`,
-    },
-};
+const PASSWORD_INPUT_ID = 'admin_password_repeat';
 
 interface WizardPasswordTabProps {
     t: Translate;
+    /** Already entered password, so the step can be visited again */
+    password: string;
+    /** The password is currently written to the server */
+    requesting: boolean;
+    /** Go one step back */
+    onBack?: () => void;
     onDone: (password: string, goToBackItUp?: boolean) => void;
 }
 
 interface WizardPasswordTabState {
     password: string;
     passwordRepeat: string;
-    errorPassword: boolean | string;
-    errorPasswordRepeat: boolean | string;
+    errorPassword: string;
+    errorPasswordRepeat: string;
+    showPassword: boolean;
 }
 
 export default class WizardPasswordTab extends Component<WizardPasswordTabProps, WizardPasswordTabState> {
-    private readonly focusRef: React.RefObject<HTMLInputElement | null>;
-
     constructor(props: WizardPasswordTabProps) {
         super(props);
 
         this.state = {
-            password: '',
-            passwordRepeat: '',
-            errorPassword: true,
-            errorPasswordRepeat: false,
+            password: props.password,
+            passwordRepeat: props.password,
+            errorPassword: '',
+            errorPasswordRepeat: '',
+            showPassword: false,
         };
-
-        this.focusRef = createRef();
     }
 
-    componentDidMount(): void {
-        this.focusRef.current?.focus();
+    /**
+     * Validate the password. An empty field is not shown as an error, as the user did not type anything yet
+     *
+     * @param password the entered password
+     * @param passwordRepeat the repeated password
+     */
+    checkPassword(password: string, passwordRepeat?: string): string {
+        if (!password && !passwordRepeat) {
+            return '';
+        }
+        const error = AdminUtils.checkPassword(password, passwordRepeat);
+        return error ? this.props.t(error) : '';
+    }
+
+    /** True if the entered passwords are valid and can be saved */
+    isValid(): boolean {
+        return (
+            !!this.state.password &&
+            this.state.password === this.state.passwordRepeat &&
+            !this.state.errorPassword &&
+            !this.state.errorPasswordRepeat
+        );
+    }
+
+    renderVisibilityButton(): JSX.Element {
+        return (
+            <InputAdornment position="end">
+                <IconButton
+                    tabIndex={-1}
+                    size="small"
+                    edge="end"
+                    disabled={this.props.requesting}
+                    aria-label={this.props.t('Show password')}
+                    onClick={() => this.setState({ showPassword: !this.state.showPassword })}
+                >
+                    {this.state.showPassword ? <IconVisibilityOff /> : <IconVisibility />}
+                </IconButton>
+            </InputAdornment>
+        );
     }
 
     render(): JSX.Element {
+        const type = this.state.showPassword ? 'text' : 'password';
+
         return (
-            <Paper style={styles.paper}>
-                <form
-                    style={styles.form}
-                    noValidate
-                    autoComplete="off"
-                >
-                    <Grid
-                        container
-                        sx={{ flexDirection: 'column' }}
-                    >
-                        <Grid>
-                            <Box
-                                component="h2"
-                                sx={styles.title}
-                            >
-                                {this.props.t('You must set the administrator password')}
-                            </Box>
-                        </Grid>
-                        <Grid>
-                            <TextField
-                                variant="standard"
-                                disabled
-                                style={styles.input}
-                                label={this.props.t('Administrator name')}
-                                value="admin"
-                                slotProps={{
-                                    input: { readOnly: true },
-                                }}
-                                helperText={this.props.t('Administrator name cannot be changed')}
-                            />
-                        </Grid>
-                        <Grid>
-                            <TextField
-                                variant="standard"
-                                slotProps={{
-                                    input: {
-                                        autoComplete: 'new-password',
-                                    },
-                                    htmlInput: {
-                                        autoComplete: 'off',
-                                    },
-                                }}
-                                onKeyDown={e => {
-                                    if (e.key === 'Enter' && this.state.password && !this.state.errorPassword) {
-                                        const el = window.document.getElementById('admin_password');
-                                        if (el) {
-                                            el.focus();
-                                        }
-                                    }
-                                }}
-                                autoComplete="off"
-                                style={styles.input}
-                                ref={this.focusRef}
-                                label={this.props.t('Administrator password')}
-                                type="password"
-                                value={this.state.password}
-                                error={!!this.state.errorPassword}
-                                onChange={e => {
-                                    const errorPassword = AdminUtils.checkPassword(e.target.value);
-                                    const errorPasswordRepeat = AdminUtils.checkPassword(
-                                        e.target.value,
-                                        this.state.passwordRepeat,
-                                    );
-                                    this.setState({
-                                        password: e.target.value,
-                                        errorPassword: errorPassword ? this.props.t(errorPassword) : false,
-                                        errorPasswordRepeat: errorPasswordRepeat
-                                            ? this.props.t(errorPasswordRepeat)
-                                            : false,
-                                    });
-                                }}
-                                helperText={this.props.t(
-                                    'Password must be at least 8 characters long and have numbers, upper and lower case letters',
-                                )}
-                            />
-                        </Grid>
-                        <Grid>
-                            <TextField
-                                variant="standard"
-                                slotProps={{
-                                    input: {
-                                        autoComplete: 'new-password',
-                                    },
-                                    htmlInput: {
-                                        autoComplete: 'off',
-                                        id: 'admin_password',
-                                    },
-                                }}
-                                onKeyDown={e => {
-                                    if (
-                                        e.key === 'Enter' &&
-                                        this.state.password &&
-                                        !this.state.errorPassword &&
-                                        !this.state.errorPasswordRepeat
-                                    ) {
-                                        this.props.onDone(this.state.password);
-                                    }
-                                }}
-                                autoComplete="off"
-                                style={styles.input}
-                                label={this.props.t('Repeat administrator password')}
-                                value={this.state.passwordRepeat}
-                                type="password"
-                                error={!!this.state.errorPasswordRepeat}
-                                onChange={e => {
-                                    const errorPasswordRepeat = AdminUtils.checkPassword(
-                                        this.state.password,
-                                        e.target.value,
-                                    );
-                                    this.setState({
-                                        passwordRepeat: e.target.value,
-                                        errorPasswordRepeat: errorPasswordRepeat
-                                            ? this.props.t(errorPasswordRepeat)
-                                            : false,
-                                    });
-                                }}
-                                helperText={this.state.errorPasswordRepeat || ''}
-                            />
-                        </Grid>
-                    </Grid>
-                </form>
-                <Toolbar
-                    style={{
-                        height: TOOLBAR_HEIGHT,
-                        lineHeight: `${TOOLBAR_HEIGHT}px`,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                    }}
-                >
+            <WizardStepFrame
+                title={this.props.t('You must set the administrator password')}
+                onBack={this.props.onBack}
+                busy={this.props.requesting}
+                secondaryActions={
                     <Tooltip
                         title={this.props.t(
                             'If you just want to restore from backup, you can skip the following wizard steps. You will be redirected to BackItUp tab.',
@@ -210,9 +107,9 @@ export default class WizardPasswordTab extends Component<WizardPasswordTabProps,
                     >
                         <span>
                             <Button
-                                variant="contained"
-                                color="primary"
-                                style={{ opacity: 0.4 }}
+                                variant="outlined"
+                                color="grey"
+                                disabled={this.props.requesting}
                                 onClick={() => this.props.onDone('', true)}
                                 startIcon={
                                     <img
@@ -226,22 +123,97 @@ export default class WizardPasswordTab extends Component<WizardPasswordTabProps,
                             </Button>
                         </span>
                     </Tooltip>
+                }
+                actions={
                     <Button
                         color="primary"
                         variant="contained"
+                        loading={this.props.requesting}
                         onClick={() => this.props.onDone(this.state.password)}
-                        disabled={
-                            !this.state.passwordRepeat || !!this.state.errorPasswordRepeat || !!this.state.errorPassword
-                        }
+                        disabled={!this.isValid()}
                         startIcon={<IconCheck />}
                     >
                         {this.props.t('Set administrator password')}
                     </Button>
-                </Toolbar>
-                <Toolbar style={styles.toolbar}>
-                    <div style={styles.grow} />
-                </Toolbar>
-            </Paper>
+                }
+            >
+                <Box
+                    component="form"
+                    noValidate
+                    autoComplete="off"
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 440 }}
+                >
+                    <Alert
+                        severity="info"
+                        variant="outlined"
+                    >
+                        {this.props.t(
+                            'Password must be at least 8 characters long and have numbers, upper and lower case letters',
+                        )}
+                    </Alert>
+                    <TextField
+                        disabled
+                        label={this.props.t('Administrator name')}
+                        value="admin"
+                        slotProps={{ input: { readOnly: true } }}
+                        helperText={this.props.t('Administrator name cannot be changed')}
+                    />
+                    <TextField
+                        autoFocus
+                        disabled={this.props.requesting}
+                        label={this.props.t('Administrator password')}
+                        type={type}
+                        value={this.state.password}
+                        error={!!this.state.errorPassword}
+                        helperText={this.state.errorPassword || ' '}
+                        slotProps={{
+                            input: {
+                                autoComplete: 'new-password',
+                                endAdornment: this.renderVisibilityButton(),
+                            },
+                            htmlInput: { autoComplete: 'off' },
+                        }}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' && this.state.password && !this.state.errorPassword) {
+                                window.document.getElementById(PASSWORD_INPUT_ID)?.focus();
+                            }
+                        }}
+                        onChange={e =>
+                            this.setState({
+                                password: e.target.value,
+                                errorPassword: this.checkPassword(e.target.value),
+                                errorPasswordRepeat: this.checkPassword(e.target.value, this.state.passwordRepeat),
+                            })
+                        }
+                    />
+                    <TextField
+                        disabled={this.props.requesting}
+                        label={this.props.t('Repeat administrator password')}
+                        type={type}
+                        value={this.state.passwordRepeat}
+                        error={!!this.state.errorPasswordRepeat}
+                        helperText={this.state.errorPasswordRepeat || ' '}
+                        slotProps={{
+                            input: {
+                                autoComplete: 'new-password',
+                                endAdornment: this.renderVisibilityButton(),
+                            },
+                            htmlInput: { autoComplete: 'off', id: PASSWORD_INPUT_ID },
+                        }}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' && this.isValid()) {
+                                this.props.onDone(this.state.password);
+                            }
+                        }}
+                        onChange={e =>
+                            this.setState({
+                                passwordRepeat: e.target.value,
+                                errorPasswordRepeat: this.checkPassword(this.state.password, e.target.value),
+                            })
+                        }
+                    />
+                </Box>
+            </WizardStepFrame>
         );
     }
 }

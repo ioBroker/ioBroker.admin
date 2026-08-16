@@ -44,6 +44,9 @@ const styles: Record<string, any> = {
         position: 'sticky',
         bottom: -10,
         pl: 1,
+        pr: 1,
+        // same radius as the log paper next to it, so the sticky bar does not read as a square patch
+        borderRadius: `${theme.shape.borderRadius}px`,
         // from the palette instead of per theme name: the old list knew only 'blue' and 'dark',
         // so every newer theme got the white value
         background: theme.palette.background.paper,

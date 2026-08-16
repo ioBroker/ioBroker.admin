@@ -1,129 +1,69 @@
-import React, { createRef, Component, type JSX } from 'react';
+import React, { Component, type JSX } from 'react';
 
-import { Grid, Toolbar, Button, Paper, Box } from '@mui/material';
+import { Button, Box, Alert, AlertTitle, Typography } from '@mui/material';
 
 import { Public as IconCloud, Language as IconCloudPro, Check as IconCheck } from '@mui/icons-material';
 
-import { type IobTheme, type Translate } from '@iobroker/gui-components';
+import { type Translate } from '@iobroker/gui-components';
 
-const TOOLBAR_HEIGHT = 64;
-
-const styles: Record<string, any> = {
-    paper: {
-        height: '100%',
-        maxHeight: '100%',
-        maxWidth: '100%',
-        overflow: 'hidden',
-    },
-    title: (theme: IobTheme) => ({
-        color: theme.palette.secondary.main,
-    }),
-    form: {
-        height: `calc(100% - ${TOOLBAR_HEIGHT + 8}px)`,
-        overflow: 'auto',
-    },
-    input: {
-        width: 400,
-        marginBottom: 16,
-    },
-    grow: {
-        flexGrow: 1,
-    },
-    toolbar: {
-        height: TOOLBAR_HEIGHT,
-        lineHeight: `${TOOLBAR_HEIGHT}px`,
-    },
-    text: {
-        fontSize: 16,
-    },
-
-    error: {
-        fontSize: 24,
-        color: '#c61f1f',
-    },
-    warning: {
-        fontSize: 20,
-        color: '#c6891f',
-    },
-    information: {
-        fontSize: 18,
-        color: '#429c1b',
-    },
-    button: {
-        marginRight: 16,
-    },
-};
+import WizardStepFrame from './WizardStepFrame';
 
 interface WizardPortForwardingProps {
     auth: boolean;
     secure: boolean;
     t: Translate;
+    /** Go one step back */
+    onBack?: () => void;
     onDone: () => void;
 }
 
-interface WizardPortForwardingState {
-    auth: boolean;
-    secure: boolean;
-}
-
-export default class WizardPortForwarding extends Component<WizardPortForwardingProps, WizardPortForwardingState> {
-    private readonly focusRef: React.RefObject<HTMLInputElement | null>;
-
-    constructor(props: WizardPortForwardingProps) {
-        super(props);
-
-        this.focusRef = createRef();
-    }
-
-    componentDidMount(): void {
-        this.focusRef.current?.focus();
-    }
-
+export default class WizardPortForwarding extends Component<WizardPortForwardingProps> {
     render(): JSX.Element {
-        return (
-            <Paper style={styles.paper}>
-                <form
-                    style={styles.form}
-                    noValidate
-                    autoComplete="off"
-                >
-                    <Grid
-                        container
-                        sx={{ flexDirection: 'column' }}
-                    >
-                        <Grid>
-                            <Box
-                                component="h2"
-                                sx={styles.title}
-                            >
-                                {this.props.t('Important information about port forwarding')}
-                            </Box>
-                        </Grid>
-                        <Grid>
-                            {!this.props.auth ? <div style={styles.error}>{this.props.t('Warning!')}</div> : null}
-                            {this.props.auth && !this.props.secure ? (
-                                <div style={styles.warning}>{this.props.t('Be aware!')}</div>
-                            ) : null}
-                            {this.props.auth && this.props.secure ? (
-                                <div style={styles.information}>{this.props.t('Information')}</div>
-                            ) : null}
+        // The less protected the installation is, the louder the warning
+        let severity: 'error' | 'warning' | 'info';
+        let title: string;
+        if (!this.props.auth) {
+            severity = 'error';
+            title = this.props.t('Warning!');
+        } else if (!this.props.secure) {
+            severity = 'warning';
+            title = this.props.t('Be aware!');
+        } else {
+            severity = 'info';
+            title = this.props.t('Information');
+        }
 
-                            <div style={styles.text}>
-                                {this.props.t(
-                                    'Do not expose iobroker Admin or Web interfaces to the internet directly via the port forwarding!',
-                                )}
-                            </div>
-                        </Grid>
-                        <Grid style={{ marginTop: 16 }}>
-                            <div style={styles.text}>
-                                {this.props.t(
-                                    'The Cloud services from iobroker.net/pro can help here to do that securely:',
-                                )}
-                            </div>
-                        </Grid>
-                        <Grid style={{ marginTop: 16 }}>
+        return (
+            <WizardStepFrame
+                title={this.props.t('Important information about port forwarding')}
+                onBack={this.props.onBack}
+                actions={
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => this.props.onDone()}
+                        startIcon={<IconCheck />}
+                    >
+                        {this.props.t('Understand')}
+                    </Button>
+                }
+            >
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, maxWidth: 700 }}>
+                    <Alert severity={severity}>
+                        <AlertTitle>{title}</AlertTitle>
+                        {this.props.t(
+                            'Do not expose iobroker Admin or Web interfaces to the internet directly via the port forwarding!',
+                        )}
+                    </Alert>
+
+                    <Box>
+                        <Typography sx={{ mb: 2 }}>
+                            {this.props.t(
+                                'The Cloud services from iobroker.net/pro can help here to do that securely:',
+                            )}
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                             <Button
-                                style={styles.button}
                                 color="secondary"
                                 variant="contained"
                                 onClick={() => window.open('https://iobroker.pro', 'help')}
@@ -139,21 +79,10 @@ export default class WizardPortForwarding extends Component<WizardPortForwarding
                             >
                                 ioBroker.net
                             </Button>
-                        </Grid>
-                    </Grid>
-                </form>
-                <Toolbar style={styles.toolbar}>
-                    <div style={styles.grow} />
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={() => this.props.onDone()}
-                        startIcon={<IconCheck />}
-                    >
-                        {this.props.t('Understand')}
-                    </Button>
-                </Toolbar>
-            </Paper>
+                        </Box>
+                    </Box>
+                </Box>
+            </WizardStepFrame>
         );
     }
 }
