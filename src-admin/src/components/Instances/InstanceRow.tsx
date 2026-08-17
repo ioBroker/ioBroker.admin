@@ -104,6 +104,10 @@ const styles: Record<string, any> = {
         },
     },
     hidden1230: {
+        // fixed width, so the icons after the host name stay aligned under each other
+        width: 150,
+        minWidth: 150,
+        overflow: 'hidden',
         '@media screen and (max-width: 1300px)': {
             display: 'none !important',
         },
@@ -576,12 +580,14 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             <Grid sx={styles.hidden1230}>{this.renderHost()}</Grid>
                         ) : null}
                     </Grid>
-                    {this.props.context.expertMode && item.checkSentry && (
+                    {this.props.context.expertMode && (
                         <Box
                             component="div"
-                            sx={styles.hidden570}
+                            // reserve the place, even if the adapter does not support sentry,
+                            // so the compact icon stays aligned too
+                            sx={{ ...styles.hidden570, minWidth: 34 }}
                         >
-                            {this.renderSentry()}
+                            {item.checkSentry ? this.renderSentry() : null}
                         </Box>
                     )}
                     <Box
