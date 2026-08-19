@@ -196,7 +196,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.5 (2026-08-19)
 - (@GermanBluefox) Corrected the doubled tiles in the quick access if more than one web instance is running
 - (@GermanBluefox) Reworked the initial setup wizard: modern layout, navigation backwards and many corrections
 - (@GermanBluefox) Rounded the options toolbar in the adapter update dialog
@@ -221,11 +221,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Breaking: React19 + MUI9
 - (@GermanBluefox) Breaking: Node 22 or higher required
 - (@GermanBluefox) Improved charts in tooltip
-
-### 7.9.13 (2026-07-12)
-- (@GermanBluefox) Added AWS and Azure credentials in credentials manager
-- (@GermanBluefox) Allowed to set the log level without expert mode
-- (@GermanBluefox) Correcting sentry reporting for the admin adapter
 
 ## License
 

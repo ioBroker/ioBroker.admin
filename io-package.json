@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.4",
+    "version": "8.0.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.5": {
+        "en": "Corrected the doubled tiles in the quick access if more than one web instance is running\nReworked the initial setup wizard: modern layout, navigation backwards and many corrections\nRounded the options toolbar in the adapter update dialog\nRemoved warning about not installed docker.",
+        "de": "Das Problem mit den doppelt angezeigten Kacheln im Schnellzugriff wurde behoben, falls mehrere Webinstanzen ausgeführt werden.\nDer Einrichtungsassistent wurde überarbeitet: modernes Layout, umgekehrte Navigation und viele Korrekturen.\nDie Optionsleiste im Adapteraktualisierungsdialog wurde abgerundet.\nWarnung bezüglich eines nicht installierten Docker-Servers entfernt.",
+        "ru": "Исправлена ошибка дублирования плиток в режиме быстрого доступа, если запущено более одного экземпляра веб-браузера.\nПереработан мастер первоначальной настройки: современный дизайн, обратная навигация и множество исправлений.\nЗакруглил панель инструментов параметров в диалоговом окне обновления адаптера.\nУдалено предупреждение о том, что Docker не установлен.",
+        "pt": "Corrigido o problema de blocos duplicados no acesso rápido quando mais de uma instância da web está em execução.\nReformulamos o assistente de configuração inicial: layout moderno, navegação inversa e diversas correções.\nArredondamos a barra de opções na caixa de diálogo de atualização do adaptador.\nAviso sobre o Docker não instalado removido.",
+        "nl": "De dubbele tegels in de snelle toegang zijn gecorrigeerd voor het geval er meer dan één webinstantie actief was.\nDe installatiewizard is herzien: moderne lay-out, navigatie naar achteren en vele correcties.\nDe optiebalk in het dialoogvenster voor het bijwerken van de adapter is afgerond.\nWaarschuwing over niet-geïnstalleerde Docker verwijderd.",
+        "fr": "Correction du problème d'affichage des vignettes en double dans l'accès rapide lorsqu'il y a plusieurs instances Web en cours d'exécution.\nL'assistant de configuration initiale a été entièrement repensé : interface moderne, navigation inversée et nombreuses corrections.\nBarre d'outils des options arrondie dans la boîte de dialogue de mise à jour de l'adaptateur\nSuppression de l'avertissement concernant l'absence de Docker.",
+        "it": "Corretto il problema delle tessere duplicate nell'accesso rapido nel caso in cui sia in esecuzione più di un'istanza web.\nRielaborata la procedura guidata di configurazione iniziale: layout moderno, navigazione inversa e numerose correzioni.\nBarra degli strumenti delle opzioni arrotondata nella finestra di dialogo di aggiornamento dell'adattatore\nRimosso l'avviso relativo alla mancata installazione di Docker.",
+        "es": "Se corrigió el problema de los mosaicos duplicados en el acceso rápido cuando se ejecuta más de una instancia web.\nSe ha rediseñado el asistente de configuración inicial: diseño moderno, navegación inversa y numerosas correcciones.\nSe redondeó la barra de herramientas de opciones en el cuadro de diálogo de actualización del adaptador.\nSe eliminó la advertencia sobre Docker no instalado.",
+        "pl": "Naprawiono podwójne kafelki w szybkim dostępie, jeśli uruchomiono więcej niż jedną instancję internetową\nPrzeprojektowano początkowego kreatora konfiguracji: nowoczesny układ, nawigacja wsteczna i wiele poprawek\nZaokrąglono pasek narzędzi opcji w oknie dialogowym aktualizacji adaptera\nUsunięto ostrzeżenie o niezainstalowanym dokerze.",
+        "uk": "Виправлено подвоєні плитки у швидкому доступі, якщо запущено більше одного веб-екземпляра.\nПерероблено майстер початкового налаштування: сучасний макет, навігація у зворотному напрямку та багато виправлень\nЗаокруглено панель інструментів параметрів у діалоговому вікні оновлення адаптера\nВидалено попередження про невстановлений док-стандарт.",
+        "zh-cn": "修正了当多个 Web 实例运行时快速访问中出现的重复图块问题。\n重新设计了初始设置向导：采用现代布局，支持反向导航，并进行了多项修正。\n在适配器更新对话框中，将选项工具栏改成了圆形。\n已移除关于未安装 Docker 的警告。"
+      },
       "8.0.4": {
         "en": "Better handlling of autocompleteSendTo JsonConfig components",
         "de": "Besseres Handling von autocompleteSendTo JsonConfig Komponenten",
@@ -95,19 +108,6 @@
         "pl": "Dodano port (native.port) do tabeli instancji i kart oraz możliwość sortowania instancji według portu\nPoprawiono łącza wprowadzające i instancyjne dla adapterów działających jako rozszerzenie sieciowe\nUlepszono komunikat o błędzie dotyczący niespełnionych zależności globalnych w konfiguracjach wielohostowych, wyświetlając listę hostów, które nie spełniają wymagań\nKategorie powiadomień posortowano według ważności (alert, powiadomienie, informacja), dzięki czemu najważniejsze powiadomienia są wyświetlane jako pierwsze",
         "uk": "Додано порт (native.port) до таблиці та карток екземплярів, а також можливість сортувати екземпляри за портом.\nВиправлено посилання на вступ та екземпляри для адаптерів, що працюють як веб-розширення.\nПокращено повідомлення про помилку щодо невиконаних глобальних залежностей у багатохостових налаштуваннях шляхом переліку хостів, які не відповідають вимозі.\nКатегорії сповіщень відсортовано за серйозністю (сповіщення, сповіщення, інформація), тому найважливіші сповіщення відображаються першими",
         "zh-cn": "在实例表和卡片中添加了端口（native.port），并增加了按端口对实例进行排序的功能。\n修正了作为 Web 扩展运行的适配器的介绍和实例链接。\n改进了多主机配置中未满足全局依赖项的错误消息，列出了不满足要求的主机。\n按严重程度（警报、通知、信息）对通知类别进行排序，以便优先显示最重要的通知。"
-      },
-      "7.9.11": {
-        "en": "Allowed creating an AI API key directly from the assistant settings dialog\nAdded provider logos (incl. DeepSeek) to the AI assistant provider and credential selectors\nThe adapter-core version will be updated if required by start\nShow status of the instance in the web-extension mode",
-        "de": "Es wurde ermöglicht, einen KI-API-Schlüssel direkt im Dialog für die Assistenteneinstellungen zu erstellen.\nAnbieterlogos (inkl. DeepSeek) wurden zu den Auswahlfeldern für KI-Assistenten und Anmeldeinformationen hinzugefügt.\nDie Adapter-Core-Version wird bei Bedarf vom Start aktualisiert.\nStatus der Instanz im Web-Erweiterungsmodus anzeigen",
-        "ru": "Разрешено создавать ключ API для ИИ непосредственно из диалогового окна настроек помощника.\nДобавлены логотипы поставщиков (включая DeepSeek) в поля выбора поставщика и учетных данных для ИИ-помощника.\nПри необходимости версия adapter-core будет обновлена к моменту запуска.\nОтображение статуса экземпляра в режиме веб-расширения",
-        "pt": "Permitido criar uma chave de API de IA diretamente da caixa de diálogo de configurações do assistente.\nAdicionamos os logotipos dos fornecedores (incluindo DeepSeek) aos seletores de fornecedores e credenciais do assistente de IA.\nA versão do adapter-core será atualizada, se necessário, pelo comando start.\nExibir o status da instância no modo de extensão da web",
-        "nl": "Het is nu mogelijk om rechtstreeks vanuit het instellingendialoogvenster van de assistent een AI API-sleutel aan te maken.\nAanbiederslogo's (inclusief DeepSeek) toegevoegd aan de selectietools voor aanbieders en referenties van de AI-assistent.\nDe adapter-core-versie wordt indien nodig door de start bijgewerkt.\nToon de status van het exemplaar in de web-extensiemodus.",
-        "fr": "Il est désormais possible de créer une clé API IA directement depuis la boîte de dialogue des paramètres de l'assistant.\nAjout des logos des fournisseurs (dont DeepSeek) aux sélecteurs de fournisseurs d'assistant IA et d'identifiants.\nLa version du noyau de l'adaptateur sera mise à jour si nécessaire au démarrage\nAfficher l'état de l'instance en mode extension Web",
-        "it": "Consente la creazione di una chiave API AI direttamente dalla finestra di dialogo delle impostazioni dell'assistente\nAggiunti i loghi dei provider (incluso DeepSeek) ai selettori di provider e credenziali dell'assistente AI.\nLa versione dell'adattatore-core verrà aggiornata se necessario all'avvio\nMostra lo stato dell'istanza nella modalità di estensione web",
-        "es": "Permitió crear una clave API de IA directamente desde el cuadro de diálogo de configuración del asistente.\nSe agregaron logotipos de proveedores (incluido DeepSeek) a los selectores de proveedores y credenciales del asistente de IA.\nLa versión del núcleo del adaptador se actualizará si es necesario al iniciar.\nMostrar el estado de la instancia en el modo de extensión web.",
-        "pl": "Umożliwiono tworzenie klucza API AI bezpośrednio z okna dialogowego ustawień asystenta\nDodano loga dostawców (w tym DeepSeek) do selektorów dostawców i poświadczeń asystenta AI\nWersja rdzenia adaptera zostanie zaktualizowana, jeśli będzie to wymagane do uruchomienia\nPokaż status instancji w trybie rozszerzenia internetowego",
-        "uk": "Дозволено створювати ключ API штучного інтелекту безпосередньо з діалогового вікна налаштувань помічника\nДодано логотипи постачальників (включно з DeepSeek) до постачальників ШІ-помічників та селекторів облікових даних.\nВерсія адаптерного ядра буде оновлена, якщо це буде потрібно, до початку роботи\nПоказати стан екземпляра в режимі веб-розширення",
-        "zh-cn": "允许直接从助手设置对话框创建 AI API 密钥\n在 AI 助手提供商和凭证选择器中添加了提供商徽标（包括 DeepSeek）。\n如果启动时需要，适配器核心版本将会更新。\n在 Web 扩展模式下显示实例状态"
       }
     },
     "desc": {
