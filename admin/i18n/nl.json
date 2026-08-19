@@ -63,6 +63,7 @@
     "Use this instance for automatic update": "Gebruik deze instantie voor automatische update",
     "Warning!": "Waarschuwing!",
     "You can use admin behind a reverse proxy.": "U kunt admin gebruiken achter een Reverse Proxy.",
+    "If admin itself is not served at the root path, add this admin instance here too, e.g. with the path '/admin/'.": "Als admin zelf niet op het rootpad wordt aangeboden, voeg deze admin-instantie hier dan ook toe, bijv. met het pad '/admin/'.",
     "every 12 hours": "Elke 12 uur",
     "every 2 days": "om de 2 dagen",
     "every 2 weeks": "elke 2 weken",

@@ -63,6 +63,7 @@
     "Use this instance for automatic update": "Utilice esta instancia para la actualización automática",
     "Warning!": "¡Advertencia!",
     "You can use admin behind a reverse proxy.": "Puede usar admin detrás de un Reverse Proxy.",
+    "If admin itself is not served at the root path, add this admin instance here too, e.g. with the path '/admin/'.": "Si admin no se sirve en la ruta raíz, añada también esta instancia de admin aquí, p. ej. con la ruta '/admin/'.",
     "every 12 hours": "cada 12 horas",
     "every 2 days": "cada 2 días",
     "every 2 weeks": "cada 2 semanas",

@@ -81,6 +81,10 @@
             window.loadingHideLogo = '@@loadingHideLogo@@';
             window.ssoActive = '@@ssoActive@@';
             window.socketPath = '@@socketPath@@';
+            if (window.socketPath.startsWith('@@')) {
+                // dev mode: vite serves this file directly, so the server did not replace the placeholders
+                window.socketPath = '';
+            }
         </script>
         <style>
             .root {

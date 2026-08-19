@@ -63,6 +63,7 @@
   "Use this instance for automatic update": "Use this instance for automatic certificate update",
   "Warning!": "Warning!",
   "You can use admin behind a reverse proxy.": "You can use admin behind a reverse proxy.",
+  "If admin itself is not served at the root path, add this admin instance here too, e.g. with the path '/admin/'.": "If admin itself is not served at the root path, add this admin instance here too, e.g. with the path '/admin/'.",
   "every 12 hours": "every 12 hours",
   "every 2 days": "every 2 days",
   "every 2 weeks": "every 2 weeks",

@@ -63,6 +63,7 @@
     "Use this instance for automatic update": "Використовуйте цей екземпляр для автоматичного оновлення сертифіката",
     "Warning!": "Увага!",
     "You can use admin behind a reverse proxy.": "Ви можете використовувати admin за Reverse Proxy.",
+    "If admin itself is not served at the root path, add this admin instance here too, e.g. with the path '/admin/'.": "Якщо admin працює не в кореневому шляху, додайте тут і цей екземпляр admin, наприклад зі шляхом '/admin/'.",
     "every 12 hours": "кожні 12 годин",
     "every 2 days": "кожні 2 дні",
     "every 2 weeks": "кожні 2 тижні",

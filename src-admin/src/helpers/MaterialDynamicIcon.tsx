@@ -33,6 +33,8 @@ import {
     type SvgIconComponent,
 } from '@mui/icons-material';
 
+import { adminHref } from './utils';
+
 const ICON_CACHE: Record<string, Promise<ioBroker.AdapterObject>> = {};
 
 const objIcon: Record<string, SvgIconComponent> = {
@@ -92,7 +94,7 @@ function MaterialDynamicIcon({
                 ICON_CACHE[adapter] = socket.getObject(`system.adapter.${adapter}`);
             }
             void ICON_CACHE[adapter].then(
-                obj => obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`),
+                obj => obj?.common?.icon && setUrl(adminHref(`adapter/${adapter}/${obj.common.icon}`)),
             );
         }
     }, [adapter, socket]);

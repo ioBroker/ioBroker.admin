@@ -534,19 +534,27 @@ export function getAdminPublicPath(reverseProxy: ReverseProxyItem[] | undefined 
     for (const group of reverseProxy) {
         const entry = group.paths?.find(item => item.instance === adminInstance);
         if (entry) {
-            return `${group.globalPath || '/'}${entry.path || ''}`.replace(/\/+/g, '/') || '/';
+            // The paths are typed by hand, so normalize them: exactly one leading and one trailing slash
+            return `/${group.globalPath || ''}/${entry.path || ''}/`.replace(/\/+/g, '/');
         }
     }
     return '/';
 }
 
-/** `adminHref('oauth/token')` → `/admin/oauth/token` when `window.socketPath` is `/admin/`. */
+/**
+ * `adminHref('oauth/token')` → `/admin/oauth/token` when the public path of this admin instance is `/admin/`.
+ * The public path is delivered by the server as `socketPath` (index.html and `_socket/info.js`),
+ * the same global that `@iobroker/socket-client` uses to build the web-socket URL.
+ */
 export function adminHref(path: string): string {
     // allow / dont modify absolute urls f.e. CustomTab href from adminTab.link
     if (path.startsWith('http://') || path.startsWith('https://')) {
         return path;
     }
-    return (window.socketPath || '/') + path.replace(/^\//, '');
+    // `globalThis` and not `window`, because this file is used by the back-end too.
+    // In the dev mode (vite) the '@@socketPath@@' placeholder is not replaced, so ignore it.
+    const publicPath = (globalThis as unknown as { socketPath?: string }).socketPath;
+    return (publicPath && !publicPath.startsWith('@@') ? publicPath : '/') + path.replace(/^\//, '');
 }
 
 // New util returning rewritten link (used by Intro & Instances simplified usage)

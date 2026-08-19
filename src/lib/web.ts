@@ -459,13 +459,23 @@ export default class Web {
 
             this.server.app.disable('x-powered-by');
 
-            // Middleware to strip sub-path like '/admin/' so ip:8081/ still works even when proxy configuration is present
-            this.server.app.use((req: Request, _res: Response, next: NextFunction): void => {
-                if (this.publicPath !== '/') {
-                    req.url = req.url.replace(this.publicPath, '/');
-                }
-                next();
-            });
+            // Strip the configured sub-path, so that `ip:8081/admin/x`, `ip:8081/x` and a reverse proxy that
+            // does not remove the prefix itself all end on the same routes.
+            // Only a real prefix may be removed: `/adapter/admin/admin.svg` contains "/admin/" too.
+            if (this.publicPath !== '/') {
+                // '/admin/' => '/admin'
+                const prefix = this.publicPath.substring(0, this.publicPath.length - 1);
+                this.server.app.use((req: Request, _res: Response, next: NextFunction): void => {
+                    if (req.url === prefix) {
+                        req.url = '/';
+                    } else if (req.url.startsWith(`${prefix}/`)) {
+                        req.url = req.url.substring(prefix.length);
+                    } else if (req.url.startsWith(`${prefix}?`)) {
+                        req.url = `/${req.url.substring(prefix.length)}`;
+                    }
+                    next();
+                });
+            }
 
             // enable use of i-frames together with HTTPS
             this.server.app.get('/*any', (_req: Request, res: Response, next: NextFunction): void => {

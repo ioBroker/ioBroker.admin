@@ -40,6 +40,7 @@ import type { HostsWorker } from '@/Workers/HostsWorker';
 import HostSelectors from '@/components/HostSelectors';
 
 import npmIcon from '../../assets/npm.svg';
+import { adminHref } from '@/helpers/utils';
 
 /** Reads a File as a base64 string (without the data-URL prefix) */
 function fileToBase64(file: File): Promise<string> {
@@ -787,7 +788,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
 
                     // If installed, take the icon from the local web server
                     if (this.props.installed[name] && name !== 'admin') {
-                        item.icon = `/adapter/${el}/${(adapter.icon || '').split('/admin/').pop()}`;
+                        item.icon = adminHref(`adapter/${el}/${(adapter.icon || '').split('/admin/').pop()}`);
                     }
 
                     return item;

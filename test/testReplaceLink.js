@@ -7729,6 +7729,49 @@ describe('admin public path (reverse proxy)', () => {
                 '/',
             );
         });
-    });
 
+        it('normalizes hand-typed paths to exactly one leading and trailing slash', () => {
+            const variants = [
+                { globalPath: '/', path: '/admin/' },
+                { globalPath: '/', path: 'admin' },
+                { globalPath: '', path: '/admin' },
+                { globalPath: '//', path: '//admin//' },
+            ];
+            for (const variant of variants) {
+                assert.strictEqual(
+                    getAdminPublicPath(
+                        [{ globalPath: variant.globalPath, paths: [{ instance: 'admin.0', path: variant.path }] }],
+                        'admin.0',
+                    ),
+                    '/admin/',
+                    `globalPath "${variant.globalPath}" + path "${variant.path}"`,
+                );
+            }
+        });
+
+        it('returns / when admin is mapped to the root path', () => {
+            assert.strictEqual(
+                getAdminPublicPath([{ globalPath: '/', paths: [{ instance: 'admin.0', path: '/' }] }], 'admin.0'),
+                '/',
+            );
+            assert.strictEqual(
+                getAdminPublicPath([{ globalPath: '', paths: [{ instance: 'admin.0', path: '' }] }], 'admin.0'),
+                '/',
+            );
+        });
+
+        it('takes the first group that contains this admin instance', () => {
+            assert.strictEqual(
+                getAdminPublicPath(
+                    [
+                        { globalPath: '/', paths: [{ instance: 'web.0', path: '/web/' }] },
+                        { globalPath: '/', paths: [{ instance: 'admin.1', path: '/admin1/' }] },
+                        { globalPath: '/', paths: [{ instance: 'admin.0', path: '/admin/' }] },
+                    ],
+                    'admin.0',
+                ),
+                '/admin/',
+            );
+        });
+    });
 });

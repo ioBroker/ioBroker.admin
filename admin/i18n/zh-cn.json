@@ -63,6 +63,7 @@
     "Use this instance for automatic update": "使用此实例进行自动更新",
     "Warning!": "警告！",
     "You can use admin behind a reverse proxy.": "您可以在反向代理后面使用 admin。",
+    "If admin itself is not served at the root path, add this admin instance here too, e.g. with the path '/admin/'.": "如果 admin 本身不在根路径下提供服务，请在此处也添加该 admin 实例，例如路径为 '/admin/'。",
     "every 12 hours": "每12小时一次",
     "every 2 days": "每2天一次",
     "every 2 weeks": "每两周一次",
