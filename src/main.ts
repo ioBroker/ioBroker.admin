@@ -356,6 +356,7 @@ class Admin extends Adapter {
                         warn: this.log.warn.bind(this.log),
                         error: this.log.error.bind(this.log),
                     },
+                    quiet: true,
                     namespace: this.namespace,
                 });
                 void dockerManager.getDockerDaemonInfo().then(result => {

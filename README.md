@@ -200,6 +200,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Corrected the doubled tiles in the quick access if more than one web instance is running
 - (@GermanBluefox) Reworked the initial setup wizard: modern layout, navigation backwards and many corrections
 - (@GermanBluefox) Rounded the options toolbar in the adapter update dialog
+- (@GermanBluefox) Removed warning about not installed docker.
 
 ### 8.0.4 (2026-08-09)
 - (@GermanBluefox) Better handlling of autocompleteSendTo JsonConfig components
