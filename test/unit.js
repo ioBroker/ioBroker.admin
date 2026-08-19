@@ -24,3 +24,5 @@ tests.unit(path.join(__dirname, '..'), {
         '{CONTROLLER_DIR}/lib/letsencrypt': jscLEMock,
     },
 });
+
+require('./testReplaceLink');

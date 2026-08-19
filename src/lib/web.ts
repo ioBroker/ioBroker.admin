@@ -21,6 +21,7 @@ import cookieParser from 'cookie-parser';
 import type { InternalStorageToken } from '@iobroker/socket-classes';
 import { McpServer, type McpConfig } from '@iobroker/mcp-server';
 import type { AdminAdapterConfig } from '../types';
+import { getAdminPublicPath } from './utils';
 
 let AdapterStore;
 /** Content of a socket-io file */
@@ -139,7 +140,16 @@ export default class Web {
         server: null,
     };
 
-    private readonly LOGIN_PAGE = '/index.html?login';
+    /**
+     * Configured public mount (`/` or `/admin/`), like web `rootPath`.
+     * Incoming `/admin/…` is stripped so `:8081/admin/` and the proxy share one path.
+     */
+    private readonly publicPath: string;
+
+    /** Login URL as the browser must see it. */
+    private get loginPage(): string {
+        return `${this.publicPath}index.html?login`;
+    }
 
     /** URL to the JSON config schema */
     private readonly JSON_CONFIG_SCHEMA_URL =
@@ -194,6 +204,7 @@ export default class Web {
         this.options = options;
 
         this.systemLanguage = this.options?.systemLanguage || 'en';
+        this.publicPath = getAdminPublicPath(this.settings.reverseProxy, this.adapter.namespace);
 
         void this.#init();
     }
@@ -278,6 +289,9 @@ export default class Web {
                 template = template.replace(`@@loginLink@@`, this.systemConfig.native?.vendor.admin.login.link || '');
             } else if (pattern === 'loginTitle') {
                 template = template.replace(`@@loginTitle@@`, this.systemConfig.native?.vendor.admin.login.title || '');
+            } else if (pattern === 'socketPath') {
+                // Same as web `rootPath`: WS URL only. Empty when admin is at `/`.
+                template = template.replace(/@@socketPath@@/g, this.publicPath === '/' ? '' : this.publicPath);
             } else {
                 template = template.replace(
                     `@@${pattern}@@`,
@@ -293,6 +307,9 @@ export default class Web {
 
     getInfoJs(): string {
         const result = [`window.sysLang = "${this.systemLanguage}";`];
+        if (this.publicPath && this.publicPath !== '/') {
+            result.push(`window.socketPath = ${JSON.stringify(this.publicPath)};`);
+        }
         if (uuid?.length === 38) {
             result.push(`window.vendorPrefix = "${uuid.substring(0, 2)}";`);
         }
@@ -307,6 +324,23 @@ export default class Web {
         return result.join('\n');
     }
 
+    /*
+        force load _socket/info.js so window.socketPath is set for adapters that do not load info.js themselves.
+        (typically tab.html and index.html (admin instance settings page) for non json-config adapters)
+     */
+    private withInfoJs(url: string, body: Buffer | string): Buffer | string {
+        if (this.publicPath === '/' || !/\.html?$/i.test(url.split('?')[0])) {
+            return body;
+        }
+        let html = typeof body === 'string' ? body : body.toString('utf8');
+        if (html.includes('_socket/info.js') || html.includes('window.socketPath')) {
+            return body;
+        }
+        const script = `<script src="${this.publicPath}_socket/info.js"></script>`;
+        html = html.includes('<head>') ? html.replace('<head>', `<head>${script}`) : script + html;
+        return html;
+    }
+
     getErrorRedirect(origin: string): string {
         // LOGIN_PAGE /index.html?login
         // origin can be "?login&href=" -
@@ -319,17 +353,17 @@ export default class Web {
                 origin = parts.join('&');
             }
             if (origin.startsWith('?login')) {
-                return this.LOGIN_PAGE + origin.substring(6);
+                return this.loginPage + origin.substring(6);
             }
             if (origin.startsWith('/?login')) {
-                return this.LOGIN_PAGE + origin.substring(7);
+                return this.loginPage + origin.substring(7);
             }
-            if (origin.startsWith(this.LOGIN_PAGE)) {
+            if (origin.startsWith(this.loginPage)) {
                 return origin;
             }
-            return this.LOGIN_PAGE + origin;
+            return this.loginPage + origin;
         }
-        return `${this.LOGIN_PAGE}?error`;
+        return `${this.loginPage}?error`;
     }
 
     /**
@@ -425,6 +459,14 @@ export default class Web {
 
             this.server.app.disable('x-powered-by');
 
+            // Middleware to strip sub-path like '/admin/' so ip:8081/ still works even when proxy configuration is present
+            this.server.app.use((req: Request, _res: Response, next: NextFunction): void => {
+                if (this.publicPath !== '/') {
+                    req.url = req.url.replace(this.publicPath, '/');
+                }
+                next();
+            });
+
             // enable use of i-frames together with HTTPS
             this.server.app.get('/*any', (_req: Request, res: Response, next: NextFunction): void => {
                 res.header('X-Frame-Options', 'SAMEORIGIN');
@@ -515,7 +557,7 @@ export default class Web {
                             return 'http://127.0.0.1:3000/index.html?login';
                         }
 
-                        return origin ? origin + this.LOGIN_PAGE : this.LOGIN_PAGE;
+                        return origin ? `${origin}/index.html?login` : this.loginPage;
                     },
                 });
 
@@ -557,7 +599,7 @@ export default class Web {
                     if (isDev) {
                         res.redirect('http://127.0.0.1:3000/index.html?login');
                     } else {
-                        res.redirect(origin ? origin + this.LOGIN_PAGE : this.LOGIN_PAGE);
+                        res.redirect(origin ? `${origin}/index.html?login` : this.loginPage);
                     }
                 });
 
@@ -615,7 +657,9 @@ export default class Web {
                                 file.isDir ? pathName.startsWith(`/${file.name}/`) : `/${file.name}` === pathName,
                             )
                         ) {
-                            res.redirect(`${this.LOGIN_PAGE}&href=${encodeURIComponent(req.originalUrl)}`);
+                            res.redirect(
+                                `${this.loginPage}&href=${encodeURIComponent(this.publicPath + req.url.replace(/^\//, ''))}`,
+                            );
                         } else {
                             next();
                             return;
@@ -626,7 +670,7 @@ export default class Web {
                     }
                 });
             } else {
-                this.server.app.get('/logout', (_req: Request, res: Response): void => res.redirect('/'));
+                this.server.app.get('/logout', (_req: Request, res: Response): void => res.redirect(this.publicPath));
             }
 
             this.server.app.get('/iobroker_check.html', (_req: Request, res: Response): void => {
@@ -990,7 +1034,7 @@ export default class Web {
                                 res.contentType('text/javascript');
                             }
                         }
-                        res.send(buffer);
+                        res.send(this.withInfoJs(url, buffer));
                     }
                 });
             });

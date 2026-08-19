@@ -38,6 +38,7 @@ import WizardAuthSSLTab from '@/components/Wizard/WizardAuthSSLTab';
 import WizardPortForwarding from '@/components/Wizard/WizardPortForwarding';
 import WizardAdaptersTab from '@/components/Wizard/WizardAdaptersTab';
 import WizardRoomsTab from '@/components/Wizard/WizardRoomsTab';
+import { adminHref } from '@/helpers/utils';
 
 /** All steps of the wizard in their order */
 const ALL_STEPS = [
@@ -446,7 +447,7 @@ export default class WizardDialog extends Component<WizardDialogProps, WizardDia
 
         // redirect to https or http, as admin will be restarted
         this.props.onClose(
-            `${this.adminInstance.native.secure ? 'https' : 'http'}://${window.location.host}/${target}`,
+            `${this.adminInstance.native.secure ? 'https' : 'http'}://${window.location.host}${adminHref(target)}`,
         );
     }
 

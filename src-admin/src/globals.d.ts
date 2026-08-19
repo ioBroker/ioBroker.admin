@@ -5,6 +5,11 @@ declare global {
         _sessionStorage?: Storage;
         /** Vendor prefix, used to select the vendor-specific loader ('PT', 'MV', 'NW', 'HA', ...) */
         vendorPrefix: undefined | string;
+        /**
+         * Public path of this admin instance (`/` or e.g. `/admin/`).
+         * Injected by the server from the reverse-proxy table.
+         */
+        socketPath?: string;
     }
 
     declare module '*.svg';

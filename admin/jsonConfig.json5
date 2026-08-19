@@ -320,7 +320,7 @@
             items: {
                 _explanation: {
                     type: 'staticText',
-                    text: 'You can use admin behind a reverse proxy.',
+                    text: 'You can use admin behind a reverse proxy. Add this admin instance as f.e. /admin/.',
                 },
                 reverseProxy: {
                     xs: 12,
@@ -335,7 +335,7 @@
                             attr: 'globalPath',
                             filter: false,
                             sort: false,
-                            default: '/iobroker/',
+                            default: '/',
                         },
                         // {"type": "text", "width": "20%", "title": "Domain", "attr": "domain", "filter": false, "sort": false, "default": "*"},
                         { type: 'staticText', text: '=>', noTranslation: true, width: 20 },
@@ -345,7 +345,10 @@
                             attr: 'paths',
                             filter: false,
                             sort: false,
-                            default: [{ instance: 'web.0', path: '/web/' }],
+                            default: [
+                                { instance: 'admin.0', path: '/admin/' },
+                                { instance: 'web.0', path: '/web/' },
+                            ],
                             items: [
                                 {
                                     type: 'instance',

@@ -7,12 +7,8 @@ const path = location.pathname;
 let parts = path.split('/');
 parts.splice(-3);
 
-if (location.pathname.match(/^\/admin\//)) {
-    parts = [];
-}
-
 var systemConfig;
-var socket = io.connect('/', { path: `${parts.join('/')}/socket.io` });
+var socket = io.connect(window.socketPath || '/', { path: `${parts.join('/')}/socket.io` });
 const query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
 const args = {};
 var theme = null;

@@ -522,6 +522,24 @@ export interface ReverseProxyItem {
     paths: { path: string; instance: string }[];
 }
 
+/**
+ * Public path of this admin instance from the reverse-proxy table.
+ * Looks up `admin.0` and joins it with `globalPath`.
+ * Returns `/` when the instance is not listed.
+ */
+export function getAdminPublicPath(reverseProxy: ReverseProxyItem[] | undefined | null, adminInstance: string): string {
+    if (!reverseProxy?.length) {
+        return '/';
+    }
+    for (const group of reverseProxy) {
+        const entry = group.paths?.find(item => item.instance === adminInstance);
+        if (entry) {
+            return `${group.globalPath || '/'}${entry.path || ''}`.replace(/\/+/g, '/') || '/';
+        }
+    }
+    return '/';
+}
+
 // New util returning rewritten link (used by Intro & Instances simplified usage)
 export function applyReverseProxyToLink(
     link: string | undefined,

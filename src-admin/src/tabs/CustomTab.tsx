@@ -13,6 +13,7 @@ import {
 
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import AdminUtils from '@/helpers/AdminUtils';
+import { adminHref } from '@/helpers/utils';
 import type { CompactHost } from '@/types';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -154,7 +155,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
         }
 
         this.setState({
-            href: result.href,
+            href: adminHref(result.href),
             adapterName: result.adapterName,
             instanceNumber: result.instanceNumber,
             schema,

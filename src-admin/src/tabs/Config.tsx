@@ -51,6 +51,7 @@ import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config'
 import DeviceManager from '@iobroker/dm-gui-components';
 
 import AdminUtils from '../helpers/AdminUtils';
+import { adminHref } from '../helpers/utils';
 
 const arrayLogLevel: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 
@@ -485,7 +486,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                     }}
                     title="config"
                     style={this.props.style}
-                    src={src}
+                    src={adminHref(src)}
                 ></iframe>
             );
         }

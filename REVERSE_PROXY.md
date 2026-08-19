@@ -27,13 +27,15 @@ So all links of instances that use web server, like `eventlist`, `vis`, `materia
 
 Below is a more complete example showing how a reverse proxy (e.g. Nginx Proxy Manager) can be configured and how the Admin UI resolves links after mapping.
 
-> NOTE: At the moment the admin UI itself still needs to be effectively served from the web root `/` of the host. login and other hardcoded urls do not yet respect another base path (see limitation discussion here: https://github.com/ioBroker/ioBroker.admin/issues/1660#issuecomment-2360056439).
+Admin can run at the host root `/` or under a sub-path such as `/admin/`. List `admin.0` in the table whenever Admin is not at `/`.
 
 ### 1. Base host / root mapping
 
-Map the public root (or a dedicated host like `https://iobroker.example.com/`) directly to your Admin instance (default port 8081):
+OPTIONAL: To keep Admin at the public root, map the host (e.g. `https://iobroker.example.com/`) directly to your Admin instance (default port 8081):
 
 <img src="assets/revproxy_nginxpm_root.png" alt="Nginx Proxy Manager: root mapping to admin" width="640" />
+
+As admin can now also be on a sub-path like `/admin/` you can for example also proxy the root / path to the web or [welcome](https://github.com/ioBroker/ioBroker.welcome) adapter to get a nice dashboard from where you can quickly navigate to admin/web/... when visiting f.e. `iobroker.example.com`.
 
 ### 2. Custom locations for other services
 
@@ -48,8 +50,16 @@ location /esphome/  => http://LOCAL_IOBROKER_IP:6052/
 ```
 (Adjust paths/ports for your environment.)
 
-Configuring the location for web is a bit more complicated, as it also needs websocket support. To do this in nginx proxy manager, you need to add the following custom nginx configuration.
+Configuring the location for admin and web is a bit more complicated, as they also need websocket support. To do this in nginx proxy manager, you need to add the following custom nginx configuration.
 ```
+location /admin/ {
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection $http_connection;
+  proxy_http_version 1.1;
+
+  proxy_pass http://LOCAL_IOBROKER_IP:8081/;
+}
+
 location /web/ {
   proxy_set_header Upgrade $http_upgrade;
   proxy_set_header Connection $http_connection;
@@ -66,12 +76,13 @@ Enter the same paths so that Intro / Instances pages rewrite adapter links corre
 
 | Global path | Instance     | Instance path behind proxy |
 |-------------|--------------|----------------------------|
-| `/`         | `web.0`      | `/web/`                    |
+| `/`         | `admin.0`    | `/admin/`                  |
+|             | `web.0`      | `/web/`                    |
 |             | `welcome.0`  | `/welcome/`                |
 |             | `esphome.0`  | `/esphome/`                |
 |             | `rest-api.0` | `/web/rest-api/api-doc/`   |
 
-> If you keep Admin on `/` you usually do not need to list `admin.0`, but adding it does not hurt and can make intent explicit.
+> If you keep Admin on `/` you usually do not need to list `admin.0`.
 
 After saving, the Intro screen rewrites links so that all web‑served adapters open under the correct prefixed paths:
 
@@ -79,29 +90,29 @@ After saving, the Intro screen rewrites links so that all web‑served adapters 
 
 ### 4. Limitations & compatibility
 
-* Admin root requirement: As stated above, full relocation of Admin itself under a sub‑path (e.g. `/admin/`) is not yet supported.
 * Adapter path awareness: Not every adapter UI is currently path‑aware. While generic `localLink` rewriting covers many cases, some UIs still assume they are hosted at the domain root. See the [Tested adapters](#tested-adapters) table below. Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream.
 
 #### Tested adapters
 
-The following adapters have been tested behind a path‑prefixed reverse proxy (Admin at host root `/`, other services under sub‑paths such as `/web/`). Not being listed here does not necessarily mean an adapter is incompatible, just that it has not been explicitly tested yet. At least everything running as a web extension and using standard iobroker tooling - but also others - should mostly just work.
+The following adapters have been tested behind a path‑prefixed reverse proxy (Admin at host root `/` or under a configured sub-path, other services under sub‑paths such as `/web/`). Not being listed here does not necessarily mean an adapter is incompatible, just that it has not been explicitly tested yet. At least everything running as a web extension and using standard iobroker tooling - but also others - should mostly just work.
 
 Contributions welcome via PR.
 
 ✅ works · ⚠️ partial / with limitations · ❌ does not work
 
-| Adapter                                                 | Works | Minimum versions             | Notes                                                                                                                                                             |
-|---------------------------------------------------------|:-----:|------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [admin](https://github.com/ioBroker/ioBroker.admin)     | ⚠️ | admin ≥ 7.7.18               | Only when served at host root `/`; sub‑path relocation (e.g. `/admin/`) not supported                                                                             |
-| [echarts](https://github.com/ioBroker/ioBroker.echarts) | ✅ | web ≥ 8.3.0, echarts ≥ 3.2.0 |                                                                                                                                                                   |
-| [esphome](https://github.com/DrozmotiX/ioBroker.esphome) | ✅ | —                            | Shown in extended example; dedicated proxy path (e.g. `/esphome/`)                                                                                                |
-| [rest-api](https://github.com/ioBroker/ioBroker.rest-api) | ⚠️ | —                            | Swagger UI 'Try it out' does not respect sub-path / tries to call root \<host\>/rest-api/... Manual call to correct  \<host\>/web/rest-api/...  url works fine.   |
-| [vis](https://github.com/ioBroker/ioBroker.vis)         | ❌ | —                            | Not path‑aware; UI broken behind a sub‑path                                                                                                                       |
-| [vis-2](https://github.com/ioBroker/ioBroker.vis-2)     | ⚠️ | —                            | Generally path tolerant; custom widgets or legacy resources may use absolute paths. Also see *1                                                                   |
-| [web](https://github.com/ioBroker/ioBroker.web)         | ✅ | —                            | Base for web‑hosted adapter UIs; proxy under e.g. `/web/`. Important: Also requires correct configuration of web adapter: see bellow "6. Configuring Web Adapter" |
-| [welcome](https://github.com/ioBroker/ioBroker.welcome) | ✅ | —                            |                                                                                                                                                                   |
+| Adapter                                                 | Works | Minimum versions             | Notes                                                                                                                                                                            |
+|---------------------------------------------------------|:-----:|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [admin](https://github.com/ioBroker/ioBroker.admin)     | ✅ | next admin release           |                                                                                                                                                                                  |
+| [echarts](https://github.com/ioBroker/ioBroker.echarts) | ✅ | web ≥ 8.3.0, echarts ≥ 3.2.0 |                                                                                                                                                                                  |
+| [esphome](https://github.com/DrozmotiX/ioBroker.esphome) | ✅ | —                            | Shown in extended example; dedicated proxy path (e.g. `/esphome/`)                                                                                                               |
+| [rest-api](https://github.com/ioBroker/ioBroker.rest-api) | ⚠️ | —                            | Swagger UI 'Try it out' does not respect sub-path / tries to call root \<host\>/rest-api/... Manual call to correct  \<host\>/web/rest-api/...  url works fine.                  |
+| [vis](https://github.com/ioBroker/ioBroker.vis)         | ❌ | —                            | Not path‑aware; UI broken behind a sub‑path                                                                                                                                      |
+| [vis-2](https://github.com/ioBroker/ioBroker.vis-2)     | ⚠️ | —                            | Generally path tolerant; custom widgets or legacy resources may use absolute paths. Also see *1                                                                                  |
+| [web](https://github.com/ioBroker/ioBroker.web)         | ✅ | —                            | Base for web‑hosted adapter UIs; proxy under e.g. `/web/`. Important: Also requires correct configuration of web adapter: see bellow "6. Configuring Web Adapter"                |
+| [welcome](https://github.com/ioBroker/ioBroker.welcome) | ✅ | —                            |                                                                                                                                                                                  |
+| [energiefluss-erweitert](https://github.com/SKB-CGN/ioBroker.energiefluss-erweitert)     | ⚠️ | —                            | The kindly provided fix was refused. You might want to consider using [energiefluss-erweitert-ng](https://github.com/SimonFischer04/ioBroker.energiefluss-erweitert-ng) instead. |
 * Mixed content: If you terminate TLS at the proxy (HTTPS) but contact adapters over HTTP internally, make sure all external links are rewritten to HTTPS to avoid browser mixed-content blocks.
-* WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx, this typically means adding (also for custom locations like `/web/` !):
+* WebSocket forwarding: Ensure `Upgrade` and `Connection` headers are passed through. In Nginx, this typically means adding (also for custom locations like `/web/` and `/admin/` !):
 ```
 proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection "upgrade";
@@ -125,7 +136,8 @@ location /icons-material-png  => http://LOCAL_IOBROKER_IP:8082
 
 | Symptom                            | Likely cause                         | Action                                                |
 |------------------------------------|--------------------------------------|-------------------------------------------------------|
-| Blank or partial Admin UI          | Admin mounted under sub‑path only    | Keep Admin at `/` (see limitation)                    |
+| Blank or partial Admin UI          | Prefix not stripped, or `admin.0` missing from the Reverse Proxy tab | Add `admin.0` and proxy `location /admin/` to `http://IP:8081/` (strip the prefix) |
+| Socket goes to `ws://host/?sid=…`  | `admin.0` not listed, or stale admin build | List `admin.0` → `/admin/`; hard-reload. Direct `:8081/admin/` also works. |
 | Adapter link opens wrong host/port | Missing entry in Reverse Proxy tab   | Add mapping row and save                              |
 | 404 for adapter JS/CSS             | Missing trailing slash in location   | Add trailing slash to location and mapping            |
 | WebSocket errors in console        | Proxy not forwarding upgrade headers | Add `proxy_set_header Upgrade` / `Connection` headers |
@@ -145,3 +157,51 @@ The socket client will then correctly try to connect to e.g. `http://iobroker-te
 
 Why not just use the root (admins) socket (e.g. `ws://iobroker-test.revproxy.home.arpa/?sid=1780827297411&name=echarts-show`)?: 
 Admin needs authentication and web usually not, so you would have to be logged in to admin for your views (served by web!) to load. Also, when not using a proxy setup, it would also use the web adapters socket (request to :8082/?sid=...) - so also using the web adapters socket for reverse proxy setup is the correct approach.
+
+## Complete nginx configuration
+
+Same layout as the table above: Admin at `/admin/`, web at `/web/`, esphome at `/esphome/`, optional welcome at `/`. The trailing slash on `proxy_pass` strips the location prefix so Admin sees `/` (and `:8081/admin/` still works).
+
+```nginx
+# Redirect HTTP → HTTPS
+server {
+    listen 80;
+    listen [::]:80;
+    server_name iobroker.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name iobroker.example.com;
+
+    ssl_certificate     /etc/nginx/ssl/iobroker.example.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/iobroker.example.com.key;
+
+    # Optional: landing page (welcome adapter) at the host root
+    location / {
+        proxy_pass http://LOCAL_IOBROKER_IP:1234/;
+    }
+
+    location /admin/ {
+        proxy_pass http://LOCAL_IOBROKER_IP:8081/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+    }
+
+    location /web/ {
+        proxy_pass http://LOCAL_IOBROKER_IP:8082/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+    }
+
+    location /esphome/ {
+        proxy_pass http://LOCAL_IOBROKER_IP:6052/;
+    }
+}
+```
+
+Replace `LOCAL_IOBROKER_IP`, the welcome port, and the certificate paths. Add further `location` blocks the same way.
