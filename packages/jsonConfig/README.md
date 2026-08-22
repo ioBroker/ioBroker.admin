@@ -459,6 +459,9 @@ Each option in `options` can have:
 | `value`       | Value of the option                                                   |
 | `color`       | Color of the option text                                              |
 | `hidden`      | Formula or boolean value to show or hide the option                   |
+| `os`          | Show the option only on these operating systems of the host           |
+| `notOs`       | Do not show the option on these operating systems of the host         |
+| `docker`      | Show the option only if the ioBroker runs (`true`) or not (`false`) in docker |
 | `description` | Description shown below the option label (can be translatable)        |
 | `icon`        | Icon URL or base64 string to display next to the option (from v8.3.3) |
 
@@ -1496,6 +1499,9 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `label`                  | String or object like {en: 'Name', ru: 'Имя'}                                                                                                                                         |
 | `hidden`                 | JS function that could use `native.attribute` for calculation                                                                                                                         |
 | `hideOnlyControl`        | if hidden the place will be shown, but no control                                                                                                                                     |
+| `os`                     | Show this element only on these operating systems of the host, on which the instance runs: `"win32"` or `["linux", "darwin"]`                                                         |
+| `notOs`                  | Do not show this element on these operating systems of the host, on which the instance runs: `"win32"` or `["linux", "darwin"]`                                                       |
+| `docker`                 | Show this element only if the ioBroker runs (`true`) or does not run (`false`) in a docker container                                                                                  |
 | `disabled`               | JS function that could use `native.attribute` for calculation                                                                                                                         |
 | `help`                   | help text (multi-language)                                                                                                                                                            |
 | `helpLink`               | href to help (could be used only together with `help`)                                                                                                                                |
@@ -1513,6 +1519,73 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `doNotSave`              | Do not save this attribute as used only for internal calculations                                                                                                                     |
 | `noMultiEdit`            | if this flag set to true, this field will not be shown if user selected more than one object for edit.                                                                                |
 | `expertMode`             | if this flag set to true, this field will be shown only if the expert mode is true  (from Admin 7.4.3)                                                                                |
+
+### Show elements depending on the operating system
+
+Every element (also `panel`, `tabs`, table columns and single `select` options) can be limited to the
+operating system of the ioBroker host, **on which the configured instance runs**. It is not the operating
+system of the browser.
+
+```json5
+{
+    "comPort":  { "type": "text", "label": "COM port", "os": "win32" },
+    "ttyPort":  { "type": "text", "label": "Serial device", "os": ["linux", "darwin"] },
+    "sudoHint": { "type": "staticText", "text": "The service must be started with sudo", "notOs": "win32" }
+}
+```
+
+Allowed values are the values of the node.js `process.platform` (like in `common.os` of `io-package.json`):
+`aix`, `android`, `cygwin`, `darwin`, `freebsd`, `haiku`, `linux`, `netbsd`, `openbsd`, `sunos`, `win32`.
+
+- If `os` is defined, the element will be shown **only** on the given operating systems.
+- If `notOs` is defined, the element will be shown on all operating systems **except** the given ones.
+- If the operating system of the host cannot be detected (e.g., the host object is not readable), the element
+  will be shown. It is better to show one element too much than to hide a required one.
+- A not shown element is not deleted: the value stays unchanged in the configuration, exactly like by `hidden`.
+  But the `default` value of such an element will not be written into the configuration.
+
+For more complex conditions, the variables `_os`, `_arch` and `_host` can be used in every JS function
+(`hidden`, `disabled`, `validator`, `defaultFunc`, `onChange.calculateFunc`, `confirm.condition`) and in
+the text patterns of `label`, `help` and so on:
+
+```json5
+{
+    "type": "text",
+    "label": "Path to the executable file",
+    "disabled": "_os === 'win32'",
+    "defaultFunc": "_os === 'win32' ? 'C:\\\\Program Files\\\\app.exe' : '/usr/bin/app'",
+    "help": "Host ${_host.id} runs ${_os} on ${_arch}"
+}
+```
+
+**Note:** old admin versions do not know `_os` and would evaluate `"hidden": "_os !== 'linux'"` to `true`
+and so hide the element everywhere. Because of that, `os`/`notOs` should be preferred, as they are simply
+ignored by old admin versions (the element will be shown). If a JS function must be used, write it
+defensively: `"hidden": "!!_os && _os !== 'linux'"`.
+
+#### Docker
+
+If an element depends on whether the ioBroker itself runs in a docker container, the attribute `docker`
+can be used:
+
+```json5
+{
+    "service":    { "type": "checkbox", "label": "Install as service", "docker": false },
+    "volumeHint": { "type": "staticText", "text": "The directory must be mapped as volume", "docker": true }
+}
+```
+
+- `"docker": true` - the element will be shown only if the ioBroker runs in a docker container.
+- `"docker": false` - the element will be shown only if the ioBroker does not run in a docker container.
+- The docker state cannot be read from the objects, it must be requested from a **running** host. If the host
+  does not answer, the state stays unknown and the element will be shown.
+- The request will only be sent if the configuration really uses `docker` or `_host.docker`, so all other
+  configurations do not cause any additional traffic.
+- In the JS functions the state is available as `_host.docker` (`true`, `false` or `undefined` if unknown) and
+  the version of the official ioBroker docker image as `_host.dockerVersion`.
+
+Do not mix it up with the [`checkDocker`](#checkdocker) control: that one checks if a docker installation is
+available **on the host** to control containers, and not if the ioBroker itself runs in docker.
 
 ### Options with detailed configuration
 
@@ -1632,6 +1705,9 @@ const func = new Function(
   '_changed',      // indicator if some data was changed and must be saved
   '_href',         // Current browser href
   'getObject',     // You can call `await getObject(data.id)`in hidden, disabled, pattern functions
+  '_os',           // Operating system of the host, where the instance runs: 'win32', 'linux', 'darwin', ...
+  '_arch',         // Architecture of the host, where the instance runs: 'x64', 'arm64', ...
+  '_host',         // Information about the host: {id, os, osType, arch, release, nodeVersion, controllerVersion, docker, dockerVersion}
   myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, this.props.socket);
@@ -1649,6 +1725,9 @@ The following variables are available in JS function in adapter settings:
 - `_instance` - instance number
 - `arrayIndex` - used only in table and represent current line in an array
 - `globalData` - used only in table for all settings and not only one table line
+- `_os` - operating system of the host, on which the instance runs (`process.platform`), e.g. `linux`, `win32`, `darwin`. Empty string if unknown
+- `_arch` - architecture of the host, on which the instance runs, e.g. `x64`, `arm64`
+- `_host` - information about the host: `{id, os, osType, arch, release, nodeVersion, controllerVersion, docker, dockerVersion}`. `docker` is `undefined` if the docker state was not requested or the host did not answer
 
 ### Custom settings dialog
 
@@ -1666,6 +1745,9 @@ const func = new Function(
   "customObj",
   "_socket",
   arrayIndex,
+  "_os",
+  "_arch",
+  "_host",
   myValidator.includes("return") ? myValidator : "return " + myValidator
 ); // e.g. "_alive === true"
 
@@ -1689,6 +1771,9 @@ The following variables are available in JS function in custom settings:
 - `_socket` - socket
 - `arrayIndex` - used only in table and represent current line in an array
 - `globalData` - used only in table for all settings and not only one table line
+- `_os` - operating system of the host, on which the instance runs (`process.platform`), e.g. `linux`, `win32`, `darwin`. Empty string if unknown
+- `_arch` - architecture of the host, on which the instance runs, e.g. `x64`, `arm64`
+- `_host` - information about the host: `{id, os, osType, arch, release, nodeVersion, controllerVersion, docker, dockerVersion}`. `docker` is `undefined` if the docker state was not requested or the host did not answer
 
 ```json5
 {
@@ -1822,6 +1907,13 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 9.0.22 (2026-08-21)
+- (@GermanBluefox) Corrected layout of Config view
+
+### 9.0.21 (2026-08-19)
+- (@GermanBluefox) Added the possibility to show or hide elements depending on the operating system of the host: `os`, `notOs` and the JS variables `_os`, `_arch`, `_host`
+- (@GermanBluefox) Added the possibility to show or hide elements depending on the docker installation: `docker` and `_host.docker`
+
 ### 9.0.20 (2026-08-13)
 - (@GermanBluefox) Correcting ConfigSelect component
 

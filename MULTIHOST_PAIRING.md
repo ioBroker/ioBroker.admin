@@ -13,13 +13,13 @@ Stand der Recherche: js-controller 7.0.8-alpha, Admin 8.0.0.
 Verifiziert im installierten js-controller (`build/esm/lib/multihostServer.js`,
 `@iobroker/js-controller-cli/build/esm/lib/setup/setupMultihost.js`):
 
-| Baustein | Fundort | Verhalten |
-|---|---|---|
-| Multihost-Server | `MHServer` | UDP **50005**, Multicast **239.255.255.250** |
-| Aktivierung | `iobroker.json` → `multihostService.enabled` | Standard: `false` |
-| Absicherung | `multihostService.secure` + `password` | Standard: `secure: true` |
-| CLI | `iobroker multihost enable\|disable\|browse\|connect\|status` | vollständig vorhanden |
-| Admin-UI | `BaseSettingsMultihost.tsx` | nur **Master-Seite**: an/aus, sicher, Passwort |
+| Baustein         | Fundort                                                       | Verhalten                                      |
+|------------------|---------------------------------------------------------------|------------------------------------------------|
+| Multihost-Server | `MHServer`                                                    | UDP **50005**, Multicast **239.255.255.250**   |
+| Aktivierung      | `iobroker.json` → `multihostService.enabled`                  | Standard: `false`                              |
+| Absicherung      | `multihostService.secure` + `password`                        | Standard: `secure: true`                       |
+| CLI              | `iobroker multihost enable\|disable\|browse\|connect\|status` | vollständig vorhanden                          |
+| Admin-UI         | `BaseSettingsMultihost.tsx`                                   | nur **Master-Seite**: an/aus, sicher, Passwort |
 
 **Protokollablauf** (aus `multihostServer.js`): Der Client schickt `{cmd: 'browse'}`. Ist `secure`
 gesetzt, antwortet der Server mit `result: 'not authenticated'` und einem `salt`. Der Client
@@ -130,12 +130,12 @@ Rückfall nach N Fehlversuchen sind deshalb Pflicht, nicht Kür.
 Nicht Teil des geplanten Wegs — hier gesammelt für den Fall, dass die Annahme aus Abschnitt 4 später
 fällt. Erschwerend kommt dann hinzu, dass der Pi kopflos ist:
 
-| geht nicht | warum |
-|---|---|
-| Admin des neuen Pi öffnen | keine Oberfläche erreichbar |
-| `iobroker multihost connect` auf dem Pi | kein SSH |
-| Code von der Konsole ablesen | kein Bildschirm |
-| irgendeine Bestätigung **auf** dem Gerät | keine Eingabemöglichkeit |
+| geht nicht                               | warum                       |
+|------------------------------------------|-----------------------------|
+| Admin des neuen Pi öffnen                | keine Oberfläche erreichbar |
+| `iobroker multihost connect` auf dem Pi  | kein SSH                    |
+| Code von der Konsole ablesen             | kein Bildschirm             |
+| irgendeine Bestätigung **auf** dem Gerät | keine Eingabemöglichkeit    |
 
 Übrig bleibt genau ein physischer Kanal: **die SD-Karte selbst.** Wer sie beschreibt, hat das Gerät
 in der Hand — das ist derselbe Besitznachweis, den Raspberry Pi OS für `ssh`, `userconf.txt` und die
@@ -213,11 +213,11 @@ sind schon da, nur die Richtung ist neu.
 
 ### Kommandos
 
-| Kommando | Richtung | Wirkung auf dem Zielhost |
-|---|---|---|
-| `join` | Master → Host | Adresse und Passwort des Masters übernehmen, umschalten, neu starten |
-| `decline` | Master → Host | Diesen Master dauerhaft ignorieren, ihm nichts mehr annoncieren |
-| `identify` | Master → Host | markiert sich kurz im Log — um zwei frische Pis auseinanderzuhalten |
+| Kommando   | Richtung      | Wirkung auf dem Zielhost                                             |
+|------------|---------------|----------------------------------------------------------------------|
+| `join`     | Master → Host | Adresse und Passwort des Masters übernehmen, umschalten, neu starten |
+| `decline`  | Master → Host | Diesen Master dauerhaft ignorieren, ihm nichts mehr annoncieren      |
+| `identify` | Master → Host | markiert sich kurz im Log — um zwei frische Pis auseinanderzuhalten  |
 
 Der Master sendet gerichtet per Unicast an `<host-ip>:50005`; der Multicast wird nur zum Finden
 gebraucht. Auf dem neuen Host muss dafür ein Empfänger laufen — entweder der `MHServer` in einem
@@ -294,14 +294,14 @@ damit die Datenbank im LAN geöffnet wird.
 
 ## 6. Was schiefgehen kann
 
-| Fall | Folge | Vorkehrung |
-|---|---|---|
-| Master nicht erreichbar nach Neustart | Pi ist verwaist, ohne Datenbank | Vor dem Umschalten Erreichbarkeit von 9000/9001 prüfen; alte `iobroker.json` sichern und bei fehlgeschlagener Verbindung nach N Versuchen zurückrollen |
-| Zwei Master im Netz | Pi könnte am falschen landen | Einmal-Code ist masterspezifisch; Anwender bestätigt Hostnamen |
-| Uhrzeit auf dem Pi falsch | Auth-Fenster von 31 s greift nicht | Zeitstempel nicht als alleiniges Kriterium verwenden |
-| Multicast blockiert | keine Anzeige | Rückfallebene C |
-| Pi hängt in fremdem VLAN | keine Anzeige | Rückfallebene C |
-| Anwender schließt konfigurierten Host an | Datenverlust auf diesem Host | nur `unclaimed` anbieten, serverseitig prüfen, Warnung im Dialog |
+| Fall                                     | Folge                              | Vorkehrung                                                                                                                                             |
+|------------------------------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Master nicht erreichbar nach Neustart    | Pi ist verwaist, ohne Datenbank    | Vor dem Umschalten Erreichbarkeit von 9000/9001 prüfen; alte `iobroker.json` sichern und bei fehlgeschlagener Verbindung nach N Versuchen zurückrollen |
+| Zwei Master im Netz                      | Pi könnte am falschen landen       | Einmal-Code ist masterspezifisch; Anwender bestätigt Hostnamen                                                                                         |
+| Uhrzeit auf dem Pi falsch                | Auth-Fenster von 31 s greift nicht | Zeitstempel nicht als alleiniges Kriterium verwenden                                                                                                   |
+| Multicast blockiert                      | keine Anzeige                      | Rückfallebene C                                                                                                                                        |
+| Pi hängt in fremdem VLAN                 | keine Anzeige                      | Rückfallebene C                                                                                                                                        |
+| Anwender schließt konfigurierten Host an | Datenverlust auf diesem Host       | nur `unclaimed` anbieten, serverseitig prüfen, Warnung im Dialog                                                                                       |
 
 ---
 

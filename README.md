@@ -98,6 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (SimonFischer04) Admin can now run behind a reverse-proxy sub-path (e.g. `/admin/`)
+- (@GermanBluefox) Corrected layout of Config view
 
 ### 8.0.5 (2026-08-19)
 - (@GermanBluefox) Corrected the doubled tiles in the quick access if more than one web instance is running
@@ -106,7 +107,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Removed warning about not installed docker.
 
 ### 8.0.4 (2026-08-09)
-- (@GermanBluefox) Better handlling of autocompleteSendTo JsonConfig components
+- (@GermanBluefox) Better handling of autocompleteSendTo JsonConfig components
 
 ### 8.0.3 (2026-08-08)
 - (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
