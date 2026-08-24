@@ -20,7 +20,7 @@
  <script type="text/javascript" src="js/selectID.js"></script>
 
  <script src="lib/js/socket.io.js"></script>
- <script src="/_socket/info.js"></script>
+ <script src="_socket/info.js"></script>
 
  To use as part, just
  <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
@@ -196,6 +196,11 @@
  */
 
 var addAll2FilterCombobox = false;
+
+function adminPath(p) {
+    var base = window.socketPath && String(window.socketPath).indexOf('@@') !== 0 ? window.socketPath : '/';
+    return base + String(p).replace(/^\//, '');
+}
 
 function tdp(x, decimals) {
     // TODO support of US format too
@@ -1105,7 +1110,7 @@ if (typeof systemLang === 'undefined') {
             // if not BASE64
             if (!data.objects[_id_].common.icon.match(/^data:image\//)) {
                 if (data.objects[_id_].common.icon.indexOf('.') !== -1) {
-                    icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
+                    icon = adminPath('adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon);
                 } else {
                     return '<i class="material-icons iob-list-icon">' + data.objects[_id_].common.icon + '</i>';
                 }
@@ -1119,7 +1124,7 @@ if (typeof systemLang === 'undefined') {
                     if (obj.common.icon.indexOf('.') !== -1) {
                         var instance;
                         if (obj.type === 'instance') {
-                            icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                            icon = adminPath('adapter/' + obj.common.name + '/' + obj.common.icon);
                         } else if (key && key.match(/^system\.adapter\./)) {
                             instance = key.split('.', 3);
                             if (obj.common.icon[0] === '/') {
@@ -1127,7 +1132,7 @@ if (typeof systemLang === 'undefined') {
                             } else {
                                 instance[2] += '/' + obj.common.icon;
                             }
-                            icon = '/adapter/' + instance[2];
+                            icon = adminPath('adapter/' + instance[2]);
                         } else {
                             instance = key.split('.', 2);
                             if (obj.common.icon[0] === '/') {
@@ -1135,7 +1140,7 @@ if (typeof systemLang === 'undefined') {
                             } else {
                                 instance[0] += '/' + obj.common.icon;
                             }
-                            icon = '/adapter/' + instance[0];
+                            icon = adminPath('adapter/' + instance[0]);
                         }
                     } else {
                         return '<i class="material-icons iob-list-icon">' + obj.common.icon + '</i>';

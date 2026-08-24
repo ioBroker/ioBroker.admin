@@ -201,6 +201,11 @@
             });
     }
 
+    function adminPath(p) {
+        var base = window.socketPath && String(window.socketPath).indexOf('@@') !== 0 ? window.socketPath : '/';
+        return base + String(p).replace(/^\//, '');
+    }
+
     function getIconFromObj(obj, imgPath, classes) {
         var icon = '';
         var alt = '';
@@ -212,7 +217,7 @@
                     if (isCommon.icon.indexOf('.') !== -1) {
                         var instance;
                         if (obj.type === 'instance') {
-                            icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                            icon = adminPath('adapter/' + obj.common.name + '/' + obj.common.icon);
                         } else if (obj._id.match(/^system\.adapter\./)) {
                             instance = obj._id.split('.', 3);
                             if (obj.common.icon[0] === '/') {
@@ -220,7 +225,7 @@
                             } else {
                                 instance[2] += '/' + obj.common.icon;
                             }
-                            icon = '/adapter/' + instance[2];
+                            icon = adminPath('adapter/' + instance[2]);
                         } else {
                             instance = obj._id.split('.', 2);
                             if (obj.common.icon[0] === '/') {
@@ -228,7 +233,7 @@
                             } else {
                                 instance[0] += '/' + obj.common.icon;
                             }
-                            icon = '/adapter/' + instance[0];
+                            icon = adminPath('adapter/' + instance[0]);
                         }
                     } else {
                         return (
