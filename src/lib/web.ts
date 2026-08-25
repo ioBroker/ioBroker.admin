@@ -10,7 +10,7 @@ import compression from 'compression';
 import { getType } from 'mime';
 import { gunzipSync } from 'node:zlib';
 import axios from 'axios';
-import { Ajv } from 'ajv';
+import { Ajv, type ValidateFunction } from 'ajv';
 import { parse as JSON5 } from 'json5';
 import fileUpload from 'express-fileupload';
 
@@ -121,6 +121,32 @@ async function readFolderRecursive(
     return filesOfDir;
 }
 
+/**
+ * A JSON tab (`common.adminTab.link`) has the same format as `jsonConfig.json`, with two differences:
+ * its root may have a `command` (message that is sent to the instance when the tab is opened),
+ * and its root `type` may be omitted, because it defaults to `panel`.
+ *
+ * @param schema the jsonConfig schema. It will be modified in place
+ */
+function adaptSchemaForTab(schema: Record<string, any>): void {
+    // The root of the schema is an "if type === 'tabs' then ... else ..." construction
+    const roots: Record<string, any>[] = [schema.then, schema.else].filter(root => !!root);
+    if (!roots.length) {
+        roots.push(schema);
+    }
+
+    for (const root of roots) {
+        root.properties ||= {};
+        root.properties.command = {
+            description: 'Message that is sent to the instance as the tab is opened',
+            type: 'string',
+        };
+        if (Array.isArray(root.required)) {
+            root.required = root.required.filter((name: string) => name !== 'type');
+        }
+    }
+}
+
 interface WebOptions {
     systemLanguage: ioBroker.Languages;
 }
@@ -155,6 +181,9 @@ export default class Web {
     private readonly JSON_CONFIG_SCHEMA_URL =
         // 'https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json';
         'https://raw.githubusercontent.com/ioBroker/json-config/main/schemas/jsonConfig.json';
+
+    /** Compiled JSON schemas for `jsonConfig.json` and for the JSON tabs */
+    private readonly jsonValidators: { config?: ValidateFunction; tab?: ValidateFunction } = {};
 
     private store: Store | null = null;
     private indexHTML = '';
@@ -367,59 +396,133 @@ export default class Web {
     }
 
     /**
-     * Validate, al JSON configs from alla adapters against the current schema
+     * Compile the JSON schema for `jsonConfig.json` or for a JSON tab and cache the result,
+     * as the schema is quite big and it is used with every opened config page or tab
      *
-     * @param adapterName name of the adapter
+     * @param type `config` for `admin/jsonConfig.json(5)`, `tab` for the JSON file of an admin tab
      */
-    async validateJsonConfig(adapterName: string): Promise<void> {
-        let schema: Record<string, any> | null = null;
+    async getJsonValidator(type: 'config' | 'tab'): Promise<ValidateFunction | null> {
+        if (this.jsonValidators[type]) {
+            return this.jsonValidators[type];
+        }
 
+        let schema: Record<string, any>;
         try {
             this.adapter.log.debug(`retrieving json schema from ${this.JSON_CONFIG_SCHEMA_URL}`);
             const schemaRes = await axios.get(this.JSON_CONFIG_SCHEMA_URL);
             schema = schemaRes.data as Record<string, any>;
         } catch (e) {
             this.adapter.log.debug(`Could not get jsonConfig schema: ${(e as Error).message}`);
+            return null;
+        }
+
+        if (type === 'tab') {
+            adaptSchemaForTab(schema);
+        }
+
+        try {
+            const ajv = new Ajv({
+                allErrors: false,
+                strict: 'log',
+            });
+
+            this.jsonValidators[type] = ajv.compile(schema);
+            return this.jsonValidators[type];
+        } catch (e) {
+            this.adapter.log.debug(`Could not compile jsonConfig schema: ${(e as Error).message}`);
+            return null;
+        }
+    }
+
+    /**
+     * Read one of the given files from the `admin` folder of an adapter.
+     * The files are read from the objects DB first, so that adapters on other hosts are covered too,
+     * and only if they were never uploaded, from the local installation.
+     *
+     * @param adapterName name of the adapter
+     * @param fileNames possible file names. The first existing file is returned
+     */
+    async readAdminFile(adapterName: string, fileNames: string[]): Promise<{ fileName: string; text: string } | null> {
+        for (const fileName of fileNames) {
+            try {
+                // this.adapter.readFile is sanitized
+                if (await this.adapter.fileExists(`${adapterName}.admin`, fileName)) {
+                    const { file } = await this.adapter.readFileAsync(`${adapterName}.admin`, fileName);
+                    return { fileName, text: file.toString() };
+                }
+            } catch {
+                // try the next file or the local installation
+            }
+        }
+
+        try {
+            const adapterPath = dirname(require.resolve(`iobroker.${adapterName}/package.json`));
+            for (const fileName of fileNames) {
+                const filePath = join(adapterPath, 'admin', fileName);
+                if (existsSync(filePath)) {
+                    return { fileName, text: readFileSync(filePath, { encoding: 'utf-8' }) };
+                }
+            }
+        } catch {
+            // the adapter is not installed on this host
+        }
+
+        return null;
+    }
+
+    /**
+     * Validate the JSON configuration or the JSON tab of an adapter against the current schema
+     *
+     * @param adapterName name of the adapter
+     * @param type `config` for `admin/jsonConfig.json(5)`, `tab` for the JSON file of an admin tab
+     */
+    async validateJsonConfig(adapterName: string, type: 'config' | 'tab' = 'config'): Promise<void> {
+        const res: ioBroker.AdapterObject | null | undefined =
+            await this.adapter.getForeignObjectAsync<`system.adapter.${string}`>(`system.adapter.${adapterName}`);
+        if (!res) {
             return;
         }
 
-        const res: ioBroker.AdapterObject | null | undefined =
-            await this.adapter.getForeignObjectAsync<`system.adapter.${string}`>(`system.adapter.${adapterName}`);
-
-        if (res?.common.adminUI?.config === 'json') {
-            try {
-                const ajv = new Ajv({
-                    allErrors: false,
-                    strict: 'log',
-                });
-
-                const adapterPath = dirname(require.resolve(`iobroker.${adapterName}/package.json`));
-
-                const jsonConfPath = join(adapterPath, 'admin', 'jsonConfig.json');
-                const json5ConfPath = join(adapterPath, 'admin', 'jsonConfig.json5');
-                let jsonConf: string;
-
-                if (existsSync(jsonConfPath)) {
-                    jsonConf = readFileSync(jsonConfPath, {
-                        encoding: 'utf-8',
-                    });
-                } else {
-                    jsonConf = readFileSync(json5ConfPath, {
-                        encoding: 'utf-8',
-                    });
-                }
-
-                const validate = ajv.compile(schema);
-                const valid = validate(JSON5(jsonConf));
-
-                if (!valid) {
-                    this.adapter.log.warn(
-                        `${adapterName} has an invalid jsonConfig: ${JSON.stringify(validate.errors)}`,
-                    );
-                }
-            } catch (e) {
-                this.adapter.log.debug(`Error validating schema of ${adapterName}: ${(e as Error).message}`);
+        let fileNames: string[];
+        if (type === 'tab') {
+            // Like the front-end (see `CustomTab`), a tab is a JSON config if its link points to a JSON file.
+            // The name is free and relative to the `admin` folder. Every other link is a page or an external URL.
+            const link = (res.common.adminTab?.link || '').split('?')[0];
+            if (
+                (!link.endsWith('.json') && !link.endsWith('.json5')) ||
+                link.includes('..') ||
+                link.includes('://') ||
+                link.includes('%')
+            ) {
+                return;
             }
+            fileNames = [link];
+        } else {
+            if (res.common.adminUI?.config !== 'json') {
+                return;
+            }
+            fileNames = ['jsonConfig.json', 'jsonConfig.json5'];
+        }
+
+        const validate = await this.getJsonValidator(type);
+        if (!validate) {
+            return;
+        }
+
+        try {
+            const jsonConf = await this.readAdminFile(adapterName, fileNames);
+            if (!jsonConf) {
+                this.adapter.log.debug(`Cannot find ${fileNames.join(' or ')} of ${adapterName}`);
+                return;
+            }
+
+            if (!validate(JSON5(jsonConf.text))) {
+                this.adapter.log.warn(
+                    `${adapterName} has an invalid ${type === 'tab' ? jsonConf.fileName : 'jsonConfig'}: ${JSON.stringify(validate.errors)}`,
+                );
+            }
+        } catch (e) {
+            this.adapter.log.debug(`Error validating schema of ${adapterName}: ${(e as Error).message}`);
         }
     }
 
@@ -688,9 +791,18 @@ export default class Web {
             });
 
             this.server.app.get('/validate_config/*any', async (req: Request, res: Response): Promise<void> => {
-                const adapterName = req.url.split('/').pop() || '';
+                const adapterName = req.url.split('?')[0].split('/').pop() || '';
 
-                await this.validateJsonConfig(adapterName.toLowerCase());
+                await this.validateJsonConfig(adapterName.toLowerCase(), 'config');
+
+                res.status(200).send('validated');
+            });
+
+            // Called by the admin UI as a JSON tab (`common.adminTab.link`) is opened
+            this.server.app.get('/validate_tab/*any', async (req: Request, res: Response): Promise<void> => {
+                const adapterName = req.url.split('?')[0].split('/').pop() || '';
+
+                await this.validateJsonConfig(adapterName.toLowerCase(), 'tab');
 
                 res.status(200).send('validated');
             });

@@ -108,6 +108,11 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
 
         // Check if jsonTab.json(5) exists
         if (fileName.endsWith('.json') || fileName.endsWith('.json5')) {
+            // Let the back-end validate the tab definition against the JSON config schema and warn in the log
+            fetch(adminHref(`validate_tab/${result.adapterName}`)).catch(e =>
+                console.warn(`Cannot validate jsonTab of ${result.adapterName}: ${e}`),
+            );
+
             try {
                 let jsonText = '';
                 const json: {
