@@ -15,7 +15,8 @@ describe('admin-gui', () => {
 
     it('Check GUI', async function () {
         this.timeout(120_000);
-        await gPage.waitForSelector('a[href="/#easy"]', { timeout: 120_000 });
+        // the link is relative since the reverse-proxy sub-path support, so match the suffix only
+        await gPage.waitForSelector('a[href$="#easy"]', { timeout: 120_000 });
         await guiHelper.screenshot(`${__dirname}/..`, gPage, '00_started');
     });
 
