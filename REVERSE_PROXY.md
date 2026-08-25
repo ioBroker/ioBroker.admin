@@ -91,6 +91,7 @@ After saving, the Intro screen rewrites links so that all web‑served adapters 
 ### 4. Limitations & compatibility
 
 * Adapter path awareness: Not every adapter UI is currently path‑aware. While generic `localLink` rewriting covers many cases, some UIs still assume they are hosted at the domain root. See the [Tested adapters](#tested-adapters) table below. Any adapter serving hard‑coded absolute URLs (starting with `/`) may need manual fixes until updated upstream.
+* One Admin instance has one public path. The reverse-proxy table may list `admin.0` in more than one group; Admin uses the **first** group that contains this instance. Two public URLs for the same instance (e.g. `/admin/` and `/iobroker/admin/`) cannot both work. Use a second Admin instance if you need a second path.
 
 #### Tested adapters
 

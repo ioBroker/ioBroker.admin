@@ -366,7 +366,7 @@ export default class Web {
             return body;
         }
         const script = `<script src="${this.publicPath}_socket/info.js"></script>`;
-        html = html.includes('<head>') ? html.replace('<head>', `<head>${script}`) : script + html;
+        html = /<head>/i.test(html) ? html.replace(/<head>/i, match => `${match}${script}`) : script + html;
         return html;
     }
 
