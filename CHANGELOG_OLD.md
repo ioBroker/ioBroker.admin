@@ -1,4 +1,9 @@
 # Older changes
+## 8.0.1 (2026-08-03)
+- (@GermanBluefox) Breaking: React19 + MUI9
+- (@GermanBluefox) Breaking: Node 22 or higher required
+- (@GermanBluefox) Improved charts in tooltip
+
 ## 7.9.13 (2026-07-12)
 - (@GermanBluefox) Added AWS and Azure credentials in credentials manager
 - (@GermanBluefox) Allowed to set the log level without expert mode
