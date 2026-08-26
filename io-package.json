@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.6",
+    "version": "8.0.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.7": {
+        "en": "The JSON tabs (`common.adminTab.link`) are now validated against the JsonConfig schema too\nAdmin can now run behind a reverse-proxy sub-path (e.g. `/admin/`)\nPrefix legacy jQuery adapter-icon URLs and inject `info.js` into `<HEAD>` as well\nCorrected layout of Config view",
+        "de": "Die JSON-Registerkarten (`common.adminTab.link`) werden nun auch anhand des JsonConfig-Schemas validiert.\nAdmin kann nun hinter einem Reverse-Proxy-Unterpfad (z. B. `/admin/`) ausgeführt werden.\nLegacy-jQuery-Adapter-Icon-URLs mit Präfix versehen und `info.js` in ` einfügen<HEAD> ebenso\nKorrigiertes Layout der Konfigurationsansicht",
+        "ru": "Теперь вкладки JSON (`common.adminTab.link`) также проверяются на соответствие схеме JsonConfig.\nТеперь администратор может работать за подпутью обратного прокси (например, `/admin/`).\nДобавьте префикс к устаревшим URL-адресам адаптера jQuery и внедрите `info.js` в `<HEAD> а также\nИсправлена компоновка окна конфигурации.",
+        "pt": "As abas JSON (`common.adminTab.link`) agora também são validadas em relação ao esquema JsonConfig.\nO Admin agora pode ser executado por trás de um subdiretório de proxy reverso (por exemplo, `/admin/`).\nAdicione o prefixo aos URLs legados do adapter-icon do jQuery e injete `info.js` em `<HEAD> ` também\nLayout da visualização de Configuração corrigido",
+        "nl": "De JSON-tabbladen (`common.adminTab.link`) worden nu ook gevalideerd aan de hand van het JsonConfig-schema.\nAdmin kan nu achter een reverse-proxy subpad draaien (bijv. `/admin/`).\nVoeg een voorvoegsel toe aan de URL&#39;s van legacy jQuery adapter-icons en injecteer `info.js` in `<HEAD> ook\nDe lay-out van de configuratieweergave is gecorrigeerd.",
+        "fr": "Les onglets JSON (`common.adminTab.link`) sont désormais également validés par rapport au schéma JsonConfig.\nL'interface d'administration peut désormais s'exécuter derrière un sous-chemin de proxy inverse (par exemple, `/admin/`).\nPréfixez les URL des icônes d&#39;adaptateur jQuery héritées et injectez `info.js` dans `<HEAD> ainsi que\nMise en page corrigée de la vue de configuration",
+        "it": "Anche le schede JSON (`common.adminTab.link`) vengono ora validate rispetto allo schema JsonConfig.\nL'area di amministrazione può ora essere eseguita dietro un percorso secondario di reverse proxy (ad esempio `/admin/`).\nPrefissa gli URL legacy dell&#39;adattatore jQuery-icon e inietta `info.js` in `<HEAD> anche\nLayout corretto della vista Configurazione",
+        "es": "Las pestañas JSON (`common.adminTab.link`) ahora también se validan con respecto al esquema JsonConfig.\nAhora, el administrador puede ejecutarse detrás de una subruta de proxy inverso (por ejemplo, `/admin/`).\nAnteponga las URL del adaptador de iconos de jQuery heredados e inyecte `info.js` en `<HEAD> ` también\nDiseño corregido de la vista de configuración.",
+        "pl": "Karty JSON (`common.adminTab.link`) są teraz również weryfikowane pod kątem schematu JsonConfig\nAdministrator może teraz działać za podścieżką odwrotnego serwera proxy (np. `/admin/`)\nDodaj prefiks do adresów URL starszych ikon adaptera jQuery i wstrzyknij `info.js` do `<HEAD> ` również\nPoprawiono układ widoku konfiguracji",
+        "uk": "Вкладки JSON (`common.adminTab.link`) тепер також перевіряються за схемою JsonConfig.\nАдміністратор тепер може працювати за підшляхом зворотного проксі (наприклад, `/admin/`)\nДодайте префікс URL-адрес іконок адаптера jQuery до застарілих jQuery-адрес та вставте `info.js` у `<HEAD> також\nВиправлено макет вікна конфігурації",
+        "zh-cn": "JSON 选项卡（`common.adminTab.link`）现在也根据 JsonConfig 架构进行验证。\n管理员现在可以在反向代理子路径（例如 `/admin/`）后运行。\n为旧版 jQuery 适配器图标 URL 添加前缀，并将 `info.js` 注入到 `<HEAD>同样\n已修正配置视图的布局"
+      },
       "8.0.5": {
         "en": "Corrected the doubled tiles in the quick access if more than one web instance is running\nReworked the initial setup wizard: modern layout, navigation backwards and many corrections\nRounded the options toolbar in the adapter update dialog\nRemoved warning about not installed docker.",
         "de": "Das Problem mit den doppelt angezeigten Kacheln im Schnellzugriff wurde behoben, falls mehrere Webinstanzen ausgeführt werden.\nDer Einrichtungsassistent wurde überarbeitet: modernes Layout, umgekehrte Navigation und viele Korrekturen.\nDie Optionsleiste im Adapteraktualisierungsdialog wurde abgerundet.\nWarnung bezüglich eines nicht installierten Docker-Servers entfernt.",
