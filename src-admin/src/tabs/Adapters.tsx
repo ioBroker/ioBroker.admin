@@ -1724,7 +1724,16 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 themeType={context.themeType}
                 commandRunning={this.props.commandRunning}
                 upload={adapterName =>
-                    this.props.executeCommand(`upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`)
+                    new Promise<void>(resolve =>
+                        this.props.executeCommand(
+                            `upload ${adapterName}${this.props.expertMode ? ' --debug' : ''}`,
+                            undefined,
+                            () => resolve(),
+                        ),
+                    )
+                }
+                createInstance={(adapterName, host) =>
+                    AdapterInstallDialog.createInstanceIfNotExists({ adapterName, context, host })
                 }
                 installFromUrl={(adapterName, debug, customUrl, options) =>
                     this.addInstance({

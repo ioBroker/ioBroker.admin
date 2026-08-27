@@ -64,3 +64,41 @@ export function extractUrlLink(adapterRepo: RepoAdapterObject): string {
 
     return url;
 }
+
+/**
+ * Extract the pure adapter name from an installation source.
+ *
+ * The js-controller accepts very different sources for the `url` command, so the adapter name must be
+ * guessed to be able to create an instance afterwards:
+ * `xyz`, `iobroker.xyz`, `iobroker.xyz@1.2.3`, `Author/ioBroker.xyz`,
+ * `https://github.com/Author/ioBroker.xyz/tarball/main`, `/opt/iobroker/ioBroker.xyz-1.2.3.tgz`
+ *
+ * @param source URL, npm package name or file path the adapter was installed from
+ * @returns the adapter name in lower case or null if it cannot be determined
+ */
+export function extractAdapterName(source: string): string | null {
+    if (!source) {
+        return null;
+    }
+
+    // cut off the query string and the anchor, like in `.../ioBroker.xyz/tarball/main?token=1`
+    const url = source.trim().split('?')[0].split('#')[0];
+
+    // packed adapter, like `/opt/iobroker/ioBroker.spotify-premium-1.6.0.tgz`
+    const packed = url.match(/iobroker\.([a-z\d][a-z\d_-]*?)-\d+\.\d+\.\d+[^/\\]*\.tgz$/i);
+    if (packed) {
+        return packed[1].toLowerCase();
+    }
+
+    const named = url.match(/iobroker\.([a-z\d][a-z\d_-]*)/i);
+    if (named) {
+        return named[1].toLowerCase();
+    }
+
+    // the pure adapter name, as it can be entered in the "Custom" tab
+    if (/^[a-z\d][a-z\d_-]*$/i.test(url)) {
+        return url.toLowerCase();
+    }
+
+    return null;
+}

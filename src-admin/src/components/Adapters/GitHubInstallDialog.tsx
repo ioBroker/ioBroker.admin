@@ -33,7 +33,7 @@ import {
 
 import { I18n, Icon, type IobTheme, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
 
-import type { RepoAdapterObject } from '@/components/Adapters/Utils';
+import { extractAdapterName, type RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import type { CommandFile } from '@/types';
 import type { HostsWorker } from '@/Workers/HostsWorker';
@@ -147,9 +147,11 @@ interface GitHubInstallDialogProps {
         debug: boolean,
         customUrl: boolean,
         options?: { host?: string; files?: CommandFile[] },
-    ) => Promise<void>;
+    ) => Promise<boolean>;
     /** Upload the adapter */
-    upload: (adapter: string) => void;
+    upload: (adapter: string) => Promise<void>;
+    /** Create the first instance of the adapter, but only if it does not have any instance yet */
+    createInstance: (adapter: string, host?: string) => Promise<void>;
 }
 
 interface AutoCompleteValue {
@@ -164,6 +166,8 @@ interface GitHubInstallDialogState {
     autoCompleteValue: AutoCompleteValue | null;
     /** If debug output is desired */
     debug: boolean;
+    /** If an instance should be created after the installation, when the adapter has no instance yet */
+    createInstance: boolean;
     /** The selected url */
     url: string;
     /** Name of the current tab */
@@ -201,6 +205,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             autoCompleteValue:
                 ((window as any)._localstorage || window.localStorage).getItem('App.autocomplete') || null,
             debug: ((window as any)._localstorage || window.localStorage).getItem('App.gitDebug') === 'true',
+            // Opt-out: the instance is created by default, but the user's decision is remembered
+            createInstance:
+                ((window as any)._localstorage || window.localStorage).getItem('App.createInstanceAfterInstall') !==
+                'false',
             url: ((window as any)._localstorage || window.localStorage).getItem('App.userUrl') || '',
             currentTab: ((window as any)._localstorage || window.localStorage).getItem('App.gitTab') || 'npm',
             customHistory,
@@ -276,6 +284,21 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
     }
 
     /**
+     * Creates the first instance of the freshly installed adapter, if the user did not opt out.
+     * The installation from npm/GitHub/URL/file only installs the adapter and creates no instance.
+     */
+    async createInstanceIfDesired(adapterName: string | null, host?: string): Promise<void> {
+        if (!this.state.createInstance || !adapterName) {
+            return;
+        }
+        try {
+            await this.props.createInstance(adapterName, host);
+        } catch (e: any) {
+            console.error(`Cannot create the instance of ${adapterName}: ${e.message}`);
+        }
+    }
+
+    /**
      * Installs the selected .tgz file.
      * - If the controller supports `CONTROLLER_CMD_EXEC_FILES`, the file is sent (base64) directly to the
      *   selected target host via cmdExec, so it can be installed on a host other than where admin runs.
@@ -286,8 +309,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             return;
         }
         // Extract adapter name from filename like "ioBroker.admin-7.8.6.tgz" or "ioBroker.spotify-premium-1.6.0.tgz"
-        const match = this.state.selectedFile.name.match(/iobroker\.(.+?)-\d+\.\d+\.\d+/i);
-        const adapterName = match ? match[1] : '';
+        const adapterName = extractAdapterName(this.state.selectedFile.name) || '';
 
         if (this.state.cmdExecFilesSupported) {
             // New way: send the file along with the command to the (possibly remote) target host
@@ -295,11 +317,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 const base64 = await fileToBase64(this.state.selectedFile);
                 // The command refers to the file by name, so it must not contain spaces, "/" or "\"
                 const fileName = this.state.selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                await this.props.installFromUrl(fileName, this.state.debug, true, {
+                const installed = await this.props.installFromUrl(fileName, this.state.debug, true, {
                     host: this.state.selectedHost,
                     files: [{ name: fileName, file: base64 }],
                 });
                 await this.restartInstances(adapterName);
+                if (installed) {
+                    await this.createInstanceIfDesired(adapterName, this.state.selectedHost);
+                }
             } catch (e: any) {
                 console.error(`Installation from file failed: ${e.message}`);
             }
@@ -310,8 +335,11 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         const filePath = await this.uploadFileToServer();
         if (filePath) {
             try {
-                await this.props.installFromUrl(filePath, this.state.debug, true);
+                const installed = await this.props.installFromUrl(filePath, this.state.debug, true);
                 await this.restartInstances(adapterName);
+                if (installed) {
+                    await this.createInstanceIfDesired(adapterName);
+                }
             } catch (e: any) {
                 console.error(`Installation from file failed: ${e.message}`);
             }
@@ -323,7 +351,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         if (this.state.currentTab === 'GitHub') {
             const parts = (this.state.autoCompleteValue?.value || '').split('/');
             const _url = `${parts[1]}/ioBroker.${parts[0]}`;
-            await this.props.installFromUrl(_url, this.state.debug, true);
+            if (await this.props.installFromUrl(_url, this.state.debug, true)) {
+                await this.createInstanceIfDesired(parts[0]);
+            }
         } else if (this.state.currentTab === 'URL') {
             const customHistory = this.state.customHistory.filter(url => url !== this.state.url);
             customHistory.unshift(this.state.url);
@@ -335,10 +365,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 JSON.stringify(customHistory),
             );
 
-            if (!this.state.url.includes('.')) {
-                await this.props.installFromUrl(`iobroker.${this.state.url}`, this.state.debug, true);
-            } else {
-                await this.props.installFromUrl(this.state.url, this.state.debug, true);
+            const url = this.state.url.includes('.') ? this.state.url : `iobroker.${this.state.url}`;
+            if (await this.props.installFromUrl(url, this.state.debug, true)) {
+                await this.createInstanceIfDesired(extractAdapterName(url));
             }
         } else if (this.state.currentTab === 'File') {
             await this.installFile();
@@ -347,13 +376,43 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             const adapterName = fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName;
 
             try {
-                await this.props.installFromUrl(`iobroker.${adapterName}@latest`, this.state.debug, true);
+                const installed = await this.props.installFromUrl(
+                    `iobroker.${adapterName}@latest`,
+                    this.state.debug,
+                    true,
+                );
                 // on npm installations we want to perform an additional upload
-                this.props.upload(adapterName);
+                await this.props.upload(adapterName);
+                if (installed) {
+                    await this.createInstanceIfDesired(adapterName);
+                }
             } catch (e: any) {
                 console.error(`Installation from url failed: ${e.message}`);
             }
         }
+    }
+
+    /** The opt-out for the automatic creation of the first instance after the installation */
+    renderCreateInstance(): JSX.Element {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={this.state.createInstance}
+                            onChange={e => {
+                                ((window as any)._localstorage || window.localStorage).setItem(
+                                    'App.createInstanceAfterInstall',
+                                    e.target.checked ? 'true' : 'false',
+                                );
+                                this.setState({ createInstance: e.target.checked });
+                            }}
+                        />
+                    }
+                    label={this.props.t('Create instance if it does not exist yet')}
+                />
+            </div>
+        );
     }
 
     renderNpm(): JSX.Element | null {
@@ -379,6 +438,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         label={this.props.t('Debug outputs')}
                     />
                 </div>
+                {this.renderCreateInstance()}
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                     <SmsIcon style={{ marginRight: 10 }} />
                     <Autocomplete
@@ -467,6 +527,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         label={this.props.t('Debug outputs')}
                     />
                 </div>
+                {this.renderCreateInstance()}
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                     <SmsIcon style={{ marginRight: 10 }} />
                     <Autocomplete
@@ -563,6 +624,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         label={this.props.t('Debug outputs')}
                     />
                 </div>
+                {this.renderCreateInstance()}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Autocomplete
                         fullWidth
@@ -613,29 +675,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 {...params}
                                 onKeyUp={event => {
                                     if (event.key === 'Enter' && this.state.url) {
-                                        const customHistory = this.state.customHistory.filter(
-                                            url => url !== this.state.url,
-                                        );
-                                        customHistory.unshift(this.state.url);
-                                        if (customHistory.length > MAX_HISTORY_LENGTH) {
-                                            customHistory.pop();
-                                        }
-                                        ((window as any)._localstorage || window.localStorage).setItem(
-                                            'App.npmHistory',
-                                            JSON.stringify(customHistory),
-                                        );
-
-                                        if (!this.state.url.includes('.')) {
-                                            void this.props.installFromUrl(
-                                                `iobroker.${this.state.url}`,
-                                                this.state.debug,
-                                                true,
-                                            );
-                                        } else {
-                                            void this.props.installFromUrl(this.state.url, this.state.debug, true);
-                                        }
-                                        this.setState({ autoCompleteValue: null, url: '' });
-                                        this.props.onClose();
+                                        void this.handleInstall().then(() => {
+                                            this.setState({ autoCompleteValue: null, url: '' });
+                                            this.props.onClose();
+                                        });
                                     }
                                 }}
                                 helperText={this.props.t('URL or file path')}
@@ -720,6 +763,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         label={this.props.t('Restart adapter after install')}
                     />
                 )}
+                {this.renderCreateInstance()}
                 {/* Host selection is only possible when the controller can receive the file directly (cross-host install) */}
                 {this.state.cmdExecFilesSupported && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>

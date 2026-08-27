@@ -2470,6 +2470,9 @@ class App extends Router<AppProps, AppState> {
                         cmd,
                         cmdDialog: true,
                         callback,
+                        // the host must be set here too, as it was reset above and a chained
+                        // command (e.g. install => upload => add) would else run on the current host
+                        commandHost: host || this.state.currentHost,
                         cmdFiles: files || null,
                     }),
             );

@@ -196,6 +196,11 @@ export default abstract class AdapterInstallDialog<
         );
     }
 
+    /**
+     * Installs an adapter (`url`) or creates an instance (`add`).
+     *
+     * @returns true if the command was executed successfully
+     */
     async addInstance(options: {
         adapterName: string;
         // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
@@ -207,7 +212,7 @@ export default abstract class AdapterInstallDialog<
         host?: string;
         /** Optional files (base64) to send along with the command (e.g. a .tgz to install on a remote host) */
         files?: CommandFile[];
-    }): Promise<void> {
+    }): Promise<boolean> {
         if (!options.customUrl) {
             const adapterObject = options.context.repository[options.adapterName];
 
@@ -225,7 +230,7 @@ export default abstract class AdapterInstallDialog<
                     addInstanceHostName: options.context.currentHost.replace(/^system\.host\./, ''),
                     addInstanceId: options.instance || 'auto',
                 });
-                return;
+                return false;
             }
 
             if (options.instance) {
@@ -235,7 +240,7 @@ export default abstract class AdapterInstallDialog<
                     window.alert(
                         options.context.t('Instance %s already exists', `${options.adapterName}.${options.instance}`),
                     );
-                    return;
+                    return false;
                 }
             }
         }
@@ -259,6 +264,62 @@ export default abstract class AdapterInstallDialog<
             });
         } catch (e) {
             window.alert(`${I18n.t('Cannot install')}: ${e}`);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Creates the first instance of an adapter, but only if it does not have any instance yet.
+     *
+     * The `url` command (installation from npm, GitHub, an URL or a `.tgz` file) only installs the adapter
+     * and does not create an instance, so this is called afterwards if the user did not opt out.
+     */
+    static async createInstanceIfNotExists(options: {
+        adapterName: string;
+        context: AdaptersContext;
+        /** Explicit target host (with or without the `system.host.` prefix). Default is the current host */
+        host?: string;
+        debug?: boolean;
+    }): Promise<void> {
+        const { adapterName, context } = options;
+        const host = (options.host || context.currentHost).replace(/^system\.host\./, '');
+
+        // The adapter object is written by the installer, so give the controller some time to create it
+        let adapterObject: ioBroker.Object | null | undefined;
+        for (let attempt = 0; attempt < 5 && !adapterObject; attempt++) {
+            await new Promise<void>(resolve => setTimeout(resolve, 500));
+            try {
+                adapterObject = await context.socket.getObject(`system.adapter.${adapterName}`);
+            } catch {
+                // ignore, as the object could be not created yet
+            }
+        }
+
+        if (!adapterObject) {
+            // The installation delivered something else than expected, so we do not know what to create
+            console.warn(`Cannot create an instance: adapter "${adapterName}" not found after the installation`);
+            return;
+        }
+
+        const instances = await context.instancesWorker.getObjects(true);
+        if (instances && Object.keys(instances).find(id => id.startsWith(`system.adapter.${adapterName}.`))) {
+            // At least one instance exists already
+            return;
+        }
+
+        try {
+            await new Promise<void>((resolve, reject) => {
+                context.executeCommand(
+                    `add ${adapterName} --host ${host} ${options.debug || context.expertMode ? '--debug' : ''}`,
+                    host,
+                    exitCode =>
+                        !exitCode ? resolve() : reject(new Error(`The process returned an exit code of ${exitCode}`)),
+                );
+            });
+        } catch (e) {
+            window.alert(`${I18n.t('Cannot create instance')}: ${e}`);
         }
     }
 
