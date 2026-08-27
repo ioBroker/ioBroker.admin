@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.8 (2026-08-27)
 - (@GermanBluefox) Added the option to answer ACME HTTP-01 challenges of the acme adapter
 - (@GermanBluefox) Fixed the CORS headers missing on the OAuth2 endpoints. They answer without passing the request on, so retrieving a token from a browser on another origin failed with `No Access-Control-Allow-Origin header is present`. The CORS middleware is now registered in front of all routes
 - (@GermanBluefox) `src-admin/src/version.json` is now generated from `package.json` at build time, so the version logged by the GUI is no longer stale
@@ -119,14 +119,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 8.0.3 (2026-08-08)
 - (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
 - (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off
-
-### 8.0.2 (2026-08-07)
-- (@GermanBluefox) Corrected charts
-- (@GermanBluefox) Corrected the authentication for the OAuth2 callbacks
-- (@GermanBluefox) Disabled the save button in the custom settings as long as a value is invalid
-- (@GermanBluefox) Added the folder selection to the alias creation dialog
-- (@GermanBluefox) Hidden the chart in the value editor in the mobile view
-- (@GermanBluefox) Small GUI improvements
 
 ## License
 

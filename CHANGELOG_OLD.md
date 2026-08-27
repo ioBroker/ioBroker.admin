@@ -1,4 +1,12 @@
 # Older changes
+## 8.0.2 (2026-08-07)
+- (@GermanBluefox) Corrected charts
+- (@GermanBluefox) Corrected the authentication for the OAuth2 callbacks
+- (@GermanBluefox) Disabled the save button in the custom settings as long as a value is invalid
+- (@GermanBluefox) Added the folder selection to the alias creation dialog
+- (@GermanBluefox) Hidden the chart in the value editor in the mobile view
+- (@GermanBluefox) Small GUI improvements
+
 ## 8.0.1 (2026-08-03)
 - (@GermanBluefox) Breaking: React19 + MUI9
 - (@GermanBluefox) Breaking: Node 22 or higher required
