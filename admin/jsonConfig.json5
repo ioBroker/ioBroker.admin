@@ -158,6 +158,16 @@
                     lg: 4,
                     hidden: '!!data.auth',
                 },
+                acmeChallenge: {
+                    newLine: true,
+                    type: 'checkbox',
+                    label: 'Answer ACME challenges',
+                    help: 'acmeChallenge_help',
+                    xs: 12,
+                    sm: 12,
+                    md: 8,
+                    lg: 6,
+                },
                 disableMcp: {
                     type: 'checkbox',
                     newLine: true,

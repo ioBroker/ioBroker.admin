@@ -30,6 +30,21 @@ let socketIoFile: false | string;
 let uuid: string;
 const page404 = readFileSync(`${__dirname}/../../public/404.html`).toString('utf8');
 const logTemplate = readFileSync(`${__dirname}/../../public/logTemplate.html`).toString('utf8');
+
+/**
+ * The only endpoints a browser on another origin may call.
+ *
+ * A page served by another adapter - or an MCP client - has to fetch a token from admin before it
+ * can talk to it at all, and the OAuth2 endpoints are built for exactly that. Everything else stays
+ * same-origin only.
+ */
+const CORS_ENABLED_PATHS = [
+    '/.well-known/oauth-authorization-server',
+    '/.well-known/oauth-protected-resource',
+    '/oauth/token',
+    '/oauth/register',
+    '/oauth/revoke',
+];
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
 
 // copied from here: https://github.com/component/escape-html/blob/master/index.js
@@ -579,6 +594,35 @@ export default class Web {
                     next();
                 });
             }
+
+            // In front of every route below: an Express middleware only ever sees a request that the
+            // routes registered before it passed on, and the OAuth2 routes answer without calling
+            // next(). Registered further down, this would leave `/oauth/token` - the one endpoint a
+            // cross-origin client has to reach before it owns a token - without a single CORS header,
+            // and the browser rejects the answer with `No Access-Control-Allow-Origin header is present`.
+            //
+            // `*` rather than the reflected origin, and no `Access-Control-Allow-Credentials`: these
+            // endpoints authenticate through the request body and the `Authorization` header, never
+            // through the `access_token` cookie. Reflecting the origin *and* allowing credentials is
+            // what would hand every website a logged-in admin session.
+            this.server.app.use((req: Request, res: Response, next: NextFunction): void => {
+                if (!CORS_ENABLED_PATHS.includes(req.url.split('?')[0])) {
+                    next();
+                    return;
+                }
+
+                res.header('Access-Control-Allow-Origin', '*');
+                res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+                res.header('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+                res.header('Access-Control-Max-Age', '86400');
+
+                if (req.method === 'OPTIONS') {
+                    // The routes below answer GET and POST only, so nobody would answer the preflight.
+                    res.status(204).end();
+                } else {
+                    next();
+                }
+            });
 
             // enable use of i-frames together with HTTPS
             this.server.app.get('/*any', (_req: Request, res: Response, next: NextFunction): void => {
@@ -1341,6 +1385,7 @@ export default class Web {
                     app: this.server.app,
                     adapter: this.adapter,
                     secure: this.settings.secure,
+                    acmeChallenge: this.settings.acmeChallenge,
                 });
                 // @ts-expect-error tbd
                 this.server.server = await webserver.init();

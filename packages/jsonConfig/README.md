@@ -1907,6 +1907,11 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 9.0.23 (2026-08-27)
+(@krobipd) Corrected: the object browser stayed empty after closing the object customization dialog if any object was changed while the dialog was open (ioBroker/ioBroker.admin#3391)
+(@krobipd) Changed: `ObjectBrowserClass.subscribes` and `.recordStates` are Sets instead of arrays now
+(@krobipd) Improved: object browser performance on large installations — bursts of object changes cause one tree rebuild instead of several, state-change echoes no longer trigger redraws, subscription bookkeeping is no longer quadratic, and rows outside the viewport skip layout and paint
+
 ### 9.0.22 (2026-08-21)
 - (@GermanBluefox) Corrected layout of Config view
 

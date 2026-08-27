@@ -3,6 +3,8 @@ declare global {
     namespace ioBroker {
         interface AdapterConfig {
             // non-primitive types are not inferred correctly
+            /** Answer ACME HTTP-01 challenges published by the acme adapter. Enabled if not set */
+            acmeChallenge: boolean;
             accessAllowedConfigs: string[];
             accessAllowedTabs: string[];
             accessApplyRights: boolean;

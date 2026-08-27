@@ -255,6 +255,7 @@
     "loadingBackgroundImage": false,
     "doNotCheckPublicIP": false,
     "ssoActive": false,
+    "acmeChallenge": true,
     "disableMcp": true
   },
   "notifications": [
