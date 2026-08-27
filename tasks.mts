@@ -13,7 +13,19 @@ const src = `${dirName}/${srcRx}`;
 const rootFolder = dirName;
 const dest = 'adminWww/';
 
+function syncVersion(): void {
+    const { version } = JSON.parse(readFileSync(`${dirName}/package.json`).toString()) as { version: string };
+    const versionFile = `${dirName}/${srcRx}src/version.json`;
+    const newContent = `${JSON.stringify({ version }, null, 4)}\n`;
+    const oldContent = existsSync(versionFile) ? readFileSync(versionFile).toString() : '';
+    if (oldContent !== newContent) {
+        writeFileSync(versionFile, newContent);
+        console.log(`Updated ${srcRx}src/version.json to ${version}`);
+    }
+}
+
 async function build(): Promise<void> {
+    syncVersion();
     const socketNew = readFileSync(`${dirName}/node_modules/@iobroker/ws/build/esm/socket.io.min.js`).toString();
     const socketOld = readFileSync(`${dirName}/src-admin/public/lib/js/socket.io.js`).toString();
     if (socketNew !== socketOld) {
@@ -178,6 +190,8 @@ if (process.argv.includes('--backend-i18n')) {
         console.error(e);
         process.exit(1);
     });
+} else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-version')) {
+    syncVersion();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
     syncUtils()
         .then(() => configCSS())
@@ -225,6 +239,7 @@ if (process.argv.includes('--backend-i18n')) {
         process.exit(1);
     });
 } else {
+    syncVersion();
     configCSS()
         .then(async () => {
             clean();
