@@ -98,6 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Added the option to create the first instance directly after the installation from npm/GitHub/URL/file, if the adapter has no instance yet
+- (@GermanBluefox) Updated web socket server
 
 ### 8.0.8 (2026-08-27)
 - (@GermanBluefox) Added the option to answer ACME HTTP-01 challenges of the acme adapter
