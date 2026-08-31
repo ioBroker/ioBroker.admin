@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.9 (2026-08-31)
 - (@GermanBluefox) The discovery dialog opens on the result page when the last scan left proposals that are not ignored
 - (@GermanBluefox) The discovery button carries a badge with the number of proposals that are neither created nor ignored
 - (@GermanBluefox) Added the option to create the first instance directly after the installation from npm/GitHub/URL/file, if the adapter has no instance yet
@@ -122,10 +122,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 8.0.4 (2026-08-09)
 - (@GermanBluefox) Better handling of autocompleteSendTo JsonConfig components
-
-### 8.0.3 (2026-08-08)
-- (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
-- (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off
 
 ## License
 

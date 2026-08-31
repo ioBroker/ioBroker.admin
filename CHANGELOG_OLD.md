@@ -1,4 +1,8 @@
 # Older changes
+## 8.0.3 (2026-08-08)
+- (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
+- (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off
+
 ## 8.0.2 (2026-08-07)
 - (@GermanBluefox) Corrected charts
 - (@GermanBluefox) Corrected the authentication for the OAuth2 callbacks

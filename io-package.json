@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "8.0.8",
+    "version": "8.0.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "8.0.9": {
+        "en": "The discovery dialog opens on the result page when the last scan left proposals that are not ignored\nThe discovery button carries a badge with the number of proposals that are neither created nor ignored\nAdded the option to create the first instance directly after the installation from npm/GitHub/URL/file, if the adapter has no instance yet\nUpdated web socket server\nImprovements of the device manager",
+        "de": "Der Suchdialog öffnet sich auf der Ergebnisseite, wenn der letzte Scan Vorschläge hinterlassen hat, die nicht ignoriert werden.\nDie Schaltfläche „Entdecken“ zeigt eine Kennung mit der Anzahl der Vorschläge an, die weder erstellt noch ignoriert wurden.\nEs wurde die Option hinzugefügt, die erste Instanz direkt nach der Installation von npm/GitHub/URL/Datei zu erstellen, falls der Adapter noch keine Instanz besitzt.\nAktualisierter WebSocket-Server\nVerbesserungen des Gerätemanagers",
+        "ru": "Диалоговое окно поиска открывается на странице результатов, если в результате последнего сканирования остались предложения, которые не были проигнорированы.\nКнопка «Поиск» отображает значок с количеством предложений, которые не были созданы или проигнорированы.\nДобавлена возможность создания первого экземпляра непосредственно после установки из npm/GitHub/URL/file, если у адаптера еще нет экземпляра.\nОбновлен сервер веб-сокетов\nУлучшения в диспетчере устройств.",
+        "pt": "A caixa de diálogo de descoberta é aberta na página de resultados quando a última verificação deixou propostas que não foram ignoradas.\nO botão de descoberta exibe um indicador com o número de propostas que não foram criadas nem ignoradas.\nAdicionada a opção de criar a primeira instância diretamente após a instalação a partir de npm/GitHub/URL/arquivo, caso o adaptador ainda não possua uma instância.\nServidor web socket atualizado\nMelhorias no gerenciador de dispositivos",
+        "nl": "Het dialoogvenster voor ontdekking wordt geopend op de resultatenpagina wanneer de laatste scan voorstellen heeft opgeleverd die niet genegeerd worden.\nDe ontdekkingsknop heeft een badge met het aantal voorstellen dat noch is aangemaakt, noch is genegeerd.\nDe optie is toegevoegd om direct na de installatie via npm/GitHub/URL/bestand de eerste instantie aan te maken, als de adapter nog geen instantie heeft.\nBijgewerkte websocket-server\nVerbeteringen aan de apparaatbeheerder",
+        "fr": "La boîte de dialogue de découverte s'ouvre sur la page de résultats lorsque la dernière analyse a laissé des propositions qui ne sont pas ignorées\nLe bouton de découverte comporte un badge indiquant le nombre de propositions qui ne sont ni créées ni ignorées.\nAjout de l'option permettant de créer la première instance directement après l'installation depuis npm/GitHub/URL/fichier, si l'adaptateur ne possède pas encore d'instance.\nServeur WebSocket mis à jour\nAméliorations du gestionnaire de périphériques",
+        "it": "La finestra di dialogo di scoperta si apre nella pagina dei risultati quando l'ultima scansione ha lasciato proposte che non vengono ignorate\nIl pulsante di scoperta riporta un badge con il numero di proposte che non sono state create né ignorate\nAggiunta l'opzione per creare la prima istanza direttamente dopo l'installazione da npm/GitHub/URL/file, se l'adattatore non ha ancora un'istanza\nServer WebSocket aggiornato\nMiglioramenti del gestore dispositivi",
+        "es": "El cuadro de diálogo de descubrimiento se abre en la página de resultados cuando el último escaneo dejó propuestas que no se ignoran.\nEl botón de descubrimiento lleva una insignia con el número de propuestas que no se crean ni se ignoran.\nSe agregó la opción de crear la primera instancia directamente después de la instalación desde npm/GitHub/URL/archivo, si el adaptador aún no tiene ninguna instancia.\nServidor de sockets web actualizado\nMejoras en el administrador de dispositivos",
+        "pl": "Okno dialogowe odkrywania otwiera się na stronie wyników, gdy ostatnie skanowanie pozostawiło propozycje, które nie zostały zignorowane\nPrzycisk odkrywania zawiera odznakę z liczbą propozycji, które nie zostały utworzone ani zignorowane\nDodano opcję utworzenia pierwszej instancji bezpośrednio po instalacji z npm/GitHub/URL/file, jeśli adapter nie ma jeszcze żadnej instancji\nZaktualizowany serwer gniazd internetowych\nUlepszenia menedżera urządzeń",
+        "uk": "Діалогове вікно виявлення відкривається на сторінці результатів, якщо в результаті останнього сканування залишилися пропозиції, які не ігноруються.\nКнопка пошуку має значок із кількістю пропозицій, які не були ні створені, ні проігноровані\nДодано опцію створення першого екземпляра безпосередньо після встановлення з npm/GitHub/URL/file, якщо адаптер ще не має екземпляра.\nОновлений веб-сокетний сервер\nПокращення диспетчера пристроїв",
+        "zh-cn": "如果上次扫描留下了未被忽略的提议，则会在结果页面上打开“发现”对话框。\n“发现”按钮带有一个徽章，显示未被创建或忽略的提案数量。\n新增了在安装完成后，如果适配器尚无实例，则直接从 npm/GitHub/URL/文件创建第一个实例的选项。\n已更新 WebSocket 服务器\n设备管理器的改进"
+      },
       "8.0.8": {
         "en": "Added the option to answer ACME HTTP-01 challenges of the acme adapter\nFixed the CORS headers missing on the OAuth2 endpoints. They answer without passing the request on, so retrieving a token from a browser on another origin failed with `No Access-Control-Allow-Origin header is present`. The CORS middleware is now registered in front of all routes\n`src-admin/src/version.json` is now generated from `package.json` at build time, so the version logged by the GUI is no longer stale",
         "de": "Es wurde die Option hinzugefügt, die ACME HTTP-01-Herausforderungen des ACME-Adapters zu beantworten.\nDie fehlenden CORS-Header an den OAuth2-Endpunkten wurden korrigiert. Da diese Anfragen nicht weiterleiteten, schlug das Abrufen eines Tokens von einem Browser einer anderen Domain mit der Fehlermeldung „Kein Access-Control-Allow-Origin-Header vorhanden“ fehl. Die CORS-Middleware ist nun vor allen Routen registriert.\nDie Datei `src-admin/src/version.json` wird nun während des Build-Prozesses aus `package.json` generiert, sodass die in der GUI angezeigte Version nicht mehr veraltet ist.",
@@ -95,19 +108,6 @@
         "pl": "Poprawione wykresy\nPoprawiono uwierzytelnianie połączeń OAuth2\nWyłączył przycisk zapisu w niestandardowych ustawieniach, o ile wartość jest nieprawidłowa\nDodano wybór folderów do okna tworzenia aliasów\nUkryty wykres w edytorze wartości w widoku mobilnym\nMałe ulepszenia GUI",
         "uk": "Виправлені діаграми\nВиправлено автентифікацію для викликів OAuth2\nВимкнено кнопку збереження в користувацьких налаштуваннях до тих пір, поки значення не буде\nДодано виділення папки до діалогу створення псевдонімів\nПрихована графіка в редакторі значень у мобільному виді\nМалі покращення інтерфейсу",
         "zh-cn": "更正的图表\n纠正了 OAuth2 回调的认证\n在自定义设置中禁用保存按钮, 只要一个值无效\n将文件夹选择添加到化名创建对话框\n在移动视图中的值编辑器中隐藏图表\n小型图形界面改进"
-      },
-      "8.0.1": {
-        "en": "Breaking: React19 + MUI9\nBreaking: Node 22 or higher required\nImproved charts in tooltip",
-        "de": "Bruch: React19 + MUI9\nBreaking: Node 22 oder höher erforderlich\nVerbesserte Charts im Tooltip",
-        "ru": "Обсуждение React19 + MUI9\nТребуется прорыв: Узел 22 или выше\nУлучшенные диаграммы в Tooltip",
-        "pt": "Quebra: React19 + MUI9\nQuebrar: Nó 22 ou superior requerido\nGráficos melhorados na dica",
-        "nl": "Breaking: React19 + MUI9\nBreken: Node 22 of hoger vereist\nVerbeterde grafieken in tooltip",
-        "fr": "Breaking: Réaction19 + MUI9\nBreaking: Noeud 22 ou plus requis\nGraphiques améliorés dans tooltip",
-        "it": "Breaking: React19 + MUI9\nRipartizione: Nodo 22 o superiore richiesto\nCarte migliorate in tooltip",
-        "es": "Breaking: React19 + MUI9\nBreaking: Nodo 22 o superior requerido\nGráficos mejorados en el campo de herramientas",
-        "pl": "Breaking: React 19 + MUI9\nZłamanie: wymagany węzeł 22 lub wyższy\nUlepszone wykresy w podpowiedzi",
-        "uk": "Перерва: React19 + MUI9\nПерерва: Node 22 або вище потрібно\nПокращені діаграми в інструментальному режимі",
-        "zh-cn": "断裂:反应19 + MUI9\n中断: 需要22号或更高节点\n工具提示中改进的图表"
       }
     },
     "desc": {
