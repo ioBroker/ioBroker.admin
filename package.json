@@ -26,7 +26,7 @@
     "@iobroker/adapter-core": "^3.4.3",
     "@iobroker/mcp-server": "^1.0.1",
     "@iobroker/plugin-docker": "^1.2.1",
-    "@iobroker/socket-classes": "^2.3.8",
+    "@iobroker/socket-classes": "^2.4.3",
     "@iobroker/webserver": "^3.0.1",
     "@iobroker/ws-server": "^4.5.0",
     "@tsconfig/node22": "^22.0.6",
