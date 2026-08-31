@@ -1948,6 +1948,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 9.1.1 (2026-08-31)
+- (@GermanBluefox) Do not show export import on narrow devices
+
 ### 9.1.0 (2026-08-31)
 - (@GermanBluefox) Added progress bar to the state component
 - (@GermanBluefox) Added the possibility to show or hide elements depending on the states: `dependsOnStates` and the JS variable `_states`

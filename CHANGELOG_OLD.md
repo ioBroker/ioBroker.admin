@@ -1,4 +1,7 @@
 # Older changes
+## 8.0.4 (2026-08-09)
+- (@GermanBluefox) Better handling of autocompleteSendTo JsonConfig components
+
 ## 8.0.3 (2026-08-08)
 - (@softwarecrash) Corrected the validation state in the custom settings if more than one instance is shown
 - (@softwarecrash) Corrected the disabled save button in the custom settings after an invalid instance was switched off

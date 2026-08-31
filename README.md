@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.10 (2026-08-31)
 - (@GermanBluefox) Fixed: clearing the adapter name filter showed an empty adapter list instead of all adapters
 
 ### 8.0.9 (2026-08-31)
@@ -122,9 +122,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Reworked the initial setup wizard: modern layout, navigation backwards and many corrections
 - (@GermanBluefox) Rounded the options toolbar in the adapter update dialog
 - (@GermanBluefox) Removed warning about not installed docker.
-
-### 8.0.4 (2026-08-09)
-- (@GermanBluefox) Better handling of autocompleteSendTo JsonConfig components
 
 ## License
 
