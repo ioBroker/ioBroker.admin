@@ -25,8 +25,8 @@
     ],
     "dependencies": {
         "@iobroker/gui-components": "^10.2.0",
-        "@iobroker/dm-gui-components": "^10.0.20",
-        "@iobroker/json-config": "^9.0.23",
+        "@iobroker/dm-gui-components": "^10.0.21",
+        "@iobroker/json-config": "^9.1.0",
         "ace-builds": "^1.44.0",
         "remark-gfm": "^4.0.1"
     },
@@ -37,7 +37,7 @@
         "@iobroker/dm-utils": "^3.2.0",
         "@iobroker/socket-client": "^5.2.1",
         "@module-federation/runtime": "^2.9.0",
-        "@module-federation/vite": "^1.21.0",
+        "@module-federation/vite": "^1.21.1",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^3.0.0",
         "@tsconfig/node20": "^20.1.10",

@@ -58,6 +58,7 @@ import GenerateInputsModal, {
     type DiscoveryObject,
 } from './GenerateInputsModal';
 import useStateLocal from '../helpers/hooks/useStateLocal';
+import { countUnhandledProposals } from '../helpers/discovery';
 
 const styles: Record<string, any> = {
     root: {
@@ -432,9 +433,18 @@ function DiscoveryDialog({
 
     useEffect(() => {
         async function readOldData(): Promise<void> {
-            const dataDiscovery = await socket.getObject('system.discovery');
+            const dataDiscovery = (await socket.getObject('system.discovery')) as unknown as DiscoveryObject | null;
             if (dataDiscovery !== undefined) {
-                setDiscoveryData(dataDiscovery as unknown as DiscoveryObject);
+                setDiscoveryData(dataDiscovery);
+
+                // A scan that ran on its own - the discovery adapter can do that on a timer -
+                // has already written everything the second page shows. Opening on "press
+                // Discover" would ask for a scan that finds the same things again, so start
+                // where the results are. Only done here, on the first read: the subscription
+                // below must not pull the user off the page they are working on.
+                if (countUnhandledProposals(dataDiscovery)) {
+                    setStep(1);
+                }
             }
         }
 

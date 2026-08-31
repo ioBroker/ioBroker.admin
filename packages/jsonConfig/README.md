@@ -1503,6 +1503,7 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `notOs`                  | Do not show this element on these operating systems of the host, on which the instance runs: `"win32"` or `["linux", "darwin"]`                                                       |
 | `docker`                 | Show this element only if the ioBroker runs (`true`) or does not run (`false`) in a docker container                                                                                  |
 | `disabled`               | JS function that could use `native.attribute` for calculation                                                                                                                         |
+| `dependsOnStates`        | ioBroker states, on which this element depends: `{"running": ".info.browsing"}`. See [Show or disable elements depending on ioBroker states](#show-or-disable-elements-depending-on-iobroker-states) |
 | `help`                   | help text (multi-language)                                                                                                                                                            |
 | `helpLink`               | href to help (could be used only together with `help`)                                                                                                                                |
 | `style`                  | CSS style in ReactJS notation: `radiusBorder` and not `radius-border`.                                                                                                                |
@@ -1557,6 +1558,42 @@ the text patterns of `label`, `help` and so on:
     "help": "Host ${_host.id} runs ${_os} on ${_arch}"
 }
 ```
+
+### Show or disable elements depending on ioBroker states
+
+With `dependsOnStates`, an element can react on the values of ioBroker states. The states are subscribed,
+so the element is updated immediately if a state changes - no reload of the configuration dialog is required.
+
+```json5
+{
+    "startBrowse": {
+        "type": "sendTo",
+        "command": "browse",
+        "label": "${_states.running?.val ? 'Stop browse' : 'Start browse'}",
+        "dependsOnStates": { "running": ".info.browsing" },
+        "disabled": "!!_states.running?.val"
+    }
+}
+```
+
+- `dependsOnStates` is written as `{"<alias>": "<state ID>"}`. The values are available in **all** JS functions
+  (`hidden`, `disabled`, `validator`, `defaultFunc`, `onChange.calculateFunc`, `confirm.condition`) and in the
+  text patterns of `label`, `help`, `tooltip` and so on as `_states.<alias>`.
+- `_states.<alias>` contains the **whole state object**, so `_states.running?.val`, `_states.running?.ts`,
+  `_states.running?.ack` can be used. It is `null` if the state does not exist, so always use `?.`.
+- A state ID that starts with a dot addresses the own instance: `.info.browsing` => `myAdapter.0.info.browsing`.
+  Every other ID is used as it is, so the states of other adapters can be monitored too.
+- The ID may contain `${data.xxx}` patterns, e.g. `"device": "${data.deviceInstance}.info.connection"`.
+  It will be resolved anew if the configuration changes. Wildcards (`*`) are **not** allowed.
+- If one of the states changes, `hidden`, `disabled`, `label`, `help`, `validator` and `defaultFunc` of this
+  element will be calculated anew. Every state is subscribed only once, independent of how many elements
+  (or table lines) use it.
+- The short form `"dependsOnStates": ["admin.0.info.connection"]` uses the ID itself as an alias:
+  `_states['admin.0.info.connection']`.
+- The attribute may be used on every element, also on `panel`, `tabs` and table columns.
+
+**Note:** old admin versions do not know `_states` and would throw an error by the evaluation of such a
+function, so the element would stay visible and enabled.
 
 **Note:** old admin versions do not know `_os` and would evaluate `"hidden": "_os !== 'linux'"` to `true`
 and so hide the element everywhere. Because of that, `os`/`notOs` should be preferred, as they are simply
@@ -1708,6 +1745,7 @@ const func = new Function(
   '_os',           // Operating system of the host, where the instance runs: 'win32', 'linux', 'darwin', ...
   '_arch',         // Architecture of the host, where the instance runs: 'x64', 'arm64', ...
   '_host',         // Information about the host: {id, os, osType, arch, release, nodeVersion, controllerVersion, docker, dockerVersion}
+  '_states',       // Values of the states from `dependsOnStates`: {<alias>: <state object or null>}
   myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, this.props.socket);
@@ -1728,6 +1766,7 @@ The following variables are available in JS function in adapter settings:
 - `_os` - operating system of the host, on which the instance runs (`process.platform`), e.g. `linux`, `win32`, `darwin`. Empty string if unknown
 - `_arch` - architecture of the host, on which the instance runs, e.g. `x64`, `arm64`
 - `_host` - information about the host: `{id, os, osType, arch, release, nodeVersion, controllerVersion, docker, dockerVersion}`. `docker` is `undefined` if the docker state was not requested or the host did not answer
+- `_states` - values of the states from [`dependsOnStates`](#show-or-disable-elements-depending-on-iobroker-states): `{<alias>: <state object>}`. `null` if the state does not exist
 
 ### Custom settings dialog
 
@@ -1748,6 +1787,7 @@ const func = new Function(
   "_os",
   "_arch",
   "_host",
+  "_states",
   myValidator.includes("return") ? myValidator : "return " + myValidator
 ); // e.g. "_alive === true"
 
@@ -1774,6 +1814,7 @@ The following variables are available in JS function in custom settings:
 - `_os` - operating system of the host, on which the instance runs (`process.platform`), e.g. `linux`, `win32`, `darwin`. Empty string if unknown
 - `_arch` - architecture of the host, on which the instance runs, e.g. `x64`, `arm64`
 - `_host` - information about the host: `{id, os, osType, arch, release, nodeVersion, controllerVersion, docker, dockerVersion}`. `docker` is `undefined` if the docker state was not requested or the host did not answer
+- `_states` - values of the states from [`dependsOnStates`](#show-or-disable-elements-depending-on-iobroker-states): `{<alias>: <state object>}`. `null` if the state does not exist
 
 ```json5
 {
@@ -1907,10 +1948,14 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 9.1.0 (2026-08-31)
+- (@GermanBluefox) Added progress bar to the state component
+- (@GermanBluefox) Added the possibility to show or hide elements depending on the states: `dependsOnStates` and the JS variable `_states`
+
 ### 9.0.23 (2026-08-27)
-(@krobipd) Corrected: the object browser stayed empty after closing the object customization dialog if any object was changed while the dialog was open (ioBroker/ioBroker.admin#3391)
-(@krobipd) Changed: `ObjectBrowserClass.subscribes` and `.recordStates` are Sets instead of arrays now
-(@krobipd) Improved: object browser performance on large installations — bursts of object changes cause one tree rebuild instead of several, state-change echoes no longer trigger redraws, subscription bookkeeping is no longer quadratic, and rows outside the viewport skip layout and paint
+- (@krobipd) Corrected: the object browser stayed empty after closing the object customization dialog if any object was changed while the dialog was open (ioBroker/ioBroker.admin#3391)
+- (@krobipd) Changed: `ObjectBrowserClass.subscribes` and `.recordStates` are Sets instead of arrays now
+- (@krobipd) Improved: object browser performance on large installations — bursts of object changes cause one tree rebuild instead of several, state-change echoes no longer trigger redraws, subscription bookkeeping is no longer quadratic, and rows outside the viewport skip layout and paint
 
 ### 9.0.22 (2026-08-21)
 - (@GermanBluefox) Corrected layout of Config view

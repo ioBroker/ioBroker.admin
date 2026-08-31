@@ -100,6 +100,8 @@ import { HostsWorker, type HostEvent, type NotificationAnswer } from './Workers/
 import { AdaptersWorker, type AdapterEvent } from './Workers/AdaptersWorker';
 import { ObjectsWorker } from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
+import type { DiscoveryObject } from './dialogs/GenerateInputsModal';
+import { countUnhandledProposals } from './helpers/discovery';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
 import IsVisible from './components/IsVisible';
 import ChatPanel from './components/Chat/ChatPanel';
@@ -471,6 +473,8 @@ interface AppState {
     wizard: boolean;
     performed: boolean;
     discoveryAlive: boolean;
+    /** Proposals of the last discovery scan that are neither created nor ignored */
+    discoveryProposals: number;
     readTimeoutMs: number;
     showSlowConnectionWarning: boolean;
     versionAdmin: string;
@@ -661,6 +665,7 @@ class App extends Router<AppProps, AppState> {
                 performed: false,
 
                 discoveryAlive: false,
+                discoveryProposals: 0,
 
                 readTimeoutMs: SlowConnectionWarningDialogClass.getReadTimeoutMs(),
                 showSlowConnectionWarning: false,
@@ -1227,6 +1232,15 @@ class App extends Router<AppProps, AppState> {
 
                         void this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
 
+                        // The discovery adapter can scan on a timer and nothing else in admin
+                        // watches that: without this, the result of a nightly scan would sit in
+                        // `system.discovery` until somebody happens to open the dialog.
+                        void this.socket
+                            .getObject('system.discovery')
+                            .then(obj => this.onDiscoveryObject('system.discovery', obj))
+                            .catch(e => console.warn(`Cannot read system.discovery: ${e as string}`));
+                        void this.socket.subscribeObject('system.discovery', this.onDiscoveryObject);
+
                         // Give some time for communication
                         setTimeout(() => this.logsWorkerChanged(this.state.currentHost), 1000);
 
@@ -1283,6 +1297,7 @@ class App extends Router<AppProps, AppState> {
     componentWillUnmount(): void {
         window.removeEventListener('hashchange', this.onHashChanged, false);
         this.socket?.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+        void this.socket?.unsubscribeObject('system.discovery', this.onDiscoveryObject);
 
         this.adaptersWorker?.unregisterRepositoryHandler(this.repoChangeHandler);
         this.adaptersWorker?.unregisterHandler(this.adaptersChangeHandler);
@@ -1511,6 +1526,15 @@ class App extends Router<AppProps, AppState> {
     onDiscoveryAlive = (_name: string, value?: ioBroker.State | null): void => {
         if (!!value?.val !== this.state.discoveryAlive) {
             this.setState({ discoveryAlive: !!value?.val });
+        }
+    };
+
+    onDiscoveryObject = (_id: string, obj?: ioBroker.Object | null): void => {
+        // creating or ignoring a proposal writes this object as well, so the badge counts
+        // itself down while the user works through the dialog
+        const discoveryProposals = countUnhandledProposals(obj as unknown as DiscoveryObject | null);
+        if (discoveryProposals !== this.state.discoveryProposals) {
+            this.setState({ discoveryProposals });
         }
     };
 
@@ -2861,11 +2885,21 @@ class App extends Router<AppProps, AppState> {
                 >
                     {this.state.discoveryAlive ? (
                         <Tooltip
-                            title={I18n.t('Discovery devices')}
+                            title={
+                                this.state.discoveryProposals
+                                    ? `${I18n.t('Discovery devices')} - ${I18n.t('New adapter proposals')}: ${this.state.discoveryProposals}`
+                                    : I18n.t('Discovery devices')
+                            }
                             slotProps={{ popper: { sx: styles.tooltip } }}
                         >
                             <IconButton onClick={() => Router.doNavigate(null, 'discovery')}>
-                                <VisibilityIcon />
+                                <Badge
+                                    badgeContent={this.state.discoveryProposals}
+                                    color="secondary"
+                                    max={99}
+                                >
+                                    <VisibilityIcon />
+                                </Badge>
                             </IconButton>
                         </Tooltip>
                     ) : (
