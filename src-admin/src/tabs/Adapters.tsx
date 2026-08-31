@@ -1318,10 +1318,18 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     filterAdapters(search?: string): void {
         search = search === undefined ? this.state.search : search;
         search = (search || '').toLowerCase().trim();
+        // No search text => no filter (null). An empty object would hide all adapters
         let filteredList: {
             [adapterName: string]: { exact: boolean; type: 'name' | 'desc' | 'title' | 'keywords'; start?: boolean };
-        } = {};
+        } | null = null;
         if (search) {
+            const foundList: {
+                [adapterName: string]: {
+                    exact: boolean;
+                    type: 'name' | 'desc' | 'title' | 'keywords';
+                    start?: boolean;
+                };
+            } = {};
             this.state.categories.forEach(category =>
                 category.adapters.forEach(name => {
                     const adapter = this.state.repository[name];
@@ -1348,18 +1356,17 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     }
 
                     if (name.includes(search)) {
-                        filteredList[name] = { exact: name === search, type: 'name', start: name.startsWith(search) };
+                        foundList[name] = { exact: name === search, type: 'name', start: name.startsWith(search) };
                     } else if (title && typeof title === 'string' && title.toLowerCase().includes(search)) {
-                        filteredList[name] = { exact: false, type: 'title' };
+                        foundList[name] = { exact: false, type: 'title' };
                     } else if (desc && typeof desc === 'string' && desc.toLowerCase().includes(search)) {
-                        filteredList[name] = { exact: false, type: 'desc' };
+                        foundList[name] = { exact: false, type: 'desc' };
                     } else if (adapter.keywords?.find(value => value.includes(search))) {
-                        filteredList[name] = { exact: false, type: 'keywords' };
+                        foundList[name] = { exact: false, type: 'keywords' };
                     }
                 }),
             );
-        } else {
-            filteredList = {};
+            filteredList = foundList;
         }
 
         this.setState({ filteredList, search }, () => {

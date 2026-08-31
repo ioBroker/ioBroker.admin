@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixed: clearing the adapter name filter showed an empty adapter list instead of all adapters
+
 ### 8.0.9 (2026-08-31)
 - (@GermanBluefox) The discovery dialog opens on the result page when the last scan left proposals that are not ignored
 - (@GermanBluefox) The discovery button carries a badge with the number of proposals that are neither created nor ignored
