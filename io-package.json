@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "8.0.10": {
-        "en": "Fixed: clearing the adapter name filter showed an empty adapter list instead of all adapters",
-        "de": "Behoben: Das Löschen des Adapternamenfilters zeigte eine leere Adapterliste anstelle aller Adapter an.",
-        "ru": "Исправлено: при очистке фильтра по имени адаптера отображался пустой список адаптеров вместо всех адаптеров.",
-        "pt": "Corrigido: ao limpar o filtro de nome do adaptador, a lista de adaptadores exibida era vazia em vez de conter todos os adaptadores.",
-        "nl": "Opgelost: het wissen van het filter voor adapternamen toonde een lege lijst met adapters in plaats van alle adapters.",
-        "fr": "Corrigé : la suppression du filtre de nom d'adaptateur affichait une liste d'adaptateurs vide au lieu de la liste complète.",
-        "it": "Risolto: la cancellazione del filtro del nome dell'adattatore mostrava un elenco di adattatori vuoto anziché tutti gli adattatori",
-        "es": "Solucionado: al borrar el filtro de nombre del adaptador, se mostraba una lista de adaptadores vacía en lugar de todos los adaptadores.",
-        "pl": "Naprawiono: wyczyszczenie filtra nazw adapterów powodowało wyświetlanie pustej listy adapterów zamiast wszystkich adapterów",
-        "uk": "Виправлено: очищення фільтра назв адаптерів відображало порожній список адаптерів замість усіх адаптерів.",
-        "zh-cn": "已修复：清除适配器名称筛选器后，显示的是空的适配器列表而不是所有适配器列表。"
-      },
       "8.0.9": {
         "en": "The discovery dialog opens on the result page when the last scan left proposals that are not ignored\nThe discovery button carries a badge with the number of proposals that are neither created nor ignored\nAdded the option to create the first instance directly after the installation from npm/GitHub/URL/file, if the adapter has no instance yet\nUpdated web socket server\nImprovements of the device manager",
         "de": "Der Suchdialog öffnet sich auf der Ergebnisseite, wenn der letzte Scan Vorschläge hinterlassen hat, die nicht ignoriert werden.\nDie Schaltfläche „Entdecken“ zeigt eine Kennung mit der Anzahl der Vorschläge an, die weder erstellt noch ignoriert wurden.\nEs wurde die Option hinzugefügt, die erste Instanz direkt nach der Installation von npm/GitHub/URL/Datei zu erstellen, falls der Adapter noch keine Instanz besitzt.\nAktualisierter WebSocket-Server\nVerbesserungen des Gerätemanagers",

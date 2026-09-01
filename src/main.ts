@@ -49,6 +49,18 @@ const ERROR_PERMISSION = 'permissionError';
 const CURRENT_MAX_MAJOR_NODEJS = 22;
 const CURRENT_MAX_MAJOR_NPM = 10;
 
+/**
+ * Detect whether this process runs on a CI system (GitHub Actions, Travis, AppVeyor or anything else that sets `CI`).
+ * Same detection as used by the Sentry plugin of the js-controller.
+ */
+function isCiSystem(): boolean {
+    const ci = process.env.CI;
+    if (ci && ci !== 'false' && ci !== '0') {
+        return true;
+    }
+    return !!(process.env.GITHUB_ACTIONS || process.env.TRAVIS || process.env.APPVEYOR);
+}
+
 let socket: SocketAdmin;
 let webServer: Web;
 let lastRepoUpdate: number;
@@ -131,6 +143,9 @@ class Admin extends Adapter {
     /** In-process ioBroker/mcp-server connection backing the chat helper. Created on first chat message. */
     private mcpChat: McpClientManager | null = null;
 
+    /** True if the adapter runs on a CI system (GitHub Actions, Travis, AppVeyor, ...). See `sendToHost` */
+    private readonly ciSystem: boolean = isCiSystem();
+
     constructor(options: Partial<AdapterOptions> = {}) {
         options = {
             ...options,
@@ -210,6 +225,11 @@ class Admin extends Adapter {
      * Is called when databases are connected and adapter received configuration.
      */
     onReady = async (): Promise<void> => {
+        if (this.ciSystem) {
+            this.log.info(
+                'CI system detected: requests to hosts that are not running will be answered immediately with a timeout error',
+            );
+        }
         const systemConfig = await this.getForeignObjectAsync('system.config');
         if (systemConfig) {
             systemConfig.native = systemConfig.native || {};
@@ -1666,6 +1686,78 @@ class Admin extends Adapter {
         const hostInfo = await this.sendToHostAsync(this.host, 'getHostInfo', {});
         // @ts-expect-error messages are special and cannot be typed easily
         return hostInfo.NPM;
+    }
+
+    /**
+     * Send a message to a host.
+     *
+     * On CI systems the test frameworks (`@iobroker/testing`, `@iobroker/legacy-testing`) start only the adapters,
+     * but no js-controller host. Requests to the host (`getRepository`, `getInstalled`, `readBaseSettings`, ...)
+     * are then never answered, and the GUI waits for its read timeout (15 seconds) before it continues.
+     * To speed up the CI runs, such requests are answered immediately with a timeout error if the host is not alive.
+     * Outside a CI system this method behaves exactly like `Adapter.sendToHost`.
+     *
+     * @param hostName Name of the host with or without the `system.host.` prefix, or `null` for all hosts
+     * @param command Command for the host
+     * @param message Command-specific message
+     * @param callback Called with the answer of the host
+     */
+    sendToHost(
+        hostName: string | null,
+        message: any,
+        callback?: ioBroker.MessageCallback | ioBroker.MessageCallbackInfo,
+    ): void;
+
+    sendToHost(
+        hostName: string | null,
+        command: string,
+        message: any,
+        callback?: ioBroker.MessageCallback | ioBroker.MessageCallbackInfo,
+    ): void;
+
+    sendToHost(
+        hostName: string | null,
+        command: any,
+        message?: any,
+        callback?: ioBroker.MessageCallback | ioBroker.MessageCallbackInfo,
+    ): void {
+        // The same argument normalization as in the js-controller
+        if (typeof message === 'function' && callback === undefined) {
+            callback = message;
+            message = undefined;
+        }
+        if (message === undefined) {
+            message = command;
+            command = 'send';
+        }
+
+        // Only requests with a callback function can wait for an answer. Broadcasts (hostName === null) are never
+        // answered, and relayed callbacks (objects) are answered by the host directly to the original sender.
+        if (!this.ciSystem || !hostName || typeof callback !== 'function') {
+            super.sendToHost(hostName, command, message, callback);
+            return;
+        }
+
+        const cb = callback;
+        const hostId = hostName.startsWith('system.host.') ? hostName : `system.host.${hostName}`;
+
+        void this.getForeignState(`${hostId}.alive`, (_err, state) => {
+            if (state?.val) {
+                super.sendToHost(hostName, command, message, cb);
+                return;
+            }
+
+            this.log.debug(
+                `[CI] Host "${hostId}" is not alive: request "${command}" is answered immediately with timeout`,
+            );
+
+            // The answers to "getRepository" and "getInstalled" are converted by the compact commands of socket-classes
+            // into a map of adapters without looking at an "error" property. Answer with an empty map there,
+            // so the GUI gets "no adapters" (as after its read timeout) instead of a fake adapter named "error".
+            const answer: unknown =
+                command === 'getRepository' || command === 'getInstalled' ? {} : { error: 'timeout' };
+            cb(answer as ioBroker.Message);
+        });
     }
 
     async checkNodeJsVersion(): Promise<void> {
