@@ -1948,6 +1948,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 9.1.2 (2026-09-01)
+- (@GermanBluefox) Replaced `react-color` with the `ColorPicker` from `@iobroker/gui-components` in the `color` component
+
 ### 9.1.1 (2026-08-31)
 - (@GermanBluefox) Do not show export import on narrow devices
 

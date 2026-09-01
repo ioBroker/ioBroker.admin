@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.11 (2026-09-01)
 - (@GermanBluefox) CI: requests to a host that is not running (e.g. in adapter tests without js-controller) are answered immediately with a timeout error, so the GUI does not wait for its read timeout
 - (@GermanBluefox) Fixed: clearing the adapter name filter showed an empty adapter list instead of all adapters
 
