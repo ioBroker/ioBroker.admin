@@ -415,6 +415,7 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
                 credentialId: settings.credentialId || undefined,
                 baseUrl: settings.baseUrl || undefined,
                 allowSelfSignedCerts: settings.allowSelfSignedCerts,
+                reasoningEffort: settings.reasoningEffort || undefined,
                 mode,
                 approvals,
                 autoApprove: autoApproveList,

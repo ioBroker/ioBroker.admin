@@ -31,6 +31,7 @@ import type {
     ChatProvidersResponse,
     ChatSettingsValue,
     ChatTestResponse,
+    ReasoningEffort,
 } from './chatTypes';
 
 interface ChatSettingsProps {
@@ -53,6 +54,21 @@ const PROVIDERS: { value: AiProvider; label: string; icon?: string }[] = [
     { value: 'deepseek', label: 'DeepSeek', icon: CREDENTIAL_ICON_DATA.deepseek },
     // no brand logo for a generic OpenAI-compatible endpoint — use the "custom" (tune) glyph
     { value: 'custom', label: 'Custom (OpenAI-compatible)' },
+];
+
+/**
+ * How hard the model should think, for the providers that take the parameter.
+ *
+ * The default sends nothing: a hosted reasoning model - one reached through a proxy, for instance -
+ * should decide for itself, and only a small local model profits from having it switched off.
+ */
+const REASONING_EFFORTS: { value: ReasoningEffort; label: string }[] = [
+    { value: '', label: 'Endpoint default' },
+    { value: 'none', label: 'Off (local models)' },
+    { value: 'minimal', label: 'Minimal' },
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
 ];
 
 /** One provider row: its brand logo (or the generic "custom" glyph) followed by the label. */
@@ -265,6 +281,29 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                                 label={I18n.t('Allow self-signed certificates')}
                             />
                         </>
+                    ) : null}
+
+                    {/* Only the OpenAI-compatible endpoints know the parameter */}
+                    {isCustom || value.provider === 'openai' ? (
+                        <FormControl
+                            variant="standard"
+                            fullWidth
+                        >
+                            <InputLabel>{I18n.t('Reasoning effort')}</InputLabel>
+                            <Select
+                                value={value.reasoningEffort}
+                                onChange={e => update({ reasoningEffort: e.target.value })}
+                            >
+                                {REASONING_EFFORTS.map(effort => (
+                                    <MenuItem
+                                        key={effort.value || 'default'}
+                                        value={effort.value}
+                                    >
+                                        {I18n.t(effort.label)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     ) : null}
 
                     <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>

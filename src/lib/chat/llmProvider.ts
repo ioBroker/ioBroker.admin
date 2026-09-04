@@ -20,6 +20,12 @@ import {
 
 export type AiProvider = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'custom';
 
+/**
+ * `reasoning_effort` for the OpenAI-compatible providers. An empty value leaves the parameter out
+ * and lets the endpoint decide - which is what a hosted reasoning model wants.
+ */
+export type ReasoningEffort = '' | 'none' | 'minimal' | 'low' | 'medium' | 'high';
+
 export interface LlmChatParams {
     provider: AiProvider;
     model: string;
@@ -30,6 +36,8 @@ export interface LlmChatParams {
     tools?: OpenAITool[];
     /** Accept self-signed certificates (only relevant for custom https endpoints). */
     allowSelfSignedCerts?: boolean;
+    /** What to ask of the reasoning; empty (the default) sends nothing and leaves it to the endpoint. */
+    reasoningEffort?: ReasoningEffort;
     timeoutMs?: number;
     maxTokens?: number;
 }
@@ -116,9 +124,15 @@ function buildChatRequest(params: LlmChatParams): {
         headers.Authorization = `Bearer ${apiKey}`;
     }
     const base = customBase || OPENAI_BASE;
-    // Local models: switch reasoning off to save context and time. Hosted models: only when they
-    // have already refused tools without it, see `needReasoningEffortNone`.
-    const noReasoning = !!customBase || needReasoningEffortNone.has(`${provider}:${model}`);
+    /*
+     * The reasoning used to be switched off for every custom base URL, to save context and time on a
+     * local model. Behind a proxy that fronts a subscription the same rule turns off the reasoning of
+     * the model one is paying for, so it is a setting now and its default sends nothing at all.
+     *
+     * `needReasoningEffortNone` still overrides it: that one is not a preference but a model saying
+     * it will not accept tools while reasoning, and it is remembered from its own error message.
+     */
+    const effort = needReasoningEffortNone.has(`${provider}:${model}`) ? 'none' : params.reasoningEffort;
     return {
         url: `${base}/chat/completions`,
         headers,
@@ -127,7 +141,7 @@ function buildChatRequest(params: LlmChatParams): {
             messages,
             stream: false,
             ...(tools?.length ? { tools } : {}),
-            ...(noReasoning ? { reasoning_effort: 'none' } : {}),
+            ...(effort ? { reasoning_effort: effort } : {}),
         },
     };
 }

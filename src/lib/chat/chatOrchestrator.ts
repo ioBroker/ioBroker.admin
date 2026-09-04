@@ -12,7 +12,7 @@
  * The LLM never touches ioBroker directly — every action goes through the tool layer.
  */
 import type { McpClientManager, OpenAiFunctionTool } from './mcpClientManager';
-import { chatCompletion, type AiProvider } from './llmProvider';
+import { chatCompletion, type AiProvider, type ReasoningEffort } from './llmProvider';
 import type { OpenAIMessage, OpenAIToolCall } from './anthropicAdapter';
 import {
     ADMIN_LOCAL_TOOL_DEFS,
@@ -59,6 +59,8 @@ export interface OrchestratorRunParams {
     /** UI language, woven into the system prompt. */
     language?: ioBroker.Languages;
     allowSelfSignedCerts?: boolean;
+    /** What to ask of the reasoning; empty (the default) leaves the parameter out entirely. */
+    reasoningEffort?: ReasoningEffort;
     /** Maximum number of tool-call rounds before forcing a final answer (default 8). */
     maxToolRounds?: number;
     /** `read` (default) = read-only; `act` = expose write/action tools (still confirmed per action). */
@@ -381,6 +383,7 @@ export class ChatOrchestrator {
                 messages,
                 tools,
                 allowSelfSignedCerts: params.allowSelfSignedCerts,
+                reasoningEffort: params.reasoningEffort,
             });
 
             // Some models/endpoints emit tool calls as TEXT (the `<invoke …>` format) instead of as
@@ -418,6 +421,7 @@ export class ChatOrchestrator {
             baseUrl: params.baseUrl,
             messages,
             allowSelfSignedCerts: params.allowSelfSignedCerts,
+            reasoningEffort: params.reasoningEffort,
         });
         const finalContent =
             finalResponse.content ||

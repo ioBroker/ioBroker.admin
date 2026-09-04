@@ -4,6 +4,12 @@ import type { AdminConnection } from '@iobroker/gui-components';
 
 export type AiProvider = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'custom';
 
+/**
+ * `reasoning_effort` for the OpenAI-compatible providers, mirroring `ReasoningEffort` of the backend.
+ * Empty leaves the parameter out of the request and lets the endpoint decide.
+ */
+export type ReasoningEffort = '' | 'none' | 'minimal' | 'low' | 'medium' | 'high';
+
 /** Permission mode: `read` = answer/inspect only, `act` = may propose write/action tools. */
 export type ChatMode = 'read' | 'act';
 
@@ -102,6 +108,11 @@ export interface ChatSettingsValue {
     /** Base URL for the OpenAI-compatible/custom endpoint. */
     baseUrl: string;
     allowSelfSignedCerts: boolean;
+    /**
+     * What to ask of the reasoning of an OpenAI-compatible endpoint. Empty - the default - leaves the
+     * parameter out and lets the endpoint decide; `none` is what a small local model wants.
+     */
+    reasoningEffort: ReasoningEffort;
     /** Hide the floating launcher button; reveal it by moving the mouse to the bottom-right corner. */
     hideFab: boolean;
 }
@@ -122,6 +133,7 @@ export const DEFAULT_CHAT_SETTINGS: ChatSettingsValue = {
     credentialId: '',
     baseUrl: '',
     allowSelfSignedCerts: false,
+    reasoningEffort: '',
     hideFab: false,
 };
 

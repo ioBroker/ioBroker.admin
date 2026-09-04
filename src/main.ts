@@ -33,7 +33,7 @@ import {
 import { McpClientManager } from './lib/chat/mcpClientManager';
 import { buildSystemPromptMessage, ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
 import { resolveAiKey } from './lib/chat/credentials';
-import { listModels, type AiProvider } from './lib/chat/llmProvider';
+import { listModels, type AiProvider, type ReasoningEffort } from './lib/chat/llmProvider';
 import type { OpenAIMessage } from './lib/chat/anthropicAdapter';
 import type { AdminAdapterConfig } from './types';
 
@@ -634,6 +634,7 @@ class Admin extends Adapter {
                 credentialId?: string;
                 baseUrl?: string;
                 allowSelfSignedCerts?: boolean;
+                reasoningEffort?: ReasoningEffort;
                 maxToolRounds?: number;
                 mode?: ChatMode;
                 approvals?: Record<string, boolean>;
@@ -667,6 +668,7 @@ class Admin extends Adapter {
                     messages: message.messages,
                     language: systemLanguage,
                     allowSelfSignedCerts: message.allowSelfSignedCerts,
+                    reasoningEffort: message.reasoningEffort,
                     maxToolRounds: message.maxToolRounds,
                     mode: message.mode,
                     approvals: message.approvals,
