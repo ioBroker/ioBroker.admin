@@ -103,6 +103,7 @@ import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import type { DiscoveryObject } from './dialogs/GenerateInputsModal';
 import { countUnhandledProposals } from './helpers/discovery';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from './dialogs/SlowConnectionWarningDialog';
+import TipsDialog from './dialogs/TipsDialog';
 import IsVisible from './components/IsVisible';
 import ChatPanel from './components/Chat/ChatPanel';
 import type { CompactInstanceInfo } from './components/Adapters/AdapterUpdateDialog';
@@ -502,6 +503,8 @@ interface AppState {
         checkNews: ShowMessage[];
         lastNewsId: string | undefined;
     } | null;
+    /** The "Did you know ...?" dialog is open */
+    showTips: boolean;
     askForTokenRefresh: { expireAt: number; resolve: (prolong: boolean) => void; doNotAsk: boolean } | null;
 }
 
@@ -663,6 +666,7 @@ class App extends Router<AppProps, AppState> {
 
                 wizard: true,
                 performed: false,
+                showTips: false,
 
                 discoveryAlive: false,
                 discoveryProposals: 0,
@@ -1175,6 +1179,9 @@ class App extends Router<AppProps, AppState> {
                         try {
                             newState.systemConfig = await this.socket.getCompactSystemConfig();
                             newState.wizard = !newState.systemConfig.common.licenseConfirmed;
+                            // Somebody who has not confirmed the license yet is busy with the wizard,
+                            // and a tip about the object browser would only be in the way there.
+                            newState.showTips = !newState.wizard && !newState.systemConfig.common.tipsDisabled;
                             await this.findCurrentHost(newState);
                             if (newState.currentHost) {
                                 await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
@@ -1773,6 +1780,62 @@ class App extends Router<AppProps, AppState> {
                 }}
             />
         );
+    }
+
+    /** Key under which the tip that was shown the last time is remembered, per browser */
+    static readonly LAST_TIP_ID = 'App.lastTipId';
+
+    renderTipsDialog(): JSX.Element | null {
+        // A tip is the least important thing on the screen. It waits until the dialogs that the start
+        // may bring along are gone, and appears by itself afterwards, as this is rendered again.
+        if (!this.state.showTips || this.state.wizard || this.state.showNews || this.state.showHostWarning) {
+            return null;
+        }
+
+        return (
+            <TipsDialog
+                t={I18n.t}
+                lang={this.state.lang}
+                lastTipId={(window._localStorage || window.localStorage).getItem(App.LAST_TIP_ID)}
+                onClose={(dontShowAgain: boolean, lastTipId: string): void => {
+                    (window._localStorage || window.localStorage).setItem(App.LAST_TIP_ID, lastTipId);
+                    this.setState({ showTips: false });
+
+                    if (dontShowAgain) {
+                        // The flag belongs to the installation and not to the browser, so that the
+                        // dialog stays away on every device. It can be switched on again in the
+                        // system settings.
+                        void this.disableTips();
+                    }
+                }}
+            />
+        );
+    }
+
+    /** Remember in `system.config` that the tips must not be shown at the start any more */
+    async disableTips(): Promise<void> {
+        if (!this.socket) {
+            return;
+        }
+        try {
+            const systemConfig = await this.socket.getSystemConfig(true);
+            if (systemConfig?.common && !systemConfig.common.tipsDisabled) {
+                systemConfig.common.tipsDisabled = true;
+                await this.socket.setSystemConfig(systemConfig);
+            }
+            if (this.state.systemConfig?.common) {
+                // The system settings read the flag from here, so the dialog of this session already
+                // shows the new value
+                this.setState({
+                    systemConfig: {
+                        ...this.state.systemConfig,
+                        common: { ...this.state.systemConfig.common, tipsDisabled: true },
+                    },
+                });
+            }
+        } catch (e) {
+            this.showAlert(`Cannot save system configuration: ${(e as Error).toString()}`, 'error');
+        }
     }
 
     renderSlowConnectionWarning(): JSX.Element | null {
@@ -3430,6 +3493,7 @@ class App extends Router<AppProps, AppState> {
                     {this.showRedirectDialog()}
                     {this.renderSlowConnectionWarning()}
                     {this.renderNewsDialog()}
+                    {this.renderTipsDialog()}
                     {this.renderHostWarningDialog()}
                     {this.renderNotificationsDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (

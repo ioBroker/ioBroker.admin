@@ -1,0 +1,14 @@
+{
+    "expert-mode": "Oko na pasku narzędzi włącza tryb eksperta. Pokazuje obiekty systemowe, dodatkowe ustawienia instancji oraz opcje eksperckie wielu okien dialogowych.",
+    "gui-settings": "Admin zwykle przechowuje własne ustawienia, na przykład wybrane kolumny albo otwarte foldery, w przeglądarce. W ustawieniach systemowych można zapisywać je w ioBrokerze, wtedy każda przeglądarka i każde urządzenie pokazuje to samo.",
+    "object-columns": "Na liście obiektów opcja „Konfiguruj” wyłącza automatyczny dobór kolumn, dzięki czemu można wybrać je samodzielnie. Szerokość zmienia się przeciągając separator w nagłówku, a dwuklik na nim przywraca cały układ.",
+    "object-keyboard": "Na liście obiektów klawisze strzałek przesuwają zaznaczenie, a strzałki w lewo i w prawo zamykają i otwierają folder.",
+    "object-url": "Jeśli wartość stanu jest odnośnikiem, Ctrl i kliknięcie w wartość otwierają go w nowej karcie.",
+    "states-view": "Widok stanów na liście obiektów zastępuje typ, rolę, pomieszczenie i funkcję kolumnami zmienione przez, jakość, znacznik czasu i ostatnia zmiana.",
+    "custom-settings": "Koło zębate obok stanu otwiera jego ustawienia niestandardowe. Tam wskazuje się adapterom zapisu, takim jak History, SQL czy InfluxDB, że mają rejestrować tę wartość.",
+    "alias": "Z każdego stanu można utworzyć alias. Nadaje on stanowi inną nazwę, inną rolę lub inne skalowanie, bez zmieniania czegokolwiek w adapterze.",
+    "log-level": "Poziom logowania pojedynczej instancji można zmienić w trakcie jej działania. Po ponownym uruchomieniu kontrolera obowiązuje znowu zapisany poziom.",
+    "discovery": "Wykrywanie urządzeń przeszukuje sieć w poszukiwaniu urządzeń i usług i proponuje pasujące adaptery.",
+    "auto-upgrade": "Każdy adapter może otrzymać zasadę automatycznej aktualizacji. Wersje poprawkowe lub pomniejsze są wtedy instalowane bez pytania.",
+    "objects-export": "Obiekty można wyeksportować do pliku JSON i ponownie zaimportować, na przykład aby przenieść konfigurację na inną instalację."
+}

@@ -262,6 +262,14 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                 ],
             },
             {
+                id: 'tipsDisabled',
+                title: 'Tips at start',
+                values: [
+                    { id: false, title: 'show (default)' },
+                    { id: true, title: 'do not show' },
+                ],
+            },
+            {
                 id: 'defaultLogLevel',
                 title: 'Default log level',
                 help: 'for new instances',

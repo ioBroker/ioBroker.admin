@@ -1,4 +1,14 @@
 declare global {
+    namespace ioBroker {
+        interface SystemConfigCommon {
+            /**
+             * The "Did you know ...?" dialog is not shown when admin is opened.
+             * It is set by the checkbox in that dialog and can be switched back on in the system settings.
+             */
+            tipsDisabled?: boolean;
+        }
+    }
+
     interface Window {
         CryptoJS: any;
         _localStorage?: Storage;

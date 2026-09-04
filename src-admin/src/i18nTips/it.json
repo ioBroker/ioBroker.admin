@@ -1,0 +1,14 @@
+{
+    "expert-mode": "L'occhio nella barra degli strumenti attiva la modalità esperto. Mostra gli oggetti di sistema, impostazioni aggiuntive di un'istanza e le opzioni esperto di molte finestre.",
+    "gui-settings": "Normalmente admin conserva le proprie impostazioni, come le colonne scelte o le cartelle aperte, nel browser. Nelle impostazioni di sistema è possibile salvarle in ioBroker, così ogni browser e ogni dispositivo mostra le stesse.",
+    "object-columns": "Nell'elenco degli oggetti, \"Configura\" disattiva la scelta automatica delle colonne, così si possono scegliere da soli. La larghezza si cambia trascinando il separatore nell'intestazione e un doppio clic su di esso ripristina l'intero layout.",
+    "object-keyboard": "Nell'elenco degli oggetti i tasti freccia spostano la selezione, mentre le frecce sinistra e destra chiudono e aprono una cartella.",
+    "object-url": "Se il valore di uno stato è un collegamento, Ctrl e un clic sul valore lo aprono in una nuova scheda.",
+    "states-view": "La vista degli stati dell'elenco oggetti sostituisce tipo, ruolo, stanza e funzione con le colonne modificato da, qualità, marca temporale e ultima modifica.",
+    "custom-settings": "L'ingranaggio accanto a uno stato apre le sue impostazioni personalizzate. Lì si indica agli adattatori di registrazione, come History, SQL o InfluxDB, di registrare il valore.",
+    "alias": "Da qualsiasi stato si può creare un alias. Gli assegna un altro nome, un altro ruolo o una diversa scala, senza modificare nulla nell'adattatore.",
+    "log-level": "Il livello di log di una singola istanza può essere modificato mentre è in funzione. Dopo un riavvio del controller torna valido il livello salvato.",
+    "discovery": "Il rilevamento dispositivi cerca nella rete dispositivi e servizi e propone gli adattatori adatti.",
+    "auto-upgrade": "Ogni adattatore può ricevere una politica di aggiornamento automatico. Le versioni di correzione o minori vengono così installate senza chiedere.",
+    "objects-export": "Gli oggetti possono essere esportati in un file JSON e importati di nuovo, ad esempio per portare una configurazione su un'altra installazione."
+}
