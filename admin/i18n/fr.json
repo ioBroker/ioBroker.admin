@@ -92,5 +92,8 @@
     "tooltip_secure": "Activer le protocole SSL. L'administration sera disponible uniquement via https:// et non http://",
     "tooltip_thresholdValue": "Si le navigateur reçoit trop d'événements en 3 secondes, la mise à jour sera arrêtée",
     "tooltip_ttl": "Passé ce délai, l'utilisateur sera automatiquement déconnecté.",
-    "users permissions": "Autorisations des utilisateurs"
+    "users permissions": "Autorisations des utilisateurs",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "s. Durée de validité du jeton d'accès, renouvelé automatiquement tant que l'admin est ouvert",
+    "Stay logged in for": "Rester connecté pendant",
+    "days": "jours"
 }

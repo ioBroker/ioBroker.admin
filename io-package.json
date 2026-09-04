@@ -240,6 +240,7 @@
     "certPrivate": "",
     "certChained": "",
     "ttl": 3600,
+    "refreshTokenTtlDays": 7,
     "defaultUser": "admin",
     "tmpPath": "/tmp",
     "tmpPathAllow": false,

@@ -92,5 +92,8 @@
     "tooltip_secure": "Abilita il protocollo SSL. L'amministratore sarà disponibile tramite https: // e non più con http: //",
     "tooltip_thresholdValue": "Se il browser riceve troppi eventi in 3 secondi, l'aggiornamento verrà interrotto",
     "tooltip_ttl": "Timeout di login. Dopo questo tempo l'utente sarà disconnesso automaticamente.",
-    "users permissions": "Permessi degli utenti"
+    "users permissions": "Permessi degli utenti",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "sec. Validità del token di accesso, rinnovato automaticamente finché l'admin è aperto",
+    "Stay logged in for": "Rimani connesso per",
+    "days": "giorni"
 }

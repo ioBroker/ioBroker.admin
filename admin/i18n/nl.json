@@ -92,5 +92,8 @@
     "tooltip_secure": "Schakel SSL-protocol in. Beheerpagina is beschikbaar via https: // en niet http: //",
     "tooltip_thresholdValue": "Als de browser te veel gebeurtenissen binnen 3 seconden ontvangt, wordt de update gestopt",
     "tooltip_ttl": "Time-out aanmelding. Na deze tijd zal de gebruiker automatisch uitloggen.",
-    "users permissions": "gebruikersrechten"
+    "users permissions": "gebruikersrechten",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "sec. Levensduur van het toegangstoken, wordt automatisch verlengd zolang de admin geopend is",
+    "Stay logged in for": "Aangemeld blijven gedurende",
+    "days": "dagen"
 }

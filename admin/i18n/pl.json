@@ -92,5 +92,8 @@
     "tooltip_secure": "Włącz protokół SSL. Administrator będzie dostępny przez https: //, a nie http: //",
     "tooltip_thresholdValue": "jeśli przeglądarka otrzyma zbyt wiele zdarzeń w ciągu 3 sekund, aktualizacja zostanie zatrzymana",
     "tooltip_ttl": "Limit czasu logowania. Po tym czasie użytkownik zostanie automatycznie wylogowany.",
-    "users permissions": "uprawnienia użytkowników"
+    "users permissions": "uprawnienia użytkowników",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "sek. Ważność tokenu dostępu, odnawiany automatycznie, dopóki admin jest otwarty",
+    "Stay logged in for": "Pozostań zalogowany przez",
+    "days": "dni"
 }

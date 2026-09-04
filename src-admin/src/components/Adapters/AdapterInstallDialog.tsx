@@ -136,6 +136,16 @@ export type AdaptersContext = {
     hostAdapterWorker: HostAdapterWorker;
 };
 
+/**
+ * Everything {@link AdapterInstallDialog.getDependencies} needs to judge the dependencies of an
+ * adapter. It is a part of the context, so that the adapters tab can pass its state directly and
+ * both the dependency list and the enabled state of the update button come from the same place.
+ */
+export type DependenciesContext = Pick<
+    AdaptersContext,
+    'repository' | 'installed' | 'installedGlobal' | 'installedGlobalHosts' | 'nodeJsVersion'
+>;
+
 export interface AdapterInstallDialogProps {
     noTranslation: boolean;
 }
@@ -323,23 +333,29 @@ export default abstract class AdapterInstallDialog<
         }
     }
 
-    static getDependencies(adapterName: string, context: AdaptersContext): AdapterDependencies[] {
+    static getDependencies(adapterName: string, context: DependenciesContext): AdapterDependencies[] {
         const adapter = context.repository[adapterName];
         const result: AdapterDependencies[] = [];
 
         if (adapter) {
-            if (adapter.dependencies && !Array.isArray(adapter.dependencies)) {
-                adapter.dependencies = [adapter.dependencies];
-            }
-
-            if (adapter.globalDependencies && !Array.isArray(adapter.globalDependencies)) {
-                adapter.globalDependencies = [adapter.globalDependencies];
-            }
+            // An old repository may deliver a single object instead of a list. It is normalized here
+            // and not written back, because this runs for every adapter of the list while it is
+            // rendered, and the repository of the state must not be changed on the way.
+            const dependencies = adapter.dependencies
+                ? Array.isArray(adapter.dependencies)
+                    ? adapter.dependencies
+                    : [adapter.dependencies]
+                : [];
+            const globalDependencies = adapter.globalDependencies
+                ? Array.isArray(adapter.globalDependencies)
+                    ? adapter.globalDependencies
+                    : [adapter.globalDependencies]
+                : [];
 
             const nodeVersion = adapter.node;
 
-            if (adapter.dependencies?.length) {
-                for (const dependency of adapter.dependencies) {
+            if (dependencies.length) {
+                for (const dependency of dependencies) {
                     const entry: AdapterDependencies = {
                         name: '',
                         version: null,
@@ -375,8 +391,8 @@ export default abstract class AdapterInstallDialog<
                 }
             }
 
-            if (adapter.globalDependencies?.length) {
-                for (const dependency of adapter.globalDependencies) {
+            if (globalDependencies.length) {
+                for (const dependency of globalDependencies) {
                     const entry: AdapterDependencies = {
                         name: '',
                         version: null,
@@ -438,14 +454,14 @@ export default abstract class AdapterInstallDialog<
                 }
             }
 
-            const dependencies: Record<string, string> = adapter.ifInstalledDependencies || {};
+            const ifInstalledDependencies: Record<string, string> = adapter.ifInstalledDependencies || {};
 
-            if (dependencies && typeof dependencies === 'object' && !Array.isArray(dependencies)) {
-                const adapters = Object.keys(dependencies);
+            if (typeof ifInstalledDependencies === 'object' && !Array.isArray(ifInstalledDependencies)) {
+                const adapters = Object.keys(ifInstalledDependencies);
                 for (const a of adapters) {
                     const entry: AdapterDependencies = {
                         name: a,
-                        version: dependencies[a],
+                        version: ifInstalledDependencies[a],
                         installed: false,
                         installedVersion: null,
                         rightVersion: false,

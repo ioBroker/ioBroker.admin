@@ -92,5 +92,8 @@
     "tooltip_secure": "SSL Verschlüsselung aktivieren. Die Admin-Oberfläche ist unter https:// und nicht mehr unter http:// erreichbar",
     "tooltip_thresholdValue": "Wenn der Browser in 3 Sekunden zu viele Ereignisse empfängt, wird das Aktualisieren der Daten vorübergehend beendet",
     "tooltip_ttl": "Nach dieser Zeit wird ein inaktiver Benutzer ausgeloggt.",
-    "users permissions": "Benutzerberechtigungen"
+    "users permissions": "Benutzerberechtigungen",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "Sek. Gültigkeit des Access-Tokens, wird automatisch verlängert, solange der Admin geöffnet ist",
+    "Stay logged in for": "Angemeldet bleiben für",
+    "days": "Tage"
 }

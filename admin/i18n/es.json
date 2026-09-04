@@ -92,5 +92,8 @@
     "tooltip_secure": "Habilite el protocolo SSL. El administrador estará disponible a través de https: // y no http: //",
     "tooltip_thresholdValue": "Si el explorador recibe muchos eventos en 3 segundos, se detiene la actualización",
     "tooltip_ttl": "Tiempo de espera de inicio de sesión. Después de ese tiempo, el usuario se desconectar automáticamente.",
-    "users permissions": "permisos de usuario"
+    "users permissions": "permisos de usuario",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "seg. Validez del token de acceso, se renueva automáticamente mientras el admin está abierto",
+    "Stay logged in for": "Mantener la sesión iniciada durante",
+    "days": "días"
 }

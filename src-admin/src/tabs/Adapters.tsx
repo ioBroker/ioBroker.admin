@@ -1,5 +1,4 @@
 import React, { createRef, type JSX } from 'react';
-import semver from 'semver';
 
 import {
     Grid,
@@ -1086,97 +1085,17 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         });
     }
 
-    rightDependencies = (adapterName: string): boolean => {
-        const adapter = this.state.repository[adapterName];
-        let result = true;
-
-        if (adapter) {
-            const dependencies = adapter.dependencies;
-            const nodeVersion = adapter.node;
-
-            if (dependencies) {
-                if (dependencies instanceof Array) {
-                    dependencies.forEach(dependency => {
-                        const checkVersion = typeof dependency !== 'string';
-                        const keys = Object.keys(dependency);
-                        const name = !checkVersion ? dependency : keys ? keys[0] : null;
-
-                        if (result && name) {
-                            const installed = this.state.installed[name];
-
-                            try {
-                                result = installed
-                                    ? checkVersion
-                                        ? semver.satisfies(installed.version, dependency[name], {
-                                              includePrerelease: true,
-                                          })
-                                        : true
-                                    : false;
-                            } catch {
-                                result = true;
-                            }
-                        }
-                    });
-                } else if (typeof dependencies === 'object') {
-                    // back compatibility
-                    const _deps: { [_adapterName: string]: string } = dependencies;
-                    Object.keys(_deps).forEach(_adapterName => {
-                        if (_adapterName && _deps[_adapterName] !== undefined && result) {
-                            const installed = this.state.installed[_adapterName];
-                            const checkVersion = typeof _deps[_adapterName] === 'string';
-                            try {
-                                result = installed
-                                    ? checkVersion
-                                        ? semver.satisfies(installed.version, _deps[_adapterName], {
-                                              includePrerelease: true,
-                                          })
-                                        : true
-                                    : false;
-                            } catch {
-                                result = true;
-                            }
-                        }
-                    });
-                } else {
-                    console.error(
-                        `[ADAPTERS] Invalid dependencies for ${adapterName}: ${JSON.stringify(dependencies)}`,
-                    );
-                }
-            }
-
-            const ifDependencies: Record<string, string> = adapter.ifInstalledDependencies || {};
-
-            if (ifDependencies && typeof ifDependencies === 'object' && !Array.isArray(ifDependencies)) {
-                const adapters = Object.keys(ifDependencies);
-
-                adapters.forEach(name => {
-                    if (result && name) {
-                        const installed = this.state.installed[name];
-
-                        try {
-                            result = installed
-                                ? semver.satisfies(installed.version, ifDependencies[name], {
-                                      includePrerelease: true,
-                                  })
-                                : true;
-                        } catch {
-                            result = true;
-                        }
-                    }
-                });
-            }
-
-            if (result && nodeVersion) {
-                try {
-                    result = semver.satisfies(this.state.nodeJsVersion, nodeVersion);
-                } catch {
-                    result = true;
-                }
-            }
-        }
-
-        return result;
-    };
+    /**
+     * Whether every dependency of the adapter is fulfilled.
+     *
+     * The answer comes from the same function that builds the dependency list of the update dialog,
+     * so the list and the enabled state of the update button can never disagree. The check of its
+     * own that stood here knew neither `globalDependencies` (where an adapter declares which admin
+     * version it needs) nor the other hosts of a multihost setup, so an update was offered although
+     * the dialog showed the dependency in red.
+     */
+    rightDependencies = (adapterName: string): boolean =>
+        AdapterInstallDialog.getDependencies(adapterName, this.state).every(dependency => dependency.rightVersion);
 
     rightOs(adapterName: string): boolean {
         const adapter = this.state.repository[adapterName];

@@ -572,6 +572,8 @@ export default class Web {
             this.server.app.use(compression());
 
             this.settings.ttl = Math.round(this.settings.ttl) || 3_600;
+            // Days a login is renewed without a password, i.e. the lifetime of the refresh token
+            this.settings.refreshTokenTtlDays = Math.round(this.settings.refreshTokenTtlDays) || 7;
             this.settings.accessAllowedConfigs ||= [];
             this.settings.accessAllowedTabs ||= [];
 
@@ -698,7 +700,7 @@ export default class Web {
                     app: this.server.app,
                     secure: this.settings.secure,
                     accessLifetime: this.settings.ttl,
-                    refreshLifetime: 60 * 60 * 24 * 7, // 1 week (Maybe adjustable?)
+                    refreshLifetime: this.settings.refreshTokenTtlDays * 24 * 60 * 60,
                     noBasicAuth: this.settings.noBasicAuth,
                     loginPage: (req: Request): string => {
                         const isDev = req.url.includes('?dev');
@@ -719,25 +721,25 @@ export default class Web {
                 });
 
                 this.server.app.get('/session', (req: Request, res: Response): void => {
-                    if (req.headers.cookie) {
-                        const cookies = req.headers.cookie.split(';').find(c => c.trim().startsWith('access_token='));
-                        let tokenCookie = cookies?.split('=')[1];
-                        if (!tokenCookie && req.headers.authorization?.startsWith('Bearer ')) {
-                            tokenCookie = req.headers.authorization.split(' ')[1];
-                        } else if (!tokenCookie && req.query?.token) {
-                            tokenCookie = req.query.token as string;
-                        }
+                    let accessToken = req.headers.cookie
+                        ?.split(';')
+                        .find(c => c.trim().startsWith('access_token='))
+                        ?.split('=')[1];
+                    if (!accessToken && req.headers.authorization?.startsWith('Bearer ')) {
+                        accessToken = req.headers.authorization.split(' ')[1];
+                    } else if (!accessToken && req.query?.token) {
+                        accessToken = req.query.token as string;
+                    }
 
-                        if (tokenCookie) {
-                            void this.adapter.getSession(`a:${tokenCookie[1]}`, (token: InternalStorageToken): void => {
-                                if (!token?.user) {
-                                    res.json({ expireInSec: 0 });
-                                } else {
-                                    res.json({ expireInSec: Math.round((token.aExp - Date.now()) / 1000) });
-                                }
-                            });
-                            return;
-                        }
+                    if (accessToken) {
+                        void this.adapter.getSession(`a:${accessToken}`, (token: InternalStorageToken): void => {
+                            if (!token?.user) {
+                                res.json({ expireInSec: 0 });
+                            } else {
+                                res.json({ expireInSec: Math.round((token.aExp - Date.now()) / 1000) });
+                            }
+                        });
+                        return;
                     }
 
                     res.json({ error: 'Cannot find session' });

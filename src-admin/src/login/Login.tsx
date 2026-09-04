@@ -139,7 +139,11 @@ export default class Login extends Component<object, LoginState> {
         this.passwordRef = React.createRef();
     }
 
-    static async processTokenAnswer(stayLoggedIn: boolean, response: Response): Promise<boolean> {
+    static async processTokenAnswer(
+        stayLoggedIn: boolean,
+        response: Response,
+        usedRefreshToken?: string,
+    ): Promise<boolean> {
         if (response.ok) {
             const data: OAuth2Response = await response.json();
 
@@ -147,27 +151,43 @@ export default class Login extends Component<object, LoginState> {
                 // Save expiration time of access token and refresh token
                 // Next loaded page with socket will take the ownership of the tokens
                 Connection.saveTokensStatic(data, stayLoggedIn);
-
-                // Get href from origin
-                // Extract from the URL like "http://localhost:8084/login?href=http://localhost:63342/ioBroker.socketio/example/index.html?_ijt=nqn3c1on9q44elikut4rgr23j8&_ij_reload=RELOAD_ON_SAVE" the href
-                const urlObj = new URL(window.location.href);
-                const href = urlObj.searchParams.get('href');
-                let origin;
-                if (href) {
-                    origin = href;
-                    if (origin.startsWith('#')) {
-                        origin = `./${origin}`;
-                    }
-                } else {
-                    origin = './';
-                }
-                window.location.href = origin;
+                Login.redirectBack();
                 return true;
             }
         }
+
+        // A refresh token can be used only once. When the refresh failed because another tab has renewed
+        // the tokens in the meantime, the stored ones are fresh and must not be thrown away - that would
+        // log out every tab although the user is signed in.
+        if (usedRefreshToken) {
+            const current = Connection.readTokens();
+            if (current?.refresh_token && current.refresh_token !== usedRefreshToken) {
+                Login.redirectBack();
+                return true;
+            }
+        }
+
         Connection.deleteTokensStatic();
 
         return false;
+    }
+
+    /** Go back to the page the user came from */
+    private static redirectBack(): void {
+        // Get href from origin
+        // Extract from the URL like "http://localhost:8084/login?href=http://localhost:63342/ioBroker.socketio/example/index.html?_ijt=nqn3c1on9q44elikut4rgr23j8&_ij_reload=RELOAD_ON_SAVE" the href
+        const urlObj = new URL(window.location.href);
+        const href = urlObj.searchParams.get('href');
+        let origin;
+        if (href) {
+            origin = href;
+            if (origin.startsWith('#')) {
+                origin = `./${origin}`;
+            }
+        } else {
+            origin = './';
+        }
+        window.location.href = origin;
     }
 
     private authenticateWithRefreshToken(): boolean {
@@ -182,7 +202,7 @@ export default class Login extends Component<object, LoginState> {
                 body: `grant_type=refresh_token&refresh_token=${tokens.refresh_token}&stayloggedin=${tokens.stayLoggedIn}&client_id=ioBroker`,
             })
                 .then(async response => {
-                    if (!(await Login.processTokenAnswer(tokens.stayLoggedIn, response))) {
+                    if (!(await Login.processTokenAnswer(tokens.stayLoggedIn, response, tokens.refresh_token))) {
                         this.setState({
                             inProcess: false,
                             loggingIn: false,

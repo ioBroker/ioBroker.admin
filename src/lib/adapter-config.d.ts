@@ -38,6 +38,8 @@ declare global {
             tmpPath: string;
             tmpPathAllow: boolean;
             ttl: number;
+            /** Days a login is renewed without a password (lifetime of the refresh token) */
+            refreshTokenTtlDays: number;
             /** If the experimental SSO feature is enabled */
             ssoActive: boolean;
             disableMcp?: boolean;

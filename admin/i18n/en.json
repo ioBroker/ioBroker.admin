@@ -92,5 +92,8 @@
   "tooltip_secure": "Enable SSL protocol. Admin will be available via https:// and not http://",
   "tooltip_thresholdValue": "If the browser receives too many events and data updates within 3 seconds, the data refresh will be temporarily stopped",
   "tooltip_ttl": "Login Session duration. After this time the user will be logged off automatically.",
-  "users permissions": "Users permissions"
+  "users permissions": "Users permissions",
+  "sec. Lifetime of the access token, renewed automatically while the admin is open": "sec. Lifetime of the access token, renewed automatically while the admin is open",
+  "Stay logged in for": "Stay logged in for",
+  "days": "days"
 }

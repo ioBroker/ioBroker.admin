@@ -91,11 +91,79 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 [Older changelog](CHANGELOG_OLD.md)
 
+## Dependencies between the ioBroker packages
+Admin is two npm projects: the backend in `package.json` (runs in Node.js) and the frontend in `src-admin/package.json`
+(bundled by vite into `www/`). The `@iobroker/*` packages nest like this (versions as of admin 8.0.11):
+
+```
+ioBroker.admin
+├── Backend (package.json, Node.js)
+│   ├── @iobroker/adapter-core          adapter API (peers: @iobroker/types, @iobroker/js-controller-common-db)
+│   ├── @iobroker/webserver             HTTP(S) server, certificates, OAuth2 login: /oauth/token, access_token cookie
+│   ├── @iobroker/ws-server             WebSocket server: upgrade request, its authentication, message framing
+│   ├── @iobroker/socket-classes        socket commands, permissions, token/session check of every command
+│   │   └── @iobroker/adapter-core
+│   ├── @iobroker/mcp-server            MCP endpoint of the AI assistant
+│   │   ├── @iobroker/type-detector
+│   │   └── @iobroker/webserver@2       its own, older copy (not the one above)
+│   ├── @iobroker/plugin-docker
+│   │   └── @iobroker/plugin-base
+│   └── dev only
+│       ├── @iobroker/ws                browser WebSocket client; `npm run build` copies build/esm/socket.io.min.js
+│       │                               to src-admin/public/lib/js/socket.io.js, served as lib/js/socket.io.js
+│       ├── @iobroker/types, @iobroker/dm-utils (-> adapter-core), @iobroker/build-tools
+│       └── @iobroker/eslint-config, @iobroker/testing, @iobroker/legacy-testing
+└── Frontend (src-admin/package.json, browser)
+    ├── @iobroker/gui-components        React components (formerly adapter-react-v5), I18n, themes
+    │   ├── @iobroker/socket-client     Connection/AdminConnection: commands over the socket, token storage and refresh
+    │   │   └── @iobroker/ws            at runtime only: the global `io` from lib/js/socket.io.js, no npm dependency
+    │   ├── @iobroker/type-detector
+    │   └── @iobroker/types, @iobroker/js-controller-common(-db)   types and helpers only
+    ├── @iobroker/json-config           JSON config renderer (admin settings and every adapter settings page)
+    │   └── @iobroker/gui-components
+    ├── @iobroker/dm-gui-components     device manager tab
+    │   ├── @iobroker/gui-components
+    │   └── @iobroker/json-config
+    └── dev only: @iobroker/socket-client (listed directly, must match the version gui-components uses), @iobroker/dm-utils
+```
+
+The login and the session live in four places: `@iobroker/webserver` issues the tokens and sets the cookie,
+`@iobroker/ws-server` and `@iobroker/socket-classes` check the token when the socket connects and on every command,
+`@iobroker/socket-client` refreshes the token in the browser, and `src-admin/src/login/Login.tsx` is the login page.
+
+Which packages have to be published and bumped after a change (each step: publish, then raise the version in the
+next package):
+
+| Changed package               | Then update, in this order                                                                                                                                         |
+|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `@iobroker/ws` (client)       | admin `package.json` (dev). `npm run build` copies it into `src-admin/public/lib/js/socket.io.js`                                                                  |
+| `@iobroker/ws-server`         | admin `package.json`                                                                                                                                               |
+| `@iobroker/socket-classes`    | admin `package.json` (also ioBroker.web, ioBroker.socketio, ioBroker.ws)                                                                                           |
+| `@iobroker/webserver`         | admin `package.json` (also ioBroker.web; `@iobroker/mcp-server` carries its own copy)                                                                              |
+| `@iobroker/adapter-core`      | admin `package.json`, `@iobroker/socket-classes`, `@iobroker/dm-utils`                                                                                             |
+| `@iobroker/socket-client`     | `@iobroker/gui-components` -> `@iobroker/json-config` and `@iobroker/dm-gui-components` -> `src-admin/package.json` (both the direct entry and the three packages) |
+| `@iobroker/gui-components`    | `@iobroker/json-config` -> `@iobroker/dm-gui-components` -> `src-admin/package.json` (all three)                                                                   |
+| `@iobroker/json-config`       | `@iobroker/dm-gui-components` -> `src-admin/package.json` (both)                                                                                                   |
+| `@iobroker/dm-gui-components` | `src-admin/package.json`                                                                                                                                           |
+
+The frontend packages must end up with one copy each: if `src-admin/package.json` and `@iobroker/json-config` ask for
+ranges of `@iobroker/gui-components` that do not overlap, vite bundles two copies and React contexts, I18n and themes
+break in the parts that got the second copy. The same holds for `@iobroker/socket-client`.
+
 ## Changelog
 <!--
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixed: the admin sent the user to the login page and sometimes logged them out for good, when the access token expired while the browser tab was in the background. The refresh timer of a hidden tab fires late, and the server cut the connection the very second the token expired. Together with the new `@iobroker/socket-classes` and `@iobroker/socket-client` the connection now refreshes the token when the server asks for it, and a refresh that was already done by another tab is no longer mistaken for an invalid login
+- (@GermanBluefox) Fixed: the login page threw the stored tokens away when its token refresh failed because another tab had renewed them in the meantime, which logged out every tab
+- (@GermanBluefox) Added the setting "Stay logged in for" (days). Until now the login without a password was renewed for one week at most
+- (@GermanBluefox) Fixed: `/session` always reported an expired session, as it looked up the second character of the access token instead of the token
+- (@GermanBluefox) The help text of "Login timeout" explains that the value is the lifetime of the access token, which is renewed automatically while the admin is open
+- (@GermanBluefox) Fixed with the new `@iobroker/gui-components`: the object browser lost the column widths as soon as the objects page was left and opened again, the checkboxes of the states view columns had no effect while "Auto" was off, the buttons column could not be resized, and switching "Auto" off left the table with nothing but the ID column after a reload: https://github.com/ioBroker/ioBroker.admin/issues/3616
+- (@GermanBluefox) Fixed: an adapter could be updated although a dependency was not fulfilled. The update dialog showed the dependency in red, but the check behind the button did not know `globalDependencies`, where an adapter declares which admin version it needs. Both now come from the same place, which also covers the other hosts of a multihost setup: https://github.com/ioBroker/ioBroker.admin/issues/3614
+
 ### 8.0.11 (2026-09-01)
 - (@GermanBluefox) CI: requests to a host that is not running (e.g. in adapter tests without js-controller) are answered immediately with a timeout error, so the GUI does not wait for its read timeout
 - (@GermanBluefox) Fixed: clearing the adapter name filter showed an empty adapter list instead of all adapters

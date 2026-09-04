@@ -92,5 +92,8 @@
     "tooltip_secure": "Активировать протокол SSL. Сайт будет доступен по https:// , а не по http://",
     "tooltip_thresholdValue": "если браузер получает слишком много событий за 3 секунды, обновление будет остановлено",
     "tooltip_ttl": "По прошествии этого времени при бездействии пользователь будет разлогинен.",
-    "users permissions": "Права доступа"
+    "users permissions": "Права доступа",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "сек. Время жизни токена доступа, продлевается автоматически, пока admin открыт",
+    "Stay logged in for": "Оставаться в системе в течение",
+    "days": "дней"
 }

@@ -92,5 +92,8 @@
     "tooltip_secure": "启用SSL协议。admin界面将通过https://而不是http://访问",
     "tooltip_thresholdValue": "如果浏览器在3秒内收到太多事件，将停止刷新",
     "tooltip_ttl": "登录超时时间。超时后用户将自动注销。",
-    "users permissions": "用户权限"
+    "users permissions": "用户权限",
+    "sec. Lifetime of the access token, renewed automatically while the admin is open": "秒。访问令牌的有效期，管理界面打开期间会自动续期",
+    "Stay logged in for": "保持登录状态",
+    "days": "天"
 }
