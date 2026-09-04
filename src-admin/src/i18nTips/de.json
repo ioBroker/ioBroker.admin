@@ -9,6 +9,6 @@
     "alias": "Aus jedem Zustand lässt sich ein Alias erzeugen. Er gibt dem Zustand einen anderen Namen, eine andere Rolle oder Skalierung, ohne im Adapter etwas zu ändern.",
     "log-level": "Die Protokollstufe einer einzelnen Instanz lässt sich im laufenden Betrieb ändern. Nach einem Neustart des Controllers gilt wieder die gespeicherte Stufe.",
     "discovery": "Die Geräteerkennung durchsucht das Netzwerk nach Geräten und Diensten und schlägt die passenden Adapter vor. Dafür muss der Discovery-Adapter installiert sein.",
-    "auto-upgrade": "Jeder Adapter kann eine Richtlinie für automatische Updates bekommen. Patch- oder Minor-Versionen werden dann ohne Nachfrage installiert.",
+    "auto-upgrade": "Adapter lassen sich so konfigurieren, dass kleinere Fehlerbehebungen und Funktionsupdates vollautomatisch eingespielt werden. Größere Versionssprünge mit potenziellen Änderungen erfordern weiterhin eine manuelle Bestätigung.",
     "objects-export": "Objekte lassen sich in eine JSON-Datei exportieren und wieder importieren, etwa um eine Konfiguration auf eine andere Installation zu übertragen."
 }

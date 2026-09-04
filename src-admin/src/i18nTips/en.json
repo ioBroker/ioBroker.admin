@@ -9,6 +9,6 @@
     "alias": "An alias can be created from any state. It gives the state another name, role or scaling, without changing anything in the adapter.",
     "log-level": "The log level of a single instance can be changed while it runs. After a restart of the controller the saved level is used again.",
     "discovery": "The device discovery searches the network for devices and services and proposes the adapters that fit them. This requires the Discovery adapter to be installed.",
-    "auto-upgrade": "Every adapter can get an auto upgrade policy. Patch or minor versions are then installed without asking.",
+    "auto-upgrade": "Adapters can be configured so that smaller bug fixes and feature updates are installed fully automatically. Larger version jumps with potentially breaking changes still require a manual confirmation.",
     "objects-export": "Objects can be exported into a JSON file and imported again, for example to move a configuration to another installation."
 }

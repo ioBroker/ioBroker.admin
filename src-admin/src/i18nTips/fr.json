@@ -9,6 +9,6 @@
     "alias": "Un alias peut être créé à partir de n'importe quel état. Il lui donne un autre nom, un autre rôle ou une autre mise à l'échelle, sans rien changer dans l'adaptateur.",
     "log-level": "Le niveau de journalisation d'une instance peut être modifié pendant son fonctionnement. Après un redémarrage du contrôleur, le niveau enregistré s'applique de nouveau.",
     "discovery": "La détection d'appareils parcourt le réseau à la recherche d'appareils et de services et propose les adaptateurs correspondants. Pour cela, l'adaptateur Discovery doit être installé.",
-    "auto-upgrade": "Chaque adaptateur peut recevoir une politique de mise à jour automatique. Les versions correctives ou mineures sont alors installées sans demander.",
+    "auto-upgrade": "Les adaptateurs peuvent être configurés pour que les petites corrections d'erreurs et les mises à jour fonctionnelles soient installées de façon entièrement automatique. Les changements de version majeurs, susceptibles d'apporter des modifications importantes, nécessitent toujours une confirmation manuelle.",
     "objects-export": "Les objets peuvent être exportés dans un fichier JSON puis réimportés, par exemple pour transférer une configuration vers une autre installation."
 }

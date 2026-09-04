@@ -9,6 +9,6 @@
     "alias": "Da qualsiasi stato si può creare un alias. Gli assegna un altro nome, un altro ruolo o una diversa scala, senza modificare nulla nell'adattatore.",
     "log-level": "Il livello di log di una singola istanza può essere modificato mentre è in funzione. Dopo un riavvio del controller torna valido il livello salvato.",
     "discovery": "Il rilevamento dispositivi cerca nella rete dispositivi e servizi e propone gli adattatori adatti. A tal fine deve essere installato l'adattatore Discovery.",
-    "auto-upgrade": "Ogni adattatore può ricevere una politica di aggiornamento automatico. Le versioni di correzione o minori vengono così installate senza chiedere.",
+    "auto-upgrade": "Gli adattatori possono essere configurati in modo che le piccole correzioni di errori e gli aggiornamenti funzionali vengano installati in modo completamente automatico. I salti di versione più importanti, con possibili modifiche rilevanti, richiedono ancora una conferma manuale.",
     "objects-export": "Gli oggetti possono essere esportati in un file JSON e importati di nuovo, ad esempio per portare una configurazione su un'altra installazione."
 }

@@ -9,6 +9,6 @@
     "alias": "Z każdego stanu można utworzyć alias. Nadaje on stanowi inną nazwę, inną rolę lub inne skalowanie, bez zmieniania czegokolwiek w adapterze.",
     "log-level": "Poziom logowania pojedynczej instancji można zmienić w trakcie jej działania. Po ponownym uruchomieniu kontrolera obowiązuje znowu zapisany poziom.",
     "discovery": "Wykrywanie urządzeń przeszukuje sieć w poszukiwaniu urządzeń i usług i proponuje pasujące adaptery. Wymaga to zainstalowanego adaptera Discovery.",
-    "auto-upgrade": "Każdy adapter może otrzymać zasadę automatycznej aktualizacji. Wersje poprawkowe lub pomniejsze są wtedy instalowane bez pytania.",
+    "auto-upgrade": "Adaptery można skonfigurować tak, aby drobne poprawki błędów i aktualizacje funkcji były instalowane w pełni automatycznie. Większe skoki wersji, które mogą wprowadzać istotne zmiany, nadal wymagają ręcznego potwierdzenia.",
     "objects-export": "Obiekty można wyeksportować do pliku JSON i ponownie zaimportować, na przykład aby przenieść konfigurację na inną instalację."
 }

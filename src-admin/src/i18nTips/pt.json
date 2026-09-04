@@ -9,6 +9,6 @@
     "alias": "A partir de qualquer estado pode criar-se um alias. Ele dá ao estado outro nome, outro papel ou outra escala, sem alterar nada no adaptador.",
     "log-level": "O nível de registo de uma instância pode ser alterado enquanto ela corre. Após um reinício do controlador volta a valer o nível guardado.",
     "discovery": "A deteção de dispositivos procura na rede dispositivos e serviços e propõe os adaptadores correspondentes. Para isso, o adaptador Discovery tem de estar instalado.",
-    "auto-upgrade": "Cada adaptador pode receber uma política de atualização automática. As versões de correção ou menores são então instaladas sem perguntar.",
+    "auto-upgrade": "Os adaptadores podem ser configurados para que as pequenas correções de erros e as atualizações de funcionalidades sejam instaladas de forma totalmente automática. Os saltos de versão maiores, com possíveis alterações relevantes, continuam a exigir uma confirmação manual.",
     "objects-export": "Os objetos podem ser exportados para um ficheiro JSON e importados de novo, por exemplo para levar uma configuração para outra instalação."
 }

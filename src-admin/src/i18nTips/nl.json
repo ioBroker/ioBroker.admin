@@ -9,6 +9,6 @@
     "alias": "Van elke state kun je een alias maken. Die geeft de state een andere naam, rol of schaling, zonder iets in de adapter te wijzigen.",
     "log-level": "Het logniveau van een enkele instantie kan tijdens het draaien worden gewijzigd. Na een herstart van de controller geldt weer het opgeslagen niveau.",
     "discovery": "De apparaatdetectie doorzoekt het netwerk op apparaten en diensten en stelt de passende adapters voor. Daarvoor moet de Discovery-adapter geïnstalleerd zijn.",
-    "auto-upgrade": "Elke adapter kan een beleid voor automatische updates krijgen. Patch- of minorversies worden dan zonder vragen geïnstalleerd.",
+    "auto-upgrade": "Adapters kunnen zo worden ingesteld dat kleinere foutoplossingen en functie-updates volledig automatisch worden geïnstalleerd. Grotere versiesprongen met mogelijke ingrijpende wijzigingen vragen nog steeds om een handmatige bevestiging.",
     "objects-export": "Objecten kunnen naar een JSON-bestand worden geëxporteerd en weer geïmporteerd, bijvoorbeeld om een configuratie naar een andere installatie te brengen."
 }
