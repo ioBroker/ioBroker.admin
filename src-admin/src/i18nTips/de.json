@@ -1,14 +1,14 @@
 {
-    "expert-mode": "Das Auge in der Werkzeugleiste schaltet den Expertenmodus ein. Er zeigt die System-Objekte, zusätzliche Einstellungen einer Instanz und die Expertenoptionen vieler Dialoge.",
+    "expert-mode": "Das Auge 👁 in der Werkzeugleiste schaltet den Expertenmodus ein. Er zeigt die System-Objekte, zusätzliche Einstellungen einer Instanz und die Expertenoptionen vieler Dialoge.",
     "gui-settings": "Der Admin merkt sich seine eigenen Einstellungen, etwa die gewählten Spalten oder die geöffneten Ordner, normalerweise im Browser. In den Systemeinstellungen kann man sie stattdessen in ioBroker ablegen, dann sieht jeder Browser und jedes Gerät dasselbe.",
     "object-columns": "In der Objektliste schaltet \"Konfigurieren\" die automatische Spaltenauswahl aus, dann kann man die Spalten selbst wählen. Die Breite ändert man am Trenner in der Kopfzeile, ein Doppelklick darauf setzt die ganze Aufteilung zurück.",
     "object-keyboard": "In der Objektliste bewegen die Pfeiltasten die Auswahl, der linke und der rechte Pfeil schließen und öffnen einen Ordner.",
     "object-url": "Wenn der Wert eines Zustands ein Link ist, öffnet Strg und ein Klick auf den Wert ihn in einem neuen Tab.",
     "states-view": "Die Zustandsansicht der Objektliste ersetzt Typ, Rolle, Raum und Funktion durch die Spalten Geändert von, Qualität, Zeitstempel und Letzte Änderung.",
-    "custom-settings": "Das Zahnrad hinter einem Zustand öffnet dessen kundenspezifische Einstellungen. Dort wird den aufzeichnenden Adaptern wie History, SQL oder InfluxDB gesagt, dass sie den Wert protokollieren sollen.",
+    "custom-settings": "Das Zahnrad hinter einem Zustand öffnet dessen kundenspezifische Einstellungen. Dort ergänzt jeder Adapter, der sie unterstützt, seine eigenen adapterspezifischen Optionen – die aufzeichnenden Adapter History, SQL oder InfluxDB sind nur das bekannteste Beispiel.",
     "alias": "Aus jedem Zustand lässt sich ein Alias erzeugen. Er gibt dem Zustand einen anderen Namen, eine andere Rolle oder Skalierung, ohne im Adapter etwas zu ändern.",
     "log-level": "Die Protokollstufe einer einzelnen Instanz lässt sich im laufenden Betrieb ändern. Nach einem Neustart des Controllers gilt wieder die gespeicherte Stufe.",
-    "discovery": "Die Geräteerkennung durchsucht das Netzwerk nach Geräten und Diensten und schlägt die passenden Adapter vor.",
+    "discovery": "Die Geräteerkennung durchsucht das Netzwerk nach Geräten und Diensten und schlägt die passenden Adapter vor. Dafür muss der Discovery-Adapter installiert sein.",
     "auto-upgrade": "Jeder Adapter kann eine Richtlinie für automatische Updates bekommen. Patch- oder Minor-Versionen werden dann ohne Nachfrage installiert.",
     "objects-export": "Objekte lassen sich in eine JSON-Datei exportieren und wieder importieren, etwa um eine Konfiguration auf eine andere Installation zu übertragen."
 }

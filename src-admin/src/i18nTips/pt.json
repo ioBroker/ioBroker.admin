@@ -1,14 +1,14 @@
 {
-    "expert-mode": "O olho na barra de ferramentas ativa o modo especialista. Ele mostra os objetos de sistema, definições adicionais de uma instância e as opções de especialista de muitos diálogos.",
+    "expert-mode": "O olho 👁 na barra de ferramentas ativa o modo especialista. Ele mostra os objetos de sistema, definições adicionais de uma instância e as opções de especialista de muitos diálogos.",
     "gui-settings": "Normalmente o admin guarda as suas próprias definições, como as colunas escolhidas ou as pastas abertas, no navegador. Nas definições do sistema pode guardá-las no ioBroker, e então todos os navegadores e dispositivos mostram o mesmo.",
     "object-columns": "Na lista de objetos, \"Configurar\" desliga a seleção automática de colunas, permitindo escolher as colunas manualmente. A largura muda-se arrastando o separador no cabeçalho, e um duplo clique sobre ele repõe todo o layout.",
     "object-keyboard": "Na lista de objetos as teclas de seta movem a seleção, e as setas para a esquerda e para a direita fecham e abrem uma pasta.",
     "object-url": "Se o valor de um estado for uma ligação, Ctrl e um clique sobre o valor abrem-na num novo separador.",
     "states-view": "A vista de estados da lista de objetos substitui tipo, papel, divisão e função pelas colunas alterado por, qualidade, data e hora e última alteração.",
-    "custom-settings": "A roda dentada ao lado de um estado abre as suas definições personalizadas. Aí indica-se aos adaptadores de registo, como History, SQL ou InfluxDB, que devem registar o valor.",
+    "custom-settings": "A roda dentada ao lado de um estado abre as suas definições personalizadas. Aí cada adaptador que as suporta acrescenta as suas próprias opções; os adaptadores de registo History, SQL ou InfluxDB são apenas o exemplo mais conhecido.",
     "alias": "A partir de qualquer estado pode criar-se um alias. Ele dá ao estado outro nome, outro papel ou outra escala, sem alterar nada no adaptador.",
     "log-level": "O nível de registo de uma instância pode ser alterado enquanto ela corre. Após um reinício do controlador volta a valer o nível guardado.",
-    "discovery": "A deteção de dispositivos procura na rede dispositivos e serviços e propõe os adaptadores correspondentes.",
+    "discovery": "A deteção de dispositivos procura na rede dispositivos e serviços e propõe os adaptadores correspondentes. Para isso, o adaptador Discovery tem de estar instalado.",
     "auto-upgrade": "Cada adaptador pode receber uma política de atualização automática. As versões de correção ou menores são então instaladas sem perguntar.",
     "objects-export": "Os objetos podem ser exportados para um ficheiro JSON e importados de novo, por exemplo para levar uma configuração para outra instalação."
 }

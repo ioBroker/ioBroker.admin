@@ -1,14 +1,14 @@
 {
-    "expert-mode": "The eye in the toolbar switches the expert mode on. It shows the system objects, additional settings of an instance and the expert options of many dialogs.",
+    "expert-mode": "The eye 👁 in the toolbar switches the expert mode on. It shows the system objects, additional settings of an instance and the expert options of many dialogs.",
     "gui-settings": "Admin normally keeps its own settings, like the selected columns or the opened folders, in the browser. In the system settings you can store them in ioBroker instead, so every browser and every device shows the same.",
     "object-columns": "In the objects list, \"Configure\" switches the automatic column selection off, so you can choose the columns yourself. A column is resized by dragging the separator in the header, and a double click on the separator resets the whole layout.",
     "object-keyboard": "In the objects list the arrow keys move the selection, and the left and right arrow close and open a folder.",
     "object-url": "If the value of a state is a link, Ctrl and a click on the value open it in a new tab.",
     "states-view": "The states view of the objects list replaces type, role, room and function with the columns changed from, quality, timestamp and last change.",
-    "custom-settings": "The gear behind a state opens its custom settings. There the recording adapters, like History, SQL or InfluxDB, are told to log the value.",
+    "custom-settings": "The gear behind a state opens its custom settings. Every adapter that supports them adds its own adapter-specific options there – the recording adapters History, SQL or InfluxDB are only the best known example.",
     "alias": "An alias can be created from any state. It gives the state another name, role or scaling, without changing anything in the adapter.",
     "log-level": "The log level of a single instance can be changed while it runs. After a restart of the controller the saved level is used again.",
-    "discovery": "The device discovery searches the network for devices and services and proposes the adapters that fit them.",
+    "discovery": "The device discovery searches the network for devices and services and proposes the adapters that fit them. This requires the Discovery adapter to be installed.",
     "auto-upgrade": "Every adapter can get an auto upgrade policy. Patch or minor versions are then installed without asking.",
     "objects-export": "Objects can be exported into a JSON file and imported again, for example to move a configuration to another installation."
 }

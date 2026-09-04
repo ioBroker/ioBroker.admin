@@ -1,14 +1,14 @@
 {
-    "expert-mode": "L'œil dans la barre d'outils active le mode expert. Il affiche les objets système, des réglages supplémentaires d'une instance et les options expert de nombreuses boîtes de dialogue.",
+    "expert-mode": "L'œil 👁 dans la barre d'outils active le mode expert. Il affiche les objets système, des réglages supplémentaires d'une instance et les options expert de nombreuses boîtes de dialogue.",
     "gui-settings": "Admin conserve normalement ses propres réglages, comme les colonnes choisies ou les dossiers ouverts, dans le navigateur. Dans les réglages système, vous pouvez les enregistrer dans ioBroker, et tous les navigateurs et appareils affichent alors la même chose.",
     "object-columns": "Dans la liste des objets, « Configurer » désactive la sélection automatique des colonnes, ce qui permet de les choisir soi-même. La largeur se modifie en tirant le séparateur de l'en-tête, un double-clic dessus réinitialise toute la disposition.",
     "object-keyboard": "Dans la liste des objets, les touches fléchées déplacent la sélection, et les flèches gauche et droite ferment et ouvrent un dossier.",
     "object-url": "Si la valeur d'un état est un lien, Ctrl et un clic sur la valeur l'ouvrent dans un nouvel onglet.",
     "states-view": "La vue des états de la liste des objets remplace type, rôle, pièce et fonction par les colonnes modifié par, qualité, horodatage et dernière modification.",
-    "custom-settings": "L'engrenage derrière un état ouvre ses réglages personnalisés. C'est là que l'on demande aux adaptateurs d'enregistrement, comme History, SQL ou InfluxDB, de journaliser la valeur.",
+    "custom-settings": "L'engrenage derrière un état ouvre ses réglages personnalisés. Chaque adaptateur qui les prend en charge y ajoute ses propres options ; les adaptateurs d'enregistrement History, SQL ou InfluxDB n'en sont que l'exemple le plus connu.",
     "alias": "Un alias peut être créé à partir de n'importe quel état. Il lui donne un autre nom, un autre rôle ou une autre mise à l'échelle, sans rien changer dans l'adaptateur.",
     "log-level": "Le niveau de journalisation d'une instance peut être modifié pendant son fonctionnement. Après un redémarrage du contrôleur, le niveau enregistré s'applique de nouveau.",
-    "discovery": "La détection d'appareils parcourt le réseau à la recherche d'appareils et de services et propose les adaptateurs correspondants.",
+    "discovery": "La détection d'appareils parcourt le réseau à la recherche d'appareils et de services et propose les adaptateurs correspondants. Pour cela, l'adaptateur Discovery doit être installé.",
     "auto-upgrade": "Chaque adaptateur peut recevoir une politique de mise à jour automatique. Les versions correctives ou mineures sont alors installées sans demander.",
     "objects-export": "Les objets peuvent être exportés dans un fichier JSON puis réimportés, par exemple pour transférer une configuration vers une autre installation."
 }

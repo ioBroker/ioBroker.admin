@@ -24,8 +24,8 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/gui-components": "^10.2.2",
         "@iobroker/dm-gui-components": "^10.0.21",
+        "@iobroker/gui-components": "^10.2.2",
         "@iobroker/json-config": "^9.1.2",
         "ace-builds": "^1.44.0",
         "remark-gfm": "^4.0.1"
@@ -37,7 +37,7 @@
         "@iobroker/dm-utils": "^3.2.0",
         "@iobroker/socket-client": "^5.2.3",
         "@module-federation/runtime": "^2.9.0",
-        "@module-federation/vite": "^1.21.3",
+        "@module-federation/vite": "1.21.2",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^3.0.0",
         "@tsconfig/node20": "^20.1.10",
@@ -73,8 +73,8 @@
         "react-dnd-multi-backend": "^9.0.0",
         "react-dnd-preview": "^9.0.0",
         "react-dnd-touch-backend": "^16.0.1",
-        "react-dropzone": "^20.1.1",
         "react-dom": "^19.2.8",
+        "react-dropzone": "^20.1.1",
         "react-icons": "^5.7.0",
         "react-leaflet": "^5.0.0",
         "react-markdown": "^10.1.0",

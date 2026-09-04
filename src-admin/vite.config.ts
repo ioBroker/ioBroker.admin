@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import commonjs from 'vite-plugin-commonjs';
+// NOTE: @module-federation/vite is pinned to an exact version in package.json.
+// 1.21.3 hangs forever on `vite build`: a single JS thread spins at 100% CPU after the
+// "moduleParseIdleTimeout ... forcing resolve" warning and the build never emits anything.
+// 1.21.1 and 1.21.2 both complete in ~1 min. Verify a build before lifting the pin.
 import { federation } from '@module-federation/vite';
 import { resolve } from 'node:path';
 import { moduleFederationShared } from '@iobroker/gui-components/modulefederation.admin.config';

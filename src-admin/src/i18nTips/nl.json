@@ -1,14 +1,14 @@
 {
-    "expert-mode": "Het oog in de werkbalk schakelt de expertmodus in. Die toont de systeemobjecten, extra instellingen van een instantie en de expertopties van veel dialoogvensters.",
+    "expert-mode": "Het oog 👁 in de werkbalk schakelt de expertmodus in. Die toont de systeemobjecten, extra instellingen van een instantie en de expertopties van veel dialoogvensters.",
     "gui-settings": "Admin bewaart zijn eigen instellingen, zoals de gekozen kolommen of de geopende mappen, normaal in de browser. In de systeeminstellingen kun je ze in plaats daarvan in ioBroker opslaan, dan tonen alle browsers en apparaten hetzelfde.",
     "object-columns": "In de objectenlijst schakelt \"Configureren\" de automatische kolomkeuze uit, zodat je de kolommen zelf kunt kiezen. De breedte wijzig je met de scheiding in de kopregel, een dubbelklik daarop zet de hele indeling terug.",
     "object-keyboard": "In de objectenlijst verplaatsen de pijltoetsen de selectie, en de linker- en rechterpijl sluiten en openen een map.",
     "object-url": "Als de waarde van een state een link is, opent Ctrl met een klik op de waarde die link in een nieuw tabblad.",
     "states-view": "De statenweergave van de objectenlijst vervangt type, rol, ruimte en functie door de kolommen gewijzigd door, kwaliteit, tijdstempel en laatste wijziging.",
-    "custom-settings": "Het tandwiel achter een state opent de aangepaste instellingen. Daar geef je opnemende adapters zoals History, SQL of InfluxDB de opdracht de waarde te loggen.",
+    "custom-settings": "Het tandwiel achter een state opent de aangepaste instellingen. Daar voegt elke adapter die ze ondersteunt zijn eigen adapterspecifieke opties toe; opnemende adapters zoals History, SQL of InfluxDB zijn slechts het bekendste voorbeeld.",
     "alias": "Van elke state kun je een alias maken. Die geeft de state een andere naam, rol of schaling, zonder iets in de adapter te wijzigen.",
     "log-level": "Het logniveau van een enkele instantie kan tijdens het draaien worden gewijzigd. Na een herstart van de controller geldt weer het opgeslagen niveau.",
-    "discovery": "De apparaatdetectie doorzoekt het netwerk op apparaten en diensten en stelt de passende adapters voor.",
+    "discovery": "De apparaatdetectie doorzoekt het netwerk op apparaten en diensten en stelt de passende adapters voor. Daarvoor moet de Discovery-adapter geïnstalleerd zijn.",
     "auto-upgrade": "Elke adapter kan een beleid voor automatische updates krijgen. Patch- of minorversies worden dan zonder vragen geïnstalleerd.",
     "objects-export": "Objecten kunnen naar een JSON-bestand worden geëxporteerd en weer geïmporteerd, bijvoorbeeld om een configuratie naar een andere installatie te brengen."
 }

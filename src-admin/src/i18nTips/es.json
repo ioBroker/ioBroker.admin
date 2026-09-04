@@ -1,14 +1,14 @@
 {
-    "expert-mode": "El ojo de la barra de herramientas activa el modo experto. Muestra los objetos del sistema, ajustes adicionales de una instancia y las opciones de experto de muchos diálogos.",
+    "expert-mode": "El ojo 👁 de la barra de herramientas activa el modo experto. Muestra los objetos del sistema, ajustes adicionales de una instancia y las opciones de experto de muchos diálogos.",
     "gui-settings": "Normalmente admin guarda sus propios ajustes, como las columnas elegidas o las carpetas abiertas, en el navegador. En los ajustes del sistema puedes guardarlos en ioBroker, y así todos los navegadores y dispositivos muestran lo mismo.",
     "object-columns": "En la lista de objetos, \"Configurar\" desactiva la selección automática de columnas para poder elegirlas uno mismo. El ancho se cambia arrastrando el separador de la cabecera, y un doble clic sobre él restablece toda la disposición.",
     "object-keyboard": "En la lista de objetos las teclas de flecha mueven la selección, y las flechas izquierda y derecha cierran y abren una carpeta.",
     "object-url": "Si el valor de un estado es un enlace, Ctrl y un clic sobre el valor lo abren en una pestaña nueva.",
     "states-view": "La vista de estados de la lista de objetos sustituye tipo, rol, habitación y función por las columnas cambiado desde, calidad, marca de tiempo y último cambio.",
-    "custom-settings": "El engranaje junto a un estado abre sus ajustes personalizados. Ahí se indica a los adaptadores de registro, como History, SQL o InfluxDB, que guarden el valor.",
+    "custom-settings": "El engranaje junto a un estado abre sus ajustes personalizados. Ahí cada adaptador que los admite añade sus propias opciones específicas; los adaptadores de registro History, SQL o InfluxDB son solo el ejemplo más conocido.",
     "alias": "A partir de cualquier estado se puede crear un alias. Le da otro nombre, otro rol u otra escala, sin cambiar nada en el adaptador.",
     "log-level": "El nivel de registro de una instancia se puede cambiar mientras está en marcha. Tras reiniciar el controlador vuelve a aplicarse el nivel guardado.",
-    "discovery": "La detección de dispositivos busca en la red dispositivos y servicios y propone los adaptadores adecuados.",
+    "discovery": "La detección de dispositivos busca en la red dispositivos y servicios y propone los adaptadores adecuados. Para ello es necesario tener instalado el adaptador Discovery.",
     "auto-upgrade": "Cada adaptador puede recibir una política de actualización automática. Las versiones de parche o menores se instalan entonces sin preguntar.",
     "objects-export": "Los objetos se pueden exportar a un archivo JSON e importar de nuevo, por ejemplo para llevar una configuración a otra instalación."
 }
