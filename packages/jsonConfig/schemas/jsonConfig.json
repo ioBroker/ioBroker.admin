@@ -1553,6 +1553,14 @@
           "type": "number",
           "minimum": 0
         },
+        "ack": {
+          "description": "Write the value as acknowledged. By default, the control writes a command (`false`), so that the adapter reacts to it",
+          "type": "boolean"
+        },
+        "highlight": {
+          "description": "Highlight the line on mouse over",
+          "type": "boolean"
+        },
         "options": {
           "description": "Options for `select` in form `[\"value1\", \"value2\", ...]` or `[{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]`. If not defiled, the `common.states` in the object must exist.",
           "type": "array",
@@ -2895,16 +2903,19 @@
                   "type": "object",
                   "properties": {
                     "color": {
-                      "description": "Optional color",
-                      "type": "string",
-                      "enum": [
-                        "primary",
-                        "secondary"
-                      ]
+                      "description": "Optional color: any CSS color, or `primary`/`secondary` for the colors of the theme",
+                      "type": "string"
                     },
                     "height": {
-                      "description": "Optional height",
-                      "type": "number"
+                      "description": "Optional height: a number in pixels or any CSS length, like `1px`",
+                      "oneOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
                     },
                     "attr": true,
                     "label": true,
@@ -6764,6 +6775,14 @@
                       "type": "number",
                       "minimum": 0
                     },
+                    "ack": {
+                      "description": "Write the value as acknowledged. By default, the control writes a command (`false`), so that the adapter reacts to it",
+                      "type": "boolean"
+                    },
+                    "highlight": {
+                      "description": "Highlight the line on mouse over",
+                      "type": "boolean"
+                    },
                     "options": {
                       "description": "Options for `select` in form `[\"value1\", \"value2\", ...]` or `[{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]`. If not defiled, the `common.states` in the object must exist.",
                       "type": "array",
@@ -7111,6 +7130,10 @@
         },
         "$schema": {
           "description": "Specify a JSON schema",
+          "type": "string"
+        },
+        "command": {
+          "description": "Only for a JSON tab (`common.adminTab.link`): the message that is sent to the instance as the tab is opened. Ignored in `jsonConfig.json`",
           "type": "string"
         },
         "i18n": {
@@ -7787,16 +7810,19 @@
                     "type": "object",
                     "properties": {
                       "color": {
-                        "description": "Optional color",
-                        "type": "string",
-                        "enum": [
-                          "primary",
-                          "secondary"
-                        ]
+                        "description": "Optional color: any CSS color, or `primary`/`secondary` for the colors of the theme",
+                        "type": "string"
                       },
                       "height": {
-                        "description": "Optional height",
-                        "type": "number"
+                        "description": "Optional height: a number in pixels or any CSS length, like `1px`",
+                        "oneOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
                       },
                       "label": true,
                       "type": true,
@@ -10413,6 +10439,7 @@
       "os": true,
       "notOs": true,
       "docker": true,
+      "command": true,
       "items": true,
       "iconPosition": true,
       "tabsStyle": true
@@ -10450,6 +10477,7 @@
       "os": true,
       "notOs": true,
       "docker": true,
+      "command": true,
       "items": true
     },
     "$ref": "#/definitions/topLevelProperties"

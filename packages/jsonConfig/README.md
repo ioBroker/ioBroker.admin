@@ -802,6 +802,12 @@ Button to open a JSON(5) editor. JSON5 is supported from admin version 5.7.3
 | `doNotApplyWithError`  | Do not allow to save the value if error in JSON or JSON5 (From 7.5.3)                   |
 | `readOnly`             | Open the editor in read-only mode - editor can be opened but content cannot be modified |
 
+The editor itself does not belong to this library: the host hands it in with the property `AceEditor`
+of `JsonConfig` / `JsonConfigComponent`. `react-ace` brings the whole `ace-builds` with it, and it
+would otherwise land in every bundle that uses this library, custom components of adapters included,
+although only three of the sixty controls ever show an editor. Without it the field falls back to a
+plain text area, which can still be read and written.
+
 ### `yamlEditor`
 
 Button to open a YAML editor with syntax validation. (From admin version 7.7.30)
@@ -931,10 +937,10 @@ allow the user to select a date input the returned string is a parseable date st
 
 horizontal line
 
-| Property | Description                                      |
-|----------|--------------------------------------------------|
-| `height` | optional height                                  |
-| `color`  | optional divider color or `primary`, `secondary` |
+| Property | Description                                                       |
+|----------|-------------------------------------------------------------------|
+| `height` | optional height: a number in pixels or any CSS length, like `1px` |
+| `color`  | optional divider color: any CSS color, or `primary`, `secondary`  |
 
 ### `header`
 
@@ -1367,6 +1373,8 @@ Special input for ports. It checks automatically if the port is used by other in
 | `setOnEnterKey`   | The value in this case will be sent only when the "Enter" button is pressed. It can be combined with `showEnterButton`                                                                               |
 | `options`         | Options for `select` in form `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1", "color": "red"}, "value2", ...]`. If not defiled, the `common.states` in the object must exist.  |
 | `digits`          | Number of decimal places to display for numeric values in `text`/`html` mode (e.g. `2` turns `230.2764537654374` into `230.28`)                                                                      |
+| `ack`             | Write the value as acknowledged. A control writes a command by default (`false`), so that the adapter reacts to it                                                                                   |
+| `highlight`       | Highlight the line on mouse over                                                                                                                                                                     |
 
 ### `staticInfo`
 
@@ -1948,6 +1956,14 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.0.0 (2026-09-04)
+
+- (@GermanBluefox) The schema allows the root property `command` of a JSON tab now. It was documented and honoured by admin, but every `jsonTab.json5` that uses it was reported as invalid: https://github.com/ioBroker/ioBroker.admin/issues/3610
+- (@GermanBluefox) The schema of `divider` accepts any CSS color and a height as a CSS length, as the control has always rendered them. Until now only `primary`/`secondary` and a number were allowed
+- (@GermanBluefox) Added `ack` to the `state` control: the value is written as a command (`ack: false`) by default, as before, and an adapter that only shows its own value can now ask for an acknowledged write
+- (@GermanBluefox) Added `highlight` to the `state` control, which highlights the line on mouse over, like `staticInfo` already did
+- (@GermanBluefox) **Breaking for hosts:** `react-ace` is not a dependency of this library anymore. The host hands the editor in with the new property `AceEditor` of `JsonConfig` / `JsonConfigComponent`, together with the modes `json`, `json5`, `yaml` and the themes `clouds_midnight`, `chrome`. Without it the editors are plain text areas. Until now every bundle that uses this library carried the whole `ace-builds` along, the custom components of all adapters included
+
 ### 9.1.2 (2026-09-01)
 - (@GermanBluefox) Replaced `react-color` with the `ColorPicker` from `@iobroker/gui-components` in the `color` component
 
