@@ -20,6 +20,7 @@ import { DialogConfirm, type IobTheme } from '@iobroker/gui-components';
 import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobroker/json-config';
 import AdminUtils from '@/helpers/AdminUtils';
 import type { BasicComponentProps } from '@/types';
+import AceEditor from '@/components/AceEditor';
 
 const styles: Record<string, React.CSSProperties> = {
     paper: {
@@ -789,6 +790,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                         }
                                     });
                                 }}
+                                AceEditor={AceEditor}
                             />
                         ) : null}
 

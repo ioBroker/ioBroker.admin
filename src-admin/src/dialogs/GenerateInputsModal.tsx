@@ -8,6 +8,8 @@ import { I18n, type AdminConnection, type ThemeName, type ThemeType, type IobThe
 
 import { type ConfigItemPanel, ConfigPanel } from '@iobroker/json-config';
 
+import AceEditor from '../components/AceEditor';
+
 const styles: Record<string, React.CSSProperties> = {
     root: {
         // backgroundColor: theme.palette.background.paper,
@@ -303,6 +305,8 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                                     adapterName: 'dummy',
                                     _themeName: themeName,
                                     systemConfig,
+                                    // the library does not bring the code editor, the host provides it
+                                    AceEditor,
                                 }}
                                 data={schemaData}
                                 themeName={themeName}

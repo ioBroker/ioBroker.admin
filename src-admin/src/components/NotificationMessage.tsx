@@ -18,6 +18,8 @@ import {
     JsonConfigComponent,
 } from '@iobroker/json-config';
 
+import AceEditor from './AceEditor';
+
 const styles: Record<string, any> = {
     message: {
         position: 'relative',
@@ -292,6 +294,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     theme={this.props.theme}
                     isFloatComma={this.props.isFloatComma}
                     dateFormat={this.props.dateFormat}
+                    AceEditor={AceEditor}
                 />
             </>
         );

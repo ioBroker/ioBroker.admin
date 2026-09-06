@@ -15,6 +15,7 @@ import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import AdminUtils from '@/helpers/AdminUtils';
 import { adminHref } from '@/helpers/utils';
 import type { CompactHost } from '@/types';
+import AceEditor from '@/components/AceEditor';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -249,6 +250,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     withoutSaveButtons
                     expertMode={this.props.expertMode}
                     DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
+                    AceEditor={AceEditor}
                 />
             );
         }

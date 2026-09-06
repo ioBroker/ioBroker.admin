@@ -62,6 +62,7 @@ import {
 import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '@iobroker/json-config';
 
 import Editor from '../Editor';
+import AceEditor from '../AceEditor';
 
 const styles: Record<string, any> = {
     divWithoutTitle: {
@@ -1013,6 +1014,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                         this.setState({ customError: error });
                     }
                 }}
+                AceEditor={AceEditor}
             />
         );
     }

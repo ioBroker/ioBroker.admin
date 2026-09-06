@@ -52,6 +52,7 @@ import DeviceManager from '@iobroker/dm-gui-components';
 
 import AdminUtils from '../helpers/AdminUtils';
 import { adminHref } from '../helpers/utils';
+import AceEditor from '../components/AceEditor';
 
 const arrayLogLevel: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 
@@ -470,6 +471,7 @@ class Config extends Component<ConfigProps, ConfigState> {
                     configStored={this.props.configStored}
                     t={this.props.t}
                     DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
+                    AceEditor={AceEditor}
                 />
             );
         }

@@ -1,18 +1,7 @@
 import React, { Component, type JSX } from 'react';
 
-import AceEditor from 'react-ace';
-import 'ace-builds/src-min-noconflict/mode-json';
-import 'ace-builds/src-min-noconflict/mode-json5';
-import 'ace-builds/src-min-noconflict/mode-xml';
-import 'ace-builds/src-min-noconflict/mode-html';
-// The `worker-*` files are web worker scripts: they bail out immediately when loaded in a window
-// (`if (typeof e.window != 'undefined' && e.document) return;`), so importing them here never did
-// anything. As ES modules `this` is `undefined` instead of the global, which made them throw
-// "Cannot read properties of undefined (reading 'window')" and blocked the whole app from starting.
-// Ace loads its workers over `ace.config.setModuleUrl()` when they are actually wanted.
-import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-min-noconflict/theme-chrome';
-import 'ace-builds/src-min-noconflict/ext-language_tools';
+// `AceEditor` brings the modes and themes with it, see there
+import AceEditor from './AceEditor';
 
 import type { ThemeType } from '@iobroker/gui-components';
 
