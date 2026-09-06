@@ -803,6 +803,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const inputOutput = this.getInputOutput(id);
             const modeSchedule = InstanceGeneric.isModeSchedule(instance.obj);
             const memoryLimitMB = InstanceGeneric.getMemoryLimitMB(instance.obj);
+            // Case-insensitively, as js-controller compares it: `platform` is hand-written in every
+            // io-package.json and already carries the wrong case in the wild.
+            const isPython = instance.obj.common.platform?.toLowerCase() === 'python';
 
             const checkSentry = InstanceGeneric.getSentrySettings(instance.obj); // is it possible to enable/disable sentry for this adapter
             const currentSentry = this.isSentry(id);
@@ -836,6 +839,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 modeSchedule,
                 checkSentry,
                 memoryLimitMB,
+                isPython,
                 port,
                 stoppedWhenWebExtension: instance.stoppedWhenWebExtension,
                 allowInstanceSettings: this.props.repository[instance.adapter]

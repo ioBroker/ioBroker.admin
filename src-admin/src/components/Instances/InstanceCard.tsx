@@ -222,7 +222,10 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                             <div style={styles.displayFlex}>{this.renderInputOutput()}</div>
                         )}
 
-                        {this.props.context.expertMode && <div style={styles.displayFlex}>{this.renderRamLimit()}</div>}
+                        {/* Node.js only -- see InstanceItem.isPython. */}
+                        {this.props.context.expertMode && !item.isPython && (
+                            <div style={styles.displayFlex}>{this.renderRamLimit()}</div>
+                        )}
 
                         <div style={styles.displayFlex}>{this.renderLogLevel()}</div>
 
@@ -232,9 +235,11 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                             <div style={styles.displayFlex}>{this.renderRestartSchedule()}</div>
                         )}
 
-                        {this.props.context.expertMode && item.checkCompact && item.compact && item.supportCompact && (
-                            <div style={styles.displayFlex}>{this.renderCompactGroup()}</div>
-                        )}
+                        {this.props.context.expertMode &&
+                            !item.isPython &&
+                            item.checkCompact &&
+                            item.compact &&
+                            item.supportCompact && <div style={styles.displayFlex}>{this.renderCompactGroup()}</div>}
 
                         {this.props.context.expertMode && <div style={styles.displayFlex}>{this.renderTier()}</div>}
 
@@ -273,7 +278,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                         <div style={styles.displayFlex}>{this.renderSentry()}</div>
                     )}
 
-                    {item.supportCompact && this.props.context.expertMode && item.checkCompact && (
+                    {item.supportCompact && !item.isPython && this.props.context.expertMode && item.checkCompact && (
                         <div style={styles.displayFlex}>{this.renderCompactGroupEnabled()}</div>
                     )}
                 </Box>

@@ -366,6 +366,16 @@ export interface InstanceItem {
     compactGroup: number | null | string;
     tier: 1 | 2 | 3;
     memoryLimitMB: number;
+    /**
+     * The instance runs on Python rather than on Node.js (`common.platform`).
+     *
+     * A few of the controls below only mean something on Node: the RAM limit becomes
+     * `--max-old-space-size`, and compact mode loads an adapter into the controller's own Node.js
+     * process. js-controller ignores both for a Python instance -- so offering them here would let
+     * a user set a memory limit against an adapter they believe is leaking and never learn that
+     * nothing happened.
+     */
+    isPython: boolean;
     port: number | null;
     name: string;
     stoppedWhenWebExtension: boolean | undefined;
@@ -1498,7 +1508,10 @@ export default abstract class InstanceGeneric<
                     size="small"
                     style={{
                         ...this.styles.button,
-                        ...(this.props.context.expertMode && this.props.item.checkCompact
+                        // A Python adapter cannot run inside the controller's Node.js process, and
+                        // js-controller refuses the combination with a warning. Hidden here rather
+                        // than left as a switch that silently does nothing.
+                        ...(this.props.context.expertMode && this.props.item.checkCompact && !this.props.item.isPython
                             ? undefined
                             : this.styles.hide),
                     }}
@@ -1655,7 +1668,13 @@ export default abstract class InstanceGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderRamLimit(): JSX.Element {
+    renderRamLimit(): JSX.Element | null {
+        // Hidden rather than shown as unavailable: `--max-old-space-size` is a Node.js argument,
+        // and there is no Python equivalent to offer in its place.
+        if (this.props.item.isPython) {
+            return null;
+        }
+
         return (
             <>
                 <InstanceInfo
@@ -1686,7 +1705,11 @@ export default abstract class InstanceGeneric<
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
-    renderCompactGroup(): JSX.Element {
+    renderCompactGroup(): JSX.Element | null {
+        if (this.props.item.isPython) {
+            return null;
+        }
+
         return (
             <>
                 <InstanceInfo
