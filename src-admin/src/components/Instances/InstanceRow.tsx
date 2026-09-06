@@ -279,7 +279,10 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                     {this.renderRestartSchedule()}
                                 </Box>
                             )}
-                            {this.props.context.expertMode && (
+                            {/* Not for a Python instance: the limit becomes --max-old-space-size,
+                                which never reaches the interpreter. The wrapper goes with it --
+                                it has a minimum height, so leaving it would be a blank band. */}
+                            {this.props.context.expertMode && !item.isPython && (
                                 <Box
                                     component="div"
                                     sx={{ ...styles.displayFlex, ...styles.maxWidth300, ...styles.editButton }}
@@ -288,6 +291,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                 </Box>
                             )}
                             {this.props.context.expertMode &&
+                                !item.isPython &&
                                 item.checkCompact &&
                                 item.compact &&
                                 item.supportCompact && (
