@@ -155,7 +155,7 @@ break in the parts that got the second copy. The same holds for `@iobroker/socke
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.12 (2026-09-09)
 - (@GermanBluefox) Updated `@iobroker/json-config` to 10.x, which does not bring `react-ace` any more: the admin hands its own editor in with the new property `AceEditor`. Until now every custom component of every adapter carried the whole `ace-builds` in its bundle, although only three of the sixty controls ever show an editor
 - (@GermanBluefox) Added the "Did you know ...?" dialog. It shows one tip about the admin when it is opened, and one can leaf through the tips. The checkbox in the dialog switches it off for the whole installation, and the system settings switch it on again ("Tips at start")
 - (@GermanBluefox) Fixed: the assistant switched the reasoning of an OpenAI-compatible endpoint off as soon as a base URL was configured. That is right for a small local model and wrong for everything else - in front of a proxy that serves a hosted model it turns off the reasoning one is paying for. The chat settings have a "Reasoning effort" selector now, and its default leaves the parameter out and lets the endpoint decide. A model that refuses function tools while reasoning still gets `none` automatically, as before, because it says so itself
@@ -189,12 +189,6 @@ break in the parts that got the second copy. The same holds for `@iobroker/socke
 - (SimonFischer04) Admin can now run behind a reverse-proxy sub-path (e.g. `/admin/`)
 - (SimonFischer04) Prefix legacy jQuery adapter-icon URLs and inject `info.js` into `<HEAD>` as well
 - (@GermanBluefox) Corrected layout of Config view
-
-### 8.0.5 (2026-08-19)
-- (@GermanBluefox) Corrected the doubled tiles in the quick access if more than one web instance is running
-- (@GermanBluefox) Reworked the initial setup wizard: modern layout, navigation backwards and many corrections
-- (@GermanBluefox) Rounded the options toolbar in the adapter update dialog
-- (@GermanBluefox) Removed warning about not installed docker.
 
 ## License
 
