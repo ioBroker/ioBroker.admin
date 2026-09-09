@@ -1807,6 +1807,7 @@
     "ts": "Zeitstempel",
     "type": "Typ",
     "unit": "Einheit",
+    "unknown": "unbekannt",
     "update": "Aktualisieren",
     "update adapter information": "Adapterinformationen aktualisieren",
     "update_info_no_net": "Für Informationen zum Update des Controllers, besuchen Sie diese Seite: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/de/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>",

@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 
 import semver from 'semver';
 
-import { Fab, Grid, Snackbar, Tooltip, LinearProgress, Skeleton } from '@mui/material';
+import { Box, Fab, Grid, Snackbar, Tooltip, LinearProgress, Skeleton } from '@mui/material';
 
 import {
     Add as AddIcon,
@@ -62,10 +62,6 @@ export type CompactHost = {
 };
 
 const styles: Record<string, any> = {
-    root: {
-        width: '100%',
-        height: '100%',
-    },
     button: {
         position: 'absolute',
         bottom: 16,
@@ -91,15 +87,10 @@ const styles: Record<string, any> = {
             backgroundColor: theme.palette.error.dark,
         },
     }),
-    bold: {
-        fontWeight: 'bold',
-    },
-    container: {
-        overflowY: 'auto',
-    },
-    hostOffline: {
-        color: '#bb0000',
-    },
+    hostOffline: (theme: IobTheme) => ({
+        color: theme.palette.error.main,
+        fontWeight: 500,
+    }),
     updateExists: {
         color: '#c28700',
         marginRight: 4,
@@ -112,8 +103,24 @@ const styles: Record<string, any> = {
         opacity: 0.6,
     },
     instanceNumber: {
-        opacity: 0.7,
-        fontSize: 16,
+        opacity: 0.6,
+        fontWeight: 500,
+    },
+    hostStats: {
+        display: 'grid',
+        gridTemplateColumns: 'auto minmax(0, 1fr)',
+        columnGap: '10px',
+        rowGap: '3px',
+        alignItems: 'baseline',
+    },
+    hostStatLabel: (theme: IobTheme) => ({
+        color: theme.palette.text.disabled,
+        whiteSpace: 'nowrap',
+    }),
+    hostStatValue: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
     updateIcon: {
         cursor: 'pointer',
@@ -122,11 +129,15 @@ const styles: Record<string, any> = {
     tooltip: {
         pointerEvents: 'none',
     },
-    viewModeDiv: {
-        display: 'flex',
-        flexFlow: 'wrap',
-        overflow: 'auto',
-        justifyContent: 'left',
+    cards: {
+        alignContent: 'flex-start',
+        // no own scrollbar - the panel around the tab already scrolls
+        width: '100%',
+        // the cards must not touch the frame around them. The panel adds another 8px left and right.
+        pt: '12px',
+        px: '8px',
+        // the floating buttons sit in the lower right corner and must not cover the last row
+        pb: '64px',
     },
 };
 
@@ -473,8 +484,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
         return (this.state.instances || []).map(instance => {
             const enabled = !this.state.deactivated?.includes(`${instance.id}_${instance.linkName}`);
             if (enabled || this.state.edit) {
-                let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
-                linkText = linkText.split('/')[0];
+                // the user wants to see where a card jumps to. A relative link stays on the admin itself.
+                let linkText = '';
+                if (instance.link) {
+                    try {
+                        linkText = new URL(instance.link, window.location.href).host;
+                    } catch {
+                        linkText = instance.link.replace(/^https?:\/\//, '').split('/')[0];
+                    }
+                }
 
                 // ignore own admin instance
                 if (instance.id === this.props.adminInstance) {
@@ -493,6 +511,15 @@ class Intro extends React.Component<IntroProps, IntroState> {
                 }
 
                 const hostData: HostInfoEx | null = this.state.hostsData ? this.state.hostsData[instance.id] : null;
+                // only the host cards carry a lamp, and only they have `info`
+                let status: 'online' | 'offline' | 'unknown' | undefined;
+                if (instance.info) {
+                    if (hostData && typeof hostData === 'object') {
+                        status = hostData.alive === false ? 'offline' : 'online';
+                    } else {
+                        status = 'unknown';
+                    }
+                }
                 const timeDiff = this.state.hostTimeDiffMap.get(instance.id) ?? 0;
                 const dataTimestamp = this.state.hostDataTimestampMap.get(instance.id) ?? 0;
                 const currentTime = Date.now();
@@ -504,13 +531,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         image={instance.image || ''}
                         title={
                             <>
-                                <span
-                                    style={
-                                        instance.name && instance.name.length > 12 ? { fontSize: '1rem' } : undefined
-                                    }
-                                >
-                                    {instance.name}
-                                </span>
+                                {instance.name}
                                 {isShowInstance ? (
                                     <span style={styles.instanceNumber}>.{instance.id.split('.').pop()}</span>
                                 ) : null}
@@ -521,6 +542,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         lang={this.props.lang}
                         color={instance.color || ''}
                         showInfo={!!instance.info}
+                        status={status}
                         edit={this.state.edit}
                         offline={!!hostData && hostData.alive === false}
                         warning={
@@ -1337,7 +1359,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         if (hostData && hostData.alive === false) {
-            return <div style={styles.hostOffline}>{this.props.t('Offline')}</div>;
+            return <Box sx={styles.hostOffline}>{this.props.t('Offline')}</Box>;
         }
 
         let nodeUpdate: string | JSX.Element = '';
@@ -1428,45 +1450,40 @@ class Intro extends React.Component<IntroProps, IntroState> {
         }
 
         return hostData && typeof hostData === 'object' ? (
-            <ul style={{ textTransform: 'none' }}>
-                <li>
-                    <span>
-                        <span style={styles.bold}>{this.t('Platform')}: </span>
-                        {hostData.Platform || '--'}
+            <Box sx={styles.hostStats}>
+                <Box sx={styles.hostStatLabel}>{this.t('Platform')}</Box>
+                <Box
+                    sx={styles.hostStatValue}
+                    title={hostData.Platform || ''}
+                >
+                    {hostData.Platform || '--'}
+                </Box>
+                <Box sx={styles.hostStatLabel}>{this.t('RAM')}</Box>
+                <Box sx={styles.hostStatValue}>{formatInfo.RAM(hostData.RAM)}</Box>
+                <Box sx={styles.hostStatLabel}>{this.t('Node.js')}</Box>
+                <Box sx={styles.hostStatValue}>
+                    <span style={nodeUpdate ? styles.updateExists : styles.updateNo}>
+                        {hostData['Node.js'] || '--'}
                     </span>
-                </li>
-                <li>
-                    <span>
-                        <span style={styles.bold}>{this.t('RAM')}: </span>
-                        {formatInfo.RAM(hostData.RAM)}
-                    </span>
-                </li>
-                <li>
-                    <span>
-                        <span style={styles.bold}>{this.t('Node.js')}: </span>
-                        <span style={nodeUpdate ? styles.updateExists : styles.updateNo}>
-                            {hostData['Node.js'] || '--'}
-                        </span>
-                        {nodeUpdate}
-                    </span>
-                </li>
-                <li>
-                    <span>
-                        <span style={styles.bold}>{this.t('NPM')}: </span>
-                        <span className={npmUpdate ? styles.updateExists : styles.updateNo}>
-                            {hostData.NPM || '--'}
-                        </span>
-                        {npmUpdate}
-                    </span>
-                </li>
-            </ul>
+                    {nodeUpdate}
+                </Box>
+                <Box sx={styles.hostStatLabel}>{this.t('NPM')}</Box>
+                <Box sx={styles.hostStatValue}>
+                    <span style={npmUpdate ? styles.updateExists : styles.updateNo}>{hostData.NPM || '--'}</span>
+                    {npmUpdate}
+                </Box>
+            </Box>
         ) : (
-            <ul>
+            <Box sx={styles.hostStats}>
+                <Skeleton width={60} />
                 <Skeleton />
+                <Skeleton width={60} />
                 <Skeleton />
+                <Skeleton width={60} />
                 <Skeleton />
+                <Skeleton width={60} />
                 <Skeleton />
-            </ul>
+            </Box>
         );
     }
 
@@ -1475,33 +1492,29 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
         return {
             el: (
-                <ul style={{ textTransform: 'none' }}>
-                    {hostData &&
-                        typeof hostData === 'object' &&
-                        Object.keys(hostData)
-                            .filter(
-                                _id =>
-                                    !_id.startsWith('_') &&
-                                    (hostData as any)[_id] !== null &&
-                                    (hostData as any)[_id] !== undefined,
-                            )
-                            .map(value => (
-                                <li key={value}>
-                                    {hostData && typeof hostData === 'object' ? (
-                                        <span>
-                                            <span style={styles.bold}>{this.t(value)}: </span>
-                                            {formatInfo[value]
-                                                ? formatInfo[value]((hostData as any)[value] as number, this.t)
-                                                : (typeof (hostData as any)[value] === 'object'
-                                                      ? JSON.stringify((hostData as any)[value])
-                                                      : (hostData as any)[value].toString()) || '--'}
-                                        </span>
-                                    ) : (
-                                        <Skeleton />
-                                    )}
-                                </li>
-                            ))}
-                </ul>
+                <Box sx={styles.hostStats}>
+                    {hostData && typeof hostData === 'object'
+                        ? Object.keys(hostData)
+                              .filter(
+                                  _id =>
+                                      !_id.startsWith('_') &&
+                                      (hostData as any)[_id] !== null &&
+                                      (hostData as any)[_id] !== undefined,
+                              )
+                              .map(value => (
+                                  <React.Fragment key={value}>
+                                      <Box sx={styles.hostStatLabel}>{this.t(value)}</Box>
+                                      <Box>
+                                          {formatInfo[value]
+                                              ? formatInfo[value]((hostData as any)[value] as number, this.t)
+                                              : (typeof (hostData as any)[value] === 'object'
+                                                    ? JSON.stringify((hostData as any)[value])
+                                                    : (hostData as any)[value].toString()) || '--'}
+                                      </Box>
+                                  </React.Fragment>
+                              ))
+                        : null}
+                </Box>
             ),
 
             text:
@@ -1593,7 +1606,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     Grid container - without it they fall back to content width. */}
                 <Grid
                     container
-                    sx={styles.viewModeDiv}
+                    spacing={2}
+                    sx={styles.cards}
                 >
                     {this.getInstancesCards()}
                     {this.getLinkCards()}

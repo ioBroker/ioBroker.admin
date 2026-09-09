@@ -13,12 +13,12 @@ const styles: Record<string, any> = {
     cameraImg: {
         width: '100%',
         height: '100%',
-        maxWidth: 200,
-        maxHeight: 200,
         objectFit: 'contain',
+        borderRadius: 8,
     },
     imgContainer: {
         height: '100%',
+        width: '100%',
     },
     hidden: {
         display: 'none',
@@ -110,6 +110,12 @@ class IntroCardCamera extends IntroCard<IntroCardCameraProps, IntroCardCameraSta
             clearInterval(this.cameraUpdateTimer);
             this.cameraUpdateTimer = null;
         }
+    }
+
+    /** A camera picture needs more room than a description */
+    // eslint-disable-next-line class-methods-use-this
+    cardMinHeight(): number {
+        return 260;
     }
 
     renderDialogs(): JSX.Element | null {

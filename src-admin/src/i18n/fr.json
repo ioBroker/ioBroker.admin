@@ -1807,6 +1807,7 @@
     "ts": "ts",
     "type": "type",
     "unit": "unité",
+    "unknown": "inconnu",
     "update": "mettre à jour",
     "update adapter information": "mettre à jour les informations d'adaptateur",
     "update_info_no_net": "Pour plus d'informations sur la mise à jour du contrôleur, visitez cette page: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/fr/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>",

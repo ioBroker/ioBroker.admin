@@ -1807,6 +1807,7 @@
     "ts": "Мітка часу",
     "type": "типу",
     "unit": "одиниця",
+    "unknown": "невідомо",
     "update": "оновлення",
     "update adapter information": "оновити інформацію про адаптер",
     "update_info_no_net": "Щоб отримати інформацію про оновлення контролера, відвідайте цю сторінку: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/en/controller-upgrade.md\" target=\"_blank\"> Оновіть JS-Contoller</a>",
