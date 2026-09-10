@@ -5,7 +5,7 @@
     "object-keyboard": "In der Objektliste bewegen die Pfeiltasten die Auswahl, der linke und der rechte Pfeil schließen und öffnen einen Ordner.",
     "object-url": "Wenn der Wert eines Zustands ein Link ist, öffnet Strg und ein Klick auf den Wert ihn in einem neuen Tab.",
     "states-view": "Die Zustandsansicht der Objektliste ersetzt Typ, Rolle, Raum und Funktion durch die Spalten Geändert von, Qualität, Zeitstempel und Letzte Änderung.",
-    "custom-settings": "Das Zahnrad hinter einem Zustand öffnet dessen kundenspezifische Einstellungen. Dort ergänzt jeder Adapter, der sie unterstützt, seine eigenen adapterspezifischen Optionen – die aufzeichnenden Adapter History, SQL oder InfluxDB sind nur das bekannteste Beispiel.",
+    "custom-settings": "Das Zahnrad hinter einem Zustand öffnet dessen spezifische Einstellungen. Dort ergänzt jeder Adapter, der sie unterstützt, seine eigenen adapterspezifischen Optionen – die aufzeichnenden Adapter History, SQL oder InfluxDB sind nur das bekannteste Beispiel.",
     "alias": "Aus jedem Zustand lässt sich ein Alias erzeugen. Er gibt dem Zustand einen anderen Namen, eine andere Rolle oder Skalierung, ohne im Adapter etwas zu ändern.",
     "log-level": "Die Protokollstufe einer einzelnen Instanz lässt sich im laufenden Betrieb ändern. Nach einem Neustart des Controllers gilt wieder die gespeicherte Stufe.",
     "discovery": "Die Geräteerkennung durchsucht das Netzwerk nach Geräten und Diensten und schlägt die passenden Adapter vor. Dafür muss der Discovery-Adapter installiert sein.",
