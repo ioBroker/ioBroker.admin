@@ -196,7 +196,7 @@ interface ConfigState {
     showMore: HTMLButtonElement | null;
 }
 
-class Config extends Component<ConfigProps, ConfigState> {
+export default class Config extends Component<ConfigProps, ConfigState> {
     private refIframe: HTMLIFrameElement | null;
 
     private registered: boolean;
@@ -842,5 +842,3 @@ class Config extends Component<ConfigProps, ConfigState> {
         );
     }
 }
-
-export default Config;
