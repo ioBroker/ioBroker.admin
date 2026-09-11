@@ -1,5 +1,5 @@
 {
-    "expert-mode": "The eye 👁 in the toolbar switches the expert mode on. It shows the system objects, additional settings of an instance and the expert options of many dialogs.",
+    "expert-mode": "The head symbol in the toolbar switches the expert mode on. It shows the system objects, additional settings of an instance and the expert options of many dialogs.",
     "gui-settings": "Admin normally keeps its own settings, like the selected columns or the opened folders, in the browser. In the system settings you can store them in ioBroker instead, so every browser and every device shows the same.",
     "object-columns": "In the objects list, \"Configure\" switches the automatic column selection off, so you can choose the columns yourself. A column is resized by dragging the separator in the header, and a double click on the separator resets the whole layout.",
     "object-keyboard": "In the objects list the arrow keys move the selection, and the left and right arrow close and open a folder.",

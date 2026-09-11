@@ -1,5 +1,5 @@
 {
-    "expert-mode": "El ojo 👁 de la barra de herramientas activa el modo experto. Muestra los objetos del sistema, ajustes adicionales de una instancia y las opciones de experto de muchos diálogos.",
+    "expert-mode": "El símbolo de la cabeza en la barra de herramientas activa el modo experto. Muestra los objetos del sistema, ajustes adicionales de una instancia y las opciones de experto de muchos diálogos.",
     "gui-settings": "Normalmente admin guarda sus propios ajustes, como las columnas elegidas o las carpetas abiertas, en el navegador. En los ajustes del sistema puedes guardarlos en ioBroker, y así todos los navegadores y dispositivos muestran lo mismo.",
     "object-columns": "En la lista de objetos, \"Configurar\" desactiva la selección automática de columnas para poder elegirlas uno mismo. El ancho se cambia arrastrando el separador de la cabecera, y un doble clic sobre él restablece toda la disposición.",
     "object-keyboard": "En la lista de objetos las teclas de flecha mueven la selección, y las flechas izquierda y derecha cierran y abren una carpeta.",

@@ -1,5 +1,5 @@
 {
-    "expert-mode": "L'œil 👁 dans la barre d'outils active le mode expert. Il affiche les objets système, des réglages supplémentaires d'une instance et les options expert de nombreuses boîtes de dialogue.",
+    "expert-mode": "Le symbole de la tête dans la barre d'outils active le mode expert. Il affiche les objets système, des réglages supplémentaires d'une instance et les options expert de nombreuses boîtes de dialogue.",
     "gui-settings": "Admin conserve normalement ses propres réglages, comme les colonnes choisies ou les dossiers ouverts, dans le navigateur. Dans les réglages système, vous pouvez les enregistrer dans ioBroker, et tous les navigateurs et appareils affichent alors la même chose.",
     "object-columns": "Dans la liste des objets, « Configurer » désactive la sélection automatique des colonnes, ce qui permet de les choisir soi-même. La largeur se modifie en tirant le séparateur de l'en-tête, un double-clic dessus réinitialise toute la disposition.",
     "object-keyboard": "Dans la liste des objets, les touches fléchées déplacent la sélection, et les flèches gauche et droite ferment et ouvrent un dossier.",

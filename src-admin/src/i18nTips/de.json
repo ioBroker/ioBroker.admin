@@ -1,5 +1,5 @@
 {
-    "expert-mode": "Das Auge 👁 in der Werkzeugleiste schaltet den Expertenmodus ein. Er zeigt die System-Objekte, zusätzliche Einstellungen einer Instanz und die Expertenoptionen vieler Dialoge.",
+    "expert-mode": "Das Kopfsymbol in der Werkzeugleiste unten schaltet den Expertenmodus ein. Er zeigt die System-Objekte, zusätzliche Einstellungen einer Instanz und die Expertenoptionen vieler Dialoge.",
     "gui-settings": "Der Admin merkt sich seine eigenen Einstellungen, etwa die gewählten Spalten oder die geöffneten Ordner, normalerweise im Browser. In den Systemeinstellungen kann man sie stattdessen in ioBroker ablegen, dann sieht jeder Browser und jedes Gerät dasselbe.",
     "object-columns": "In der Objektliste schaltet \"Konfigurieren\" die automatische Spaltenauswahl aus, dann kann man die Spalten selbst wählen. Die Breite ändert man am Trenner in der Kopfzeile, ein Doppelklick darauf setzt die ganze Aufteilung zurück.",
     "object-keyboard": "In der Objektliste bewegen die Pfeiltasten die Auswahl, der linke und der rechte Pfeil schließen und öffnen einen Ordner.",
