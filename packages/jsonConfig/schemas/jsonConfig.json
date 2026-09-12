@@ -2187,7 +2187,9 @@
         "noMultiEdit": true,
         "tooltip": true,
         "expertMode": true,
-        "noTranslation": true
+        "noTranslation": true,
+        "help": true,
+        "helpLink": true
       },
       "additionalProperties": false,
       "required": [
@@ -9456,7 +9458,7 @@
                           "ok"
                         ]
                       },
-                      "closable": {
+                      "closeable": {
                         "description": "If the box is closeable",
                         "type": "boolean"
                       },

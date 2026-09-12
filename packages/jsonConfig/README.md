@@ -1956,6 +1956,11 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.0.1 (2026-09-12)
+
+- (@GermanBluefox) The schema was corrected: closable to closeable.
+- (@GermanBluefox) Updated packages
+
 ### 10.0.0 (2026-09-04)
 
 - (@GermanBluefox) The schema allows the root property `command` of a JSON tab now. It was documented and honoured by admin, but every `jsonTab.json5` that uses it was reported as invalid: https://github.com/ioBroker/ioBroker.admin/issues/3610
