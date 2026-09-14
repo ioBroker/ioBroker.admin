@@ -136,36 +136,10 @@ const styles: Record<string, any> = {
             mr: '8px',
         },
     },
-    close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
-        cursor: 'pointer',
-        position: 'relative',
-        top: 20,
-        marginTop: '10px',
-        transition: 'all 0.6s ease',
-        '&:hover': {
-            transform: 'rotate(90deg)',
-        },
-        '&:before': {
-            position: 'absolute',
-            left: '9px',
-            content: '""',
-            height: '20px',
-            width: '3px',
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)',
-        },
-        '&:after': {
-            position: 'absolute',
-            left: '9px',
-            content: '""',
-            height: '20px',
-            width: '3px',
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)',
-        },
+    removeButton: {
+        mt: '23px',
+        alignSelf: 'flex-start',
+        flexShrink: 0,
     },
     color: {
         width: 70,
@@ -1518,12 +1492,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 title={t('Remove attribute %s', t(nameKey))}
                 slotProps={{ popper: { sx: styles.tooltip } }}
             >
-                <Box
-                    component="div"
-                    sx={styles.close}
+                <IconButton
+                    size="small"
+                    sx={styles.removeButton}
                     style={style}
                     onClick={cb}
-                />
+                >
+                    <IconClose />
+                </IconButton>
             </Tooltip>
         );
     }
@@ -1706,7 +1682,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         </Select>
                                     </FormControl>
                                     {this.buttonRemoveKey('State type', () => this.removeCommonItem(json, 'type'), {
-                                        marginTop: 20,
+                                        marginTop: 33,
                                     })}
                                 </Box>
                             ) : (
@@ -1836,7 +1812,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                                         )}
                                     />
                                     {this.buttonRemoveKey('Role', () => this.removeCommonItem(json, 'role'), {
-                                        marginTop: 20,
+                                        marginTop: 33,
                                     })}
                                 </Box>
                             ) : (

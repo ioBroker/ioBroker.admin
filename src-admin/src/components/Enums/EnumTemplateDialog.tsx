@@ -1,30 +1,12 @@
 import React, { Component, type JSX } from 'react';
 
-import {
-    Dialog,
-    Button,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    TextField,
-    LinearProgress,
-    IconButton,
-} from '@mui/material';
+import { Dialog, Button, DialogActions, DialogContent, DialogTitle, TextField, IconButton } from '@mui/material';
 
 import { Clear as ClearIcon, Brush as CustomGroup, Close as CloseIcon } from '@mui/icons-material';
 
-import { Icon, type Translate, Utils } from '@iobroker/gui-components';
-
-import devices from '../../assets/devices/list.json';
-import rooms from '../../assets/rooms/list.json';
+import { Icon, type Translate, getClassicIconTemplates, type ClassicIconTemplate } from '@iobroker/gui-components';
 
 import AdminUtils from '../../helpers/AdminUtils';
-
-interface EnumIcon {
-    _id: string;
-    name: ioBroker.StringOrTranslated;
-    icon: string;
-}
 
 const styles: Record<string, React.CSSProperties> = {
     icon: {
@@ -78,47 +60,23 @@ interface EnumTemplateDialogProps {
 }
 
 interface EnumTemplateDialogState {
-    icons: string[];
-    loading: boolean;
     filter: string;
 }
 
 class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplateDialogState> {
+    private readonly templates: ClassicIconTemplate[];
+
     constructor(props: EnumTemplateDialogProps) {
         super(props);
 
+        this.templates = getClassicIconTemplates(props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms');
+
         this.state = {
-            icons: [],
-            loading: true,
             filter: '',
         };
     }
 
-    componentDidMount(): void {
-        this.setState({ loading: true }, () => {
-            const templates: EnumIcon[] = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
-            const icons: string[] = [];
-
-            const promises = templates.map(async (template, i) => {
-                try {
-                    const image: Promise<{ default: string }> = import(
-                        `../../assets/${this.props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms'}/${template.icon}.svg`
-                    );
-                    const im = await image;
-                    const icon = await Utils.getSvg(im.default);
-                    return (icons[i] = icon);
-                } catch {
-                    return null;
-                }
-            });
-
-            void Promise.all(promises).then(() => this.setState({ icons, loading: false }));
-        });
-    }
-
     render(): JSX.Element {
-        const templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
-
         return (
             <Dialog
                 maxWidth="md"
@@ -154,9 +112,8 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                     />
                 </DialogTitle>
                 <DialogContent style={{ textAlign: 'center' }}>
-                    {this.state.loading && <LinearProgress />}
                     <div style={styles.content}>
-                        {templates.map((template, i) => {
+                        {this.templates.map((template, i) => {
                             const name = AdminUtils.getText(template.name, this.props.lang) || template._id;
 
                             if (this.props.enums[`${this.props.prefix}.${template._id}`]) {
@@ -175,23 +132,20 @@ class EnumTemplateDialog extends Component<EnumTemplateDialogProps, EnumTemplate
                                                 type: 'enum',
                                                 common: {
                                                     name: template.name,
-                                                    icon: this.state.icons[i],
+                                                    icon: template.icon,
                                                 },
                                                 native: {},
                                             });
                                         }}
-                                        // startIcon={<Icon src={this.state.icons[i]} style={styles.icon}/>}
                                         style={styles.enumTemplateButton}
                                         startIcon={
                                             <Icon
-                                                src={this.state.icons[i]}
+                                                src={template.icon}
                                                 style={styles.icon}
                                             />
                                         }
                                     >
-                                        <span style={styles.enumTemplateLabel}>
-                                            {AdminUtils.getText(template.name, this.props.lang) || template._id}
-                                        </span>
+                                        <span style={styles.enumTemplateLabel}>{name}</span>
                                     </Button>
                                 );
                             }

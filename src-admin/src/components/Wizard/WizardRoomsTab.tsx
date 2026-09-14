@@ -4,15 +4,15 @@ import { Button, Typography, Box, ButtonBase, LinearProgress } from '@mui/materi
 
 import { Check as IconCheck, ArrowForward as IconNext, CheckCircle as IconSelected } from '@mui/icons-material';
 
-import { type AdminConnection, Icon, type Translate, Utils } from '@iobroker/gui-components';
+import { type AdminConnection, Icon, type Translate, getClassicIconTemplates } from '@iobroker/gui-components';
 
 import WizardStepFrame from './WizardStepFrame';
 
 interface RoomTemplate {
     _id: string;
     name: ioBroker.StringOrTranslated;
+    /** SVG data URL of the icon, which is stored in the created enum */
     icon: string;
-    iconSvg?: string;
     translatedName?: string;
 }
 
@@ -86,9 +86,8 @@ export default class WizardRoomsTab extends Component<WizardRoomsTabProps, Wizar
 
     async componentDidMount(): Promise<void> {
         try {
-            const json: { default: RoomTemplate[] } = await import(`../../assets/rooms/list.json`);
-            // Work with a copy, as the templates are extended with the existing enums
-            this.rooms = json.default.map(room => ({ ...room }));
+            // Every call returns new objects, so the templates can be extended with the existing enums
+            this.rooms = getClassicIconTemplates('rooms');
 
             let selectedRooms = [...this.state.selectedRooms];
             const objects = await this.props.socket.getObjectViewSystem('enum');
@@ -113,7 +112,7 @@ export default class WizardRoomsTab extends Component<WizardRoomsTabProps, Wizar
                     if (roomByName !== -1) {
                         // Use the ID and the icon of the existing enum
                         this.importantRooms = this.importantRooms.filter(id => id !== this.rooms[roomByName]._id);
-                        this.rooms[roomByName].iconSvg = objects[roomId].common.icon || '';
+                        this.rooms[roomByName].icon = objects[roomId].common.icon || this.rooms[roomByName].icon;
                         this.rooms[roomByName]._id = shortRoomId;
                         this.rooms[roomByName].translatedName = getText(objects[roomId].common.name, this.props.lang);
                     } else {
@@ -122,7 +121,6 @@ export default class WizardRoomsTab extends Component<WizardRoomsTabProps, Wizar
                             _id: shortRoomId,
                             name: objects[roomId].common.name || shortRoomId,
                             icon: objects[roomId].common.icon || '',
-                            iconSvg: objects[roomId].common.icon || '',
                             translatedName: getText(objects[roomId].common.name, this.props.lang),
                         });
                     }
@@ -134,21 +132,9 @@ export default class WizardRoomsTab extends Component<WizardRoomsTabProps, Wizar
                 selectedRooms.sort();
             }
 
-            // Read the icons of all templates
-            await Promise.all(
-                this.rooms.map(async room => {
-                    room.translatedName ||= getText(room.name, this.props.lang);
-                    if (room.iconSvg) {
-                        return;
-                    }
-                    try {
-                        const image: { default: string } = await import(`../../assets/rooms/${room.icon}.svg`);
-                        room.iconSvg = await Utils.getSvg(image.default);
-                    } catch {
-                        console.warn(`Icon for room ${room.icon} not found`);
-                    }
-                }),
-            );
+            for (const room of this.rooms) {
+                room.translatedName ||= getText(room.name, this.props.lang);
+            }
 
             this.setState({
                 loading: false,
@@ -256,7 +242,7 @@ export default class WizardRoomsTab extends Component<WizardRoomsTabProps, Wizar
                     />
                 ) : null}
                 <Icon
-                    src={room.iconSvg}
+                    src={room.icon}
                     alt={room.translatedName}
                     style={{ width: 72, height: 72, opacity: selected ? 1 : 0.7 }}
                 />

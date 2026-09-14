@@ -1,8 +1,8 @@
 import React, { type JSX } from 'react';
 
-import { Box, Card, CardContent, CardMedia, Fab, Tooltip, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@mui/material';
 
-import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { MoreVert as MoreVertIcon, Close as IconClose } from '@mui/icons-material';
 import { amber } from '@mui/material/colors';
 
 import { type IobTheme, Utils } from '@iobroker/gui-components';
@@ -94,35 +94,11 @@ const styles: Record<string, any> = {
         flexDirection: 'column',
     },
     close: {
-        width: 20,
-        height: 20,
-        opacity: 0.9,
-        cursor: 'pointer',
-        position: 'relative',
-        marginLeft: 'auto',
-        mb: '10px',
-        transition: 'all 0.6s ease',
-        '&:hover': {
-            transform: 'rotate(90deg)',
-        },
-        '&:before': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: 'rgba(0, 0, 0, 0.54)',
-            transform: 'rotate(45deg)',
-        },
-        '&:after': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: 'rgba(0, 0, 0, 0.54)',
-            transform: 'rotate(-45deg)',
-        },
+        display: 'flex',
+        ml: 'auto',
+        mt: '-4px',
+        // the collapse panel is always silver, so the theme color would be too bright in the dark theme
+        color: 'rgba(0, 0, 0, 0.54)',
     },
     footerBlock: (theme: IobTheme) => ({
         background: theme.palette.background.default,
@@ -212,11 +188,13 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
             <div style={this.styles.collapse}>
                 <CardContent style={this.styles.cardContent}>
                     <div style={this.styles.cardContentDiv}>
-                        <Box
-                            component="div"
+                        <IconButton
+                            size="small"
                             sx={this.styles.close}
                             onClick={() => this.setState({ openCollapse: !this.state.openCollapse })}
-                        />
+                        >
+                            <IconClose />
+                        </IconButton>
                     </div>
                     <Typography
                         gutterBottom

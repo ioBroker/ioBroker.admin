@@ -1,8 +1,8 @@
 import React, { type JSX } from 'react';
 
-import { Box, Card, CardContent, CardMedia, Fab, Skeleton, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Fab, IconButton, Skeleton, Typography } from '@mui/material';
 
-import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { MoreVert as MoreVertIcon, Close as IconClose } from '@mui/icons-material';
 
 import { Utils, type IobTheme } from '@iobroker/gui-components';
 
@@ -77,35 +77,9 @@ export const styles: Record<string, any> = {
         height: 0,
     },
     close: {
-        width: 20,
-        height: 20,
-        opacity: 0.9,
-        cursor: 'pointer',
-        position: 'relative',
+        display: 'flex',
         ml: 'auto',
-        mb: '10px',
-        transition: 'all 0.6s ease',
-        '&:hover': {
-            transform: 'rotate(90deg)',
-        },
-        '&:before': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)',
-        },
-        '&:after': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)',
-        },
+        mt: '-4px',
     },
     onOffLine: {
         alignSelf: 'center',
@@ -281,11 +255,13 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                                 style={styles.cardContentDiv}
                                 onClick={() => this.setState({ openCollapse: false })}
                             >
-                                <Box
-                                    component="div"
+                                <IconButton
+                                    size="small"
                                     sx={styles.close}
                                     onClick={() => this.setState({ openCollapse: false })}
-                                />
+                                >
+                                    <IconClose />
+                                </IconButton>
                             </div>
                             {description}
                         </CardContent>
