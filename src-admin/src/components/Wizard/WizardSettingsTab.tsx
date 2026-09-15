@@ -23,58 +23,8 @@ import { Close as CloseIcon, ArrowForward as IconNext, GpsFixed, MyLocation } fr
 
 import { type AdminConnection, I18n, type Translate } from '@iobroker/gui-components';
 
+import { COUNTRY_SEPARATOR, getCountryList } from '../../helpers/countries';
 import WizardStepFrame from './WizardStepFrame';
-
-/** Countries, which are shown at the top of the list */
-const TOP_COUNTRIES: string[] = [
-    'Germany',
-    'Austria',
-    'Switzerland',
-    'Russian Federation',
-    'France',
-    'Netherlands',
-    'Italy',
-    'United Kingdom',
-    'United States',
-    'China',
-];
-
-/** All other countries in alphabetical order (English names, they are translated for the display) */
-// prettier-ignore
-const COUNTRIES: string[] = [
-    'Afghanistan', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica',
-    'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Azerbaijan', 'Bahamas', 'Bahrain',
-    'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia',
-    'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory',
-    'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde',
-    'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'Christmas Island', 'Cocos Islands',
-    'Colombia', 'Comoros', 'Congo', 'Cook Islands', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic',
-    'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador',
-    'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands',
-    'Fiji', 'Finland', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia',
-    'Georgia', 'Ghana', 'Gibraltar', 'Guernsey', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam',
-    'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard and Mc Donald Islands', 'Honduras',
-    'Hong Kong', 'Hungary', 'Iceland', 'India', 'Isle of Man', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel',
-    'Ivory Coast', 'Jersey', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea', 'Kosovo',
-    'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia',
-    'Libyan Arab Jamahiriya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macau', 'Macedonia', 'Madagascar',
-    'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania',
-    'Mauritius', 'Mayotte', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat',
-    'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands Antilles', 'New Caledonia',
-    'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands',
-    'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru',
-    'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Reunion', 'Romania', 'Rwanda',
-    'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino',
-    'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore',
-    'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia South Sandwich Islands',
-    'Spain', 'Sri Lanka', 'St. Helena', 'St. Pierre and Miquelon', 'Sudan', 'Suriname',
-    'Svalbard and Jan Mayen Islands', 'Swaziland', 'Sweden', 'Syrian Arab Republic', 'Taiwan', 'Tajikistan',
-    'Tanzania', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey',
-    'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates',
-    'United States minor outlying islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City State',
-    'Venezuela', 'Vietnam', 'Virgin Islands (British)', 'Virgin Islands (U.S.)', 'Wallis and Futuna Islands',
-    'Western Sahara', 'Yemen', 'Zaire', 'Zambia', 'Zimbabwe',
-];
 
 const CURRENCY: string[] = ['€', '$', '₽', '₤', 'CHF'];
 
@@ -152,7 +102,7 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
     /** Counter of the address requests, so only the answer of the last one is used */
     private addressRequestId = 0;
 
-    /** Countries in the order they are shown: the most used ones first, the rest sorted by the translated name */
+    /** Countries in the order they are shown: the top countries, a separator and the rest sorted by the translated name */
     private readonly countries: string[];
 
     constructor(props: WizardSettingsTabProps) {
@@ -172,9 +122,7 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
             zoom: 14,
         };
 
-        this.countries = TOP_COUNTRIES.concat(
-            [...COUNTRIES].sort((a, b) => props.t(a).localeCompare(props.t(b), I18n.getLanguage())),
-        );
+        this.countries = getCountryList(props.t);
     }
 
     async componentDidMount(): Promise<void> {
@@ -470,7 +418,10 @@ export default class WizardSettingsTab extends Component<WizardSettingsTabProps,
                     disabled={disabled}
                     options={this.countries}
                     value={this.state.country || null}
-                    getOptionLabel={(country: string) => this.props.t(country)}
+                    getOptionDisabled={(country: string) => country === COUNTRY_SEPARATOR}
+                    getOptionLabel={(country: string) =>
+                        country === COUNTRY_SEPARATOR ? country : this.props.t(country)
+                    }
                     onChange={(_e, country) => this.onChangeAddress(country || '', 'country')}
                     renderInput={params => (
                         <TextField

@@ -25,7 +25,7 @@ import { DialogConfirm, I18n, type Translate } from '@iobroker/gui-components';
 import { type AdminGuiConfig } from '@/types';
 
 import AdminUtils from '../../helpers/AdminUtils';
-import countries from '../../assets/json/countries.json';
+import { COUNTRY_SEPARATOR, getCountryList } from '../../helpers/countries';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
 
 const styles: Record<string, React.CSSProperties> = {
@@ -507,12 +507,13 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
     }
 
     getCounters = (): JSX.Element => {
-        const items = countries.map((elem, index) => (
+        const items = getCountryList(this.props.t).map(name => (
             <MenuItem
-                value={elem.name}
-                key={index}
+                value={name}
+                key={name}
+                disabled={name === COUNTRY_SEPARATOR}
             >
-                {this.props.t(elem.name)}
+                {name === COUNTRY_SEPARATOR ? name : this.props.t(name)}
             </MenuItem>
         ));
 

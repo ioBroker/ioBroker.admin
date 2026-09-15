@@ -56,6 +56,11 @@ const styles: Record<string, React.CSSProperties> = {
     },
 };
 
+/** Modes of the object browser in the URL (`#tab-objects/<mode>/<id>`). Other names there, e.g. "system", are dialogs of the App */
+const OBJECT_BROWSER_MODES = ['select', 'edit', 'settings', 'view'];
+
+type ObjectsNavigation = { mode: 'select' | 'edit' | 'settings' | 'viewFile'; id: string };
+
 interface ObjectsProps {
     t: Translate;
     lang: ioBroker.Languages;
@@ -83,6 +88,8 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
     private filters: Record<string, any>;
     private readonly t: Translate;
     private readonly wordCache: Record<string, string>;
+    /** The last navigation target from the URL, it is kept while a dialog of the App is open */
+    private navigateTo: ObjectsNavigation | null = null;
 
     constructor(props: ObjectsProps) {
         super(props);
@@ -114,6 +121,12 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
         };
         this.t = this.translate;
         this.wordCache = {};
+    }
+
+    /** The URL shows a dialog of the App (e.g., the system settings) and not a route of the object browser */
+    private static isAppDialogOpen(): boolean {
+        const dialog = Router.getLocation().dialog;
+        return !!dialog && !OBJECT_BROWSER_MODES.includes(dialog);
     }
 
     translate = (word: string, arg1: any, arg2: any): string => {
@@ -242,22 +255,32 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
     render(): (JSX.Element | null)[] {
         // Derive the browser's navigation target from the URL hash `#tab-objects/<mode>/<id>`.
         // The ObjectBrowser stays URL-agnostic; we translate the route here and back (onNavigateTo).
-        const location = Router.getLocation();
-        const navigateTo =
-            location.tab === 'tab-objects' && location.id
-                ? {
-                      mode: (location.dialog === 'view' ? 'viewFile' : location.dialog || 'select') as
-                          'select' | 'edit' | 'settings' | 'viewFile',
-                      id: location.id,
-                  }
-                : null;
+        // A dialog of the App (e.g., the system settings) replaces the route of the browser in the URL.
+        // Meanwhile, the last target is kept and nothing is reported, otherwise the browser would write
+        // its selection back into the URL and close the dialog immediately.
+        if (!Objects.isAppDialogOpen()) {
+            const location = Router.getLocation();
+            this.navigateTo =
+                location.tab === 'tab-objects' && location.id
+                    ? {
+                          mode: (location.dialog === 'view'
+                              ? 'viewFile'
+                              : location.dialog || 'select') as ObjectsNavigation['mode'],
+                          id: location.id,
+                      }
+                    : null;
+        }
+        const navigateTo = this.navigateTo;
 
         return [
             this.renderToast(),
             <ObjectBrowser
                 key="browser"
                 navigateTo={navigateTo}
-                onNavigateTo={(nav: { mode: 'select' | 'edit' | 'settings' | 'viewFile'; id: string } | null) => {
+                onNavigateTo={(nav: ObjectsNavigation | null) => {
+                    if (Objects.isAppDialogOpen()) {
+                        return;
+                    }
                     if (!nav?.id) {
                         Router.doNavigate('tab-objects');
                     } else {

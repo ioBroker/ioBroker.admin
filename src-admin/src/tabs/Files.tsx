@@ -18,6 +18,11 @@ import {
 import FileEditor from '../components/FileEditor';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
 
+/** Modes of the file browser in the URL (`#tab-files/<mode>/<id>`). Other names there, e.g. "system", are dialogs of the App */
+const FILE_BROWSER_MODES = ['select', 'view'];
+
+type FilesNavigation = { mode: 'select' | 'view'; id: string };
+
 interface FilesProps {
     t: Translate;
     lang: ioBroker.Languages;
@@ -35,6 +40,9 @@ export default class Files extends Component<FilesProps> {
 
     private objects: Record<string, ioBroker.Object>;
 
+    /** The last navigation target from the URL, it is kept while a dialog of the App is open */
+    private navigateTo: FilesNavigation | null = null;
+
     constructor(props: FilesProps) {
         super(props);
         this.t = this.translate;
@@ -44,6 +52,12 @@ export default class Files extends Component<FilesProps> {
 
     componentDidMount(): void {
         void this.props.socket.getObjects(true, true).then(objects => (this.objects = objects));
+    }
+
+    /** The URL shows a dialog of the App (e.g., the system settings) and not a route of the file browser */
+    private static isAppDialogOpen(): boolean {
+        const dialog = Router.getLocation().dialog;
+        return !!dialog && !FILE_BROWSER_MODES.includes(dialog);
     }
 
     translate = (word: string, arg1?: any, arg2?: any): string => {
@@ -145,18 +159,27 @@ export default class Files extends Component<FilesProps> {
         // Derive the browser's navigation from the URL hash `#tab-files/<mode>/<encoded-id>`.
         // File IDs contain "/" (e.g. "email.admin/custom/assets/x.js"), so the id segment is
         // URL-encoded (the Router decodes it again in getLocation). The FileBrowser stays URL-agnostic.
-        const location = Router.getLocation();
-        const navigateTo =
-            location.tab === 'tab-files' && location.id
-                ? { mode: location.dialog === 'view' ? 'view' : 'select', id: location.id }
-                : null;
+        // A dialog of the App (e.g., the system settings) replaces the route of the browser in the URL.
+        // Meanwhile, the last target is kept and nothing is reported, otherwise the browser would write
+        // its selection back into the URL and close the dialog immediately.
+        if (!Files.isAppDialogOpen()) {
+            const location = Router.getLocation();
+            this.navigateTo =
+                location.tab === 'tab-files' && location.id
+                    ? { mode: location.dialog === 'view' ? 'view' : 'select', id: location.id }
+                    : null;
+        }
+        const navigateTo = this.navigateTo;
 
         return (
             <TabContainer>
                 <TabContent overflow="auto">
                     <FileBrowser
                         navigateTo={navigateTo}
-                        onNavigateTo={(nav: { mode: 'select' | 'view'; id: string } | null) => {
+                        onNavigateTo={(nav: FilesNavigation | null) => {
+                            if (Files.isAppDialogOpen()) {
+                                return;
+                            }
                             if (!nav?.id) {
                                 Router.doNavigate('tab-files');
                             } else {
