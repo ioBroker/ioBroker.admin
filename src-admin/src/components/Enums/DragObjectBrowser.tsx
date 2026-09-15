@@ -35,7 +35,7 @@ interface DragWrapperProps {
 interface DragSettings {
     type: string;
     end: (item: TreeItem, monitor: any) => void;
-    item: { data: TreeItemData; preview: JSX.Element | null };
+    item: { data: TreeItemData; children?: TreeItem[]; preview: JSX.Element | null };
     collect: (monitor: DragSourceMonitor) => {
         isDragging?: boolean;
         canDrag?: boolean;
@@ -47,9 +47,27 @@ interface DragObjectBrowserProps {
     lang: ioBroker.Languages;
     socket: AdminConnection;
     addItemToEnum: (id: string, enumId: string) => void;
+    /** Called when a folder without its own object was dropped: `ids` are the objects found below it */
+    addFolderToEnum: (folderId: string, ids: string[], enumId: string) => void;
     stylesParent: Record<string, React.CSSProperties>;
     getName: (name: ioBroker.StringOrTranslated | undefined) => string;
     theme: IobTheme;
+}
+
+const MEMBER_TYPES: ioBroker.ObjectType[] = ['state', 'channel', 'device'];
+
+/** Collect the topmost visible states, channels and devices below a folder */
+function collectMemberIds(item: TreeItem, ids: string[]): void {
+    item.children?.forEach(child => {
+        if (child.data.sumVisibility === false) {
+            return;
+        }
+        if (child.data.obj && MEMBER_TYPES.includes(child.data.obj.type)) {
+            ids.push(child.data.obj._id);
+        } else {
+            collectMemberIds(child, ids);
+        }
+    });
 }
 
 const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element | null => {
@@ -66,8 +84,11 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element | null =>
                     if (item.data.obj) {
                         props.addItemToEnum(item.data.obj._id, dropResult.enumId);
                     } else {
-                        // all children ??
-                        window.alert(`TODO: Add all direct children of ${item.data.id}`);
+                        const ids: string[] = [];
+                        collectMemberIds(item, ids);
+                        if (ids.length) {
+                            props.addFolderToEnum(item.data.id, ids, dropResult.enumId);
+                        }
                     }
                 }
             };
@@ -77,6 +98,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element | null =>
                 end: onDragEnd,
                 item: {
                     data: dragProps.item.data,
+                    children: dragProps.item.children,
                     preview:
                         dragProps.item.data && dragProps.item.data.obj ? (
                             <Card
@@ -143,7 +165,7 @@ const DragObjectBrowser = (props: DragObjectBrowserProps): JSX.Element | null =>
         };
         setWrapperState({ DragWrapper });
         // eslint-disable-next-line
-    }, [props.stylesParent, props.addItemToEnum, props.getName]); // react-hooks/exhaustive-deps
+    }, [props.stylesParent, props.addItemToEnum, props.addFolderToEnum, props.getName]); // react-hooks/exhaustive-deps
 
     return wrapperState ? (
         <ObjectBrowser

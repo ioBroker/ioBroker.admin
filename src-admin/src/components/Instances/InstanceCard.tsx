@@ -1,8 +1,8 @@
 import React, { type JSX } from 'react';
 
-import { Box, Card, CardContent, CardMedia, Fab, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Fab, IconButton, Typography } from '@mui/material';
 
-import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { MoreVert as MoreVertIcon, Close as IconClose } from '@mui/icons-material';
 
 import { Utils, type IobTheme } from '@iobroker/gui-components';
 
@@ -40,35 +40,9 @@ const styles: Record<string, any> = {
         height: 0,
     },
     close: {
-        width: 20,
-        height: 20,
-        opacity: 0.9,
-        cursor: 'pointer',
-        position: 'relative',
-        marginLeft: 'auto',
-        mb: '10px',
-        transition: 'all 0.6s ease',
-        '&:hover': {
-            transform: 'rotate(90deg)',
-        },
-        '&:before': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)',
-        },
-        '&:after': {
-            position: 'absolute',
-            left: 9,
-            content: '""',
-            height: 20,
-            width: 3,
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)',
-        },
+        display: 'flex',
+        ml: 'auto',
+        mt: '-4px',
     },
     footerBlock: (theme: IobTheme) => ({
         background: theme.palette.background.default,
@@ -192,8 +166,8 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                         component="div"
                         sx={styles.collapseIcon}
                     >
-                        <Box
-                            component="div"
+                        <IconButton
+                            size="small"
                             sx={styles.close}
                             onClick={() => {
                                 if (this.state.openDialog) {
@@ -203,7 +177,9 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                                     this.props.context.onToggleExpanded(this.props.id, false),
                                 );
                             }}
-                        />
+                        >
+                            <IconClose />
+                        </IconButton>
                     </Box>
                     <Typography
                         gutterBottom

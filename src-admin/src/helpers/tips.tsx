@@ -1,3 +1,4 @@
+import React from 'react';
 import enTips from '@/i18nTips/en.json';
 import deTips from '@/i18nTips/de.json';
 import ruTips from '@/i18nTips/ru.json';
@@ -46,8 +47,25 @@ export const TIPS: string[] = Object.keys(enTips);
  * @param id name of the tip
  * @param lang language of the user interface
  */
-export function getTipText(id: string, lang: ioBroker.Languages): string {
-    return TIP_TEXTS[lang]?.[id] || TIP_TEXTS.en[id] || id;
+export function getTipText(id: string, lang: ioBroker.Languages): React.JSX.Element | string {
+    const text = TIP_TEXTS[lang]?.[id] || TIP_TEXTS.en[id] || id;
+    // Looking for base64
+    const m = text.match(/<img\s+src='([\w;:/])'\s+\/>/);
+    if (m) {
+        const base64 = m[1];
+        const parts = text.split(m[0]);
+        return (
+            <span>
+                {parts[0]}
+                <img
+                    src={`data:image/svg;base64,${base64}`}
+                    alt={id}
+                />
+                {parts[1]}
+            </span>
+        );
+    }
+    return text;
 }
 
 /**

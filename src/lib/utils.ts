@@ -547,7 +547,7 @@ export function getAdminPublicPath(reverseProxy: ReverseProxyItem[] | undefined 
  * the same global that `@iobroker/socket-client` uses to build the web-socket URL.
  */
 export function adminHref(path: string): string {
-    // allow / dont modify absolute urls f.e. CustomTab href from adminTab.link
+    // allow / don't modify absolute URLs f.e. CustomTab href from adminTab.link
     if (path.startsWith('http://') || path.startsWith('https://')) {
         return path;
     }

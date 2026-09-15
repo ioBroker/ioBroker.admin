@@ -13,6 +13,21 @@ const query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, 
 const args = {};
 var theme = null;
 
+// The stylesheet of this old GUI (adapter.css) only knows the theme names that existed when it was
+// written. A newer name like `modernDark` would produce the class `react-modernDark`, which no rule
+// matches, and the page would stay bright inside a dark admin. So every unknown name is mapped down
+// onto the plain `dark`/`light` it descends from.
+var LEGACY_THEMES = ['dark', 'blue', 'light', 'colored'];
+// every theme that is drawn on a dark background - the vendor themes included
+var DARK_THEMES = ['dark', 'blue', 'modernDark', 'NW', 'HA'];
+
+function toLegacyTheme(themeName) {
+    if (LEGACY_THEMES.indexOf(themeName) !== -1) {
+        return themeName;
+    }
+    return DARK_THEMES.indexOf(themeName) !== -1 ? 'dark' : 'light';
+}
+
 // parse parameters
 query
     .trim()
@@ -475,13 +490,13 @@ function preInit() {
         close();
     });
 
-    // detect, that we are now in react container (themeNames = ['dark', 'blue', 'colored', 'light'])
+    // detect, that we are now in react container (the admin sends its current theme name)
     const _query = query.split('&');
 
     for (var q = 0; q < _query.length; q++) {
         if (_query[q].indexOf('react=') !== -1) {
-            $('.adapter-container').addClass('react-' + _query[q].substring(6));
-            theme = 'react-' + _query[q].substring(6);
+            theme = 'react-' + toLegacyTheme(_query[q].substring(6));
+            $('.adapter-container').addClass(theme);
         }
     }
 

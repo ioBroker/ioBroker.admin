@@ -366,6 +366,7 @@
         "alive",
         "autocomplete",
         "autocompleteSendTo",
+        "certCollection",
         "certificate",
         "certificates",
         "checkDocker",
@@ -395,6 +396,7 @@
         "ip",
         "jsonEditor",
         "language",
+        "license",
         "number",
         "oauth2",
         "objectId",
@@ -408,6 +410,7 @@
         "select",
         "selectSendTo",
         "sendTo",
+        "sendto",
         "setState",
         "slider",
         "state",
@@ -419,6 +422,7 @@
         "text",
         "textSendTo",
         "timePicker",
+        "topic",
         "user",
         "uuid",
         "yamlEditor"
@@ -429,7 +433,14 @@
       "properties": {
         "placeholder": {
           "description": "Placeholder (for text control)",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "min": {
           "description": "Minimal value",
@@ -487,7 +498,16 @@
         "onChange": true,
         "noTranslation": true,
         "confirm": true,
-        "doNotSave": true
+        "doNotSave": true,
+        "readOnly": {
+          "description": "Read-only field",
+          "type": "boolean"
+        },
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -585,7 +605,11 @@
         "confirm": true,
         "button": true,
         "onChange": true,
-        "doNotSave": true
+        "doNotSave": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -625,7 +649,14 @@
         },
         "placeholder": {
           "description": "Placeholder (for text control)",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "minRows": {
           "description": "default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row",
@@ -673,7 +704,24 @@
         "noTranslation": true,
         "confirm": true,
         "maxLength": true,
-        "doNotSave": true
+        "doNotSave": true,
+        "max": {
+          "description": "Deprecated: use maxLength",
+          "type": "number"
+        },
+        "validateJson": {
+          "type": "boolean",
+          "description": "if true, the text will be validated as JSON"
+        },
+        "allowEmpty": {
+          "type": "boolean",
+          "description": "if true, the JSON will be validated only if the value is not empty"
+        },
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -778,7 +826,13 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -821,7 +875,29 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "leCollectionName": {
+          "description": "Name of the attribute for the Let's Encrypt collection (default: leCollection)",
+          "type": "string"
+        },
+        "certPublicName": {
+          "description": "Name of the attribute for the public certificate (default: certPublic)",
+          "type": "string"
+        },
+        "certPrivateName": {
+          "description": "Name of the attribute for the private certificate (default: certPrivate)",
+          "type": "string"
+        },
+        "certChainedName": {
+          "description": "Name of the attribute for the chained certificate (default: certChained)",
+          "type": "string"
+        },
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -881,7 +957,16 @@
         "onChange": true,
         "noTranslation": true,
         "confirm": true,
-        "maxLength": true
+        "maxLength": true,
+        "max": {
+          "description": "Deprecated: use maxLength",
+          "type": "number"
+        },
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -924,7 +1009,16 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "readOnly": {
+          "description": "Same as disabled",
+          "type": "boolean"
+        },
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -978,7 +1072,13 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -1051,7 +1151,11 @@
         "onChange": true,
         "noTranslation": true,
         "confirm": true,
-        "doNotSave": true
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "jsonData": true
       }
     },
     "qrCodeSendToProps": {
@@ -1148,7 +1252,10 @@
         "onChange": true,
         "noTranslation": true,
         "confirm": true,
-        "doNotSave": true
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true
       }
     },
     "deviceManagerProps": {
@@ -1190,7 +1297,13 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -1240,32 +1353,44 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "placeholder": {
+          "description": "Placeholder (for text control)",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        },
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
         "type"
       ],
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "complex": true
+      "not": {
+        "type": "object",
+        "properties": {
+          "complex": {
+            "const": true
           },
-          "required": [
-            "complex"
-          ]
+          "simple": {
+            "const": true
+          }
         },
-        {
-          "type": "object",
-          "properties": {
-            "simple": true
-          },
-          "required": [
-            "simple"
-          ]
-        }
-      ]
+        "required": [
+          "complex",
+          "simple"
+        ]
+      }
     },
     "sendToProps": {
       "type": "object",
@@ -1312,7 +1437,14 @@
         },
         "placeholder": {
           "description": "Placeholder (for text control)",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "useNative": {
           "description": "if adapter returns result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration",
@@ -1378,7 +1510,26 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "reloadBrowser": {
+          "description": "Reload the browser, if the instance responds with `reloadBrowser: true`",
+          "type": "boolean"
+        },
+        "title": {
+          "description": "Tooltip of the button",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        }
       },
       "additionalProperties": false,
       "required": [
@@ -1428,7 +1579,14 @@
         },
         "trueText": {
           "description": "This text will be shown if the value is true",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "trueTextStyle": {
           "description": "Style of the text if the value is true",
@@ -1436,7 +1594,14 @@
         },
         "falseText": {
           "description": "This text will be shown if the value is false",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "falseTextStyle": {
           "description": "Style of the text if the value is false",
@@ -1489,7 +1654,14 @@
         },
         "blinkOnUpdate": {
           "description": "Value should blink when updated (true or color). Only texts",
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "size": {
           "description": "Font size: small, normal, large or number",
@@ -1601,7 +1773,22 @@
         "tooltip": true,
         "expertMode": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "defaultSendTo": true,
+        "allowSaveWithError": true,
+        "validator": true,
+        "validatorNoSaveOnError": true,
+        "validatorErrorText": true,
+        "noMultiEdit": true,
+        "default": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -1675,7 +1862,13 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -1736,7 +1929,7 @@
         },
         "root": {
           "description": "Show only this root object and its children",
-          "type": "boolean"
+          "type": "string"
         },
         "customFilter": {
           "description": "Cannot be used together with `types` settings. Example: `{type: ['channel', 'device']}` - show only channels and devices",
@@ -1759,7 +1952,14 @@
         },
         "placeholder": {
           "description": "Placeholder (for text control)",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "label": true,
         "type": true,
@@ -1793,7 +1993,17 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "filters": {
+          "description": "Predefined search filters",
+          "type": "object"
+        },
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -1825,7 +2035,14 @@
         },
         "refreshLabel": {
           "description": "Button label for refreshing the token",
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "label": true,
         "type": true,
@@ -1849,7 +2066,23 @@
         "darkStyle": true,
         "tooltip": true,
         "expertMode": true,
-        "confirm": true
+        "confirm": true,
+        "defaultSendTo": true,
+        "allowSaveWithError": true,
+        "validator": true,
+        "validatorNoSaveOnError": true,
+        "validatorErrorText": true,
+        "noMultiEdit": true,
+        "default": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "noTranslation": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -1936,7 +2169,13 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": []
@@ -2018,7 +2257,43 @@
         "noMultiEdit": true,
         "tooltip": true,
         "expertMode": true,
-        "noTranslation": true
+        "noTranslation": true,
+        "timesteps": {
+          "description": "Deprecated: use timeSteps",
+          "type": "object",
+          "additionalProperties": false,
+          "default": {
+            "hours": 1,
+            "minutes": 5,
+            "seconds": 5
+          },
+          "properties": {
+            "hours": {
+              "type": "number"
+            },
+            "minutes": {
+              "type": "number"
+            },
+            "seconds": {
+              "type": "number"
+            }
+          }
+        },
+        "help": true,
+        "helpLink": true,
+        "validator": true,
+        "validatorNoSaveOnError": true,
+        "validatorErrorText": true,
+        "default": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -2068,7 +2343,13 @@
         "defaultFunc": true,
         "onChange": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -2129,7 +2410,31 @@
         "tooltip": true,
         "expertMode": true,
         "noTranslation": true,
-        "confirm": true
+        "confirm": true,
+        "max": {
+          "description": "Deprecated: use maxLength",
+          "type": "number"
+        },
+        "placeholder": {
+          "description": "Placeholder (for text control)",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
+        },
+        "default": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -2187,7 +2492,21 @@
         "noMultiEdit": true,
         "tooltip": true,
         "expertMode": true,
-        "noTranslation": true
+        "noTranslation": true,
+        "help": true,
+        "helpLink": true,
+        "validator": true,
+        "validatorNoSaveOnError": true,
+        "validatorErrorText": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -2241,7 +2560,21 @@
         "noMultiEdit": true,
         "tooltip": true,
         "expertMode": true,
-        "noTranslation": true
+        "noTranslation": true,
+        "help": true,
+        "helpLink": true,
+        "validator": true,
+        "validatorNoSaveOnError": true,
+        "validatorErrorText": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
       },
       "additionalProperties": false,
       "required": [
@@ -2359,7 +2692,17 @@
                     "attr": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "changeGuiLanguage": {
+                      "description": "If true, the language of the GUI will be changed to the selected language",
+                      "type": "boolean"
+                    },
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2410,7 +2753,14 @@
                 },
                 "placeholder": {
                   "description": "Placeholder (for text control)",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
                 },
                 "alsoDependsOn": {
                   "$ref": "#/definitions/alsoDependsOnSendProp"
@@ -2451,7 +2801,67 @@
                 "onChange": true,
                 "noTranslation": true,
                 "confirm": true,
-                "maxLength": true
+                "maxLength": true,
+                "options": {
+                  "description": "Options which can be completed. [\"value1\", \"value2\", ...] or [{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]",
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "label": {
+                            "oneOf": [
+                              {
+                                "description": "Value label",
+                                "type": "string"
+                              },
+                              {
+                                "$ref": "#/definitions/multilingual"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "oneOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "hidden": {
+                            "type": "boolean"
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "description": "Icon URL to display next to the option",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "max": {
+                  "description": "Deprecated: use maxLength",
+                  "type": "number"
+                },
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true
               },
               "additionalProperties": false,
               "required": [
@@ -2540,7 +2950,29 @@
                 "default": true,
                 "defaultFunc": true,
                 "onChange": true,
-                "confirm": true
+                "confirm": true,
+                "placeholder": {
+                  "description": "Placeholder (for text control)",
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "showAllValues": {
+                  "description": "Show item even if no label was found for it (by multiple), default=`true`",
+                  "type": "boolean"
+                },
+                "noClearButton": {
+                  "description": "If true, the clear button will not be shown",
+                  "type": "boolean"
+                },
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true
               },
               "additionalProperties": false,
               "required": [
@@ -2629,7 +3061,11 @@
                 "default": true,
                 "defaultFunc": true,
                 "onChange": true,
-                "confirm": true
+                "confirm": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true
               },
               "additionalProperties": false,
               "required": [
@@ -2732,7 +3168,22 @@
                 "default": true,
                 "defaultFunc": true,
                 "onChange": true,
-                "confirm": true
+                "confirm": true,
+                "height": {
+                  "description": "Height of the image: a number in pixels or any CSS length",
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true
               },
               "additionalProperties": false,
               "required": [
@@ -2809,7 +3260,16 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2875,7 +3335,17 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "noClearButton": {
+                      "description": "If true, the clear button will not be shown",
+                      "type": "boolean"
+                    },
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -2954,7 +3424,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3062,7 +3538,13 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -3144,7 +3626,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3228,7 +3716,21 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "color": {
+                      "description": "Color of the collapsable header: `primary` or `secondary`",
+                      "type": "string",
+                      "enum": [
+                        "primary",
+                        "secondary"
+                      ]
+                    },
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3351,7 +3853,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3400,7 +3908,14 @@
                     },
                     "frameBorder": {
                       "description": "Frame border width (default: 0)",
-                      "type": "number"
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
                     },
                     "reloadOnShow": {
                       "description": "Reload iframe when it becomes visible in the viewport",
@@ -3447,7 +3962,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3531,7 +4052,48 @@
                 "defaultSendTo": true,
                 "allowSaveWithError": true,
                 "onChange": true,
-                "confirm": true
+                "confirm": true,
+                "sandbox": {
+                  "description": "Sandbox attributes for security restrictions (e.g., 'allow-same-origin allow-scripts')",
+                  "type": "string"
+                },
+                "allowFullscreen": {
+                  "description": "Allow fullscreen mode (default: false)",
+                  "type": "boolean"
+                },
+                "frameBorder": {
+                  "description": "Frame border width (default: 0)",
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "lazyLoad": {
+                  "description": "Lazy loading: 'lazy' or 'eager' (default: 'lazy')",
+                  "type": "string",
+                  "enum": [
+                    "lazy",
+                    "eager"
+                  ]
+                },
+                "reloadOnShow": {
+                  "description": "Reload iframe when it becomes visible in the viewport",
+                  "type": "boolean"
+                },
+                "innerStyle": {
+                  "description": "CSS styles for the iframe element",
+                  "type": "object"
+                },
+                "noMultiEdit": true,
+                "expertMode": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true
               },
               "additionalProperties": false,
               "required": [
@@ -3544,7 +4106,10 @@
               "type": "object",
               "properties": {
                 "type": {
-                  "const": "sendTo"
+                  "enum": [
+                    "sendTo",
+                    "sendto"
+                  ]
                 }
               }
             },
@@ -3606,7 +4171,14 @@
                     },
                     "placeholder": {
                       "description": "Placeholder (for text control)",
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
                     },
                     "useNative": {
                       "description": "if adapter returns result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration",
@@ -3656,7 +4228,28 @@
                     "noTranslation": true,
                     "confirm": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "reloadBrowser": {
+                      "description": "Reload the browser, if the instance responds with `reloadBrowser: true`",
+                      "type": "boolean"
+                    },
+                    "window": {
+                      "description": "if `openUrl` is true, this is a name of the new window. Could be overwritten if response consist `window` attribute. It is not the title of the new window!",
+                      "type": "string",
+                      "default": "_blank"
+                    },
+                    "timeout": {
+                      "description": "timeout for request in ms. Default: none.",
+                      "type": "number"
+                    },
+                    "controlStyle": {
+                      "description": "Style of the button or control itself",
+                      "type": "object"
+                    }
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3733,7 +4326,22 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "readOnly": {
+                  "description": "The read-only flag. Visible is automatically true if readOnly is true",
+                  "type": "boolean"
+                },
+                "maxLength": true,
+                "max": {
+                  "description": "Deprecated: use maxLength",
+                  "type": "number"
+                },
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -3799,12 +4407,79 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "placeholder": {
+                      "description": "Placeholder (for text control)",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
+                    },
+                    "disableEdit": {
+                      "description": "If the user can manually enter the file name and not only through the select dialog",
+                      "type": "boolean"
+                    },
+                    "limitPath": {
+                      "description": "Limit selection to one specific object of type `meta` and the following path (not mandatory)",
+                      "type": "string"
+                    },
+                    "filterFiles": {
+                      "description": "Like ['png', 'svg', 'bmp', 'jpg', 'jpeg', 'gif']",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "allowUpload": {
+                      "description": "Allowed upload of files",
+                      "type": "boolean"
+                    },
+                    "allowDownload": {
+                      "description": "Allowed download of files (default true)",
+                      "type": "boolean"
+                    },
+                    "allowCreateFolder": {
+                      "description": "Allowed creation of folders",
+                      "type": "boolean"
+                    },
+                    "allowView": {
+                      "description": "Allowed tile view (default true)",
+                      "type": "boolean"
+                    },
+                    "showToolbar": {
+                      "description": "Show toolbar (default true)",
+                      "type": "boolean"
+                    },
+                    "selectOnlyFolders": {
+                      "description": "User can select only folders (e.g. for the upload path)",
+                      "type": "boolean"
+                    },
+                    "trim": {
+                      "description": "Trim the file name",
+                      "type": "boolean"
+                    },
+                    "maxLength": {
+                      "description": "Max length of the file name",
+                      "type": "number"
+                    },
+                    "max": {
+                      "description": "Deprecated: use maxLength",
+                      "type": "number"
+                    },
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
-                    "type",
-                    "filename"
+                    "type"
                   ]
                 }
               ]
@@ -3890,7 +4565,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -3981,7 +4662,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4045,7 +4732,17 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "readOnly": {
+                  "description": "Same as disabled",
+                  "type": "boolean"
+                },
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -4080,7 +4777,14 @@
                 "sort": true,
                 "placeholder": {
                   "description": "Placeholder (for text control)",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
                 },
                 "min": {
                   "description": "Minimal value",
@@ -4138,7 +4842,16 @@
                 "onChange": true,
                 "noTranslation": true,
                 "confirm": true,
-                "doNotSave": true
+                "doNotSave": true,
+                "readOnly": {
+                  "description": "Read-only field",
+                  "type": "boolean"
+                },
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -4161,7 +4874,69 @@
                   "$ref": "#/definitions/tableItemBaseProps"
                 },
                 {
-                  "$ref": "#/definitions/aliveProps"
+                  "type": "object",
+                  "properties": {
+                    "instance": {
+                      "description": "Check if the instance is alive. If not defined, it will be used current instance. You can use `${data.number}` pattern in the text.",
+                      "type": "string"
+                    },
+                    "textAlive": {
+                      "description": "Default text is `Instance %s is alive`, where `%s` will be replaced by `ADAPTER.0`",
+                      "type": "string"
+                    },
+                    "textNotAlive": {
+                      "description": "Default text is `Instance %s is not alive`, where `%s` will be replaced by `ADAPTER.0`",
+                      "type": "string"
+                    },
+                    "label": true,
+                    "type": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "dependsOnStates": true,
+                    "debug": true,
+                    "os": true,
+                    "notOs": true,
+                    "docker": true,
+                    "hideOnlyControl": true,
+                    "disabled": true,
+                    "helpLink": true,
+                    "help": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true,
+                    "attr": true,
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ]
                 }
               ]
             }
@@ -4185,7 +4960,14 @@
                   "properties": {
                     "placeholder": {
                       "description": "Placeholder (for text control)",
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
                     },
                     "freeSolo": {
                       "description": "Set freeSolo to true so the textbox can contain any arbitrary value.",
@@ -4283,7 +5065,13 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4356,32 +5144,44 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "placeholder": {
+                  "description": "Placeholder (for text control)",
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
                 "type"
               ],
-              "oneOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "complex": true
+              "not": {
+                "type": "object",
+                "properties": {
+                  "complex": {
+                    "const": true
                   },
-                  "required": [
-                    "complex"
-                  ]
+                  "simple": {
+                    "const": true
+                  }
                 },
-                {
-                  "type": "object",
-                  "properties": {
-                    "simple": true
-                  },
-                  "required": [
-                    "simple"
-                  ]
-                }
-              ]
+                "required": [
+                  "complex",
+                  "simple"
+                ]
+              }
             }
           },
           {
@@ -4423,7 +5223,14 @@
                 },
                 "placeholder": {
                   "description": "Placeholder (for text control)",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
                 },
                 "minRows": {
                   "description": "default is 1. Set this attribute to `2` or more if you want to have a textarea with more than one row",
@@ -4483,7 +5290,24 @@
                 "noTranslation": true,
                 "confirm": true,
                 "maxLength": true,
-                "doNotSave": true
+                "doNotSave": true,
+                "max": {
+                  "description": "Deprecated: use maxLength",
+                  "type": "number"
+                },
+                "copyToClipboard": {
+                  "type": "boolean",
+                  "description": "Shows copy to clipboard button, but only if disabled or read-only"
+                },
+                "time": {
+                  "description": "If true, the text will be shown as time. The value is readonly automatically",
+                  "type": "boolean"
+                },
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -4579,7 +5403,13 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -4649,7 +5479,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4703,7 +5539,14 @@
                     },
                     "okText": {
                       "description": "Alert that will be shown by pressing the button",
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
                     },
                     "error": {
                       "description": "{error1: {en: 'E'}, error2: {en: 'E2'}}",
@@ -4754,7 +5597,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4845,7 +5694,12 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4963,7 +5817,11 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -4992,8 +5850,12 @@
                   "type": "object",
                   "properties": {
                     "short": {
-                      "description": "no system.func.",
-                      "type": "string"
+                      "description": "Value will be without enum.functions. prefix",
+                      "type": "boolean"
+                    },
+                    "allowDeactivate": {
+                      "description": "If false, the empty option is not shown. Default: true",
+                      "type": "boolean"
                     },
                     "attr": true,
                     "label": true,
@@ -5032,7 +5894,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -5060,8 +5928,12 @@
                   "type": "object",
                   "properties": {
                     "short": {
-                      "description": "no system.room.",
-                      "type": "string"
+                      "description": "Value will be without enum.rooms. prefix",
+                      "type": "boolean"
+                    },
+                    "allowDeactivate": {
+                      "description": "If false, the empty option is not shown. Default: true",
+                      "type": "boolean"
                     },
                     "attr": true,
                     "label": true,
@@ -5100,7 +5972,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -5128,8 +6006,8 @@
                   "type": "object",
                   "properties": {
                     "short": {
-                      "description": "no system.user.",
-                      "type": "string"
+                      "description": "Value will be without system.user. prefix",
+                      "type": "boolean"
                     },
                     "attr": true,
                     "label": true,
@@ -5168,7 +6046,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -5247,7 +6131,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -5320,12 +6210,17 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
-                    "type",
-                    "certType"
+                    "type"
                   ]
                 }
               ]
@@ -5401,7 +6296,13 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -5426,7 +6327,74 @@
                   "$ref": "#/definitions/tableItemBaseProps"
                 },
                 {
-                  "$ref": "#/definitions/certificatesProps"
+                  "type": "object",
+                  "description": "Universal type that manages `certPublic`, `certPrivate`, `certChained` and `leCollection` attributes",
+                  "properties": {
+                    "label": true,
+                    "type": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "dependsOnStates": true,
+                    "debug": true,
+                    "os": true,
+                    "notOs": true,
+                    "docker": true,
+                    "hideOnlyControl": true,
+                    "disabled": true,
+                    "helpLink": true,
+                    "help": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "leCollectionName": {
+                      "description": "Name of the attribute for the Let's Encrypt collection (default: leCollection)",
+                      "type": "string"
+                    },
+                    "certPublicName": {
+                      "description": "Name of the attribute for the public certificate (default: certPublic)",
+                      "type": "string"
+                    },
+                    "certPrivateName": {
+                      "description": "Name of the attribute for the private certificate (default: certPrivate)",
+                      "type": "string"
+                    },
+                    "certChainedName": {
+                      "description": "Name of the attribute for the chained certificate (default: certChained)",
+                      "type": "string"
+                    },
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true,
+                    "attr": true,
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ]
                 }
               ]
             }
@@ -5499,7 +6467,12 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "doNotSave": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               }
             }
           },
@@ -5614,7 +6587,13 @@
                 "default": true,
                 "defaultFunc": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "onChange": true,
+                "doNotSave": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -5791,7 +6770,24 @@
                       "type": "number"
                     }
                   ]
-                }
+                },
+                "defaultSendTo": true,
+                "allowSaveWithError": true,
+                "hideOnlyControl": true,
+                "disabled": true,
+                "validator": true,
+                "validatorNoSaveOnError": true,
+                "validatorErrorText": true,
+                "noMultiEdit": true,
+                "default": true,
+                "defaultFunc": true,
+                "onChange": true,
+                "confirm": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -5886,7 +6882,13 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -5975,7 +6977,14 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "onChange": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -6043,7 +7052,13 @@
                     "defaultFunc": true,
                     "onChange": true,
                     "noTranslation": true,
-                    "confirm": true
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
@@ -6125,7 +7140,7 @@
                 },
                 "root": {
                   "description": "Show only this root object and its children",
-                  "type": "boolean"
+                  "type": "string"
                 },
                 "customFilter": {
                   "description": "Cannot be used together with `types` settings. Example: `{type: ['channel', 'device']}` - show only channels and devices",
@@ -6144,7 +7159,14 @@
                 },
                 "placeholder": {
                   "description": "Placeholder (for text control)",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
                 },
                 "label": true,
                 "type": true,
@@ -6178,7 +7200,21 @@
                 "defaultFunc": true,
                 "onChange": true,
                 "noTranslation": true,
-                "confirm": true
+                "confirm": true,
+                "filters": {
+                  "description": "Predefined search filters",
+                  "type": "object"
+                },
+                "fillOnSelect": {
+                  "description": "Fill other config fields when an object ID is selected. Format: 'pathInObject=>attr,pathInObject=>attr(X)'. Example: 'common.name=>name,common.color=>color(X)'. Append '(X)' to overwrite non-empty fields.",
+                  "type": "string"
+                },
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -6237,7 +7273,41 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "variant": {
+                      "description": "Variant of the button",
+                      "type": "string",
+                      "enum": [
+                        "text",
+                        "outlined",
+                        "contained"
+                      ]
+                    },
+                    "color": {
+                      "description": "Color of the button",
+                      "type": "string",
+                      "enum": [
+                        "primary",
+                        "secondary"
+                      ]
+                    },
+                    "help": true,
+                    "helpLink": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false
                 }
@@ -6288,7 +7358,27 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "defaultSendTo": true,
+                    "help": true,
+                    "helpLink": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false
                 }
@@ -6338,7 +7428,24 @@
                     "width": true,
                     "title": true,
                     "filter": true,
-                    "sort": true
+                    "sort": true,
+                    "help": true,
+                    "helpLink": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false
                 }
@@ -6396,7 +7503,16 @@
                 "width": true,
                 "title": true,
                 "filter": true,
-                "sort": true
+                "sort": true,
+                "default": true,
+                "defaultFunc": true,
+                "onChange": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -6506,7 +7622,37 @@
                 "width": true,
                 "title": true,
                 "filter": true,
-                "sort": true
+                "sort": true,
+                "timesteps": {
+                  "description": "Deprecated: use timeSteps",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "default": {
+                    "hours": 1,
+                    "minutes": 5,
+                    "seconds": 5
+                  },
+                  "properties": {
+                    "hours": {
+                      "type": "number"
+                    },
+                    "minutes": {
+                      "type": "number"
+                    },
+                    "seconds": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "default": true,
+                "defaultFunc": true,
+                "onChange": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -6586,7 +7732,31 @@
                 "width": true,
                 "title": true,
                 "filter": true,
-                "sort": true
+                "sort": true,
+                "max": {
+                  "description": "Deprecated: use maxLength",
+                  "type": "number"
+                },
+                "placeholder": {
+                  "description": "Placeholder (for text control)",
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "default": true,
+                "defaultFunc": true,
+                "onChange": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
               },
               "additionalProperties": false,
               "required": [
@@ -6650,7 +7820,14 @@
                     },
                     "trueText": {
                       "description": "This text will be shown if the value is true",
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
                     },
                     "trueTextStyle": {
                       "description": "Style of the text if the value is true",
@@ -6658,7 +7835,14 @@
                     },
                     "falseText": {
                       "description": "This text will be shown if the value is false",
-                      "type": "string"
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/definitions/multilingual"
+                        }
+                      ]
                     },
                     "falseTextStyle": {
                       "description": "Style of the text if the value is false",
@@ -6711,7 +7895,14 @@
                     },
                     "blinkOnUpdate": {
                       "description": "Value should blink when updated (true or color). Only texts",
-                      "type": "boolean"
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
                     },
                     "size": {
                       "description": "Font size: small, normal, large or number",
@@ -6836,12 +8027,260 @@
                     "validatorErrorText": true,
                     "default": true,
                     "defaultFunc": true,
-                    "onChange": true
+                    "onChange": true,
+                    "noMultiEdit": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true
                   },
                   "additionalProperties": false,
                   "required": [
                     "type",
                     "oid"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "certCollection"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "leCollectionName": {
+                      "description": "Name of the attribute, where the collection is stored (default: leCollection)",
+                      "type": "string"
+                    },
+                    "attr": true,
+                    "type": true,
+                    "label": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "os": true,
+                    "notOs": true,
+                    "docker": true,
+                    "disabled": true,
+                    "dependsOnStates": true,
+                    "debug": true,
+                    "help": true,
+                    "helpLink": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true,
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "license"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "texts": {
+                      "description": "Array of paragraphs with texts, which will be shown each as a separate paragraph",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "licenseUrl": {
+                      "description": "URL to the license file",
+                      "type": "string"
+                    },
+                    "agreeText": {
+                      "description": "Text of the agree button",
+                      "type": "string"
+                    },
+                    "checkBox": {
+                      "description": "If defined, the checkbox with the given name will be shown. If checked, the agree button will be enabled.",
+                      "type": "string"
+                    },
+                    "attr": true,
+                    "type": true,
+                    "label": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "os": true,
+                    "notOs": true,
+                    "docker": true,
+                    "disabled": true,
+                    "dependsOnStates": true,
+                    "debug": true,
+                    "help": true,
+                    "helpLink": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true,
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "topic"
+                }
+              }
+            },
+            "then": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "maxLength": {
+                      "description": "Max length of the text in field",
+                      "type": "number"
+                    },
+                    "max": {
+                      "description": "Deprecated: use maxLength",
+                      "type": "number"
+                    },
+                    "attr": true,
+                    "type": true,
+                    "label": true,
+                    "defaultSendTo": true,
+                    "allowSaveWithError": true,
+                    "xs": true,
+                    "sm": true,
+                    "md": true,
+                    "lg": true,
+                    "xl": true,
+                    "newLine": true,
+                    "hidden": true,
+                    "hideOnlyControl": true,
+                    "os": true,
+                    "notOs": true,
+                    "docker": true,
+                    "disabled": true,
+                    "dependsOnStates": true,
+                    "debug": true,
+                    "help": true,
+                    "helpLink": true,
+                    "style": true,
+                    "darkStyle": true,
+                    "validator": true,
+                    "validatorNoSaveOnError": true,
+                    "validatorErrorText": true,
+                    "noMultiEdit": true,
+                    "tooltip": true,
+                    "expertMode": true,
+                    "default": true,
+                    "defaultFunc": true,
+                    "onChange": true,
+                    "noTranslation": true,
+                    "confirm": true,
+                    "doNotSave": true,
+                    "button": true,
+                    "buttonTooltip": true,
+                    "buttonTooltipNoTranslation": true,
+                    "data": true,
+                    "jsonData": true,
+                    "width": true,
+                    "title": true,
+                    "filter": true,
+                    "sort": true
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
                   ]
                 }
               ]
@@ -6892,8 +8331,15 @@
             "type": "boolean"
           },
           "hidden": {
-            "description": "JS function that could use 'native.attribute' for calculation",
-            "type": "string"
+            "description": "Boolean or JS function that could use 'native.attribute' for calculation",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
           },
           "hideOnlyControl": {
             "description": "If hidden the place will be shown, but no control",
@@ -6910,8 +8356,15 @@
             "type": "boolean"
           },
           "disabled": {
-            "description": "JS function that could use 'native.attribute' for calculation",
-            "type": "string"
+            "description": "Boolean or JS function that could use 'native.attribute' for calculation",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
           },
           "dependsOnStates": {
             "description": "ioBroker states, on which this element depends: `{ \"<alias>\": \"<state ID>\" }`. The states will be subscribed, and if one of them changes, `hidden`, `disabled`, `label`, `help`, `validator` and `defaultFunc` will be calculated anew. The values are available in all JS functions and in all `${...}` patterns as `_states.<alias>` and they contain the whole state object, e.g. `_states.running?.val`. A state ID that starts with a dot addresses the own instance: `.info.connection`. Wildcards are not allowed.",
@@ -7111,8 +8564,18 @@
             "type": "number"
           },
           "button": {
-            "description": "show link as button",
-            "type": "boolean"
+            "description": "Label of the button to request the value again with `defaultSendTo`. For `staticLink`/`staticText`: show the link as a button",
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/definitions/multilingual"
+              }
+            ]
           }
         }
       }
@@ -7195,7 +8658,17 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "changeGuiLanguage": {
+                        "description": "If true, the language of the GUI will be changed to the selected language",
+                        "type": "boolean"
+                      },
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7234,7 +8707,14 @@
                       },
                       "placeholder": {
                         "description": "Placeholder (for text control)",
-                        "type": "string"
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/definitions/multilingual"
+                          }
+                        ]
                       },
                       "alsoDependsOn": {
                         "$ref": "#/definitions/alsoDependsOnSendProp"
@@ -7275,7 +8755,67 @@
                       "onChange": true,
                       "noTranslation": true,
                       "confirm": true,
-                      "maxLength": true
+                      "maxLength": true,
+                      "options": {
+                        "description": "Options which can be completed. [\"value1\", \"value2\", ...] or [{\"value\": \"value\", \"label\": \"Value1\"}, \"value2\", ...]",
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "label": {
+                                  "oneOf": [
+                                    {
+                                      "description": "Value label",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "$ref": "#/definitions/multilingual"
+                                    }
+                                  ]
+                                },
+                                "value": {
+                                  "oneOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "hidden": {
+                                  "type": "boolean"
+                                },
+                                "color": {
+                                  "type": "string"
+                                },
+                                "icon": {
+                                  "description": "Icon URL to display next to the option",
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "value"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "max": {
+                        "description": "Deprecated: use maxLength",
+                        "type": "number"
+                      },
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7354,7 +8894,29 @@
                       "default": true,
                       "defaultFunc": true,
                       "onChange": true,
-                      "confirm": true
+                      "confirm": true,
+                      "placeholder": {
+                        "description": "Placeholder (for text control)",
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/definitions/multilingual"
+                          }
+                        ]
+                      },
+                      "showAllValues": {
+                        "description": "Show item even if no label was found for it (by multiple), default=`true`",
+                        "type": "boolean"
+                      },
+                      "noClearButton": {
+                        "description": "If true, the clear button will not be shown",
+                        "type": "boolean"
+                      },
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7433,7 +8995,11 @@
                       "default": true,
                       "defaultFunc": true,
                       "onChange": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7515,7 +9081,36 @@
                       "default": true,
                       "defaultFunc": true,
                       "onChange": true,
-                      "confirm": true
+                      "confirm": true,
+                      "width": {
+                        "description": "Width of the image: a number in pixels or any CSS length",
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "height": {
+                        "description": "Height of the image: a number in pixels or any CSS length",
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "noTranslation": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7558,7 +9153,14 @@
                       },
                       "frameBorder": {
                         "description": "Frame border width (default: 0)",
-                        "type": "number"
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
                       },
                       "reloadOnShow": {
                         "description": "Reload iframe when it becomes visible in the viewport",
@@ -7597,7 +9199,16 @@
                       "default": true,
                       "defaultFunc": true,
                       "onChange": true,
-                      "confirm": true
+                      "confirm": true,
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "noTranslation": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7668,7 +9279,49 @@
                       "default": true,
                       "defaultFunc": true,
                       "onChange": true,
-                      "confirm": true
+                      "confirm": true,
+                      "sandbox": {
+                        "description": "Sandbox attributes for security restrictions (e.g., 'allow-same-origin allow-scripts')",
+                        "type": "string"
+                      },
+                      "allowFullscreen": {
+                        "description": "Allow fullscreen mode (default: false)",
+                        "type": "boolean"
+                      },
+                      "frameBorder": {
+                        "description": "Frame border width (default: 0)",
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "lazyLoad": {
+                        "description": "Lazy loading: 'lazy' or 'eager' (default: 'lazy')",
+                        "type": "string",
+                        "enum": [
+                          "lazy",
+                          "eager"
+                        ]
+                      },
+                      "reloadOnShow": {
+                        "description": "Reload iframe when it becomes visible in the viewport",
+                        "type": "boolean"
+                      },
+                      "innerStyle": {
+                        "description": "CSS styles for the iframe element",
+                        "type": "object"
+                      },
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "noTranslation": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7735,7 +9388,27 @@
                       "tooltip": true,
                       "expertMode": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "width": {
+                        "description": "Width of the element (default: 100%)",
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7789,7 +9462,17 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "noClearButton": {
+                        "description": "If true, the clear button will not be shown",
+                        "type": "boolean"
+                      },
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7856,7 +9539,24 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "width": {
+                        "description": "Width of the element (default: 100%)",
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7928,7 +9628,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -7997,7 +9703,21 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "color": {
+                        "description": "Color of the collapsable header: `primary` or `secondary`",
+                        "type": "string",
+                        "enum": [
+                          "primary",
+                          "secondary"
+                        ]
+                      },
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8108,7 +9828,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8121,7 +9847,10 @@
                     "type": "object",
                     "properties": {
                       "type": {
-                        "const": "sendTo"
+                        "enum": [
+                          "sendTo",
+                          "sendto"
+                        ]
                       }
                     }
                   },
@@ -8206,12 +9935,79 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "placeholder": {
+                        "description": "Placeholder (for text control)",
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/definitions/multilingual"
+                          }
+                        ]
+                      },
+                      "disableEdit": {
+                        "description": "If the user can manually enter the file name and not only through the select dialog",
+                        "type": "boolean"
+                      },
+                      "limitPath": {
+                        "description": "Limit selection to one specific object of type `meta` and the following path (not mandatory)",
+                        "type": "string"
+                      },
+                      "filterFiles": {
+                        "description": "Like ['png', 'svg', 'bmp', 'jpg', 'jpeg', 'gif']",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "allowUpload": {
+                        "description": "Allowed upload of files",
+                        "type": "boolean"
+                      },
+                      "allowDownload": {
+                        "description": "Allowed download of files (default true)",
+                        "type": "boolean"
+                      },
+                      "allowCreateFolder": {
+                        "description": "Allowed creation of folders",
+                        "type": "boolean"
+                      },
+                      "allowView": {
+                        "description": "Allowed tile view (default true)",
+                        "type": "boolean"
+                      },
+                      "showToolbar": {
+                        "description": "Show toolbar (default true)",
+                        "type": "boolean"
+                      },
+                      "selectOnlyFolders": {
+                        "description": "User can select only folders (e.g. for the upload path)",
+                        "type": "boolean"
+                      },
+                      "trim": {
+                        "description": "Trim the file name",
+                        "type": "boolean"
+                      },
+                      "maxLength": {
+                        "description": "Max length of the file name",
+                        "type": "number"
+                      },
+                      "max": {
+                        "description": "Deprecated: use maxLength",
+                        "type": "number"
+                      },
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
-                      "type",
-                      "filename"
+                      "type"
                     ]
                   }
                 },
@@ -8285,7 +10081,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8375,7 +10177,14 @@
                     "properties": {
                       "placeholder": {
                         "description": "Placeholder (for text control)",
-                        "type": "string"
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/definitions/multilingual"
+                          }
+                        ]
                       },
                       "freeSolo": {
                         "description": "Set freeSolo to true so the textbox can contain any arbitrary value.",
@@ -8465,7 +10274,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8617,7 +10432,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8662,7 +10483,14 @@
                       },
                       "clone": {
                         "description": "If clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.",
-                        "type": "boolean"
+                        "anyOf": [
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
                       },
                       "encryptedAttributes": {
                         "description": "These items will be encrypted before saving with simple (not SHA) encryption method",
@@ -8728,7 +10556,22 @@
                       "onChange": true,
                       "noTranslation": true,
                       "confirm": true,
-                      "showSecondAddAt": true
+                      "showSecondAddAt": true,
+                      "objKeyName": {
+                        "description": "Deprecated (legacy setting, do not use): name of the key in `{\"192.168.1.1\": {delay: 1000}}`",
+                        "type": "string"
+                      },
+                      "objValueName": {
+                        "description": "Deprecated (legacy setting, do not use): name of the value in `{\"192.168.1.1\": \"value1\"}`",
+                        "type": "string"
+                      },
+                      "showFirstAddOnTop": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "required": [
                       "type",
@@ -8789,7 +10632,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8836,7 +10685,14 @@
                       },
                       "okText": {
                         "description": "Alert that will be shown by pressing the button",
-                        "type": "string"
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/definitions/multilingual"
+                          }
+                        ]
                       },
                       "error": {
                         "description": "{error1: {en: 'E'}, error2: {en: 'E2'}}",
@@ -8882,7 +10738,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8905,8 +10767,12 @@
                     "type": "object",
                     "properties": {
                       "short": {
-                        "description": "no system.func.",
-                        "type": "string"
+                        "description": "Value will be without enum.functions. prefix",
+                        "type": "boolean"
+                      },
+                      "allowDeactivate": {
+                        "description": "If false, the empty option is not shown. Default: true",
+                        "type": "boolean"
                       },
                       "label": true,
                       "type": true,
@@ -8940,7 +10806,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -8961,8 +10833,12 @@
                     "type": "object",
                     "properties": {
                       "short": {
-                        "description": "no system.room.",
-                        "type": "string"
+                        "description": "Value will be without enum.rooms. prefix",
+                        "type": "boolean"
+                      },
+                      "allowDeactivate": {
+                        "description": "If false, the empty option is not shown. Default: true",
+                        "type": "boolean"
                       },
                       "label": true,
                       "type": true,
@@ -8996,7 +10872,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9017,8 +10899,8 @@
                     "type": "object",
                     "properties": {
                       "short": {
-                        "description": "no system.user.",
-                        "type": "string"
+                        "description": "Value will be without system.user. prefix",
+                        "type": "boolean"
                       },
                       "label": true,
                       "type": true,
@@ -9052,7 +10934,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9119,7 +11007,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9180,12 +11074,17 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
-                      "type",
-                      "certType"
+                      "type"
                     ]
                   }
                 },
@@ -9249,7 +11148,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9384,7 +11289,13 @@
                       "default": true,
                       "defaultFunc": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "onChange": true,
+                      "doNotSave": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9456,7 +11367,7 @@
                           "ok"
                         ]
                       },
-                      "closable": {
+                      "closeable": {
                         "description": "If the box is closeable",
                         "type": "boolean"
                       },
@@ -9489,7 +11400,28 @@
                       "hideOnlyControl": true,
                       "noTranslation": true,
                       "style": true,
-                      "expertMode": true
+                      "expertMode": true,
+                      "label": true,
+                      "defaultSendTo": true,
+                      "disabled": true,
+                      "help": true,
+                      "helpLink": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9637,7 +11569,24 @@
                             "type": "number"
                           }
                         ]
-                      }
+                      },
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "hideOnlyControl": true,
+                      "disabled": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9730,7 +11679,14 @@
                       "default": true,
                       "defaultFunc": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "onChange": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9786,7 +11742,13 @@
                       "defaultFunc": true,
                       "onChange": true,
                       "noTranslation": true,
-                      "confirm": true
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false,
                     "required": [
@@ -9861,7 +11823,41 @@
                       "style": true,
                       "darkStyle": true,
                       "noMultiEdit": true,
-                      "noTranslation": true
+                      "noTranslation": true,
+                      "variant": {
+                        "description": "Variant of the button",
+                        "type": "string",
+                        "enum": [
+                          "text",
+                          "outlined",
+                          "contained"
+                        ]
+                      },
+                      "color": {
+                        "description": "Color of the button",
+                        "type": "string",
+                        "enum": [
+                          "primary",
+                          "secondary"
+                        ]
+                      },
+                      "help": true,
+                      "helpLink": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false
                   }
@@ -9903,7 +11899,24 @@
                       "darkStyle": true,
                       "helpLink": true,
                       "help": true,
-                      "noTranslation": true
+                      "noTranslation": true,
+                      "defaultSendTo": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false
                   }
@@ -9941,7 +11954,24 @@
                       "style": true,
                       "darkStyle": true,
                       "noMultiEdit": true,
-                      "noTranslation": true
+                      "noTranslation": true,
+                      "help": true,
+                      "helpLink": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false
                   }
@@ -9992,7 +12022,24 @@
                       "style": true,
                       "darkStyle": true,
                       "noMultiEdit": true,
-                      "noTranslation": true
+                      "noTranslation": true,
+                      "help": true,
+                      "helpLink": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "additionalProperties": false
                   }
@@ -10071,7 +12118,14 @@
                       },
                       "clone": {
                         "description": "If clone button should be shown. If true, the clone button will be shown. If attribute name, this name will be unique.",
-                        "type": "boolean"
+                        "anyOf": [
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
                       },
                       "items": {
                         "$ref": "#/definitions/tableItems"
@@ -10109,7 +12163,13 @@
                       "onChange": true,
                       "noTranslation": true,
                       "confirm": true,
-                      "showSecondAddAt": true
+                      "showSecondAddAt": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
                     },
                     "required": [
                       "type",
@@ -10129,6 +12189,215 @@
                   },
                   "then": {
                     "$ref": "#/definitions/stateProps"
+                  }
+                },
+                {
+                  "if": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "certCollection"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "leCollectionName": {
+                        "description": "Name of the attribute, where the collection is stored (default: leCollection)",
+                        "type": "string"
+                      },
+                      "type": true,
+                      "label": true,
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "os": true,
+                      "notOs": true,
+                      "docker": true,
+                      "disabled": true,
+                      "dependsOnStates": true,
+                      "debug": true,
+                      "help": true,
+                      "helpLink": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "noTranslation": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "license"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "texts": {
+                        "description": "Array of paragraphs with texts, which will be shown each as a separate paragraph",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "licenseUrl": {
+                        "description": "URL to the license file",
+                        "type": "string"
+                      },
+                      "title": {
+                        "description": "Title of the license dialog",
+                        "type": "string"
+                      },
+                      "agreeText": {
+                        "description": "Text of the agree button",
+                        "type": "string"
+                      },
+                      "checkBox": {
+                        "description": "If defined, the checkbox with the given name will be shown. If checked, the agree button will be enabled.",
+                        "type": "string"
+                      },
+                      "type": true,
+                      "label": true,
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "os": true,
+                      "notOs": true,
+                      "docker": true,
+                      "disabled": true,
+                      "dependsOnStates": true,
+                      "debug": true,
+                      "help": true,
+                      "helpLink": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "noTranslation": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "topic"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "maxLength": {
+                        "description": "Max length of the text in field",
+                        "type": "number"
+                      },
+                      "max": {
+                        "description": "Deprecated: use maxLength",
+                        "type": "number"
+                      },
+                      "type": true,
+                      "label": true,
+                      "defaultSendTo": true,
+                      "allowSaveWithError": true,
+                      "xs": true,
+                      "sm": true,
+                      "md": true,
+                      "lg": true,
+                      "xl": true,
+                      "newLine": true,
+                      "hidden": true,
+                      "hideOnlyControl": true,
+                      "os": true,
+                      "notOs": true,
+                      "docker": true,
+                      "disabled": true,
+                      "dependsOnStates": true,
+                      "debug": true,
+                      "help": true,
+                      "helpLink": true,
+                      "style": true,
+                      "darkStyle": true,
+                      "validator": true,
+                      "validatorNoSaveOnError": true,
+                      "validatorErrorText": true,
+                      "noMultiEdit": true,
+                      "tooltip": true,
+                      "expertMode": true,
+                      "default": true,
+                      "defaultFunc": true,
+                      "onChange": true,
+                      "noTranslation": true,
+                      "confirm": true,
+                      "doNotSave": true,
+                      "button": true,
+                      "buttonTooltip": true,
+                      "buttonTooltipNoTranslation": true,
+                      "data": true,
+                      "jsonData": true
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ]
                   }
                 }
               ],
@@ -10183,8 +12452,15 @@
                   "type": "boolean"
                 },
                 "hidden": {
-                  "description": "JS function that could use 'native.attribute' for calculation",
-                  "type": "string"
+                  "description": "Boolean or JS function that could use 'native.attribute' for calculation",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
                 },
                 "hideOnlyControl": {
                   "description": "If hidden the place will be shown, but no control",
@@ -10201,8 +12477,15 @@
                   "type": "boolean"
                 },
                 "disabled": {
-                  "description": "JS function that could use 'native.attribute' for calculation",
-                  "type": "string"
+                  "description": "Boolean or JS function that could use 'native.attribute' for calculation",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
                 },
                 "dependsOnStates": {
                   "description": "ioBroker states, on which this element depends: `{ \"<alias>\": \"<state ID>\" }`. The states will be subscribed, and if one of them changes, `hidden`, `disabled`, `label`, `help`, `validator` and `defaultFunc` will be calculated anew. The values are available in all JS functions and in all `${...}` patterns as `_states.<alias>` and they contain the whole state object, e.g. `_states.running?.val`. A state ID that starts with a dot addresses the own instance: `.info.connection`. Wildcards are not allowed.",
@@ -10406,8 +12689,18 @@
                   "type": "number"
                 },
                 "button": {
-                  "description": "show link as button",
-                  "type": "boolean"
+                  "description": "Label of the button to request the value again with `defaultSendTo`. For `staticLink`/`staticText`: show the link as a button",
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
                 }
               }
             }
@@ -10442,7 +12735,18 @@
       "command": true,
       "items": true,
       "iconPosition": true,
-      "tabsStyle": true
+      "tabsStyle": true,
+      "statesFilter": {
+        "description": "Filter states for the custom editor dialog. If true, only states of this adapter instance can be edited. If string, it is a regex to filter state IDs.",
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
     },
     "allOf": [
       {
@@ -10478,7 +12782,34 @@
       "notOs": true,
       "docker": true,
       "command": true,
-      "items": true
+      "items": true,
+      "statesFilter": {
+        "description": "Filter states for the custom editor dialog. If true, only states of this adapter instance can be edited. If string, it is a regex to filter state IDs.",
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "collapsable": {
+        "description": "Show the panel as collapsable (only possible as not part of tabs)",
+        "type": "boolean"
+      },
+      "color": {
+        "description": "Color of the collapsable header: `primary` or `secondary`",
+        "type": "string",
+        "enum": [
+          "primary",
+          "secondary"
+        ]
+      },
+      "innerStyle": {
+        "description": "CSS Styles in React format (`marginLeft` and not `margin-left`) for the inner div of the panel",
+        "type": "object"
+      }
     },
     "$ref": "#/definitions/topLevelProperties"
   }

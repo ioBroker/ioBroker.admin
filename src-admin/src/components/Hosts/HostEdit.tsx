@@ -10,7 +10,6 @@ import {
     Tooltip,
     InputAdornment,
     IconButton,
-    Box,
 } from '@mui/material';
 
 import { Close as IconClose, Check as IconCheck, Add as IconAdd, Close as CloseIcon } from '@mui/icons-material';
@@ -70,35 +69,10 @@ const styles: Record<string, any> = {
     flex: {
         display: 'flex',
     },
-    close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
-        cursor: 'pointer',
-        position: 'relative',
-        top: 20,
-        transition: 'all 0.6s ease',
-        '&:hover': {
-            transform: 'rotate(90deg)',
-        },
-        '&:before': {
-            position: 'absolute',
-            left: '9px',
-            content: '""',
-            height: '20px',
-            width: '3px',
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)',
-        },
-        '&:after': {
-            position: 'absolute',
-            left: '9px',
-            content: '""',
-            height: '20px',
-            width: '3px',
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)',
-        },
+    removeButton: {
+        mt: '13px',
+        alignSelf: 'flex-start',
+        flexShrink: 0,
     },
     color: {
         width: 70,
@@ -209,11 +183,13 @@ class HostEdit extends Component<HostEditProps, HostEditState> {
                 title={t(`Remove ${nameKey}`)}
                 slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
             >
-                <Box
-                    component="div"
-                    sx={styles.close}
+                <IconButton
+                    size="small"
+                    sx={styles.removeButton}
                     onClick={cb}
-                />
+                >
+                    <IconClose />
+                </IconButton>
             </Tooltip>
         );
     }
