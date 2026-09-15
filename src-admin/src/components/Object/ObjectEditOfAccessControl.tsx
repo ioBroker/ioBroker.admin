@@ -263,7 +263,6 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
     // guarded by an equality check) and therefore correct as they stand; converting them is deferred
     // until the dialogs can be exercised against a live controller - getting ACL handling subtly
     // wrong is worse than the extra render pass.
-    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         let count = 0;
         const _differentState: number[] = [];
@@ -448,7 +447,6 @@ const ObjectEditOfAccessControl: React.FC<ObjectEditOfAccessControlProps> = ({
         different,
         ownerGroups,
     ]);
-    /* eslint-enable react-hooks/set-state-in-effect */
 
     if (!ids.length) {
         return <LinearProgress />;

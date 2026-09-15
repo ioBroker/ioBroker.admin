@@ -510,18 +510,20 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
     }, []);
 
     useEffect(() => {
-        setObjects(null);
-        // the local cache of the connection holds only the objects read one by one, so always read all objects
-        props.socket
-            .getObjects(true, true)
-            .then(result => {
-                detected.current.clear();
-                setObjects(result);
-            })
-            .catch((e: unknown) => {
-                console.error('Cannot read the objects:', e);
-                setObjects({});
-            });
+        setTimeout(() => {
+            setObjects(null);
+            // the local cache of the connection holds only the objects read one by one, so always read all objects
+            props.socket
+                .getObjects(true, true)
+                .then(result => {
+                    detected.current.clear();
+                    setObjects(result);
+                })
+                .catch((e: unknown) => {
+                    console.error('Cannot read the objects:', e);
+                    setObjects({});
+                });
+        }, 0);
     }, [props.socket, reload]);
 
     const sortedKeys = useMemo(() => (objects ? Object.keys(objects).sort() : []), [objects]);

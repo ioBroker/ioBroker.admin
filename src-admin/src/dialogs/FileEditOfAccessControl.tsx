@@ -502,7 +502,6 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
     // TODO: the owner/group selection could be derived from `applyToChildren` while rendering. The
     // effect is convergent (every write is guarded by an equality check), so it is correct as it
     // stands; converting it is deferred until the dialog can be tested against a live controller.
-    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (applyToChildren) {
             if (differentOwner && stateOwnerUser !== DIFFERENT) {
@@ -523,7 +522,6 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
         console.log(`stateOwnerUser ${stateOwnerUser}`);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
-    /* eslint-enable react-hooks/set-state-in-effect */
 
     if (!ids.length) {
         return <LinearProgress />;

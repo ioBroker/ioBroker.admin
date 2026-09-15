@@ -862,88 +862,93 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
             this.setState({ progress: Math.round(((maxOids - ids.length) / maxOids) * 50) });
 
             const id = ids.shift() as string;
-            this.getObject(_objects, _oldObjects, id).then((obj: Record<string, any>) => {
-                if (!obj) {
-                    window.alert(`Invalid object ${id}`);
-                    return;
-                }
-
-                // remove all disabled commons
-                if (obj.common?.custom) {
-                    Object.keys(obj.common.custom).forEach(ins => {
-                        if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {
-                            obj.common.custom[ins] = null;
-                        }
-                    });
-                }
-
-                const instances = Object.keys(this.state.newValues);
-
-                for (let i = 0; i < instances.length; i++) {
-                    const instance = instances[i];
-
-                    // skip if this object doesn't match the statesFilter
-                    if (!this.getStatesFilterFunction(instance)(id)) {
-                        continue;
+            this.getObject(_objects, _oldObjects, id)
+                .then((obj: Record<string, any>) => {
+                    if (!obj) {
+                        window.alert(`Invalid object ${id}`);
+                        return;
                     }
 
-                    // const adapter = instance.split('.')[0];
-                    const newValues = this.combineNewAndOld(instance, true);
-
-                    if (newValues.enabled === false) {
-                        if (obj.common?.custom?.[instance]) {
-                            obj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
-                        }
-                    } else if (newValues.enabled) {
-                        obj.common = obj.common || {};
-                        if (Array.isArray(newValues.enabled)) {
-                            if (
-                                !obj.common.custom ||
-                                !obj.common.custom[instance] ||
-                                !obj.common.custom[instance].enabled
-                            ) {
-                                // leave this object disabled
-                                if (obj.common.custom && obj.common.custom[instance]) {
-                                    obj.common.custom[instance] = null;
-                                }
-                                continue; // instance disabled
-                            }
-                        }
-
-                        obj.common.custom = obj.common.custom || {};
-
-                        if (!obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
-                            // provide defaults
-                            const _default = this.getDefaultValues(instance, obj);
-                            obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
-                            // remove all temporary values
-                            Object.keys(obj.common.custom[instance]).forEach(attr => {
-                                if (attr.startsWith('_')) {
-                                    delete obj.common.custom[instance][attr];
-                                }
-                            });
-                        }
-
-                        const isMultiEdit = this.props.objectIDs.length > 1;
-
-                        obj.common.custom[instance].enabled = true;
-
-                        Object.keys(newValues).forEach(attr => {
-                            // if not different
-                            if (!attr.startsWith('_')) {
-                                // if we have an array, it is still the data of multiple different fields (multiEdit) do not override issue#2359
-                                if (Array.isArray(newValues[attr]) && isMultiEdit) {
-                                    return;
-                                }
-
-                                obj.common.custom[instance][attr] = newValues[attr];
+                    // remove all disabled commons
+                    if (obj.common?.custom) {
+                        Object.keys(obj.common.custom).forEach(ins => {
+                            if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {
+                                obj.common.custom[ins] = null;
                             }
                         });
                     }
-                }
 
-                setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
-            });
+                    const instances = Object.keys(this.state.newValues);
+
+                    for (let i = 0; i < instances.length; i++) {
+                        const instance = instances[i];
+
+                        // skip if this object doesn't match the statesFilter
+                        if (!this.getStatesFilterFunction(instance)(id)) {
+                            continue;
+                        }
+
+                        // const adapter = instance.split('.')[0];
+                        const newValues = this.combineNewAndOld(instance, true);
+
+                        if (newValues.enabled === false) {
+                            if (obj.common?.custom?.[instance]) {
+                                obj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
+                            }
+                        } else if (newValues.enabled) {
+                            obj.common = obj.common || {};
+                            if (Array.isArray(newValues.enabled)) {
+                                if (
+                                    !obj.common.custom ||
+                                    !obj.common.custom[instance] ||
+                                    !obj.common.custom[instance].enabled
+                                ) {
+                                    // leave this object disabled
+                                    if (obj.common.custom && obj.common.custom[instance]) {
+                                        obj.common.custom[instance] = null;
+                                    }
+                                    continue; // instance disabled
+                                }
+                            }
+
+                            obj.common.custom = obj.common.custom || {};
+
+                            if (!obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
+                                // provide defaults
+                                const _default = this.getDefaultValues(instance, obj);
+                                obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
+                                // remove all temporary values
+                                Object.keys(obj.common.custom[instance]).forEach(attr => {
+                                    if (attr.startsWith('_')) {
+                                        delete obj.common.custom[instance][attr];
+                                    }
+                                });
+                            }
+
+                            const isMultiEdit = this.props.objectIDs.length > 1;
+
+                            obj.common.custom[instance].enabled = true;
+
+                            Object.keys(newValues).forEach(attr => {
+                                // if not different
+                                if (!attr.startsWith('_')) {
+                                    // if we have an array, it is still the data of multiple different fields (multiEdit) do not override issue#2359
+                                    if (Array.isArray(newValues[attr]) && isMultiEdit) {
+                                        return;
+                                    }
+
+                                    obj.common.custom[instance][attr] = newValues[attr];
+                                }
+                            });
+                        }
+                    }
+
+                    setTimeout(() => this.saveOneState(ids, cb, _objects, _oldObjects), 0);
+                })
+                .catch(e => {
+                    console.error(`Cannot get object ${id}: ${e}`);
+                    window.alert(`Cannot get object ${id}: ${e}`);
+                });
         }
     }
 

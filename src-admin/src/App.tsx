@@ -2886,7 +2886,9 @@ class App extends Router<AppProps, AppState> {
                 <MenuItem
                     onClick={() => {
                         this.setState({ showGuiSettings: null });
-                        this.enableGuiSettings(true);
+                        this.enableGuiSettings(true).catch(e =>
+                            console.error(`Cannot enable GUI settings: ${e as Error}`),
+                        );
                     }}
                 >
                     {I18n.t('Use settings of other browsers')}
@@ -2894,7 +2896,9 @@ class App extends Router<AppProps, AppState> {
                 <MenuItem
                     onClick={() => {
                         this.setState({ showGuiSettings: null });
-                        this.enableGuiSettings(true, true);
+                        this.enableGuiSettings(true, true).catch(e =>
+                            console.error(`Cannot enable GUI settings: ${e as Error}`),
+                        );
                     }}
                 >
                     {I18n.t('Use settings of this browser')}
