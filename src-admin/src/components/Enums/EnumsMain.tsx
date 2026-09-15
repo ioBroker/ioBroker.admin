@@ -1161,13 +1161,14 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                     </>
                 ) : null}
                 <Box sx={{ flexGrow: 1 }} />
-                {this.state.narrow || this.state.view !== 'categories' ? null : (
+                {/* a hidden object list is opened with the bar on the right side, so the button only hides it */}
+                {this.state.narrow || this.state.view !== 'categories' || !this.state.showObjects ? null : (
                     <Tooltip
-                        title={t(this.state.showObjects ? 'Hide object list' : 'Show object list')}
+                        title={t('Hide object list')}
                         slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                     >
                         <IconButton
-                            color={this.state.showObjects ? 'primary' : 'default'}
+                            color="primary"
                             onClick={this.toggleObjects}
                         >
                             <ObjectListIcon />
