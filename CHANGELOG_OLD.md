@@ -1,4 +1,10 @@
 # Older changes
+## 8.0.7 (2026-08-26)
+- (@GermanBluefox) The JSON tabs (`common.adminTab.link`) are now validated against the JsonConfig schema too
+- (SimonFischer04) Admin can now run behind a reverse-proxy sub-path (e.g. `/admin/`)
+- (SimonFischer04) Prefix legacy jQuery adapter-icon URLs and inject `info.js` into `<HEAD>` as well
+- (@GermanBluefox) Corrected layout of Config view
+
 ## 8.0.5 (2026-08-19)
 - (@GermanBluefox) Corrected the doubled tiles in the quick access if more than one web instance is running
 - (@GermanBluefox) Reworked the initial setup wizard: modern layout, navigation backwards and many corrections
