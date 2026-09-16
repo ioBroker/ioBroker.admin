@@ -264,6 +264,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
             {
                 id: 'tipsDisabled',
                 title: 'Tips at start',
+                translate: true,
                 values: [
                     { id: false, title: 'show (default)' },
                     { id: true, title: 'do not show' },

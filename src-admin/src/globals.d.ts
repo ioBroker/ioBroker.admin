@@ -4,6 +4,10 @@ declare global {
             /**
              * The "Did you know ...?" dialog is not shown when admin is opened.
              * It is set by the checkbox in that dialog and can be switched back on in the system settings.
+             *
+             * The js-controller knows this flag too - it is part of `SystemConfigCommon` and of the
+             * default `system.config` - so this declaration can be deleted as soon as admin requires
+             * an `@iobroker/types` that contains it.
              */
             tipsDisabled?: boolean;
         }
