@@ -15,7 +15,14 @@ import { platform } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-import { Adapter, type AdapterOptions, commonTools, I18n } from '@iobroker/adapter-core';
+import {
+    Adapter,
+    type AdapterOptions,
+    commonTools,
+    controllerDir,
+    getAbsoluteDefaultDataDir,
+    I18n,
+} from '@iobroker/adapter-core';
 import { SocketAdmin, type Server, type Store as SocketStore, type SocketSettings } from '@iobroker/socket-classes';
 import type { Store } from 'express-session';
 import { SocketIO } from '@iobroker/ws-server';
@@ -36,6 +43,18 @@ import { resolveAiKey } from './lib/chat/credentials';
 import { listModels, type AiProvider, type ReasoningEffort } from './lib/chat/llmProvider';
 import type { OpenAIMessage } from './lib/chat/anthropicAdapter';
 import type { AdminAdapterConfig } from './types';
+import {
+    createLocalLogFiles,
+    createRemoteLogFiles,
+    detectLogLocation,
+    LOG_LEVELS,
+    searchLogFiles,
+    type LogFiles,
+    type LogLevel,
+    type LogLocation,
+    type SearchLogFilesOptions,
+    type SearchLogFilesResult,
+} from './lib/logSearch';
 
 const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), { encoding: 'utf-8' }))
     .name.split('.')
@@ -44,6 +63,12 @@ const adapterName = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'
 const { getInstalledInfo } = commonTools;
 
 const ONE_HOUR_MS = 3_600_000;
+
+/** How long another host may take to answer a request of the log search, e.g. to send a big log file */
+const LOG_SEARCH_HOST_TIMEOUT_MS = 60_000;
+
+/** How long another host may take to tell whether it supports a feature */
+const FEATURE_CHECK_TIMEOUT_MS = 5_000;
 const ERROR_PERMISSION = 'permissionError';
 
 const CURRENT_MAX_MAJOR_NODEJS = 22;
@@ -145,6 +170,9 @@ class Admin extends Adapter {
 
     /** True if the adapter runs on a CI system (GitHub Actions, Travis, AppVeyor, ...). See `sendToHost` */
     private readonly ciSystem: boolean = isCiSystem();
+
+    /** Where the log files of this host are. Found at the first search in the Log tab */
+    private logLocation: LogLocation | null = null;
 
     constructor(options: Partial<AdapterOptions> = {}) {
         options = {
@@ -358,6 +386,10 @@ class Admin extends Adapter {
                 }
                 return;
             }
+            if (obj.command === 'admin:searchLogs') {
+                void this.processLogSearch(obj);
+                return;
+            }
             if (obj.command.startsWith('admin:')) {
                 return this.processNotificationsGui(obj);
             }
@@ -398,6 +430,143 @@ class Admin extends Adapter {
 
         socket?.sendCommand(obj);
     };
+
+    /**
+     * Handle `admin:searchLogs` from the Log tab: search the log files of a host.
+     *
+     * The message holds the host - without it the one this instance runs on - and the filters of the tab:
+     * `hours`, `level` (this one and the more severe ones), `source`, `text` and `maxRows`.
+     *
+     * @param obj the message object
+     */
+    private async processLogSearch(obj: ioBroker.Message): Promise<void> {
+        const message: Record<string, unknown> =
+            obj.message && typeof obj.message === 'object' ? (obj.message as Record<string, unknown>) : {};
+        let response: SearchLogFilesResult | { error: string };
+
+        try {
+            const host =
+                typeof message.host === 'string' && message.host
+                    ? message.host.replace(/^system\.host\./, '')
+                    : this.host;
+
+            const filters: Omit<SearchLogFilesOptions, 'files'> = {
+                hours: Number(message.hours),
+                level: LOG_LEVELS.includes(message.level as LogLevel) ? (message.level as LogLevel) : undefined,
+                source: typeof message.source === 'string' ? message.source : undefined,
+                text: typeof message.text === 'string' ? message.text : undefined,
+                maxRows: Number(message.maxRows),
+            };
+
+            response =
+                host === this.host
+                    ? await searchLogFiles({ files: this.getLocalLogFiles(), ...filters })
+                    : await this.searchRemoteLogFiles(host, filters);
+        } catch (error) {
+            response = { error: (error as Error).message };
+        }
+
+        if (obj.callback) {
+            this.sendTo(obj.from, obj.command, response, obj.callback);
+        }
+    }
+
+    /** The log files of the host this instance runs on, read from the disk */
+    private getLocalLogFiles(): LogFiles {
+        if (!this.logLocation) {
+            let dataDir: string | undefined;
+            try {
+                dataDir = getAbsoluteDefaultDataDir();
+            } catch {
+                dataDir = undefined;
+            }
+            this.logLocation = detectLogLocation({ controllerDir, dataDir });
+            this.log.debug(
+                `Log files for the search: ${this.logLocation.directory}, ${this.logLocation.prefix}.<date>${this.logLocation.extension} (${this.logLocation.source})`,
+            );
+        }
+        return createLocalLogFiles(this.logLocation);
+    }
+
+    /**
+     * Search the log files of another host.
+     *
+     * A js-controller that knows the host command `searchLogs` searches its files itself and sends only the
+     * matching entries. An older one sends every file with `getLogFile`, as for the download of a log file,
+     * and admin searches them.
+     *
+     * @param host name of the host without `system.host.`
+     * @param filters what to look for
+     */
+    private async searchRemoteLogFiles(
+        host: string,
+        filters: Omit<SearchLogFilesOptions, 'files'>,
+    ): Promise<SearchLogFilesResult> {
+        const id = `system.host.${host}`;
+        const obj = await this.getForeignObjectAsync(id);
+        if (obj?.type !== 'host') {
+            throw new Error(`Unknown host ${host}`);
+        }
+        const alive = await this.getForeignStateAsync(`${id}.alive`);
+        if (!alive?.val) {
+            throw new Error(`Host ${host} is not running`);
+        }
+
+        const request = (command: string, message: unknown, timeout = LOG_SEARCH_HOST_TIMEOUT_MS): Promise<unknown> =>
+            new Promise((resolve, reject) => {
+                // a host that does not know a command never answers
+                const timer = this.setTimeout(
+                    () => reject(new Error(`Host ${host} did not answer "${command}"`)),
+                    timeout,
+                );
+                this.sendToHost(id, command, message, answer => {
+                    if (timer) {
+                        this.clearTimeout(timer);
+                    }
+                    resolve(answer);
+                });
+            });
+
+        if (await this.isHostFeatureSupported(obj, 'CONTROLLER_SEARCH_LOGS', request)) {
+            const answer = (await request('searchLogs', filters)) as Partial<SearchLogFilesResult> & {
+                error?: string;
+            };
+            if (!answer || !Array.isArray(answer.lines)) {
+                throw new Error(answer?.error || `Host ${host} did not send the log entries`);
+            }
+            return answer as SearchLogFilesResult;
+        }
+
+        return searchLogFiles({ files: createRemoteLogFiles(request), ...filters });
+    }
+
+    /**
+     * Ask a host whether its js-controller supports a feature.
+     *
+     * Only a js-controller from 7.2.0 on answers this question, so an older one is not asked at all.
+     *
+     * @param obj object of the host
+     * @param feature name of the feature
+     * @param request sends a command to the host
+     */
+    private async isHostFeatureSupported(
+        obj: ioBroker.HostObject,
+        feature: string,
+        request: (command: string, message: unknown, timeout?: number) => Promise<unknown>,
+    ): Promise<boolean> {
+        const version = semver.coerce(obj.common.installedVersion);
+        if (!version || semver.lt(version, '7.2.0')) {
+            return false;
+        }
+        try {
+            const answer = (await request('checkFeatureSupported', feature, FEATURE_CHECK_TIMEOUT_MS)) as {
+                result?: boolean;
+            } | null;
+            return answer?.result === true;
+        } catch {
+            return false;
+        }
+    }
 
     private getName(name?: ioBroker.StringOrTranslated): string | undefined {
         if (!name) {

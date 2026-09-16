@@ -36,6 +36,8 @@ import {
     ErrorOutlined as ErrorIcon,
     Warning as WarningIcon,
     Check as CheckIcon,
+    Search as SearchIcon,
+    TextSnippet as ExportIcon,
     ArrowUpward,
     ArrowDownward,
     Clear,
@@ -57,12 +59,21 @@ import {
     TabContent,
 } from '@iobroker/gui-components';
 
-import type { LogLineSaved, LogsWorker } from '@/Workers/LogsWorker';
+import { parseLogFileLine, type LogLineSaved, type LogsWorker } from '@/Workers/LogsWorker';
 import type { CompactAdapterInfo, CompactHost } from '@/types';
 
 import AdminUtils from '../helpers/AdminUtils';
 
 const MAX_LOGS = 3000;
+
+/** Color codes of the terminal, as the log files contain them */
+const ANSI_COLOR = new RegExp(`${String.fromCharCode(27)}\\[\\d+m`, 'g');
+
+/** Time ranges of the search in the log files, in hours. `0` shows the latest entries the host hands out */
+const SEARCH_RANGES = [0, 1, 6, 24, 72, 168, 720];
+
+/** Time range of a search started with Enter, as long as none was chosen */
+const DEFAULT_SEARCH_HOURS = 24;
 
 const styles: Record<string, any> = {
     container: {
@@ -268,6 +279,27 @@ const styles: Record<string, any> = {
     tooltip: {
         pointerEvents: 'none',
     },
+    searchError: (theme: IobTheme) => ({
+        color: theme.palette.error.main,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        maxWidth: 400,
+    }),
+    searchTruncated: (theme: IobTheme) => ({
+        color: theme.palette.warning.main,
+        width: 16,
+        height: 16,
+        verticalAlign: 'text-bottom',
+        marginLeft: 4,
+    }),
+    searchProgress: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 3,
+    },
 };
 
 const COLORS_LIGHT = [
@@ -335,6 +367,16 @@ interface LogsState {
     sources: Record<string, { active: boolean; icon: string; color?: string }>;
     currentHost: string;
     hosts: Record<string, CompactHost>;
+    /** Time range of the shown search in the log files in hours, `0` while the latest entries of the host are shown */
+    searchHours: number;
+    /** A search in the log files runs */
+    searching: boolean;
+    /** Error of the last search */
+    searchError: string;
+    /** The search found more entries than it returned */
+    searchTruncated: boolean;
+    /** Admin instance that searches the log files, e.g. `admin.0`. Empty until it is known */
+    searchInstance: string;
 }
 
 class Logs extends Component<LogsProps, LogsState> {
@@ -353,6 +395,21 @@ class Logs extends Component<LogsProps, LogsState> {
     private hostsTimer: ReturnType<typeof setTimeout> | null = null;
 
     private scrollToEnd: boolean;
+
+    /**
+     * Counts the requests that replace the shown entries - reading the latest ones or searching the files -
+     * so that the answer of an outdated one is dropped
+     */
+    private logsRequest = 0;
+
+    /**
+     * The shown search result holds the entries of the files up to this time; newer ones come from the live
+     * log. `0` if no search result is shown.
+     */
+    private searchUntil = 0;
+
+    /** Number of rows that no filter hides, counted while the rows are built */
+    private visibleRows = 0;
 
     constructor(props: LogsProps) {
         super(props);
@@ -381,6 +438,11 @@ class Logs extends Component<LogsProps, LogsState> {
             sources: {},
             currentHost: this.props.currentHost,
             hosts: {},
+            searchHours: 0,
+            searching: false,
+            searchError: '',
+            searchTruncated: false,
+            searchInstance: '',
         };
 
         this.scrollToEnd = this.state.reverse;
@@ -396,11 +458,76 @@ class Logs extends Component<LogsProps, LogsState> {
         this.t = props.t;
     }
 
+    /**
+     * Prepare entries that replace the shown ones: stripes, formatted time, counters and sources.
+     *
+     * @param logs the new entries, oldest first. They are changed in place
+     */
+    prepareLogs(logs: LogLineSavedExtended[]): Pick<LogsState, 'logErrors' | 'logWarnings' | 'sources'> {
+        let logWarnings = 0;
+        let logErrors = 0;
+        let lastOdd = true;
+        const sources: Record<string, { active: boolean; icon: string; color?: string }> = JSON.parse(
+            JSON.stringify(this.state.sources),
+        );
+        Object.values(sources).forEach(source => (source.active = false));
+
+        logs.forEach(item => {
+            lastOdd = !lastOdd;
+            item.odd = lastOdd;
+
+            if (!item.time) {
+                const date = new Date(item.ts);
+                item.time =
+                    `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ` +
+                    `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
+            }
+            if (item.severity === 'error') {
+                logErrors++;
+            } else if (item.severity === 'warn') {
+                logWarnings++;
+            }
+
+            if (item.from) {
+                if (!sources[item.from]) {
+                    sources[item.from] = { active: true, icon: this.getSourceIcon(item.from) };
+                } else {
+                    sources[item.from].active = true;
+                }
+            }
+        });
+
+        // define for every source the own color
+        let color = 0;
+        const COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
+        Object.keys(sources)
+            .sort()
+            .forEach(id => {
+                sources[id].color = COLORS[color % COLORS.length];
+                color++;
+            });
+
+        return { logErrors, logWarnings, sources };
+    }
+
+    /**
+     * Show the latest entries the host hands out. Leaves the search in the log files.
+     *
+     * @param force read anew instead of taking the cached answer
+     * @param logFiles list of the log files to store together with the entries
+     * @param cb called when the entries are shown
+     */
     readLogs(
         force: boolean,
         logFiles?: { path: { fileName: string; size: number }; name: string }[],
         cb?: () => void,
     ): void {
+        const request = ++this.logsRequest;
+        this.searchUntil = 0;
+        if (this.state.searchHours || this.state.searching || this.state.searchError) {
+            this.setState({ searchHours: 0, searching: false, searchError: '', searchTruncated: false });
+        }
+
         if (this.props.logsWorker && this.state.hosts) {
             // Ask the host for the selected severity only. A controller that can do it returns a
             // window that actually holds that many entries of this level instead of a fixed byte
@@ -409,62 +536,25 @@ class Logs extends Component<LogsProps, LogsState> {
                 if (!results) {
                     return;
                 }
+                if (request !== this.logsRequest) {
+                    // a search that was started in the meantime shows its own entries
+                    if (logFiles) {
+                        this.setState({ logFiles }, () => cb && cb());
+                    } else if (cb) {
+                        cb();
+                    }
+                    return;
+                }
                 const logs: LogLineSavedExtended[] = [...results.logs];
-                const logSize = results.logSize;
-
-                let logWarnings = 0;
-                let logErrors = 0;
-                let lastOdd = true;
-                const sources: Record<string, { active: boolean; icon: string; color?: string }> = JSON.parse(
-                    JSON.stringify(this.state.sources),
-                );
-                Object.values(sources).forEach(source => (source.active = false));
-
-                logs.forEach(item => {
-                    lastOdd = !lastOdd;
-                    item.odd = lastOdd;
-
-                    if (!item.time) {
-                        const date = new Date(item.ts);
-                        item.time =
-                            `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ` +
-                            `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
-                    }
-                    if (item.severity === 'error') {
-                        logErrors++;
-                    } else if (item.severity === 'warn') {
-                        logWarnings++;
-                    }
-
-                    if (item.from) {
-                        if (!sources[item.from]) {
-                            sources[item.from] = { active: true, icon: this.getSourceIcon(item.from) };
-                        } else {
-                            sources[item.from].active = true;
-                        }
-                    }
-                });
-
-                // define for every source the own color
-                let color = 0;
-                const COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
-                Object.keys(sources)
-                    .sort()
-                    .forEach(id => {
-                        sources[id].color = COLORS[color % COLORS.length];
-                        color++;
-                    });
 
                 // scroll down by reverse direction
                 this.scrollToEnd = this.state.reverse;
 
                 const newState: Partial<LogsState> = {
                     logs,
-                    logSize,
+                    logSize: results.logSize,
                     estimatedSize: false,
-                    logErrors,
-                    logWarnings,
-                    sources,
+                    ...this.prepareLogs(logs),
                 };
                 if (logFiles) {
                     newState.logFiles = logFiles;
@@ -473,6 +563,170 @@ class Logs extends Component<LogsProps, LogsState> {
             });
         } else if (logFiles) {
             this.setState({ logFiles }, () => cb && cb());
+        }
+    }
+
+    /** The log files can be searched as soon as the admin instance that does it is known */
+    isSearchPossible(): boolean {
+        return !!this.state.searchInstance;
+    }
+
+    /** Time range for a search that is started without choosing one */
+    static getLastSearchHours(): number {
+        const hours = parseInt(
+            (((window as any)._localStorage as Storage) || window.localStorage).getItem('Log.searchHours') || '',
+            10,
+        );
+        return hours && SEARCH_RANGES.includes(hours) ? hours : DEFAULT_SEARCH_HOURS;
+    }
+
+    /**
+     * Find out which admin instance serves this page: it searches the log files - the ones of its own host
+     * on the disk, the ones of other hosts through their js-controller
+     */
+    async detectSearchInstance(): Promise<void> {
+        try {
+            this.setState({ searchInstance: await this.props.socket.getCurrentInstance() });
+        } catch (error) {
+            console.warn(`Cannot find out the admin instance: ${error}`);
+        }
+    }
+
+    /**
+     * Search the log files with the filters of the table.
+     *
+     * The found entries replace the shown ones, and the live log goes on adding the new entries.
+     *
+     * @param hours time range. Without it, the range of the shown search or the last used one
+     */
+    async searchLogFiles(hours?: number): Promise<void> {
+        if (!this.isSearchPossible()) {
+            return;
+        }
+        hours ||= this.state.searchHours || Logs.getLastSearchHours();
+
+        const request = ++this.logsRequest;
+        this.setState({ searchHours: hours, searching: true, searchError: '' });
+
+        const source =
+            this.state.source !== '1' && this.state.sources[this.state.source] ? this.state.source : undefined;
+
+        try {
+            const result = await this.props.socket.sendTo<
+                { lines?: string[]; truncated?: boolean; until?: number; error?: string } | string | null
+            >(this.state.searchInstance, 'admin:searchLogs', {
+                host: this.state.currentHost,
+                hours,
+                level: this.state.severity,
+                source,
+                text: this.state.message || undefined,
+                maxRows: MAX_LOGS,
+            });
+            if (request !== this.logsRequest) {
+                return;
+            }
+            // a missing permission is answered with a plain text
+            if (!result || typeof result !== 'object' || !Array.isArray(result.lines)) {
+                throw new Error((typeof result === 'string' ? result : result?.error) || 'no answer');
+            }
+
+            const logs: LogLineSavedExtended[] = [];
+            let lastKey = 0;
+            for (const line of result.lines) {
+                const item: LogLineSavedExtended | null = parseLogFileLine(line);
+                if (item) {
+                    // the same keys as the log worker gives
+                    if (lastKey && lastKey <= item.ts) {
+                        item.key = lastKey + 1;
+                    }
+                    lastKey = item.key || 0;
+                    item.message = AdminUtils.parseColorMessage(item.message as string);
+                    logs.push(item);
+                }
+            }
+
+            // The live log went on while the files were read: keep what is newer than them
+            const until = result.until || Date.now();
+            this.state.logs?.forEach(item => item.ts > until && logs.push(item));
+            if (logs.length > MAX_LOGS) {
+                logs.splice(0, logs.length - MAX_LOGS);
+            }
+
+            this.searchUntil = until;
+            this.scrollToEnd = this.state.reverse;
+
+            this.setState({
+                logs,
+                searching: false,
+                searchTruncated: !!result.truncated,
+                // the counted entries of a paused view are gone
+                pause: 0,
+                ...this.prepareLogs(logs),
+            });
+        } catch (error) {
+            if (request === this.logsRequest) {
+                this.setState({ searching: false, searchError: (error as Error).message || String(error) });
+            }
+        }
+    }
+
+    /**
+     * Choose the time range of the table: the latest entries of the host, or a search in the log files.
+     *
+     * @param hours time range in hours, `0` for the latest entries
+     */
+    handleSearchHoursChange(hours: number): void {
+        if (!hours) {
+            this.readLogs(true);
+            return;
+        }
+        (((window as any)._localStorage as Storage) || window.localStorage).setItem(
+            'Log.searchHours',
+            hours.toString(),
+        );
+        void this.searchLogFiles(hours);
+    }
+
+    /** A filter of the table changed: a shown search result is searched anew with it */
+    onFilterChanged(): void {
+        if (this.state.searchHours) {
+            void this.searchLogFiles();
+        }
+    }
+
+    /** Download the shown entries - with all filters applied and in the shown order - as a text file */
+    exportLogs(): void {
+        const lines: string[] = [];
+        const filterMessage = this.state.message.toLowerCase();
+        const sourceFilter =
+            this.state.source !== '1' && this.state.sources[this.state.source] ? this.state.source : '1';
+        const logs = this.state.logs || [];
+        const length = this.state.pause > 0 ? this.state.pause : logs.length;
+
+        for (let i = 0; i < length; i++) {
+            const row = logs[i];
+            if (row && !this.getRowView(row, sourceFilter, filterMessage).hidden) {
+                const message = typeof row.message === 'object' ? row.message.original : row.message;
+                lines.push(`${row.time}  - ${row.severity}: ${(message || '').replace(ANSI_COLOR, '')}`);
+            }
+        }
+        if (!this.state.reverse) {
+            lines.reverse();
+        }
+
+        const url = window.URL.createObjectURL(
+            new Blob([`${lines.join('\n')}\n`], { type: 'text/plain;charset=utf-8' }),
+        );
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `iobroker-log-${this.state.currentHost.replace('system.host.', '')}-${new Date().toISOString().replace(/[:.]/g, '-')}.txt`;
+        document.body.appendChild(link);
+        try {
+            link.click();
+        } finally {
+            link.remove();
+            // give the browser time to start the download
+            setTimeout(() => window.URL.revokeObjectURL(url), 1000);
         }
     }
 
@@ -530,6 +784,8 @@ class Logs extends Component<LogsProps, LogsState> {
             const logFiles = await this.readLogFiles();
             this.readLogs(true, logFiles);
         });
+
+        void this.detectSearchInstance();
     }
 
     componentWillUnmount(): void {
@@ -555,6 +811,14 @@ class Logs extends Component<LogsProps, LogsState> {
         if (this.ignoreNextLogs) {
             this.ignoreNextLogs = false;
             return;
+        }
+        if (this.searchUntil) {
+            // A search result is shown. What the log worker reads again after a reconnection is
+            // older than the files and in the result already; only the newer entries are added.
+            newLogs = newLogs.filter(line => line.ts > this.searchUntil);
+            if (!newLogs.length) {
+                return;
+            }
         }
 
         const oldLogs = this.state.logs || [];
@@ -629,11 +893,18 @@ class Logs extends Component<LogsProps, LogsState> {
     clearLog(): void {
         this.props.logsWorker?.clearLines();
         this.props.clearErrors();
+        // an empty table shows only the new entries, which is no search result anymore
+        this.logsRequest++;
+        this.searchUntil = 0;
         this.setState({
             logs: [],
             logSize: null,
             logErrors: 0,
             logWarnings: 0,
+            searchHours: 0,
+            searching: false,
+            searchError: '',
+            searchTruncated: false,
         });
     }
 
@@ -644,7 +915,7 @@ class Logs extends Component<LogsProps, LogsState> {
 
     handleSourceChange(source: string): void {
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Log.source', source);
-        this.setState({ source });
+        this.setState({ source }, () => this.onFilterChanged());
     }
 
     /**
@@ -661,7 +932,9 @@ class Logs extends Component<LogsProps, LogsState> {
     handleSeverityChange(event: SelectChangeEvent<string>): void {
         (((window as any)._localStorage as Storage) || window.localStorage).setItem('Log.severity', event.target.value);
         // A coarser severity reaches further back, so the history is read anew for the new level
-        this.setState({ severity: event.target.value }, () => this.readLogs(true));
+        this.setState({ severity: event.target.value }, () =>
+            this.state.searchHours ? this.onFilterChanged() : this.readLogs(true),
+        );
     }
 
     handleLogDelete(): void {
@@ -756,6 +1029,7 @@ class Logs extends Component<LogsProps, LogsState> {
             previousKey: number;
             keyPrefix: 'r' | '';
             length: number;
+            visible: number;
         },
     ): void {
         const row = this.state.logs?.[i];
@@ -763,34 +1037,9 @@ class Logs extends Component<LogsProps, LogsState> {
             return;
         }
         const severity = row.severity;
-
-        let message = row.message || '';
-        let id = '';
-
-        if (typeof message !== 'object') {
-            const regExp = new RegExp(
-                `${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `,
-                'g',
-            );
-            const matches = message.match(regExp);
-
-            if (matches) {
-                message = message.replace(matches[0], '');
-                id = (matches[0].split(' ')[1].match(/\d+/g) || [''])[0];
-            } else {
-                message = message.replace(`${row.from} `, '');
-            }
-        }
-
-        const isFrom = options.sourceFilter !== '1' && options.sourceFilter !== row.from;
-
-        let isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity];
-        if (!isHidden && options.filterMessage) {
-            if (typeof message === 'object') {
-                isHidden = !message.original.toLowerCase().includes(options.filterMessage);
-            } else {
-                isHidden = !message.toLowerCase().includes(options.filterMessage);
-            }
+        const { message, id, hidden: isHidden } = this.getRowView(row, options.sourceFilter, options.filterMessage);
+        if (!isHidden) {
+            options.visible++;
         }
 
         const key = options.previousKey === row.key ? i : (row.key ?? i);
@@ -851,6 +1100,50 @@ class Logs extends Component<LogsProps, LogsState> {
         );
     }
 
+    /**
+     * How an entry is shown: the message without source and PID, the PID, and whether a filter hides it.
+     *
+     * @param row the entry
+     * @param sourceFilter selected source, `1` for all
+     * @param filterMessage text filter in lower case
+     */
+    getRowView(
+        row: LogLineSavedExtended,
+        sourceFilter: string,
+        filterMessage: string,
+    ): { message: LogLineSaved['message']; id: string; hidden: boolean } {
+        let message = row.message || '';
+        let id = '';
+
+        if (typeof message !== 'object') {
+            const regExp = new RegExp(
+                `${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `,
+                'g',
+            );
+            const matches = message.match(regExp);
+
+            if (matches) {
+                message = message.replace(matches[0], '');
+                id = (matches[0].split(' ')[1].match(/\d+/g) || [''])[0];
+            } else {
+                message = message.replace(`${row.from} `, '');
+            }
+        }
+
+        const isFrom = sourceFilter !== '1' && sourceFilter !== row.from;
+
+        let hidden = isFrom || this.severities[row.severity] < this.severities[this.state.severity];
+        if (!hidden && filterMessage) {
+            if (typeof message === 'object') {
+                hidden = !message.original.toLowerCase().includes(filterMessage);
+            } else {
+                hidden = !message.toLowerCase().includes(filterMessage);
+            }
+        }
+
+        return { message, id, hidden };
+    }
+
     getRows(): JSX.Element[] {
         const rows: JSX.Element[] = [];
         const options: {
@@ -859,12 +1152,14 @@ class Logs extends Component<LogsProps, LogsState> {
             previousKey: number;
             keyPrefix: 'r' | '';
             length: number;
+            visible: number;
         } = {
             filterMessage: this.state.message.toLowerCase(),
             sourceFilter: this.state.source,
             previousKey: 0,
             keyPrefix: '',
             length: 0,
+            visible: 0,
         };
         const sources = Object.keys(this.state.sources).sort();
         sources.unshift('1');
@@ -902,6 +1197,8 @@ class Logs extends Component<LogsProps, LogsState> {
                 }, 1000);
             }
         }
+
+        this.visibleRows = options.visible;
 
         return rows;
     }
@@ -994,7 +1291,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 >
                     <IconButton
                         size="large"
-                        onClick={() => this.readLogs(true)}
+                        onClick={() => (this.state.searchHours ? void this.searchLogFiles() : this.readLogs(true))}
                     >
                         <RefreshIcon />
                     </IconButton>
@@ -1099,9 +1396,9 @@ class Logs extends Component<LogsProps, LogsState> {
                             size="large"
                             onClick={() => {
                                 if (this.state.severity === 'error') {
-                                    this.setState({ severity: 'debug' });
+                                    this.setState({ severity: 'debug' }, () => this.onFilterChanged());
                                 } else {
-                                    this.setState({ severity: 'error', logErrors: 0 });
+                                    this.setState({ severity: 'error', logErrors: 0 }, () => this.onFilterChanged());
                                 }
                             }}
                             color={this.state.severity === 'error' ? 'primary' : 'default'}
@@ -1123,9 +1420,9 @@ class Logs extends Component<LogsProps, LogsState> {
                             size="large"
                             onClick={() => {
                                 if (this.state.severity === 'warn') {
-                                    this.setState({ severity: 'debug' });
+                                    this.setState({ severity: 'debug' }, () => this.onFilterChanged());
                                 } else {
-                                    this.setState({ severity: 'warn', logWarnings: 0 });
+                                    this.setState({ severity: 'warn', logWarnings: 0 }, () => this.onFilterChanged());
                                 }
                             }}
                             color={this.state.severity === 'warn' ? 'primary' : 'default'}
@@ -1133,6 +1430,20 @@ class Logs extends Component<LogsProps, LogsState> {
                             <WarningIcon />
                         </IconButton>
                     </Badge>
+                </Tooltip>
+                <Tooltip
+                    title={this.props.t('Export the shown entries as a text file')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <span>
+                        <IconButton
+                            size="large"
+                            disabled={!this.state.logs?.length}
+                            onClick={() => this.exportLogs()}
+                        >
+                            <ExportIcon />
+                        </IconButton>
+                    </span>
                 </Tooltip>
                 <div style={styles.grow} />
                 {this.state.logFiles?.length ? downloadLogButton : null}
@@ -1148,20 +1459,97 @@ class Logs extends Component<LogsProps, LogsState> {
                     </Menu>
                 ) : null}
                 {isMobile ? null : <div style={styles.grow} />}
-                {isMobile ? null : (
-                    <Typography
-                        variant="body2"
-                        title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
-                        style={styles.logSize}
-                    >
-                        {this.t('Log size:')}{' '}
-                        <span style={this.state.estimatedSize ? styles.logEstimated : undefined}>
-                            {this.state.logSize === null ? '-' : AdminUtils.formatBytes(this.state.logSize)}
-                        </span>
-                    </Typography>
-                )}
+                {isMobile ? null : this.renderLogInfo()}
                 <Box sx={{ ml: 'auto', pl: 1 }}>{this.props.hostSelector}</Box>
             </TabHeader>
+        );
+    }
+
+    /** Size of the log, or what the search in the log files found */
+    renderLogInfo(): JSX.Element {
+        if (this.state.searchError) {
+            return (
+                <Typography
+                    variant="body2"
+                    sx={[styles.logSize, styles.searchError]}
+                    title={this.state.searchError}
+                >
+                    {this.t('Search failed: %s', this.state.searchError)}
+                </Typography>
+            );
+        }
+
+        if (this.state.searchHours) {
+            return (
+                <Typography
+                    variant="body2"
+                    style={styles.logSize}
+                >
+                    {this.t('Hits: %s', this.state.searching ? '…' : this.visibleRows)}
+                    {this.state.searchTruncated && !this.state.searching ? (
+                        <Tooltip
+                            title={this.t('Only the newest %s hits are shown', MAX_LOGS)}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <Box
+                                component={WarningIcon}
+                                sx={styles.searchTruncated}
+                            />
+                        </Tooltip>
+                    ) : null}
+                </Typography>
+            );
+        }
+
+        return (
+            <Typography
+                variant="body2"
+                title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
+                style={styles.logSize}
+            >
+                {this.t('Log size:')}{' '}
+                <span style={this.state.estimatedSize ? styles.logEstimated : undefined}>
+                    {this.state.logSize === null ? '-' : AdminUtils.formatBytes(this.state.logSize)}
+                </span>
+            </Typography>
+        );
+    }
+
+    /** Time range of the table: the latest entries, or the search in the log files */
+    renderTimeHeader(): JSX.Element {
+        return (
+            <Tooltip
+                title={this.t('Search the log files in this time range')}
+                placement="top"
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                <FormControl
+                    variant="standard"
+                    style={styles.formControl}
+                >
+                    <Select
+                        variant="standard"
+                        value={this.state.searchHours}
+                        disabled={!this.isSearchPossible()}
+                        onChange={event => this.handleSearchHoursChange(Number(event.target.value))}
+                    >
+                        {SEARCH_RANGES.map(hours => (
+                            <MenuItem
+                                key={hours}
+                                value={hours}
+                            >
+                                {!hours
+                                    ? this.t('Latest entries')
+                                    : hours === 1
+                                      ? this.t('1 hour')
+                                      : hours < 72
+                                        ? this.t('%s hours', hours)
+                                        : this.t('%s days', hours / 24)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </Tooltip>
         );
     }
 
@@ -1231,14 +1619,7 @@ class Logs extends Component<LogsProps, LogsState> {
                             </Box>
                         </TableCell>
                     )}
-                    <TableCell sx={styles.timestamp}>
-                        <Box
-                            component="div"
-                            sx={styles.header}
-                        >
-                            {this.t('Time')}
-                        </Box>
-                    </TableCell>
+                    <TableCell sx={styles.timestamp}>{this.renderTimeHeader()}</TableCell>
                     <TableCell sx={styles.severity}>
                         <FormControl
                             variant="standard"
@@ -1267,24 +1648,49 @@ class Logs extends Component<LogsProps, LogsState> {
                                 sx={styles.messageText}
                                 placeholder={this.t('Message')}
                                 onChange={event => this.handleMessageChange(event)}
+                                // typing filters the shown entries, Enter searches the log files
+                                onKeyDown={event => {
+                                    if (event.key === 'Enter') {
+                                        void this.searchLogFiles();
+                                    }
+                                }}
                                 value={this.state.message}
                                 slotProps={{
                                     input: {
-                                        endAdornment: this.state.message ? (
-                                            <IconButton
-                                                tabIndex={-1}
-                                                size="small"
-                                                onClick={() => {
-                                                    (
-                                                        ((window as any)._localStorage as Storage) ||
-                                                        window.localStorage
-                                                    ).removeItem('Log.message');
-                                                    this.setState({ message: '' });
-                                                }}
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        ) : null,
+                                        endAdornment: (
+                                            <>
+                                                {this.state.message ? (
+                                                    <IconButton
+                                                        tabIndex={-1}
+                                                        size="small"
+                                                        onClick={() => {
+                                                            (
+                                                                ((window as any)._localStorage as Storage) ||
+                                                                window.localStorage
+                                                            ).removeItem('Log.message');
+                                                            this.setState({ message: '' });
+                                                        }}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                ) : null}
+                                                {this.isSearchPossible() ? (
+                                                    <Tooltip
+                                                        title={this.t('Search in the log files (Enter)')}
+                                                        slotProps={{ popper: { sx: styles.tooltip } }}
+                                                    >
+                                                        <IconButton
+                                                            tabIndex={-1}
+                                                            size="small"
+                                                            disabled={this.state.searching}
+                                                            onClick={() => this.searchLogFiles()}
+                                                        >
+                                                            <SearchIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : null}
+                                            </>
+                                        ),
                                     },
                                 }}
                             />
@@ -1317,6 +1723,7 @@ class Logs extends Component<LogsProps, LogsState> {
                 this.hostsTimer ||
                 setTimeout(() => {
                     this.hostsTimer = null;
+                    // readLogs also leaves a search: the files of another host cannot be searched
                     this.setState(
                         {
                             currentHost: this.props.currentHost,
@@ -1328,10 +1735,15 @@ class Logs extends Component<LogsProps, LogsState> {
                 }, 200);
         }
 
+        // the rows first: the toolbar shows how many of them are visible
+        const rows = this.getRows();
+
         return (
             <TabContainer>
                 {this.renderToolbar()}
-                <TabContent>
+                {/* relative, so that the progress of a search lies over the table instead of moving it */}
+                <TabContent style={{ position: 'relative' }}>
+                    {this.state.searching ? <LinearProgress sx={styles.searchProgress} /> : null}
                     <TableContainer style={styles.container}>
                         <Table
                             stickyHeader
@@ -1339,7 +1751,7 @@ class Logs extends Component<LogsProps, LogsState> {
                             sx={styles.table}
                         >
                             {this.renderTableHeader()}
-                            <TableBody>{this.getRows()}</TableBody>
+                            <TableBody>{rows}</TableBody>
                         </Table>
                     </TableContainer>
                 </TabContent>

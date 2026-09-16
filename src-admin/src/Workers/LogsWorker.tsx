@@ -13,6 +13,66 @@ export interface LogLineSaved extends LogLine {
     key?: number;
 }
 
+/** Safari cannot parse `2020-01-01T10:00:00.000` as local time, so every number is parsed apart there */
+const IS_SAFARI =
+    typeof navigator !== 'undefined' &&
+    !!navigator.vendor &&
+    navigator.vendor.includes('Apple') &&
+    !!navigator.userAgent &&
+    !navigator.userAgent.includes('CriOS') &&
+    !navigator.userAgent.includes('FxiOS');
+
+/**
+ * Parse one entry of a log file, as the host sends it for `getLogs` and the file search of admin returns it:
+ * `2020-01-01 10:00:00.000  - <ESC>[32minfo<ESC>[39m: admin.0 (1234) text`.
+ *
+ * The message is left as text; `key` is the time stamp.
+ *
+ * @param line one line of the file, or one entry with its continuation lines joined by a line break
+ * @returns `null` if the text does not start with a time stamp - then it continues the entry above
+ */
+export function parseLogFileLine(line: string): LogLineSaved | null {
+    const time = line.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})/);
+    if (!time) {
+        return null;
+    }
+
+    let ts: number;
+    if (IS_SAFARI) {
+        ts = new Date(
+            parseInt(time[1], 10),
+            parseInt(time[2], 10) - 1,
+            parseInt(time[3], 10),
+            parseInt(time[4], 10),
+            parseInt(time[5], 10),
+            parseInt(time[6], 10),
+            parseInt(time[7], 10),
+        ).getTime();
+    } else {
+        const tt = time[0].split(' ');
+        ts = new Date(`${tt[0]}T${tt[1]}`).getTime();
+    }
+
+    // detect from
+    const from = line.match(/: (host\..+? |[-\w]+\.\d+ \()/);
+
+    // the level is normally colorized (`…[32minfo…`), but a log file written
+    // with `colorize: false` has no escape sequences
+    const severity = line.match(/\d+m(silly|debug|info|warn|error)/) || line.match(/ - (silly|debug|info|warn|error):/);
+
+    // the message starts after the colored level, or after the plain one
+    const message = line.match(/\[\d+m: ([\s\S]*)$/) || line.match(/ - (?:silly|debug|info|warn|error): ([\s\S]*)$/);
+
+    return {
+        key: ts,
+        from: from ? from[0].replace(/[ :(]/g, '') : '',
+        message: message ? message[1] : '',
+        severity: severity ? severity[1] : 'info',
+        ts,
+        _id: 0,
+    };
+}
+
 export class LogsWorker {
     private readonly socket: AdminConnection;
 
@@ -42,8 +102,6 @@ export class LogsWorker {
 
     private readonly maxLogs: number;
 
-    private readonly isSafari: boolean;
-
     private logTimeout: ReturnType<typeof setTimeout> | null = null;
 
     private logSize = 0;
@@ -69,12 +127,6 @@ export class LogsWorker {
         this.connected = this.socket.isConnected();
         this.maxLogs = maxLogs || 1000;
         this.logs = null;
-        this.isSafari =
-            !!navigator.vendor &&
-            navigator.vendor.includes('Apple') &&
-            !!navigator.userAgent &&
-            !navigator.userAgent.includes('CriOS') &&
-            !navigator.userAgent.includes('FxiOS');
 
         socket.registerLogHandler(this.logHandler);
         socket.registerConnectionHandler(this.connectionHandler);
@@ -238,49 +290,13 @@ export class LogsWorker {
                 objLine.key = objLine.ts;
             }
         } else {
-            // parse string
-            const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
+            const parsed = parseLogFileLine(line);
 
-            if (time && time.length > 0) {
-                let ts;
-                // Safari sucks. It is a very idiotic browser, and because of it, we must parse every number apart
-                if (this.isSafari) {
-                    // parse every number
-                    const tt = line.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})/) || [];
-                    ts = new Date(
-                        parseInt(tt[1], 10),
-                        parseInt(tt[2], 10) - 1,
-                        parseInt(tt[3], 10),
-                        parseInt(tt[4], 10),
-                        parseInt(tt[5], 10),
-                        parseInt(tt[6], 10),
-                        parseInt(tt[7], 10),
-                    ).getTime();
-                } else {
-                    const tt = time[0].split(' ');
-                    ts = new Date(`${tt[0]}T${tt[1]}`).getTime();
+            if (parsed) {
+                objLine = parsed;
+                if (lastKey && lastKey <= parsed.ts) {
+                    objLine.key = lastKey + 1;
                 }
-                let key = ts;
-
-                if (lastKey && lastKey <= ts) {
-                    key = lastKey + 1;
-                }
-
-                // detect from
-                const from = line.match(/: (host\..+? |[-\w]+\.\d+ \()/);
-
-                // the level is normally colorized (`…[32minfo…`), but a log file written
-                // with `colorize: false` has no escape sequences
-                const severity =
-                    line.match(/\d+m(silly|debug|info|warn|error)/) || line.match(/ - (silly|debug|info|warn|error):/);
-
-                objLine = {
-                    key,
-                    from: from ? from[0].replace(/[ :(]/g, '') : '',
-                    message: line.split(/\[\d+m: /)[1],
-                    severity: severity ? severity[1] : 'info',
-                    ts,
-                } as LogLineSaved;
             } else {
                 isNew = false;
                 // if no time found

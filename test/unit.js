@@ -26,3 +26,4 @@ tests.unit(path.join(__dirname, '..'), {
 });
 
 require('./testReplaceLink');
+require('./testLogSearch');
