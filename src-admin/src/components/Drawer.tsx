@@ -559,7 +559,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 if (b.order) {
                     return 1;
                 }
-                return a.name > b.name ? -1 : a.name > b.name ? 1 : 0;
+                return a.name > b.name ? 1 : a.name < b.name ? -1 : 0;
             });
 
             // Convert
@@ -578,35 +578,24 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 const map: Record<string, number> = {};
                 tabsVisible.forEach((item, i) => (map[item.name] = i));
 
-                tabs.sort((a, b) => {
-                    const aa = map[a.name];
-                    const bb = map[b.name];
-                    if (aa !== undefined && bb !== undefined) {
-                        return aa - bb;
-                    }
-                    if (aa) {
-                        return -1;
-                    }
-                    if (bb) {
-                        return 1;
-                    }
-                    return 0;
-                });
+                // The tabs saved in the system config keep the position the user gave them. A tab that is not saved yet
+                // (e.g., of a freshly installed adapter) follows the tab that precedes it by `order`, instead of ending up last.
+                // The list is saved only when the user edits the menu, so that `adminTab.order` stays effective until then
+                const saved = tabs.filter(tab => map[tab.name] !== undefined).sort((a, b) => map[a.name] - map[b.name]);
+                if (saved.length) {
+                    const unsaved = new Map<AdminTab | null, AdminTab[]>();
+                    let previous: AdminTab | null = null;
+                    tabs.forEach(tab => {
+                        if (map[tab.name] !== undefined) {
+                            previous = tab;
+                        } else {
+                            unsaved.set(previous, [...(unsaved.get(previous) || []), tab]);
+                        }
+                    });
+                    tabs = [...(unsaved.get(null) || []), ...saved.flatMap(tab => [tab, ...(unsaved.get(tab) || [])])];
+                }
 
-                this.setState({ tabs }, () => {
-                    this.props.provideTabsInfo(this.state.tabs);
-                    const newTabsVisible = tabs.map(({ name, visible, color }) => ({ name, visible, color }));
-
-                    if (JSON.stringify(newTabsVisible) !== JSON.stringify(tabsVisible)) {
-                        void this.props.socket.getSystemConfig(true).then(_systemConfig => {
-                            _systemConfig.common.tabsVisible = tabsVisible;
-
-                            return this.props.socket
-                                .setSystemConfig(_systemConfig)
-                                .catch(e => window.alert(`Cannot set system config: ${e}`));
-                        });
-                    }
-                });
+                this.setState({ tabs }, () => this.props.provideTabsInfo(this.state.tabs));
             });
         } catch (error) {
             window.alert(`Cannot get instances: ${error}`);
