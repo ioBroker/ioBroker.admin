@@ -226,6 +226,7 @@
     "port": 8081,
     "auth": false,
     "secure": false,
+    "http2": true,
     "bind": "0.0.0.0",
     "cache": false,
     "accessLimit": false,

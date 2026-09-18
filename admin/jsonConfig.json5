@@ -35,6 +35,16 @@
                     md: 6,
                     lg: 5,
                 },
+                http2: {
+                    type: 'checkbox',
+                    hidden: '!data.secure',
+                    label: 'Use HTTP/2',
+                    help: 'http2_help',
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 5,
+                },
                 _certs: {
                     type: 'certificates',
                     newLine: true,

@@ -15,6 +15,8 @@ export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     certPublic: string;
     defaultUser: string;
     doNotCheckPublicIP: boolean;
+    /** Speak HTTP/2 (with HTTP/1.1 fallback) if `secure` is set. Enabled if not set */
+    http2?: boolean;
     language: ioBroker.Languages;
     leCollection: boolean;
     loadingBackgroundColor: string;
