@@ -2330,7 +2330,7 @@ class App extends Router<AppProps, AppState> {
                 return (
                     <Suspense fallback={<Connecting />}>
                         <DeviceManagerTab
-                            key={this.state.currentTab.tab}
+                            key={`${this.state.currentTab.tab}:${this.state.currentTab.id || ''}`}
                             themeName={this.state.themeName}
                             themeType={this.state.themeType}
                             theme={this.state.theme}
@@ -3434,6 +3434,7 @@ class App extends Router<AppProps, AppState> {
                                 onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
                                 onLogout={() => App.logout()}
                                 currentTab={this.state.currentTab && this.state.currentTab.tab}
+                                currentTabId={this.state.currentTab?.id}
                                 instancesWorker={this.instancesWorker}
                                 hostsWorker={this.hostsWorker}
                                 logsWorker={this.logsWorker}

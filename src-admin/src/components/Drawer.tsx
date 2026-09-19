@@ -58,6 +58,11 @@ import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
 import DrawerItem from './DrawerItem';
+import {
+    CONFIG_MANAGER_PINS_CHANGED_EVENT,
+    getPinnedConfigManagerInstances,
+    setPinnedConfigManagerInstances,
+} from '@/helpers/configManagerPins';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -237,6 +242,8 @@ export interface AdminTab {
     visible?: boolean;
     color?: string;
     supportsLoadingMessage?: boolean;
+    configManagerInstance?: string;
+    adminTabInstance?: string;
 }
 
 interface DrawerProps {
@@ -248,10 +255,11 @@ interface DrawerProps {
     onLogout: () => void;
     isSecure: boolean;
     currentTab: string;
+    currentTabId?: string;
     themeType: ThemeType;
     socket: AdminConnection;
     versionAdmin: string;
-    handleNavigation: (tab: string) => void;
+    handleNavigation: (tab: string, subTab?: string, param?: string) => void;
     editMenuList: boolean;
     setEditMenuList: (editMenuList: boolean) => void;
 
@@ -360,6 +368,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     componentDidMount(): void {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
         this.getTabs().catch(e => window.alert(`Cannot get tabs: ${e}`));
+        window.addEventListener(CONFIG_MANAGER_PINS_CHANGED_EVENT, this.pinsChangedHandler);
+        window.addEventListener('storage', this.pinsChangedHandler);
 
         void this.onNotificationsHandler().then((): void => {
             this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
@@ -415,6 +425,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     componentWillUnmount(): void {
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandler);
         this.props.hostsWorker.unregisterNotificationHandler(this.onNotificationsHandler);
+        window.removeEventListener(CONFIG_MANAGER_PINS_CHANGED_EVENT, this.pinsChangedHandler);
+        window.removeEventListener('storage', this.pinsChangedHandler);
 
         if (this.logsHandlerRegistered) {
             this.logsHandlerRegistered = false;
@@ -422,6 +434,10 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             this.props.logsWorker.unregisterWarningCountHandler(this.onWarningsUpdates);
         }
     }
+
+    pinsChangedHandler = (): void => {
+        void this.getTabs();
+    };
 
     componentDidUpdate(): void {
         if (!this.isSwipeable() && this.props.state !== STATES.opened && this.props.editMenuList) {
@@ -506,8 +522,18 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             obj.title += ` ${instNum}`;
                         }
                     }
+                    obj.adminTabInstance = id.replace('system.adapter.', '');
                     dynamicTabs.push(obj);
                 });
+            }
+
+            const pinnedInstances = getPinnedConfigManagerInstances();
+            const validPinnedInstances = pinnedInstances.filter(instanceId => {
+                const instance = instances?.[`system.adapter.${instanceId}`];
+                return !!instance?.supportedMessages?.deviceManager;
+            });
+            if (validPinnedInstances.length !== pinnedInstances.length) {
+                setPinnedConfigManagerInstances(validPinnedInstances);
             }
 
             const READY_TO_USE = [
@@ -545,6 +571,36 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
             // add dynamic tabs
             tabs = tabs.concat(dynamicTabs);
+
+            validPinnedInstances.forEach((instanceId, index) => {
+                const instance = instances[`system.adapter.${instanceId}`];
+                const adapterName = instanceId.replace(/\.\d+$/, '');
+                const instanceNumber = instanceId.match(/\.(\d+)$/)?.[1];
+                const titleValue = instance.titleLang || instance.title || instance.name || adapterName;
+                let title =
+                    typeof titleValue === 'object'
+                        ? titleValue[this.props.lang] || titleValue.en || adapterName
+                        : this.props.t(titleValue);
+                if (
+                    instanceNumber &&
+                    (instanceNumber !== '0' ||
+                        validPinnedInstances.some(id => id !== instanceId && id.startsWith(`${adapterName}.`)))
+                ) {
+                    title += ` ${instanceNumber}`;
+                }
+                if (dynamicTabs.some(tab => tab.adminTabInstance === instanceId)) {
+                    title += ` (${this.props.t('Configuration Manager')})`;
+                }
+
+                tabs.push({
+                    name: `shortcut-devicemanager-${instanceId}`,
+                    order: 121 + index,
+                    icon: instance.icon ? `adapter/${instance.name}/${instance.icon}` : <DeviceManagerIcon />,
+                    title,
+                    visible: true,
+                    configManagerInstance: instanceId,
+                });
+            });
 
             tabs = tabs.filter(obj => obj);
             tabs.forEach(obj => (obj.visible = true));
@@ -825,6 +881,12 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 return null;
             }
 
+            const selected = tab.configManagerInstance
+                ? currentTab === 'tab-devicemanager' && this.props.currentTabId === tab.configManagerInstance
+                : currentTab === tab.name &&
+                  (tab.name !== 'tab-devicemanager' ||
+                      !tabs.some(item => item.configManagerInstance === this.props.currentTabId));
+
             return (
                 <DragWrapper
                     key={tab.name}
@@ -841,7 +903,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         )
                     }
                     _id={tab.name}
-                    selected={currentTab === tab.name}
+                    selected={selected}
                     tab={tab}
                     compact={!this.isSwipeable() && state !== STATES.opened}
                     badgeContent={logErrors || logWarnings || 0}
@@ -860,7 +922,9 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         }
                         compact={!this.isSwipeable() && state !== STATES.opened}
                         onClick={e => {
-                            if (e?.ctrlKey || e?.shiftKey) {
+                            if (tab.name.startsWith('shortcut-devicemanager-')) {
+                                handleNavigation('tab-devicemanager', 'tab', tab.configManagerInstance);
+                            } else if (e?.ctrlKey || e?.shiftKey) {
                                 void AdminUtils.getHref(
                                     this.props.instancesWorker,
                                     tab.name,
@@ -897,7 +961,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             )
                         }
                         text={tab.title || ''}
-                        selected={currentTab === tab.name}
+                        selected={selected}
                         badgeContent={this.badge(tab).content}
                         badgeColor={this.badge(tab).color}
                         badgeAdditionalContent={this.badge(tab)?.additionalContent}
