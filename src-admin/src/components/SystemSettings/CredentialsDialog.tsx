@@ -103,6 +103,12 @@ const styles: Record<string, React.CSSProperties> = {
 
 const ICON_SIZE = 20;
 
+/**
+ * Prefix of a script object, which is cut off in the "used by" column:
+ * `script.js.common.MyScript` and `script.py.common.MyScript` are shown as `common.MyScript`
+ */
+const SCRIPT_PREFIX = /^script\.[^.]+\./;
+
 function CredentialIcon(props: { src: string }): JSX.Element {
     return (
         <img
@@ -260,6 +266,23 @@ function getCredentialIcon(credential: ioBroker.Object): JSX.Element {
     );
 }
 
+/**
+ * Collects the credential names a script source accesses via the `SECRETS` object,
+ * i.e. `SECRETS.name`, `SECRETS?.name` and `SECRETS['name']`.
+ * Both notations are valid in javascript and in python.
+ */
+function findSecretsInSource(source: string): string[] {
+    // a new instance per call, as the regex is stateful (`g` flag)
+    const regExp = /\bSECRETS\s*\??\s*(?:\.\s*([A-Za-z_$][\w$]*)|\[\s*(['"`])([^'"`]+)\2\s*\])/g;
+    const names = new Set<string>();
+    let match = regExp.exec(source);
+    while (match) {
+        names.add(match[1] || match[3]);
+        match = regExp.exec(source);
+    }
+    return [...names];
+}
+
 interface CredentialsDialogProps {
     t: Translate;
     data: ioBroker.Object[];
@@ -269,10 +292,14 @@ interface CredentialsDialogProps {
 }
 
 interface UsageEntry {
-    /** Instance that references the credential, e.g. `iot.0` */
+    /** Text shown in the table, e.g. `iot.0` or `common.MyScript` */
     instance: string;
+    /** Unique key of the entry, e.g. `iot.0` or `script.js.common.MyScript` */
+    key: string;
     /** Icon URL of the adapter, e.g. `adapter/iot/iot.png` */
     icon?: string;
+    /** Tooltip of the entry, e.g. the full script ID */
+    title?: string;
 }
 
 interface CredentialsDialogState {
@@ -313,39 +340,74 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
         void this.detectUsage();
     }
 
-    /** Find out which adapter instances and the admin AI assistant reference which credential */
+    /**
+     * Find out which adapter instances, javascript scripts and the admin AI assistant
+     * reference which credential
+     */
     async detectUsage(): Promise<void> {
         const usage: Record<string, UsageEntry[]> = {};
         const add = (id: string, entry: UsageEntry): void => {
             usage[id] = usage[id] || [];
             usage[id].push(entry);
         };
+        // icons of all instances, to show the engine of a script (javascript.0, python.0, ...)
+        const instanceIcons: Record<string, string> = {};
 
         // 1. Instances that store a `system.credentials.*` reference somewhere in their `native`
         try {
             const instances = await this.props.socket.getAdapterInstances(true);
             instances.forEach(instance => {
+                let icon = instance.common?.icon;
+                if (icon && !icon.startsWith('data:image') && !icon.includes('/')) {
+                    icon = `adapter/${instance.common.name}/${icon}`;
+                }
+                if (icon) {
+                    instanceIcons[instance._id.replace('system.adapter.', '')] = icon;
+                }
                 const text = JSON.stringify(instance.native || {});
                 const matches = text.match(/system\.credentials\.[0-9A-Za-z_.-]+/g);
                 if (matches) {
                     const instanceId = instance._id.replace('system.adapter.', '');
-                    let icon = instance.common?.icon;
-                    if (icon && !icon.startsWith('data:image') && !icon.includes('/')) {
-                        icon = `adapter/${instance.common.name}/${icon}`;
-                    }
-                    [...new Set(matches)].forEach(id => add(id, { instance: instanceId, icon }));
+                    [...new Set(matches)].forEach(id => add(id, { instance: instanceId, key: instanceId, icon }));
                 }
             });
         } catch (e) {
             console.error(`Cannot read instances: ${e}`);
         }
 
-        // 2. The admin AI assistant keeps its selected credential in `system.ai`
+        // 2. Scripts (javascript, python, ...) that read a credential via `SECRETS.<name>`
+        try {
+            const scripts = await this.props.socket.getObjectViewSystem('script', 'script.', 'script.香');
+            Object.values(scripts).forEach(script => {
+                const source = script?.common?.source;
+                if (!source || typeof source !== 'string') {
+                    return;
+                }
+                // `common.engine` is the instance that executes the script, e.g. `system.adapter.javascript.0`
+                const engine = (script.common?.engine || '').replace('system.adapter.', '');
+                findSecretsInSource(source).forEach(secret =>
+                    add(`${CREDENTIALS_PREFIX}${secret}`, {
+                        instance: script._id.replace(SCRIPT_PREFIX, ''),
+                        key: script._id,
+                        icon: instanceIcons[engine],
+                        title: script._id,
+                    }),
+                );
+            });
+        } catch (e) {
+            console.error(`Cannot read scripts: ${e}`);
+        }
+
+        // 3. The admin AI assistant keeps its selected credential in `system.ai`
         try {
             const aiObj = await this.props.socket.getObject(CHAT_SETTINGS_OBJECT_ID);
             const credentialId = aiObj?.native?.credentialId;
             if (typeof credentialId === 'string' && credentialId.startsWith(CREDENTIALS_PREFIX)) {
-                add(credentialId, { instance: this.props.t('AI assistant'), icon: 'adapter/admin/admin.svg' });
+                add(credentialId, {
+                    instance: this.props.t('AI assistant'),
+                    key: CHAT_SETTINGS_OBJECT_ID,
+                    icon: 'adapter/admin/admin.svg',
+                });
             }
         } catch {
             // ignore — the object may not exist yet
@@ -746,8 +808,9 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
                             <span style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                                 {usedBy.map(entry => (
                                     <span
-                                        key={entry.instance}
+                                        key={entry.key}
                                         style={styles.templateItem}
+                                        title={entry.title}
                                     >
                                         {entry.icon ? (
                                             <img
