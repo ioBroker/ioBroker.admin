@@ -64,6 +64,7 @@ import CustomPopper from './CustomPopper';
 import DrawerItem from './DrawerItem';
 import {
     CONFIG_MANAGER_PINS_CHANGED_EVENT,
+    CONFIG_MANAGER_PINS_STORAGE_KEY,
     getPinnedConfigManagerInstances,
     setPinnedConfigManagerInstances,
 } from '@/helpers/configManagerPins';
@@ -269,8 +270,10 @@ export interface AdminTab {
     visible?: boolean;
     color?: string;
     supportsLoadingMessage?: boolean;
+    /** Shortcut to the config manager of this instance, like `devices.0` */
     configManagerInstance?: string;
-    adminTabInstance?: string;
+    /** The instances this tab belongs to. A singleton tab is shared by all instances of the adapter */
+    adminTabInstances?: string[];
 }
 
 interface DrawerProps {
@@ -468,7 +471,12 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         }
     }
 
-    pinsChangedHandler = (): void => {
+    pinsChangedHandler = (event?: Event): void => {
+        // `storage` fires for every key another browser tab writes. A null key means the whole storage
+        // was cleared - then the pins are gone, too, and the menu has to be built anew
+        if (event instanceof StorageEvent && event.key && event.key !== CONFIG_MANAGER_PINS_STORAGE_KEY) {
+            return;
+        }
         void this.getTabs();
     };
 
@@ -508,7 +516,10 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         }
                     }
 
-                    if (dynamicTabs.find(item => item.name === tab)) {
+                    const existingTab = dynamicTabs.find(item => item.name === tab);
+                    if (existingTab) {
+                        // a singleton tab is shown once, but it belongs to every instance of the adapter
+                        existingTab.adminTabInstances?.push(id.replace('system.adapter.', ''));
                         return;
                     }
 
@@ -567,18 +578,27 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             obj.englishTitle += ` ${instNum}`;
                         }
                     }
-                    obj.adminTabInstance = id.replace('system.adapter.', '');
+                    obj.adminTabInstances = [id.replace('system.adapter.', '')];
                     dynamicTabs.push(obj);
                 });
             }
 
+            // `getCompactInstances` delivers neither `supportedMessages` nor the title, only the full
+            // objects have them. The worker caches them, so this costs no additional request
+            const instanceObjects: Record<string, ioBroker.InstanceObject> =
+                (await this.props.instancesWorker.getObjects()) || {};
+
             const pinnedInstances = getPinnedConfigManagerInstances();
-            const validPinnedInstances = pinnedInstances.filter(instanceId => {
-                const instance = instances?.[`system.adapter.${instanceId}`];
-                return !!instance?.supportedMessages?.deviceManager;
-            });
-            if (validPinnedInstances.length !== pinnedInstances.length) {
-                setPinnedConfigManagerInstances(validPinnedInstances);
+            // an instance that was deleted or that no longer offers a device manager loses its shortcut
+            const pinned = pinnedInstances
+                .map(instanceId => ({
+                    instanceId,
+                    common: instanceObjects[`system.adapter.${instanceId}`]?.common,
+                }))
+                .filter(item => !!item.common?.supportedMessages?.deviceManager);
+
+            if (pinned.length !== pinnedInstances.length) {
+                setPinnedConfigManagerInstances(pinned.map(item => item.instanceId));
             }
 
             const READY_TO_USE = [
@@ -617,31 +637,50 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             // add dynamic tabs
             tabs = tabs.concat(dynamicTabs);
 
-            validPinnedInstances.forEach((instanceId, index) => {
-                const instance = instances[`system.adapter.${instanceId}`];
+            pinned.forEach(({ instanceId, common }, index) => {
                 const adapterName = instanceId.replace(/\.\d+$/, '');
                 const instanceNumber = instanceId.match(/\.(\d+)$/)?.[1];
-                const titleValue = instance.titleLang || instance.title || instance.name || adapterName;
+                const titleValue = common.titleLang || common.title || common.name || adapterName;
                 let title =
                     typeof titleValue === 'object'
                         ? titleValue[this.props.lang] || titleValue.en || adapterName
                         : this.props.t(titleValue);
+                // the untranslated name is English and is kept for the quick filter
+                let englishTitle = typeof titleValue === 'object' ? titleValue.en || adapterName : titleValue;
+
+                // the instance number only says something if the adapter is pinned more than once
                 if (
                     instanceNumber &&
                     (instanceNumber !== '0' ||
-                        validPinnedInstances.some(id => id !== instanceId && id.startsWith(`${adapterName}.`)))
+                        pinned.some(
+                            item => item.instanceId !== instanceId && item.instanceId.startsWith(`${adapterName}.`),
+                        ))
                 ) {
                     title += ` ${instanceNumber}`;
+                    englishTitle += ` ${instanceNumber}`;
                 }
-                if (dynamicTabs.some(tab => tab.adminTabInstance === instanceId)) {
-                    title += ` (${this.props.t('Configuration Manager')})`;
+                // the adapter brings a tab of its own: both entries have to say where they lead
+                if (dynamicTabs.some(tab => tab.adminTabInstances?.includes(instanceId))) {
+                    title += ` (${this.props.t('Devicemanager')})`;
+                    englishTitle += ' (Config manager)';
+                }
+
+                // the icon is kept as a string: `tabsEditSystemConfig` clones the tabs through JSON and a
+                // JSX element would not survive that. The fallback icon is added while rendering
+                let icon: string | undefined;
+                if (common.icon) {
+                    icon =
+                        common.icon.startsWith('data:image') || common.icon.includes('/')
+                            ? common.icon
+                            : `adapter/${common.name}/${common.icon}`;
                 }
 
                 tabs.push({
                     name: `shortcut-devicemanager-${instanceId}`,
                     order: 121 + index,
-                    icon: instance.icon ? `adapter/${instance.name}/${instance.icon}` : <DeviceManagerIcon />,
+                    icon,
                     title,
+                    englishTitle,
                     visible: true,
                     configManagerInstance: instanceId,
                 });
@@ -1011,6 +1050,28 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         }
     };
 
+    /**
+     * The icon of a menu entry.
+     *
+     * Only the built-in tabs bring a JSX icon with them: everything that is stored in the state has to stay
+     * serialisable, because `tabsEditSystemConfig` clones the tabs through JSON. The shortcut of an adapter
+     * that has no icon of its own therefore gets the fallback here and not in `getTabs`
+     */
+    static tabIcon(tab: AdminTab): JSX.Element {
+        if (tabsInfo[tab.name]?.icon) {
+            return tabsInfo[tab.name].icon as JSX.Element;
+        }
+        if (!tab.icon && tab.configManagerInstance) {
+            return <DeviceManagerIcon />;
+        }
+        return (
+            <Icon
+                style={styles.icon}
+                src={tab.icon}
+            />
+        );
+    }
+
     getNavigationItems(): (JSX.Element | null)[] {
         const { tabs, logErrors, logWarnings } = this.state;
         const { currentTab, state, handleNavigation } = this.props;
@@ -1048,16 +1109,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     // dragging while entries are hidden would move an entry to a position the user cannot see
                     canDrag={this.props.editMenuList && !filter}
                     name={tab.name}
-                    iconJSX={
-                        tabsInfo[tab.name]?.icon ? (
-                            (tabsInfo[tab.name].icon as JSX.Element)
-                        ) : (
-                            <Icon
-                                style={styles.icon}
-                                src={tab.icon}
-                            />
-                        )
-                    }
+                    iconJSX={Drawer.tabIcon(tab)}
                     _id={tab.name}
                     selected={selected}
                     tab={tab}
@@ -1082,8 +1134,18 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             if (this.state.filterOpened) {
                                 this.closeFilter();
                             }
-                            if (tab.name.startsWith('shortcut-devicemanager-')) {
-                                handleNavigation('tab-devicemanager', 'tab', tab.configManagerInstance);
+                            if (tab.configManagerInstance) {
+                                // ctrl or shift opens the entry in a new window, as with every other entry
+                                if (e?.ctrlKey || e?.shiftKey) {
+                                    window
+                                        .open(
+                                            `${window.location.pathname}#tab-devicemanager/tab/${tab.configManagerInstance}`,
+                                            tab.name,
+                                        )
+                                        ?.focus();
+                                } else {
+                                    handleNavigation('tab-devicemanager', 'tab', tab.configManagerInstance);
+                                }
                             } else if (e?.ctrlKey || e?.shiftKey) {
                                 void AdminUtils.getHref(
                                     this.props.instancesWorker,
@@ -1110,16 +1172,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 handleNavigation(tab.name);
                             }
                         }}
-                        icon={
-                            tabsInfo[tab.name]?.icon ? (
-                                (tabsInfo[tab.name].icon as JSX.Element)
-                            ) : (
-                                <Icon
-                                    src={tab.icon}
-                                    style={styles.icon}
-                                />
-                            )
-                        }
+                        icon={Drawer.tabIcon(tab)}
                         text={tab.title || ''}
                         selected={selected}
                         badgeContent={this.badge(tab).content}

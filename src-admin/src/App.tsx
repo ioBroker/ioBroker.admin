@@ -2330,7 +2330,7 @@ class App extends Router<AppProps, AppState> {
                 return (
                     <Suspense fallback={<Connecting />}>
                         <DeviceManagerTab
-                            key={`${this.state.currentTab.tab}:${this.state.currentTab.id || ''}`}
+                            key={this.state.currentTab.tab}
                             themeName={this.state.themeName}
                             themeType={this.state.themeType}
                             theme={this.state.theme}
