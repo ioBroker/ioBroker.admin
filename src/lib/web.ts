@@ -1,4 +1,4 @@
-import { commonTools, EXIT_CODES } from '@iobroker/adapter-core';
+import { commonTools, EXIT_CODES, I18n } from '@iobroker/adapter-core';
 import { checkPublicIP, WebServer, createOAuth2Server, type OAuth2Model } from '@iobroker/webserver';
 import express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
@@ -92,14 +92,6 @@ function escapeHtml(string: string): string {
     }
 
     return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
-}
-
-function get404Page(customText?: string): string {
-    if (customText) {
-        return page404.replace('<div class="custom-message"></div>', `<div class="custom-message">${customText}</div>`);
-    }
-
-    return page404;
 }
 
 /**
@@ -260,6 +252,46 @@ export default class Web {
 
     setLanguage(lang: ioBroker.Languages): void {
         this.systemLanguage = lang;
+    }
+
+    /**
+     * Text of the 404 page in the language of admin; English as long as there is no translation
+     *
+     * @param key English text from `src/i18n`, may contain one `%s`
+     * @param html HTML for `%s`
+     */
+    private translate404(key: string, html?: string): string {
+        let text = key;
+        try {
+            // Without a value for `%s`, getTranslatedObject() returns no language at all. It gets `%s` itself,
+            // as it would take `$&` and the like in a real value for replacement patterns.
+            const translated = I18n.getTranslatedObject(key, '%s');
+            text = translated[this.systemLanguage] || translated.en || key;
+        } catch {
+            // I18n is not initialized yet
+        }
+        return html === undefined ? text : text.replace('%s', () => html);
+    }
+
+    /**
+     * Render the 404 page in the language of admin. The page picks the theme of admin itself.
+     *
+     * @param detail English text from `src/i18n` saying what was not found, may contain one `%s`
+     * @param value value for `%s`, e.g., the requested path. It is escaped here.
+     */
+    private get404Page(detail?: string, value?: string): string {
+        const values: Record<string, string> = {
+            LANGUAGE: this.systemLanguage,
+            TITLE: this.translate404('Page not found'),
+            MESSAGE: this.translate404('The page you are looking for does not exist or has been moved.'),
+            DETAIL: detail
+                ? this.translate404(detail, value === undefined ? undefined : `<code>${escapeHtml(value)}</code>`)
+                : '',
+            HOME: escapeHtml(this.publicPath),
+            BACK: this.translate404('Back to start page'),
+        };
+        // In one pass: a value - like the requested path - must never be searched for placeholders itself
+        return page404.replace(/%(LANGUAGE|TITLE|MESSAGE|DETAIL|HOME|BACK)%/g, (_match, name: string) => values[name]);
     }
 
     close(): void {
@@ -677,7 +709,7 @@ export default class Web {
                         return;
                     }
                     socketIoFile = false;
-                    res.status(404).send(get404Page());
+                    res.status(404).send(this.get404Page());
                     return;
                 }
                 next();
@@ -783,7 +815,7 @@ export default class Web {
                                 res.set('Content-Type', 'image/png');
                                 res.status(200).send(file);
                             } else {
-                                res.status(404).send(get404Page());
+                                res.status(404).send(this.get404Page());
                             }
                         });
                         return;
@@ -866,7 +898,7 @@ export default class Web {
                     const fileName = parts.join('/');
                     if (fileName.includes('..')) {
                         res.status(404).send(
-                            get404Page(`File ${escapeHtml(fileName)} not found. Do not use relative paths!`),
+                            this.get404Page('File %s not found. Do not use relative paths!', fileName),
                         );
                         return;
                     }
@@ -881,10 +913,10 @@ export default class Web {
                                 if (_result.error) {
                                     this.adapter.log.warn(`Cannot read log file ${fileName}: ${_result.error}`);
                                 }
-                                res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
+                                res.status(404).send(this.get404Page('File %s not found', fileName));
                             } else {
                                 if (_result.data === undefined || _result.data === null) {
-                                    res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
+                                    res.status(404).send(this.get404Page('File %s not found', fileName));
                                 } else if (_result.gz) {
                                     if ((_result.size || 0) > 1024 * 1024) {
                                         res.header('Content-Type', 'application/gzip');
@@ -979,7 +1011,7 @@ export default class Web {
                         }
                     }
 
-                    res.status(404).send(get404Page(`File ${escapeHtml(fileName)} not found`));
+                    res.status(404).send(this.get404Page('File %s not found', fileName));
                 }
             });
 
@@ -1142,13 +1174,13 @@ export default class Web {
                                 res.contentType(getType(url) || 'text/javascript');
                                 createReadStream(url).pipe(res);
                             } else {
-                                res.status(404).send(get404Page(`File not found`));
+                                res.status(404).send(this.get404Page('File not found'));
                             }
                         } catch (e) {
-                            res.status(404).send(get404Page(`File not found: ${escapeHtml(JSON.stringify(e))}`));
+                            res.status(404).send(this.get404Page('File not found: %s', JSON.stringify(e)));
                         }
                     } else {
-                        res.status(404).send(get404Page(`File ${escapeHtml(url)} not found`));
+                        res.status(404).send(this.get404Page('File %s not found', url));
                     }
                     return;
                 }
@@ -1190,7 +1222,7 @@ export default class Web {
                 this.adapter.readFile(id, url, null, (err, buffer, mimeType): void => {
                     if (!buffer || err) {
                         res.contentType('text/html');
-                        res.status(404).send(get404Page(`File ${escapeHtml(url)} not found`));
+                        res.status(404).send(this.get404Page('File %s not found', url));
                     } else {
                         if (mimeType) {
                             res.contentType(mimeType);
@@ -1303,7 +1335,7 @@ export default class Web {
                 } catch (e) {
                     this.adapter.log.warn(`Cannot read file ("${adapterName}"/"${url}"): ${(e as Error).message}`);
                     res.contentType('text/html');
-                    res.status(404).send(get404Page(`File ${escapeHtml(url)} not found`));
+                    res.status(404).send(this.get404Page('File %s not found', url));
                 }
             });
 
@@ -1316,7 +1348,7 @@ export default class Web {
                 // The route is reachable without a login, so only well-formed "<adapter>.<instance>"
                 // targets are addressed instead of forwarding whatever stands in the path.
                 if (!/^[a-z0-9][a-z0-9\-_]*\.\d+$/.test(instance)) {
-                    res.status(404).send(get404Page(`Invalid instance "${escapeHtml(instance)}"`));
+                    res.status(404).send(this.get404Page('Invalid instance %s', instance));
                     return;
                 }
 
@@ -1377,17 +1409,13 @@ export default class Web {
                 });
             });
 
-            // 404 handler
-            this.server.app.use((req: Request, res: Response): void => {
-                res.status(404).send(get404Page(`File ${escapeHtml(req.url)} not found`));
-            });
-
             try {
                 const webserver = new WebServer({
                     app: this.server.app,
                     adapter: this.adapter,
                     secure: this.settings.secure,
                     acmeChallenge: this.settings.acmeChallenge,
+                    http2: this.settings.http2 !== false,
                 });
                 // @ts-expect-error tbd
                 this.server.server = await webserver.init();
@@ -1474,6 +1502,12 @@ export default class Web {
                     this.server.app,
                 );
             }
+
+            // 404 handler. Registered only here, after the MCP routes: Express tries the routes in the order
+            // they were added, and a catch-all in front of them made `/mcp` unreachable.
+            this.server.app?.use((req: Request, res: Response): void => {
+                res.status(404).send(this.get404Page('File %s not found', req.url));
+            });
 
             this.adapter.getPort(
                 this.settings.port,
