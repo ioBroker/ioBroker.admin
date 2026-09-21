@@ -24,9 +24,9 @@
         "not op_mini all"
     ],
     "dependencies": {
-        "@iobroker/dm-gui-components": "^10.0.21",
+        "@iobroker/dm-gui-components": "^10.0.22",
         "@iobroker/gui-components": "^10.3.1",
-        "@iobroker/json-config": "^10.0.2",
+        "@iobroker/json-config": "^10.0.5",
         "ace-builds": "^1.44.0",
         "remark-gfm": "^4.0.1"
     },
@@ -34,11 +34,11 @@
         "@devbookhq/splitter": "^1.4.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@iobroker/dm-utils": "^3.2.0",
+        "@iobroker/dm-utils": "^3.2.1",
         "@iobroker/socket-client": "^5.2.3",
         "@iobroker/type-detector": "^6.0.1",
         "@module-federation/runtime": "^2.9.0",
-        "@module-federation/vite": "^1.22.0",
+        "@module-federation/vite": "^1.22.1",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^3.0.0",
         "@tsconfig/node20": "^20.1.10",
@@ -48,7 +48,7 @@
         "@types/less": "^3.0.8",
         "@types/lodash": "^4.17.25",
         "@types/mocha": "^10.0.10",
-        "@types/node": "^26.5.1",
+        "@types/node": "^26.6.2",
         "@types/react": "^19.3.0",
         "@types/react-color": "^3.0.13",
         "@types/react-dom": "^19.3.0",
@@ -106,5 +106,5 @@
             }
         ]
     ],
-    "version": "8.0.15"
+    "version": "8.0.17"
 }

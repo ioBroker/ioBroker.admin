@@ -10,6 +10,8 @@ import {
     ListItemText,
     Menu,
     MenuItem,
+    TextField,
+    Tooltip,
     Typography,
     SwipeableDrawer,
     Box,
@@ -17,6 +19,8 @@ import {
 
 import {
     ChevronLeft as ChevronLeftIcon,
+    Search as SearchIcon,
+    Close as CloseIcon,
     GridView as QuickAccessIcon,
     SpaceDashboard as DashboardIcon,
     Info as InfoIcon,
@@ -58,10 +62,19 @@ import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
 import DrawerItem from './DrawerItem';
+import {
+    CONFIG_MANAGER_PINS_CHANGED_EVENT,
+    CONFIG_MANAGER_PINS_STORAGE_KEY,
+    getPinnedConfigManagerInstances,
+    setPinnedConfigManagerInstances,
+} from '@/helpers/configManagerPins';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
 export const DRAWER_EDIT_WIDTH = 250;
+
+/** From this many entries on, the menu gets the quick filter. A short menu is read faster than filtered */
+const MIN_TABS_FOR_FILTER = 10;
 
 function ucFirst(str: string): string {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
@@ -111,6 +124,19 @@ const styles: Record<string, any> = {
     }),
     headerCompact: {
         padding: 0,
+    },
+    // The filter button must not be squeezed by the logo beside it, which claims the whole width.
+    // The drawer is only 180px wide, so the padding is smaller than the one of a normal small button
+    filterButton: {
+        flexShrink: 0,
+        p: '4px',
+    },
+    // While the filter is open it is the only thing in the header, so it may take all of it
+    filterField: {
+        flexGrow: 1,
+        '& .MuiInputBase-input': {
+            fontSize: 14,
+        },
     },
     headerLogout: {
         justifyContent: 'space-between',
@@ -173,6 +199,10 @@ const styles: Record<string, any> = {
         // marginLeft: 48,
         marginTop: 5,
         marginBottom: 5,
+        // The buttons beside it keep their size, the logo gives way: without this the version label
+        // would push the filter button out of the narrow drawer
+        minWidth: 0,
+        overflow: 'hidden',
     },
     avatarNotVisible: {
         opacity: 0,
@@ -183,6 +213,7 @@ const styles: Record<string, any> = {
     },
     styleVersion: (theme: IobTheme) => ({
         fontSize: 10,
+        whiteSpace: 'nowrap',
         color: theme.palette.mode === 'dark' ? '#ffffff5e' : '#0000005e',
         alignSelf: 'center',
         ml: '5px',
@@ -234,9 +265,15 @@ export interface AdminTab {
     order: number;
     icon?: string | JSX.Element;
     title?: string;
+    /** Title in English. The quick filter matches it too, so that the English name of a tab finds it in every language */
+    englishTitle?: string;
     visible?: boolean;
     color?: string;
     supportsLoadingMessage?: boolean;
+    /** Shortcut to the config manager of this instance, like `devices.0` */
+    configManagerInstance?: string;
+    /** The instances this tab belongs to. A singleton tab is shared by all instances of the adapter */
+    adminTabInstances?: string[];
 }
 
 interface DrawerProps {
@@ -248,10 +285,11 @@ interface DrawerProps {
     onLogout: () => void;
     isSecure: boolean;
     currentTab: string;
+    currentTabId?: string;
     themeType: ThemeType;
     socket: AdminConnection;
     versionAdmin: string;
-    handleNavigation: (tab: string) => void;
+    handleNavigation: (tab: string, subTab?: string, param?: string) => void;
     editMenuList: boolean;
     setEditMenuList: (editMenuList: boolean) => void;
 
@@ -292,6 +330,10 @@ interface DrawerState {
     deviceManagerVisible: boolean;
     /** Anchor of the logout menu below the user entry */
     userMenuAnchor: HTMLElement | null;
+    /** The quick filter replaces the header content while it is open */
+    filterOpened: boolean;
+    /** Text of the quick filter above the navigation */
+    filter: string;
 }
 
 class Drawer extends Component<DrawerProps, DrawerState> {
@@ -311,6 +353,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
             deviceManagerVisible: false,
             userMenuAnchor: null,
+            filterOpened: false,
+            filter: '',
         };
     }
 
@@ -360,6 +404,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     componentDidMount(): void {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
         this.getTabs().catch(e => window.alert(`Cannot get tabs: ${e}`));
+        window.addEventListener(CONFIG_MANAGER_PINS_CHANGED_EVENT, this.pinsChangedHandler);
+        window.addEventListener('storage', this.pinsChangedHandler);
 
         void this.onNotificationsHandler().then((): void => {
             this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
@@ -415,6 +461,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     componentWillUnmount(): void {
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandler);
         this.props.hostsWorker.unregisterNotificationHandler(this.onNotificationsHandler);
+        window.removeEventListener(CONFIG_MANAGER_PINS_CHANGED_EVENT, this.pinsChangedHandler);
+        window.removeEventListener('storage', this.pinsChangedHandler);
 
         if (this.logsHandlerRegistered) {
             this.logsHandlerRegistered = false;
@@ -423,9 +471,23 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         }
     }
 
+    pinsChangedHandler = (event?: Event): void => {
+        // `storage` fires for every key another browser tab writes. A null key means the whole storage
+        // was cleared - then the pins are gone, too, and the menu has to be built anew
+        if (event instanceof StorageEvent && event.key && event.key !== CONFIG_MANAGER_PINS_STORAGE_KEY) {
+            return;
+        }
+        void this.getTabs();
+    };
+
     componentDidUpdate(): void {
         if (!this.isSwipeable() && this.props.state !== STATES.opened && this.props.editMenuList) {
             setTimeout(() => this.props.setEditMenuList(false));
+        }
+        // The filter field has no room in the compact drawer, and a filter the user cannot see
+        // would silently hide menu entries
+        if (this.state.filterOpened && !this.isSwipeable() && this.props.state !== STATES.opened) {
+            this.closeFilter();
         }
     }
 
@@ -454,14 +516,20 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         }
                     }
 
-                    if (dynamicTabs.find(item => item.name === tab)) {
+                    const existingTab = dynamicTabs.find(item => item.name === tab);
+                    if (existingTab) {
+                        // a singleton tab is shown once, but it belongs to every instance of the adapter
+                        existingTab.adminTabInstances?.push(id.replace('system.adapter.', ''));
                         return;
                     }
 
                     let title;
+                    // The untranslated name is English and is kept for the quick filter
+                    let englishTitle;
 
                     if (instance.adminTab.name) {
                         if (typeof instance.adminTab.name === 'object') {
+                            englishTitle = instance.adminTab.name.en || instance.name;
                             if (instance.adminTab.name && instance.adminTab.name[this.props.lang]) {
                                 title = instance.adminTab.name[this.props.lang];
                             } else if (instance.adminTab.name?.en) {
@@ -470,9 +538,11 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 title = this.props.t(instance.name);
                             }
                         } else {
+                            englishTitle = instance.adminTab.name;
                             title = this.props.t(instance.adminTab.name);
                         }
                     } else {
+                        englishTitle = instance.name;
                         title = this.props.t(instance.name);
                     }
 
@@ -499,15 +569,36 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     }
 
                     obj.title = title;
+                    obj.englishTitle = englishTitle;
 
                     if (!singleton) {
                         // obj.instance = instance;
                         if (instNum) {
                             obj.title += ` ${instNum}`;
+                            obj.englishTitle += ` ${instNum}`;
                         }
                     }
+                    obj.adminTabInstances = [id.replace('system.adapter.', '')];
                     dynamicTabs.push(obj);
                 });
+            }
+
+            // `getCompactInstances` delivers neither `supportedMessages` nor the title, only the full
+            // objects have them. The worker caches them, so this costs no additional request
+            const instanceObjects: Record<string, ioBroker.InstanceObject> =
+                (await this.props.instancesWorker.getObjects()) || {};
+
+            const pinnedInstances = getPinnedConfigManagerInstances();
+            // an instance that was deleted or that no longer offers a device manager loses its shortcut
+            const pinned = pinnedInstances
+                .map(instanceId => ({
+                    instanceId,
+                    common: instanceObjects[`system.adapter.${instanceId}`]?.common,
+                }))
+                .filter(item => !!item.common?.supportedMessages?.deviceManager);
+
+            if (pinned.length !== pinnedInstances.length) {
+                setPinnedConfigManagerInstances(pinned.map(item => item.instanceId));
             }
 
             const READY_TO_USE = [
@@ -531,20 +622,69 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
             let tabs: AdminTab[] = tabNames.map(name => {
                 const obj: AdminTab = { name, ...tabsInfo[name] };
-                obj.title = I18n.t(
-                    ucFirst(
-                        name
-                            .replace('tab-', '')
-                            .replace('-0', '')
-                            .replace(/-(\d+)$/, ' $1'),
-                    ),
+                // the translation key of the built-in tabs is the English word itself
+                obj.englishTitle = ucFirst(
+                    name
+                        .replace('tab-', '')
+                        .replace('-0', '')
+                        .replace(/-(\d+)$/, ' $1'),
                 );
+                obj.title = I18n.t(obj.englishTitle);
                 obj.visible = true;
                 return obj;
             });
 
             // add dynamic tabs
             tabs = tabs.concat(dynamicTabs);
+
+            pinned.forEach(({ instanceId, common }, index) => {
+                const adapterName = instanceId.replace(/\.\d+$/, '');
+                const instanceNumber = instanceId.match(/\.(\d+)$/)?.[1];
+                const titleValue = common.titleLang || common.title || common.name || adapterName;
+                let title =
+                    typeof titleValue === 'object'
+                        ? titleValue[this.props.lang] || titleValue.en || adapterName
+                        : this.props.t(titleValue);
+                // the untranslated name is English and is kept for the quick filter
+                let englishTitle = typeof titleValue === 'object' ? titleValue.en || adapterName : titleValue;
+
+                // the instance number only says something if the adapter is pinned more than once
+                if (
+                    instanceNumber &&
+                    (instanceNumber !== '0' ||
+                        pinned.some(
+                            item => item.instanceId !== instanceId && item.instanceId.startsWith(`${adapterName}.`),
+                        ))
+                ) {
+                    title += ` ${instanceNumber}`;
+                    englishTitle += ` ${instanceNumber}`;
+                }
+                // the adapter brings a tab of its own: both entries have to say where they lead
+                if (dynamicTabs.some(tab => tab.adminTabInstances?.includes(instanceId))) {
+                    title += ` (${this.props.t('Devicemanager')})`;
+                    englishTitle += ' (Config manager)';
+                }
+
+                // the icon is kept as a string: `tabsEditSystemConfig` clones the tabs through JSON and a
+                // JSX element would not survive that. The fallback icon is added while rendering
+                let icon: string | undefined;
+                if (common.icon) {
+                    icon =
+                        common.icon.startsWith('data:image') || common.icon.includes('/')
+                            ? common.icon
+                            : `adapter/${common.name}/${common.icon}`;
+                }
+
+                tabs.push({
+                    name: `shortcut-devicemanager-${instanceId}`,
+                    order: 121 + index,
+                    icon,
+                    title,
+                    englishTitle,
+                    visible: true,
+                    configManagerInstance: instanceId,
+                });
+            });
 
             tabs = tabs.filter(obj => obj);
             tabs.forEach(obj => (obj.visible = true));
@@ -706,8 +846,79 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         );
     }
 
+    /**
+     * Does the tab match the quick filter?
+     *
+     * Both the translated and the English name are matched: the adapters are known by their English
+     * name, so `javascript` must find the entry even if the menu shows it translated.
+     *
+     * @param tab the menu entry to test
+     * @param filter the already trimmed and lower-cased filter text
+     */
+    static matchesFilter(tab: AdminTab, filter: string): boolean {
+        return (
+            !!tab.title?.toLowerCase().includes(filter) ||
+            !!tab.englishTitle?.toLowerCase().includes(filter) ||
+            tab.name.replace('tab-', '').toLowerCase().includes(filter)
+        );
+    }
+
+    closeFilter = (): void => this.setState({ filterOpened: false, filter: '' });
+
+    /** Entries the navigation really shows. Invisible ones and those the GUI config hides do not count */
+    countVisibleTabs(): number {
+        const menuConfig = this.props.adminGuiConfig.admin?.menu as Record<string, any> | undefined;
+        return this.state.tabs.filter(tab => tab.visible && menuConfig?.[tab.name] !== false).length;
+    }
+
+    /**
+     * The quick filter. While it is open it replaces the logo and the buttons beside it, so that
+     * the text field can use the whole width of the drawer - it is narrow enough as it is.
+     */
+    renderFilter(): JSX.Element {
+        return (
+            <TextField
+                variant="standard"
+                autoFocus
+                sx={styles.filterField}
+                value={this.state.filter}
+                placeholder={this.props.t('Filter')}
+                onChange={e => this.setState({ filter: e.target.value })}
+                onKeyUp={e => {
+                    if (e.key === 'Escape') {
+                        this.closeFilter();
+                    } else if (e.key === 'Enter') {
+                        // Enter opens the only entry that is left - the usual way of using a quick filter
+                        const filter = this.state.filter.trim().toLowerCase();
+                        const found = this.state.tabs.find(
+                            tab => tab.visible && filter && Drawer.matchesFilter(tab, filter),
+                        );
+                        if (found) {
+                            this.closeFilter();
+                            this.props.handleNavigation(found.name);
+                        }
+                    }
+                }}
+                slotProps={{
+                    input: {
+                        endAdornment: (
+                            <IconButton
+                                tabIndex={-1}
+                                size="small"
+                                title={this.props.t('ra_Close')}
+                                onClick={this.closeFilter}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        ),
+                    },
+                }}
+            />
+        );
+    }
+
     getHeader(): JSX.Element {
-        const { state, handleNavigation } = this.props;
+        const compact = !this.isSwipeable() && this.props.state !== STATES.opened;
 
         return (
             <Box
@@ -719,52 +930,83 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                     !this.isSwipeable() && this.props.state !== STATES.opened && styles.headerCompact,
                 )}
             >
-                <div
-                    style={{
-                        ...styles.avatarBlock,
-                        ...styles.avatarNotVisible,
-                        ...(state === 0 ? styles.avatarVisible : { display: 'none' }),
-                    }}
-                >
-                    <a
-                        href="#easy"
-                        onClick={event => event.preventDefault()}
-                        style={{ color: 'inherit', textDecoration: 'none' }}
-                    >
-                        {this.props.adminGuiConfig.icon ? (
-                            <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
-                                <img
-                                    src={this.props.adminGuiConfig.icon}
-                                    alt="logo"
-                                    style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}
-                                />
-                            </div>
-                        ) : (
-                            <Avatar
-                                onClick={() => handleNavigation('easy')}
-                                style={styles.logoSize}
-                                alt="ioBroker"
-                                src="img/no-image.svg"
-                            />
-                        )}
-                    </a>
-                    {!this.props.adminGuiConfig.icon && this.props.versionAdmin && (
-                        <Typography sx={styles.styleVersion}>v{this.props.versionAdmin}</Typography>
-                    )}
-                </div>
-                <IconButton
-                    size="large"
-                    onClick={() => {
-                        if (this.isSwipeable() || this.props.state === STATES.compact) {
-                            this.props.onStateChange(STATES.closed as 1);
-                        } else {
-                            this.props.onStateChange(STATES.compact as 2);
-                        }
-                    }}
-                >
-                    <ChevronLeftIcon />
-                </IconButton>
+                {this.state.filterOpened ? (
+                    this.renderFilter()
+                ) : (
+                    <>
+                        {this.renderLogo()}
+                        {/* In the compact drawer there is no room for the button, and no room for the
+                            text field it would open. A short menu does not need a filter either */}
+                        {!compact && this.countVisibleTabs() > MIN_TABS_FOR_FILTER ? (
+                            <Tooltip
+                                title={this.props.t('Filter menu')}
+                                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                            >
+                                <IconButton
+                                    size="small"
+                                    sx={styles.filterButton}
+                                    onClick={() => this.setState({ filterOpened: true })}
+                                >
+                                    <SearchIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        ) : null}
+                        <IconButton
+                            size="large"
+                            onClick={() => {
+                                if (this.isSwipeable() || this.props.state === STATES.compact) {
+                                    this.props.onStateChange(STATES.closed as 1);
+                                } else {
+                                    this.props.onStateChange(STATES.compact as 2);
+                                }
+                            }}
+                        >
+                            <ChevronLeftIcon />
+                        </IconButton>
+                    </>
+                )}
             </Box>
+        );
+    }
+
+    /** The ioBroker logo with the admin version beside it. Only shown in the fully opened drawer */
+    renderLogo(): JSX.Element {
+        const { state, handleNavigation } = this.props;
+
+        return (
+            <div
+                style={{
+                    ...styles.avatarBlock,
+                    ...styles.avatarNotVisible,
+                    ...(state === 0 ? styles.avatarVisible : { display: 'none' }),
+                }}
+            >
+                <a
+                    href="#easy"
+                    onClick={event => event.preventDefault()}
+                    style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                    {this.props.adminGuiConfig.icon ? (
+                        <div style={{ height: 50, width: 102, lineHeight: '50px' }}>
+                            <img
+                                src={this.props.adminGuiConfig.icon}
+                                alt="logo"
+                                style={{ maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle' }}
+                            />
+                        </div>
+                    ) : (
+                        <Avatar
+                            onClick={() => handleNavigation('easy')}
+                            style={styles.logoSize}
+                            alt="ioBroker"
+                            src="img/no-image.svg"
+                        />
+                    )}
+                </a>
+                {!this.props.adminGuiConfig.icon && this.props.versionAdmin && (
+                    <Typography sx={styles.styleVersion}>v{this.props.versionAdmin}</Typography>
+                )}
+            </div>
         );
     }
 
@@ -808,6 +1050,28 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         }
     };
 
+    /**
+     * The icon of a menu entry.
+     *
+     * Only the built-in tabs bring a JSX icon with them: everything that is stored in the state has to stay
+     * serialisable, because `tabsEditSystemConfig` clones the tabs through JSON. The shortcut of an adapter
+     * that has no icon of its own therefore gets the fallback here and not in `getTabs`
+     */
+    static tabIcon(tab: AdminTab): JSX.Element {
+        if (tabsInfo[tab.name]?.icon) {
+            return tabsInfo[tab.name].icon as JSX.Element;
+        }
+        if (!tab.icon && tab.configManagerInstance) {
+            return <DeviceManagerIcon />;
+        }
+        return (
+            <Icon
+                style={styles.icon}
+                src={tab.icon}
+            />
+        );
+    }
+
     getNavigationItems(): (JSX.Element | null)[] {
         const { tabs, logErrors, logWarnings } = this.state;
         const { currentTab, state, handleNavigation } = this.props;
@@ -815,8 +1079,16 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         const hosts: Record<string, ioBroker.HostObject> = {};
         this.props.hosts.forEach(host => (hosts[host._id] = host));
 
+        const filter = this.state.filter.trim().toLowerCase();
+
+        // The entries that do not match are only hidden, the list itself is not filtered: the index
+        // is the position in `tabs` that `tabsEditSystemConfig` writes back into the system config
         return tabs.map((tab, idx) => {
             if (!this.props.editMenuList && !tab.visible) {
+                return null;
+            }
+
+            if (filter && !Drawer.matchesFilter(tab, filter)) {
                 return null;
             }
 
@@ -825,23 +1097,21 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 return null;
             }
 
+            const selected = tab.configManagerInstance
+                ? currentTab === 'tab-devicemanager' && this.props.currentTabId === tab.configManagerInstance
+                : currentTab === tab.name &&
+                  (tab.name !== 'tab-devicemanager' ||
+                      !tabs.some(item => item.configManagerInstance === this.props.currentTabId));
+
             return (
                 <DragWrapper
                     key={tab.name}
-                    canDrag={this.props.editMenuList}
+                    // dragging while entries are hidden would move an entry to a position the user cannot see
+                    canDrag={this.props.editMenuList && !filter}
                     name={tab.name}
-                    iconJSX={
-                        tabsInfo[tab.name]?.icon ? (
-                            (tabsInfo[tab.name].icon as JSX.Element)
-                        ) : (
-                            <Icon
-                                style={styles.icon}
-                                src={tab.icon}
-                            />
-                        )
-                    }
+                    iconJSX={Drawer.tabIcon(tab)}
                     _id={tab.name}
-                    selected={currentTab === tab.name}
+                    selected={selected}
                     tab={tab}
                     compact={!this.isSwipeable() && state !== STATES.opened}
                     badgeContent={logErrors || logWarnings || 0}
@@ -860,7 +1130,23 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         }
                         compact={!this.isSwipeable() && state !== STATES.opened}
                         onClick={e => {
-                            if (e?.ctrlKey || e?.shiftKey) {
+                            // the filter has done its job as soon as the user picked an entry
+                            if (this.state.filterOpened) {
+                                this.closeFilter();
+                            }
+                            if (tab.configManagerInstance) {
+                                // ctrl or shift opens the entry in a new window, as with every other entry
+                                if (e?.ctrlKey || e?.shiftKey) {
+                                    window
+                                        .open(
+                                            `${window.location.pathname}#tab-devicemanager/tab/${tab.configManagerInstance}`,
+                                            tab.name,
+                                        )
+                                        ?.focus();
+                                } else {
+                                    handleNavigation('tab-devicemanager', 'tab', tab.configManagerInstance);
+                                }
+                            } else if (e?.ctrlKey || e?.shiftKey) {
                                 void AdminUtils.getHref(
                                     this.props.instancesWorker,
                                     tab.name,
@@ -886,18 +1172,9 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 handleNavigation(tab.name);
                             }
                         }}
-                        icon={
-                            tabsInfo[tab.name]?.icon ? (
-                                (tabsInfo[tab.name].icon as JSX.Element)
-                            ) : (
-                                <Icon
-                                    src={tab.icon}
-                                    style={styles.icon}
-                                />
-                            )
-                        }
+                        icon={Drawer.tabIcon(tab)}
                         text={tab.title || ''}
-                        selected={currentTab === tab.name}
+                        selected={selected}
                         badgeContent={this.badge(tab).content}
                         badgeColor={this.badge(tab).color}
                         badgeAdditionalContent={this.badge(tab)?.additionalContent}

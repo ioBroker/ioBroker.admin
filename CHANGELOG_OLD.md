@@ -1,4 +1,15 @@
 # Older changes
+## 8.0.11 (2026-09-01)
+- (@GermanBluefox) CI: requests to a host that is not running (e.g. in adapter tests without js-controller) are answered immediately with a timeout error, so the GUI does not wait for its read timeout
+- (@GermanBluefox) Fixed: clearing the adapter name filter showed an empty adapter list instead of all adapters
+
+## 8.0.9 (2026-08-31)
+- (@GermanBluefox) The discovery dialog opens on the result page when the last scan left proposals that are not ignored
+- (@GermanBluefox) The discovery button carries a badge with the number of proposals that are neither created nor ignored
+- (@GermanBluefox) Added the option to create the first instance directly after the installation from npm/GitHub/URL/file, if the adapter has no instance yet
+- (@GermanBluefox) Updated web socket server
+- (@GermanBluefox) Improvements of the device manager
+
 ## 8.0.8 (2026-08-27)
 - (@GermanBluefox) Added the option to answer ACME HTTP-01 challenges of the acme adapter
 - (@GermanBluefox) Fixed the CORS headers missing on the OAuth2 endpoints. They answer without passing the request on, so retrieving a token from a browser on another origin failed with `No Access-Control-Allow-Origin header is present`. The CORS middleware is now registered in front of all routes

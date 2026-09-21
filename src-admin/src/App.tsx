@@ -3434,6 +3434,7 @@ class App extends Router<AppProps, AppState> {
                                 onStateChange={(state: 0 | 1 | 2) => this.handleDrawerState(state)}
                                 onLogout={() => App.logout()}
                                 currentTab={this.state.currentTab && this.state.currentTab.tab}
+                                currentTabId={this.state.currentTab?.id}
                                 instancesWorker={this.instancesWorker}
                                 hostsWorker={this.hostsWorker}
                                 logsWorker={this.logsWorker}
