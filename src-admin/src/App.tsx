@@ -520,6 +520,12 @@ class App extends Router<AppProps, AppState> {
     private hostsWorker: HostsWorker | null = null;
     private adaptersWorker: AdaptersWorker | null = null;
     private objectsWorker: ObjectsWorker | null = null;
+
+    /** The latest read of repository, installed versions and adapters. The start does not wait for it, the news do */
+    private repoInfoPromise: Promise<void> | null = null;
+
+    /** Number of the latest `readRepoAndInstalledInfo` run. A slower, older run must not overwrite a newer one */
+    private repoInfoRun = 0;
     private guiSettings: ObjectGuiSettings | null = null;
     private localStorageTimer: ReturnType<typeof setTimeout> | null = null;
     private languageSet: boolean = false;
@@ -1189,7 +1195,7 @@ class App extends Router<AppProps, AppState> {
                                 // ready without. A host that cannot reach the repository server does not
                                 // answer these two, so the admin used to show its loader for the whole
                                 // read timeout - with the start hanging on it, not the tab that needs it
-                                void this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
+                                void this.readRepoAndInstalledInfo(newState.currentHost);
                             }
                         } catch (e) {
                             console.log(`Error reading repo in onReady: ${(e as Error).stack}`);
@@ -1350,7 +1356,7 @@ class App extends Router<AppProps, AppState> {
     };
 
     repoChangeHandler = (): void => {
-        void this.readRepoAndInstalledInfo(this.state.currentHost, null, true).then(() => console.log('Repo updated!'));
+        void this.readRepoAndInstalledInfo(this.state.currentHost, true).then(() => console.log('Repo updated!'));
     };
 
     adaptersChangeHandler = (events: AdapterEvent[]): void => {
@@ -1736,6 +1742,10 @@ class App extends Router<AppProps, AppState> {
                     const objects = await this.objectsWorker?.getObjects(true);
                     const noObjects = Object.keys(objects || {}).length;
 
+                    // The conditions of the news check the adapters and the version of js-controller. The start
+                    // does not wait for them, and with empty ones a news for "not installed" would reach everybody
+                    await this.repoInfoPromise?.catch(() => {});
+
                     const checkNews = checkMessages(news, lastNewsId?.val as string, {
                         lang: I18n.getLanguage(),
                         adapters: this.state.adapters,
@@ -1865,8 +1875,18 @@ class App extends Router<AppProps, AppState> {
         );
     }
 
-    async readRepoAndInstalledInfo(currentHost: string, hosts?: CompactHost[] | null, update?: boolean): Promise<void> {
-        hosts ||= this.state.hosts;
+    /**
+     * Reads the repository, the installed versions and the adapters of the host into the state.
+     * The hosts are not part of it: they are kept up to date by the hosts worker, and a list taken
+     * before the reads would overwrite its changes when a slow read finishes
+     */
+    readRepoAndInstalledInfo(currentHost: string, update?: boolean): Promise<void> {
+        const promise = this.readRepoAndInstalledInfoRun(currentHost, ++this.repoInfoRun, update);
+        this.repoInfoPromise = promise;
+        return promise;
+    }
+
+    private async readRepoAndInstalledInfoRun(currentHost: string, run: number, update?: boolean): Promise<void> {
         if (!this.socket) {
             throw new Error('Socket not initialized');
         }
@@ -1898,11 +1918,26 @@ class App extends Router<AppProps, AppState> {
                     }
                     return {};
                 }),
-            this.socket.getCompactAdapters(update).catch((e: unknown): Record<string, CompactAdapterInfo> => {
-                window.alert(`Cannot read adapters: ${e as Error}`);
-                return {};
-            }),
+            // The adapters come fast, also from a host that cannot reach the repository server: they are
+            // shown at once instead of waiting for the two slow reads
+            this.socket
+                .getCompactAdapters(update)
+                .then(adapters => {
+                    if (run === this.repoInfoRun) {
+                        this.setState({ adapters });
+                    }
+                    return adapters;
+                })
+                .catch((e: unknown): Record<string, CompactAdapterInfo> => {
+                    window.alert(`Cannot read adapters: ${e as Error}`);
+                    return {};
+                }),
         ]);
+
+        if (run !== this.repoInfoRun) {
+            // a newer run has taken over in the meantime
+            return;
+        }
 
         if (installed && adapters) {
             Object.keys(adapters).forEach(id => {
@@ -1915,7 +1950,6 @@ class App extends Router<AppProps, AppState> {
         this.setState({
             repository,
             installed,
-            hosts,
             adapters,
         });
     }
@@ -2041,7 +2075,7 @@ class App extends Router<AppProps, AppState> {
                             async () => {
                                 this.logsWorkerChanged(host);
                                 (window._localStorage || window.localStorage).setItem('App.currentHost', host);
-                                await this.readRepoAndInstalledInfo(host, this.state.hosts);
+                                await this.readRepoAndInstalledInfo(host);
                                 // read notifications from the host
                                 const notifications = await this.hostsWorker?.getNotifications(host);
                                 await this.handleNewNotifications(notifications);
