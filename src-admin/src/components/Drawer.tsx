@@ -84,6 +84,9 @@ const MIN_TABS_FOR_FILTER = 10;
  */
 const INSTANCE_CHANGES_BURST_MS = 300;
 
+/** A steady stream of instance changes must not put off the rebuild forever */
+const INSTANCE_CHANGES_MAX_WAIT_MS = 2_000;
+
 function ucFirst(str: string): string {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
 }
@@ -361,6 +364,12 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     /** Collects a burst of instance changes into one rebuild */
     private instanceChangesTimer: ReturnType<typeof setTimeout> | null = null;
 
+    /** When the first instance change of the current burst arrived */
+    private instanceChangesSince = 0;
+
+    /** The last read of the system config failed, so the next one must bypass the socket cache */
+    private systemConfigFailed = false;
+
     private unmounted = false;
 
     constructor(props: DrawerProps) {
@@ -419,13 +428,20 @@ class Drawer extends Component<DrawerProps, DrawerState> {
      * arrive in a burst, and one rebuild of the menu covers all of them
      */
     instanceChangedHandler = (): void => {
+        const now = Date.now();
         if (this.instanceChangesTimer) {
             clearTimeout(this.instanceChangesTimer);
+        } else {
+            this.instanceChangesSince = now;
         }
+        const delay = Math.min(
+            INSTANCE_CHANGES_BURST_MS,
+            Math.max(0, this.instanceChangesSince + INSTANCE_CHANGES_MAX_WAIT_MS - now),
+        );
         this.instanceChangesTimer = setTimeout(() => {
             this.instanceChangesTimer = null;
             void this.getTabs(true);
-        }, INSTANCE_CHANGES_BURST_MS);
+        }, delay);
     };
 
     /**
@@ -558,9 +574,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
      * does not stay empty until the page is reloaded.
      *
      * @param update read the compact instances anew instead of taking them from the cache
-     * @param afterFailure this is a new attempt after a failed one: everything is read anew, because the
-     * socket keeps a rejected request under its cache key, and the instance worker keeps the `null` of a
-     * failed read
+     * @param afterFailure this is a new attempt after a failed one: the instances are read anew, because the
+     * socket keeps a request the server rejected under its cache key
      */
     async getTabs(update?: boolean, afterFailure?: boolean): Promise<void> {
         const run = ++this.tabsRun;
@@ -664,8 +679,9 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             // objects have them. The worker caches them, so this costs no additional request.
             // A failed read is `null` - not "no instances": taken for that, every pinned config manager
             // below would be filtered out and deleted from the browser storage
+            // The menu tries again by itself, so the worker must not show an alert for every failed attempt
             const instanceObjects: Record<string, ioBroker.InstanceObject> | null =
-                await this.props.instancesWorker.getObjects(afterFailure);
+                await this.props.instancesWorker.getObjects(afterFailure, true);
             if (!instanceObjects) {
                 throw new Error('instance objects not available');
             }
@@ -787,11 +803,16 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             // The saved order, visibility and colors come from the system config. Without it the menu is
             // still shown - in its default order, with every entry visible - and the saved settings follow
             // with the next attempt: an empty menu until the page is reloaded would be the alternative
+            // The request has no command timeout: it is read anew only if the last read of it failed (the socket
+            // keeps the rejected promise in its cache), not after every failure - a forced read that loses its
+            // reply to a reconnect would never settle
             let configError: unknown = null;
             try {
-                const systemConfig = await this.props.socket.getCompactSystemConfig(afterFailure);
+                const systemConfig = await this.props.socket.getCompactSystemConfig(this.systemConfigFailed);
+                this.systemConfigFailed = false;
                 tabs = Drawer.applySavedTabs(tabs, systemConfig.common.tabsVisible || []);
             } catch (error) {
+                this.systemConfigFailed = true;
                 configError = error;
             }
 

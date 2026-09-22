@@ -103,6 +103,9 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
     /** The next attempt after a failed read of the hosts */
     private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
+    /** Number of the latest `readHosts` run. A reconnect may start a new run while an older one still waits */
+    private readRun = 0;
+
     private unmounted = false;
 
     constructor(props: HostSelectorsProps) {
@@ -152,6 +155,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
      * alert and a selector that stays empty until the page is reloaded
      */
     async readHosts(): Promise<void> {
+        const run = ++this.readRun;
         if (this.retryTimer) {
             clearTimeout(this.retryTimer);
             this.retryTimer = null;
@@ -159,7 +163,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
 
         try {
             const hosts: CompactHost[] = await this.props.socket.getCompactHosts(true);
-            if (this.unmounted) {
+            if (run !== this.readRun || this.unmounted) {
                 return;
             }
 
@@ -173,7 +177,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                     alive[hosts[h]._id] = false;
                 }
             }
-            if (this.unmounted) {
+            if (run !== this.readRun || this.unmounted) {
                 return;
             }
 
@@ -202,7 +206,7 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                 this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
             });
         } catch (error) {
-            if (this.unmounted) {
+            if (run !== this.readRun || this.unmounted) {
                 return;
             }
             // a missing permission does not go away by asking again
