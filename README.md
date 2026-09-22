@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@krobipd) Fixed: the admin showed its start screen for half a minute when the host could not reach the repository server - on an installation without internet access, behind a firewall or with a slow repository. The repository and the installed versions were read one after the other before the start finished, and each of them ran into its own read timeout of fifteen seconds. Both are read at the same time now, and the start no longer waits for them: only the adapters tab needs them, and it fills itself as soon as they arrive. Measured with a host that does not answer them: 31.2 s until the first row of the objects tab, 1.1 s with this change
+
 ### 8.0.17 (2026-09-20)
 - (@BenAhrdt) Added: a config manager instance can be pinned to the menu. The pin sits in the toolbar of the device list and creates an entry that opens exactly this instance, so an adapter no longer needs an `adminTab` of its own just to lead there. The pinned instances are stored per browser (or in the GUI settings, if they are switched on), and an instance that is deleted or no longer offers a device manager loses its entry
 - (@GermanBluefox) Added: a quick filter in the menu. From 11 entries on, a magnifier appears next to the logo; it turns the header into a text field and hides the menu entries that do not match. Both the translated and the English name are searched, so the English name of a tab finds it in every language; Enter opens the first hit, Escape closes the filter

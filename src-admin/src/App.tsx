@@ -1184,7 +1184,12 @@ class App extends Router<AppProps, AppState> {
                             newState.showTips = !newState.wizard && !newState.systemConfig.common.tipsDisabled;
                             await this.findCurrentHost(newState);
                             if (newState.currentHost) {
-                                await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
+                                // Repository and installed versions are read WITHOUT waiting for them:
+                                // only the adapters tab needs them, while menu, objects and logs are
+                                // ready without. A host that cannot reach the repository server does not
+                                // answer these two, so the admin used to show its loader for the whole
+                                // read timeout - with the start hanging on it, not the tab that needs it
+                                void this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
                             }
                         } catch (e) {
                             console.log(`Error reading repo in onReady: ${(e as Error).stack}`);
@@ -1866,32 +1871,38 @@ class App extends Router<AppProps, AppState> {
             throw new Error('Socket not initialized');
         }
 
-        const repository: CompactRepository = await this.socket
-            .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
-            .catch((e: unknown): CompactRepository => {
-                window.alert(`Cannot getRepositoryCompact: ${e as Error}`);
-                if ((e as Error).toString().includes('timeout')) {
-                    this.setState({ showSlowConnectionWarning: true });
-                }
-                return {};
-            });
-
-        const installed: CompactInstalledInfo = await this.socket
-            .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
-            .catch((e: unknown): CompactInstalledInfo => {
-                window.alert(`Cannot getInstalled: ${e as Error}`);
-                if ((e as Error).toString().includes('timeout')) {
-                    this.setState({ showSlowConnectionWarning: true });
-                }
-                return {};
-            });
-
-        const adapters: Record<string, CompactAdapterInfo> = await this.socket
-            .getCompactAdapters(update)
-            .catch((e: unknown): Record<string, CompactAdapterInfo> => {
+        // The three reads do not depend on each other, so they run at the same time. One after the
+        // other they added up their waiting time: a host that cannot reach the repository server
+        // answers neither of the first two, and both ran into their own read timeout - fifteen
+        // seconds each, thirty in a row
+        const [repository, installed, adapters]: [
+            CompactRepository,
+            CompactInstalledInfo,
+            Record<string, CompactAdapterInfo>,
+        ] = await Promise.all([
+            this.socket
+                .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
+                .catch((e: unknown): CompactRepository => {
+                    window.alert(`Cannot getRepositoryCompact: ${e as Error}`);
+                    if ((e as Error).toString().includes('timeout')) {
+                        this.setState({ showSlowConnectionWarning: true });
+                    }
+                    return {};
+                }),
+            this.socket
+                .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
+                .catch((e: unknown): CompactInstalledInfo => {
+                    window.alert(`Cannot getInstalled: ${e as Error}`);
+                    if ((e as Error).toString().includes('timeout')) {
+                        this.setState({ showSlowConnectionWarning: true });
+                    }
+                    return {};
+                }),
+            this.socket.getCompactAdapters(update).catch((e: unknown): Record<string, CompactAdapterInfo> => {
                 window.alert(`Cannot read adapters: ${e as Error}`);
                 return {};
-            });
+            }),
+        ]);
 
         if (installed && adapters) {
             Object.keys(adapters).forEach(id => {
