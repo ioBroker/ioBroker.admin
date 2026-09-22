@@ -5,6 +5,7 @@ import { Box, Button, Menu, MenuItem, Tooltip } from '@mui/material';
 import { type AdminConnection, I18n, Icon, Utils } from '@iobroker/gui-components';
 import type { CompactHost } from '@/types';
 import type { HostsWorker, HostEvent, HostAliveEvent } from '@/Workers/HostsWorker';
+import { isPermissionError, retryDelay } from '@/helpers/retryDelay';
 
 const styles: Record<string, any> = {
     imgDiv: {
@@ -96,6 +97,17 @@ interface HostSelectorsState {
 }
 
 class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
+    /** How many reads of the hosts failed in a row - decides the pause before the next attempt */
+    private failures = 0;
+
+    /** The next attempt after a failed read of the hosts */
+    private retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    /** Number of the latest `readHosts` run. A reconnect may start a new run while an older one still waits */
+    private readRun = 0;
+
+    private unmounted = false;
+
     constructor(props: HostSelectorsProps) {
         super(props);
 
@@ -107,53 +119,118 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
     }
 
     componentDidMount(): void {
-        this.props.socket
-            .getCompactHosts(true)
-            .then((hosts: CompactHost[]) => {
-                this.setState({ hosts }, async () => {
-                    // request for all host the "alive" status
-                    const alive: Record<string, boolean> = {};
-                    for (let h = 0; h < hosts.length; h++) {
-                        const state = await this.props.socket.getState(`${hosts[h]._id}.alive`);
-                        if (state) {
-                            alive[hosts[h]._id] = !!state.val;
-                        } else {
-                            alive[hosts[h]._id] = false;
-                        }
-                    }
-
-                    // if the current host is not alive, find the first alive host and set it as current
-                    if (!alive[this.props.currentHost]) {
-                        const aliveHost = Object.keys(alive).find(id => alive[id]);
-                        if (aliveHost) {
-                            setTimeout(() => {
-                                const obj = this.state.hosts.find(ob => ob._id === aliveHost);
-                                if (obj) {
-                                    this.props.setCurrentHost(
-                                        obj.common?.name || aliveHost.replace('system.host.', ''),
-                                        aliveHost,
-                                    );
-                                } else {
-                                    this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
-                                }
-                            }, 100);
-                        }
-                    }
-
-                    this.setState({ alive }, () => {
-                        this.props.hostsWorker.registerHandler(this.onHostsObjectChange);
-                        this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
-                    });
-                });
-            })
-            .catch((e: any) => {
-                window.alert(`Cannot get hosts: ${e}`);
-            });
+        this.props.socket.registerConnectionHandler(this.connectionHandler);
+        void this.readHosts();
     }
 
     componentWillUnmount(): void {
+        this.unmounted = true;
+        if (this.retryTimer) {
+            clearTimeout(this.retryTimer);
+            this.retryTimer = null;
+        }
+        this.props.socket.unregisterConnectionHandler(this.connectionHandler);
         this.props.hostsWorker.unregisterHandler(this.onHostsObjectChange);
         this.props.hostsWorker.unregisterAliveHandler(this.onAliveChanged);
+    }
+
+    /**
+     * After a reconnect the hosts are read again only if no read succeeded so far. Once the list is
+     * there, the hosts worker keeps it up to date
+     */
+    connectionHandler = (connected: boolean): void => {
+        if (connected && !this.state.hosts.length) {
+            this.failures = 0;
+            if (this.retryTimer) {
+                clearTimeout(this.retryTimer);
+                this.retryTimer = null;
+            }
+            void this.readHosts();
+        }
+    };
+
+    /**
+     * Reads the hosts and their "alive" state. It never throws: a host that does not answer in time
+     * (busy right after the admin was opened) is asked again with a growing pause instead of a modal
+     * alert and a selector that stays empty until the page is reloaded
+     */
+    async readHosts(): Promise<void> {
+        const run = ++this.readRun;
+        if (this.retryTimer) {
+            clearTimeout(this.retryTimer);
+            this.retryTimer = null;
+        }
+
+        try {
+            const hosts: CompactHost[] = await this.props.socket.getCompactHosts(true);
+            if (run !== this.readRun || this.unmounted) {
+                return;
+            }
+
+            // request for all host the "alive" status
+            const alive: Record<string, boolean> = {};
+            for (let h = 0; h < hosts.length; h++) {
+                const state = await this.props.socket.getState(`${hosts[h]._id}.alive`);
+                if (state) {
+                    alive[hosts[h]._id] = !!state.val;
+                } else {
+                    alive[hosts[h]._id] = false;
+                }
+            }
+            if (run !== this.readRun || this.unmounted) {
+                return;
+            }
+
+            this.failures = 0;
+
+            // if the current host is not alive, find the first alive host and set it as current
+            if (!alive[this.props.currentHost]) {
+                const aliveHost = Object.keys(alive).find(id => alive[id]);
+                if (aliveHost) {
+                    setTimeout(() => {
+                        const obj = this.state.hosts.find(ob => ob._id === aliveHost);
+                        if (obj) {
+                            this.props.setCurrentHost(
+                                obj.common?.name || aliveHost.replace('system.host.', ''),
+                                aliveHost,
+                            );
+                        } else {
+                            this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
+                        }
+                    }, 100);
+                }
+            }
+
+            this.setState({ hosts, alive }, () => {
+                this.props.hostsWorker.registerHandler(this.onHostsObjectChange);
+                this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
+            });
+        } catch (error) {
+            if (run !== this.readRun || this.unmounted) {
+                return;
+            }
+            // a missing permission does not go away by asking again
+            if (isPermissionError(error)) {
+                this.failures = 0;
+                window.alert(`Cannot get hosts: ${error}`);
+                return;
+            }
+
+            const delay = retryDelay(this.failures);
+            this.failures++;
+
+            // without a connection the connection handler makes the next attempt as soon as the socket is back
+            if (!this.props.socket.isConnected()) {
+                console.warn(`Cannot get hosts: ${error}. Next attempt after the reconnect`);
+                return;
+            }
+
+            console.warn(`Cannot get hosts: ${error}. Next attempt in ${delay / 1000} s`);
+            this.retryTimer = setTimeout(() => {
+                this.retryTimer = null;
+                void this.readHosts();
+            }, delay);
+        }
     }
 
     onAliveChanged = (events: HostAliveEvent[]): void => {

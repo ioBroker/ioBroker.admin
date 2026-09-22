@@ -151,7 +151,14 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
         }
     };
 
-    getObjects(update?: boolean): Promise<null | Record<string, GetObjectFromType<T>>> {
+    /**
+     * Reads all objects of this type. A failed read resolves with `null`.
+     *
+     * @param update read the objects anew instead of taking them from the cache
+     * @param silent the caller handles a failed read itself (e.g. tries again later): no alert, and the
+     * failed read is not kept in the cache, so the next caller asks the server again
+     */
+    getObjects(update?: boolean, silent?: boolean): Promise<null | Record<string, GetObjectFromType<T>>> {
         update ||= this.forceUpdate;
         this.forceUpdate = false;
 
@@ -159,7 +166,7 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
             return this.promise;
         }
 
-        this.promise = this.socket
+        const promise: Promise<null | Record<string, GetObjectFromType<T>>> = this.socket
             .getObjectViewSystem(
                 this.objectType,
                 this.root ? `${this.root}.` : '',
@@ -175,11 +182,20 @@ export class GenericWorker<T extends ioBroker.ObjectType> {
                 return result;
             })
             .catch((e: unknown): null => {
-                window.alert(`Cannot get objects of type ${this.objectType}, with root "${this.root}": ${e as Error}`);
+                const text = `Cannot get objects of type ${this.objectType}, with root "${this.root}": ${e as Error}`;
+                if (silent) {
+                    console.warn(text);
+                    if (this.promise === promise) {
+                        this.promise = null;
+                    }
+                } else {
+                    window.alert(text);
+                }
                 return null;
             });
 
-        return this.promise;
+        this.promise = promise;
+        return promise;
     }
 
     // eslint-disable-next-line class-methods-use-this

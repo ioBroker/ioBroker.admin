@@ -21,7 +21,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 
 import { Marker, type DragEndEvent, type LatLngTuple, type Map } from 'leaflet';
 
-import { DialogConfirm, I18n, type Translate } from '@iobroker/gui-components';
+import { DialogConfirm, I18n, Icon, type Translate } from '@iobroker/gui-components';
 import { type AdminGuiConfig } from '@/types';
 
 import AdminUtils from '../../helpers/AdminUtils';
@@ -47,6 +47,16 @@ const styles: Record<string, React.CSSProperties> = {
     map: {
         borderRadius: 5,
     },
+    itemWithIcon: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+    },
+    itemIcon: {
+        width: 20,
+        height: 20,
+        flexShrink: 0,
+    },
 };
 
 const MyMapComponent: React.FC<{ addMap: (map: any) => any }> = props => {
@@ -59,7 +69,7 @@ interface Setting {
     id: string;
     title: string;
     translate?: boolean;
-    values: { id: string | boolean; title: string }[];
+    values: { id: string | boolean; title: string; icon?: string }[];
     allowText?: boolean;
     autocomplete?: boolean;
     help?: string;
@@ -73,6 +83,8 @@ interface Props {
     saving: boolean;
     onChange: (data: any, dataAux: any, cb?: () => void) => void;
     histories: string[];
+    /** Icons of the history instances by instance ID, e.g. `influxdb.0` */
+    historyIcons?: Record<string, string>;
     multipleRepos: boolean;
 }
 
@@ -241,6 +253,7 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                     ...this.props.histories.map(history => ({
                         id: history,
                         title: history,
+                        icon: this.props.historyIcons?.[history],
                     })),
                 ],
             },
@@ -446,12 +459,32 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
             );
         }
 
+        const getTitle = (elem: Setting['values'][0]): string =>
+            e.translate ? this.props.t(elem.title || elem.id.toString()) : elem.title || elem.id.toString();
+        // e.g., the icons of the history adapters
+        const withIcons = e.values.some(elem => elem.icon);
+
         const items = e.values.map((elem, index) => (
             <MenuItem
                 value={elem.id as string}
                 key={index}
             >
-                {e.translate ? this.props.t(elem.title || elem.id.toString()) : elem.title || elem.id}
+                {withIcons ? (
+                    <span style={styles.itemWithIcon}>
+                        {elem.icon ? (
+                            <Icon
+                                src={elem.icon}
+                                style={styles.itemIcon}
+                            />
+                        ) : (
+                            // keeps the texts in the list aligned
+                            <span style={styles.itemIcon} />
+                        )}
+                        {getTitle(elem)}
+                    </span>
+                ) : (
+                    getTitle(elem)
+                )}
             </MenuItem>
         ));
 
@@ -478,6 +511,27 @@ export default class MainSettingsDialog extends BaseSystemSettingsDialog<Props, 
                         value={value === undefined ? false : value}
                         onChange={evt => this.handleChange(evt, i)}
                         displayEmpty
+                        renderValue={
+                            withIcons
+                                ? selected => {
+                                      const elem = e.values.find(item => item.id === selected);
+                                      if (!elem) {
+                                          return String(selected ?? '');
+                                      }
+                                      return (
+                                          <span style={styles.itemWithIcon}>
+                                              {elem.icon ? (
+                                                  <Icon
+                                                      src={elem.icon}
+                                                      style={styles.itemIcon}
+                                                  />
+                                              ) : null}
+                                              {getTitle(elem)}
+                                          </span>
+                                      );
+                                  }
+                                : undefined
+                        }
                     >
                         {items}
                     </Select>
