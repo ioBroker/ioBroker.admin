@@ -34,6 +34,7 @@ import AdaptersUpdaterDialog from '@/components/Adapters/AdaptersUpdaterDialog';
 import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@/dialogs/SlowConnectionWarningDialog';
 import IsVisible from '@/components/IsVisible';
 import AdminUtils from '@/helpers/AdminUtils';
+import IconUpdateAll from '@/icons/IconUpdateAll';
 import {
     TabHeader,
     type AdminConnection,
@@ -84,16 +85,6 @@ const styles: Record<string, any> = {
     grow: {
         flexGrow: 1,
     },
-    updateAllButton: (theme: IobTheme) => ({
-        position: 'relative',
-        '& .admin-update-second-icon': {
-            position: 'absolute',
-            top: 15,
-            left: 15,
-            opacity: 0.4,
-            color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff',
-        },
-    }),
     counters: {
         mr: '10px',
         minWidth: 120,
@@ -1952,10 +1943,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                         <IconButton
                             size="large"
                             onClick={() => this.setState({ showUpdater: true })}
-                            sx={styles.updateAllButton}
                         >
-                            <UpdateIcon />
-                            <UpdateIcon className="admin-update-second-icon" />
+                            <IconUpdateAll />
                         </IconButton>
                     </Tooltip>
                 )}

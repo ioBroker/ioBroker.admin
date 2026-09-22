@@ -1,6 +1,19 @@
 import React, { Component, type JSX } from 'react';
 
-import { Box, Button, Card, Collapse, Grid, IconButton, Link, Tooltip, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Card,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    IconButton,
+    Link,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import { alpha, darken, lighten } from '@mui/material/styles';
 
 import {
@@ -215,33 +228,27 @@ export const styles: Record<string, any> = {
     tooltip: {
         pointerEvents: 'none',
     },
-    overlay: (theme: IobTheme) => ({
-        position: 'absolute',
-        inset: 0,
-        zIndex: 4,
-        backgroundColor: theme.palette.background.paper,
-        '& .MuiCollapse-wrapper, & .MuiCollapse-wrapperInner': {
-            height: '100%',
-        },
-    }),
-    overlayInner: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    overlayHead: (theme: IobTheme) => ({
+    infoTitle: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
         gap: '8px',
-        p: '8px 8px 8px 16px',
-        borderBottom: `1px solid ${theme.palette.divider}`,
-    }),
-    overlayBody: {
+        pr: '12px',
+    },
+    infoTitleText: {
         flex: 1,
-        overflowY: 'auto',
-        p: '12px 16px',
-        fontSize: '0.82rem',
+        minWidth: 0,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+    infoBody: {
+        fontSize: '0.9rem',
+        lineHeight: 1.5,
+        // the card needs tight rows, the dialog has room to breathe
+        '& > div': {
+            columnGap: '24px',
+            rowGap: '6px',
+        },
     },
 };
 
@@ -275,7 +282,8 @@ export interface IntroCardProps {
 }
 
 export interface IntroCardState {
-    expanded: boolean;
+    /** The dialog with the complete host information is open */
+    infoOpen: boolean;
 }
 
 class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> extends Component<TProps, TState> {
@@ -283,19 +291,15 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         super(props);
 
         this.state = {
-            expanded: false,
+            infoOpen: false,
         } as TState;
     }
 
     static getDerivedStateFromProps(props: IntroCardProps): Partial<IntroCardState> | null {
         if (props.edit) {
-            return { expanded: false };
+            return { infoOpen: false };
         }
         return null;
-    }
-
-    handleExpandClick(): void {
-        this.setState({ expanded: !this.state.expanded });
     }
 
     renderContent(): JSX.Element | JSX.Element[] | string | string[] | null | undefined {
@@ -384,53 +388,65 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
         );
     }
 
-    /** The complete host information, shown over the card */
-    renderInfoOverlay(): JSX.Element | null {
-        if (!this.props.showInfo) {
+    /** The complete host information. It has far too many lines for the card, so it gets a dialog. */
+    renderInfoDialog(): JSX.Element | null {
+        if (!this.props.showInfo || !this.state.infoOpen) {
             return null;
         }
+        const description = this.props.getHostDescriptionAll?.();
+        const onClose = (): void => this.setState({ infoOpen: false });
 
         return (
-            <Collapse
-                sx={styles.overlay}
-                in={this.state.expanded}
-                timeout="auto"
-                unmountOnExit
+            <Dialog
+                open={!0}
+                onClose={onClose}
+                maxWidth="sm"
+                fullWidth
+                // the dialog is rendered in a portal, but React still bubbles its clicks up to the card
+                onClick={e => e.stopPropagation()}
             >
-                <Box sx={styles.overlayInner}>
-                    <Box sx={styles.overlayHead}>
-                        <Typography
-                            component="div"
-                            sx={styles.title}
-                        >
-                            {this.props.t('Info')}
-                        </Typography>
-                        <Box sx={{ display: 'flex' }}>
-                            <IconButton
-                                size="small"
-                                title={this.props.t('Copy to clipboard')}
-                                onClick={e =>
-                                    IntroCard.swallow(e, () => {
-                                        if (this.props.getHostDescriptionAll) {
-                                            Utils.copyToClipboard(this.props.getHostDescriptionAll().text);
-                                        }
-                                        this.props.openSnackBarFunc?.();
-                                    })
-                                }
-                            >
-                                <SaveIcon />
-                            </IconButton>
-                            <IconButton
-                                size="small"
-                                onClick={e => IntroCard.swallow(e, () => this.handleExpandClick())}
-                            >
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </Box>
+                <DialogTitle sx={styles.infoTitle}>
+                    <InfoIcon color="primary" />
+                    <Box sx={styles.infoTitleText}>
+                        {this.props.t('Info')}: {this.props.title}
                     </Box>
-                    <Box sx={styles.overlayBody}>{this.props.getHostDescriptionAll?.().el}</Box>
-                </Box>
-            </Collapse>
+                    <IconButton
+                        size="small"
+                        onClick={onClose}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent
+                    dividers
+                    sx={styles.infoBody}
+                >
+                    {description?.el}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        color="grey"
+                        variant="outlined"
+                        startIcon={<SaveIcon />}
+                        disabled={!description?.text}
+                        onClick={() => {
+                            Utils.copyToClipboard(description?.text || '');
+                            this.props.openSnackBarFunc?.();
+                        }}
+                    >
+                        {this.props.t('Copy to clipboard')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        autoFocus
+                        startIcon={<CloseIcon />}
+                        onClick={onClose}
+                    >
+                        {this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         );
     }
 
@@ -577,13 +593,13 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                 color="inherit"
                                 startIcon={<InfoIcon fontSize="small" />}
                                 disabled={this.props.disabled}
-                                onClick={e => IntroCard.swallow(e, () => this.handleExpandClick())}
+                                onClick={e => IntroCard.swallow(e, () => this.setState({ infoOpen: true }))}
                             >
                                 {this.props.t('Info')}
                             </Button>
                         ) : null}
 
-                        {this.renderInfoOverlay()}
+                        {this.renderInfoDialog()}
                         {this.renderEditBar()}
                         {this.renderDialogs()}
                     </Card>

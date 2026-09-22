@@ -122,6 +122,10 @@ const styles: Record<string, any> = {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
     },
+    /** In the info dialog nothing is cut off, even a long path or JSON value wraps */
+    hostInfoValue: {
+        overflowWrap: 'anywhere',
+    },
     updateIcon: {
         cursor: 'pointer',
         fontSize: 16,
@@ -185,6 +189,14 @@ const formatInfo: Record<string, (seconds: number, t?: Translate) => string> = {
     Speed: AdminUtils.formatSpeed,
     'Disk size': AdminUtils.formatBytes,
     'Disk free': AdminUtils.formatBytes,
+    Time: (ts: number): string => new Date(ts).toLocaleString(),
+    // the host reports `Date.getTimezoneOffset()`: minutes, and negative east of Greenwich
+    timeOffset: (minutes: number): string => {
+        const abs = Math.abs(minutes);
+        const hours = Math.floor(abs / 60);
+        const rest = abs % 60;
+        return `UTC${minutes > 0 ? '-' : '+'}${hours}${rest ? `:${rest.toString().padStart(2, '0')}` : ''}`;
+    },
 };
 
 interface IntroProps {
@@ -1489,41 +1501,41 @@ class Intro extends React.Component<IntroProps, IntroState> {
 
     getHostDescriptionAll(id: string): { el: JSX.Element; text: string } {
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
+        const rows: { name: string; value: string }[] =
+            hostData && typeof hostData === 'object'
+                ? Object.keys(hostData)
+                      .filter(
+                          name =>
+                              !name.startsWith('_') &&
+                              (hostData as any)[name] !== null &&
+                              (hostData as any)[name] !== undefined,
+                      )
+                      .map(name => {
+                          const value = (hostData as any)[name];
+                          return {
+                              name,
+                              value:
+                                  (formatInfo[name]
+                                      ? formatInfo[name](value as number, this.t)
+                                      : typeof value === 'object'
+                                        ? JSON.stringify(value)
+                                        : value.toString()) || '--',
+                          };
+                      })
+                : [];
 
         return {
             el: (
                 <Box sx={styles.hostStats}>
-                    {hostData && typeof hostData === 'object'
-                        ? Object.keys(hostData)
-                              .filter(
-                                  _id =>
-                                      !_id.startsWith('_') &&
-                                      (hostData as any)[_id] !== null &&
-                                      (hostData as any)[_id] !== undefined,
-                              )
-                              .map(value => (
-                                  <React.Fragment key={value}>
-                                      <Box sx={styles.hostStatLabel}>{this.t(value)}</Box>
-                                      <Box>
-                                          {formatInfo[value]
-                                              ? formatInfo[value]((hostData as any)[value] as number, this.t)
-                                              : (typeof (hostData as any)[value] === 'object'
-                                                    ? JSON.stringify((hostData as any)[value])
-                                                    : (hostData as any)[value].toString()) || '--'}
-                                      </Box>
-                                  </React.Fragment>
-                              ))
-                        : null}
+                    {rows.map(row => (
+                        <React.Fragment key={row.name}>
+                            <Box sx={styles.hostStatLabel}>{this.t(row.name)}</Box>
+                            <Box sx={styles.hostInfoValue}>{row.value}</Box>
+                        </React.Fragment>
+                    ))}
                 </Box>
             ),
-
-            text:
-                hostData && typeof hostData === 'object'
-                    ? Object.keys(hostData).reduce(
-                          (acom: string, item: string) =>
-                              `${acom}${this.t(item)}:${formatInfo[item] ? formatInfo[item]((hostData as any)[item] as number, this.t) : (typeof (hostData as any)[item] === 'object' ? JSON.stringify((hostData as any)[item]) : ((hostData as any)[item] as string)) || '--'}\n`,
-                      )
-                    : '',
+            text: rows.map(row => `${this.t(row.name)}: ${row.value}`).join('\n'),
         };
     }
 
