@@ -97,6 +97,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@krobipd) Fixed: the admin showed its start screen for half a minute when the host could not reach the repository server - on an installation without internet access, behind a firewall or with a slow repository. The repository and the installed versions were read one after the other before the start finished, and each of them ran into its own read timeout of fifteen seconds. Both are read at the same time now, and the start no longer waits for them: only the adapters tab needs them, and it fills itself as soon as they arrive. Measured with a host that does not answer them: 31.2 s until the first row of the objects tab, 1.1 s with this change
 - (@krobipd) Fixed: on a slow or busy host, the admin start ended with "Cannot get hosts: Error: timeout" and an empty menu column until the page was reloaded. The menu and the host selector now try again (after 2 s, 5 s, then every 10 s) and after a reconnect, without an alert for each failed attempt; a missing permission is still reported once
 - (@krobipd) Fixed: when the instance objects could not be read, the pinned config manager entries were deleted from the menu
 - (@krobipd) Changed: several instance changes in a row rebuild the menu only once, and an older rebuild can no longer overwrite a newer one
