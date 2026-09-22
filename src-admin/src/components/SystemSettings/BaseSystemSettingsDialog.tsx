@@ -20,6 +20,8 @@ export interface BaseSystemSettingsDialogProps {
     activeRep?: string[];
     repoInfo?: Record<string, ioBroker.RepoInfo>;
     histories?: string[];
+    /** Icons of the history instances by instance ID, e.g. `influxdb.0` */
+    historyIcons?: Record<string, string>;
     themeName?: ThemeName;
     themeType?: ThemeType;
     host?: string;

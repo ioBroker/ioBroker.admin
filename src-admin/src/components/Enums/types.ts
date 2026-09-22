@@ -22,10 +22,9 @@ export interface DragMemberItem {
 /** Members to add to or remove from enums, by enum ID */
 export type MemberChanges = Record<string, { add?: string[]; remove?: string[] }>;
 
-/** Result of a drop on an enum. `dropEffect` is "copy" if the ALT key was pressed */
+/** Result of a drop on an enum. If a member is moved or copied, is decided in dragCopy.ts */
 export interface EnumDropResult {
     enumId: string;
-    dropEffect?: string;
 }
 
 /**

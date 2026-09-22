@@ -7,10 +7,12 @@ import { Box, Button, Chip, IconButton, Tooltip, Typography } from '@mui/materia
 import {
     Add as IconAdd,
     ArrowBack as IconBack,
+    ArrowForward as IconMoveTo,
     Close as IconClose,
     Delete as IconDelete,
     Edit as IconEdit,
     FileCopy as IconCopy,
+    InfoOutlined as IconInfo,
     List as IconList,
     PlaylistAdd as IconAddObjects,
     Warning as IconWarning,
@@ -30,6 +32,7 @@ import {
 
 import AdminUtils from '@/helpers/AdminUtils';
 import { canDropOnEnum, sortTreeItems, type DragMemberItem, type EnumDropResult, type EnumTreeItem } from './types';
+import { endMemberDrag, startMemberDrag, useCopyOnDrop } from './dragCopy';
 
 const styles: Record<string, any> = {
     root: {
@@ -180,6 +183,16 @@ const styles: Record<string, any> = {
         width: 30,
         flexShrink: 0,
     },
+    dragHint: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        opacity: 0.7,
+        flexShrink: 0,
+    },
+    dragHintIcon: {
+        fontSize: 18,
+    },
     emptyMembers: (theme: IobTheme) => ({
         border: `2px dashed ${theme.palette.divider}`,
         borderRadius: '8px',
@@ -196,8 +209,19 @@ const styles: Record<string, any> = {
         whiteSpace: 'nowrap',
     }),
     previewHint: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
         fontSize: 11,
         opacity: 0.7,
+    },
+    previewHintCopy: {
+        color: 'primary.main',
+        fontWeight: 600,
+        opacity: 1,
+    },
+    previewHintIcon: {
+        fontSize: 14,
     },
 };
 
@@ -282,9 +306,49 @@ function formatValue(state: ioBroker.State | null | undefined, obj: ioBroker.Obj
     return unit ? `${text} ${unit}` : text;
 }
 
+interface MemberDragPreviewProps {
+    name: string;
+    /** Name of the enum, from which the member is dragged */
+    enumName: string;
+    t: Translate;
+    theme: IobTheme;
+}
+
+/** Preview of a dragged member: it shows, if the member will be moved or copied */
+function MemberDragPreview(props: MemberDragPreviewProps): JSX.Element {
+    const copy = useCopyOnDrop();
+    const { t } = props;
+    let hint: JSX.Element | null = null;
+    if (copy) {
+        hint = (
+            <Box sx={Utils.getStyle(props.theme, styles.previewHint, styles.previewHintCopy)}>
+                <IconAdd sx={styles.previewHintIcon} />
+                {t('Copy · stays in "%s" too', props.enumName)}
+            </Box>
+        );
+    } else if (!AdminUtils.isTouchDevice()) {
+        // on touch devices there are no keys to copy
+        hint = (
+            <Box sx={styles.previewHint}>
+                <IconMoveTo sx={styles.previewHintIcon} />
+                {t('Move · hold Shift, Ctrl or Alt to copy')}
+            </Box>
+        );
+    }
+
+    return (
+        <Box sx={styles.preview}>
+            <div>{props.name}</div>
+            {hint}
+        </Box>
+    );
+}
+
 interface MemberRowProps {
     memberId: string;
     enumId: string;
+    /** Name of the enum, used in the preview of a dragged member */
+    enumName: string;
     obj?: ioBroker.Object;
     /** Parent of a state, used for the icon */
     parent?: ioBroker.Object;
@@ -313,26 +377,33 @@ function MemberRow(props: MemberRowProps): JSX.Element {
     const [{ isDragging }, dragRef, preview] = useDrag<DragMemberItem, EnumDropResult, { isDragging: boolean }>(
         () => ({
             type: 'enum-member',
-            item: () => ({
-                memberId: props.memberId,
-                fromEnumId: props.enumId,
-                preview: (
-                    <Box sx={styles.preview}>
-                        <div>{name}</div>
-                        <div style={styles.previewHint}>{t('Press ALT-key to copy')}</div>
-                    </Box>
-                ),
-            }),
+            item: () => {
+                startMemberDrag();
+                return {
+                    memberId: props.memberId,
+                    fromEnumId: props.enumId,
+                    preview: (
+                        <MemberDragPreview
+                            name={name}
+                            enumName={props.enumName}
+                            t={t}
+                            theme={props.theme}
+                        />
+                    ),
+                };
+            },
             canDrag: draggable,
             end: (item, monitor) => {
+                // moved by default, copied with Shift, Ctrl or Alt
+                const copy = endMemberDrag();
                 const result = monitor.getDropResult();
                 if (result?.enumId && result.enumId !== item.fromEnumId) {
-                    props.onMove(item.memberId, result.enumId, result.dropEffect === 'copy');
+                    props.onMove(item.memberId, result.enumId, copy);
                 }
             },
             collect: monitor => ({ isDragging: monitor.isDragging() }),
         }),
-        [props.memberId, props.enumId, props.onMove, name, draggable, t],
+        [props.memberId, props.enumId, props.enumName, props.onMove, props.theme, name, draggable, t],
     );
 
     useEffect(() => {
@@ -543,6 +614,7 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
 
     const rowProps = {
         enumId: enumItem._id,
+        enumName: name || enumItem._id,
         t,
         theme: props.theme,
         getName: props.getName,
@@ -722,6 +794,19 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
                             />
                         ))}
                     </Box>
+                ) : null}
+                {memberIds.length > 0 && !props.onBack && !AdminUtils.isTouchDevice() ? (
+                    // the members can only be dragged onto other entries if the list is shown next to the details
+                    <Typography
+                        variant="caption"
+                        component="div"
+                        sx={styles.dragHint}
+                    >
+                        <IconInfo sx={styles.dragHintIcon} />
+                        {t(
+                            'Drag an object onto another entry in the list to move it there. Hold Shift, Ctrl or Alt to copy it.',
+                        )}
+                    </Typography>
                 ) : null}
                 {!memberIds.length ? (
                     <Box sx={styles.emptyMembers}>
