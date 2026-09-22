@@ -325,6 +325,15 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     /** Full copy of the enums with the not yet applied changes, null if nothing is pending */
     private changeEnums: Record<string, ioBroker.EnumObject> | null = null;
 
+    /**
+     * Enums of the last update. They are not in the state yet while the members are read, so the next changes
+     * must be based on them: otherwise, a member moved to another enum appears again in the old one.
+     */
+    private lastEnums: Record<string, ioBroker.EnumObject> | null = null;
+
+    /** Counts the updates, so that a slow update does not overwrite a newer one */
+    private updateCounter = 0;
+
     /** This enum is selected as soon as it exists after the next update */
     private selectAfterUpdate: string | null = null;
 
@@ -416,18 +425,19 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         let changed;
 
         if (this.state.enums && id.startsWith('enum.')) {
+            const latestEnums = this.changeEnums || this.lastEnums || this.state.enums;
             if (obj) {
-                const oldObj = this.changeEnums?.[id] || this.state.enums?.[id];
+                const oldObj = latestEnums[id];
                 if (!oldObj || (oldObj && JSON.stringify(oldObj) !== JSON.stringify(obj))) {
                     const changeEnums: Record<string, ioBroker.EnumObject> =
-                        this.changeEnums || JSON.parse(JSON.stringify(this.state.enums));
+                        this.changeEnums || JSON.parse(JSON.stringify(latestEnums));
                     changeEnums[id] = obj;
                     this.changeEnums = changeEnums;
                     changed = true;
                 }
-            } else if (this.changeEnums?.[id] || (!this.changeEnums && this.state.enums?.[id])) {
+            } else if (latestEnums[id]) {
                 const changeEnums: Record<string, ioBroker.EnumObject> =
-                    this.changeEnums || JSON.parse(JSON.stringify(this.state.enums));
+                    this.changeEnums || JSON.parse(JSON.stringify(latestEnums));
                 delete changeEnums[id];
                 this.changeEnums = changeEnums;
                 changed = true;
@@ -463,7 +473,9 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     };
 
     updateData = async (enums?: Record<string, ioBroker.EnumObject>): Promise<void> => {
+        const counter = ++this.updateCounter;
         const allEnums = enums || (await this.props.socket.getForeignObjects('enum.*', 'enum'));
+        this.lastEnums = allEnums;
 
         const memberIds = new Set<string>();
         Object.values(allEnums).forEach(enumObj => enumObj.common?.members?.forEach(id => memberIds.add(id)));
@@ -480,6 +492,11 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
             }
         }
         const parents = await this.readObjects([...parentIds]);
+
+        if (counter !== this.updateCounter) {
+            // a newer update is running
+            return;
+        }
 
         this.setState({ enums: allEnums, members, parents, updating: [] }, () => this.buildTree(allEnums));
     };

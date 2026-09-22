@@ -47,6 +47,9 @@ import '../../assets/css/style.css';
 
 const SOME_PASSWORD = '__SOME_PASSWORD__';
 
+/** The tab opened last is opened again, if the URL does not name a tab */
+const TAB_STORAGE_KEY = 'SystemSettings.tab';
+
 const styles: Record<string, any> = {
     tabPanel: (theme: IobTheme) => ({
         width: '100%',
@@ -108,6 +111,8 @@ interface SystemSettingsDialogState {
     users?: ioBroker.UserObject[];
     groups?: ioBroker.GroupObject[];
     histories?: string[];
+    /** Icons of the history instances by instance ID, e.g. `influxdb.0` */
+    historyIcons?: Record<string, string>;
     diagData?: any;
     saving?: boolean;
 }
@@ -213,12 +218,25 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             newState.users = await this.props.socket.getUsers();
             newState.groups = await this.props.socket.getGroups();
             const instances = await this.props.socket.getAdapterInstances(true);
-            newState.histories = Object.values(instances)
-                .filter(instance => instance.common.getHistory)
-                .map(instance => {
-                    const id = instance._id.split('.');
-                    return `${id[id.length - 2]}.${id[id.length - 1]}`;
-                });
+            const histories: string[] = [];
+            const historyIcons: Record<string, string> = {};
+            for (const instance of Object.values(instances)) {
+                if (!instance.common.getHistory) {
+                    continue;
+                }
+                const parts = instance._id.split('.');
+                const id = `${parts[parts.length - 2]}.${parts[parts.length - 1]}`;
+                histories.push(id);
+                let icon = instance.common.icon;
+                if (icon && !icon.startsWith('data:image') && !icon.includes('/')) {
+                    icon = `adapter/${instance.common.name}/${icon}`;
+                }
+                if (icon) {
+                    historyIcons[id] = icon;
+                }
+            }
+            newState.histories = histories;
+            newState.historyIcons = historyIcons;
 
             const systemCertificates = await this.props.socket.getObject('system.certificates');
             this.originalCertificates = JSON.stringify(systemCertificates);
@@ -526,15 +544,22 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         );
     };
 
-    getDialogContent(tabsList: SystemSettingsDialogTab[]): JSX.Element {
+    /** The tab named in the URL, else the tab opened last */
+    getCurrentTabId(tabsList: SystemSettingsDialogTab[]): string {
+        const id =
+            this.props.currentTab.id || (window._localStorage || window.localStorage).getItem(TAB_STORAGE_KEY) || '';
+        return tabsList.find(tab => tab.name === id) ? id : tabsList[0]?.name || 'tabConfig';
+    }
+
+    getDialogContent(tabsList: SystemSettingsDialogTab[], currentTabId: string): JSX.Element {
         if (this.state.loading) {
             return <LinearProgress />;
         }
 
-        const tab = tabsList.find(t => t.name === this.props.currentTab.id) || tabsList[0];
+        const tab = tabsList.find(t => t.name === currentTabId) || tabsList[0];
 
         const MyComponent: React.FC<BaseSystemSettingsDialogProps> = tab.component;
-        const { groups, users, histories } = this.state;
+        const { groups, users, histories, historyIcons } = this.state;
         return (
             <Box
                 component="div"
@@ -554,6 +579,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     activeRepo={this.state.systemConfig?.common.activeRepo}
                     repoInfo={this.state.repoInfo}
                     histories={histories}
+                    historyIcons={historyIcons}
                     themeName={this.props.themeName}
                     themeType={this.props.themeType}
                     host={this.state.host}
@@ -566,6 +592,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
     }
 
     static onTabChanged = (newTab: string): void => {
+        (window._localStorage || window.localStorage).setItem(TAB_STORAGE_KEY, newTab);
         Router.doNavigate(null, 'system', newTab);
     };
 
@@ -604,12 +631,6 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             }) === this.originalLicenses
         );
 
-        let tabError = false;
-        if (this.props.currentTab.id === 'tabRepositories') {
-            tabError =
-                !!this.state.systemRepositories && SystemSettingsDialog.ifRepoError(this.state.systemRepositories);
-        }
-
         const tabsList = this.getTabs().filter(tab => {
             if (!this.state.licenseManager && tab.name === 'tabLicenses') {
                 return false;
@@ -617,6 +638,13 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             const settings = this.props.adminGuiConfig.admin?.settings;
             return settings?.[tab.name as keyof typeof settings] !== false;
         });
+        const currentTabId = this.getCurrentTabId(tabsList);
+
+        let tabError = false;
+        if (currentTabId === 'tabRepositories') {
+            tabError =
+                !!this.state.systemRepositories && SystemSettingsDialog.ifRepoError(this.state.systemRepositories);
+        }
 
         console.log(`get state: ${tabError}`);
         const tabs = tabsList.map(tab => (
@@ -624,7 +652,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 key={tab.title}
                 label={this.props.t(tab.title)}
                 value={tab.name}
-                disabled={tabError && tab.name !== (this.props.currentTab.id || 'tabConfig')}
+                disabled={tabError && tab.name !== currentTabId}
                 sx={{ '&.Mui-selected': styles.selected }}
             />
         ));
@@ -665,7 +693,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                             <Tabs
                                 style={styles.tab}
                                 indicatorColor="secondary"
-                                value={this.props.currentTab.id || 'tabConfig'}
+                                value={currentTabId}
                                 onChange={(_event, newTab: string) => SystemSettingsDialog.onTabChanged(newTab)}
                                 variant="scrollable"
                                 scrollButtons="auto"
@@ -684,7 +712,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                             </IconButton>
                         </div>
                     </AppBar>
-                    {this.getDialogContent(tabsList)}
+                    {this.getDialogContent(tabsList, currentTabId)}
                     {this.renderDialogConfirm()}
                 </DialogContent>
                 <DialogActions>
