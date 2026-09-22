@@ -96,6 +96,11 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@krobipd) Fixed: on a slow or busy host, the admin start ended with the error message "Cannot get hosts: Error: timeout" and a white menu column that stayed empty until the page was reloaded. The menu and the host selector were built exactly once, and every request that the host did not answer within five seconds was the end of it. Both now try again with a growing pause (2 s, 5 s, then every 10 s), rebuild themselves after a reconnect, and no longer report such transient errors themselves (the object workers still report their own failed reads, they are untouched); a missing permission is still reported once. The menu is shown even when only the system configuration cannot be read - the saved order and colors follow with the next attempt
+- (@krobipd) Fixed: when the instance objects could not be read, the menu took that for "no instances" and silently deleted the pinned config manager entries from the browser storage
+- (@krobipd) Changed: several instance changes in a row (e.g. after a reconnect) rebuilt the menu once per change, each with its own round-trip to the host; they are collected into one rebuild now, and a slower, older rebuild can no longer overwrite a newer one
+
 ### 8.0.17 (2026-09-20)
 - (@BenAhrdt) Added: a config manager instance can be pinned to the menu. The pin sits in the toolbar of the device list and creates an entry that opens exactly this instance, so an adapter no longer needs an `adminTab` of its own just to lead there. The pinned instances are stored per browser (or in the GUI settings, if they are switched on), and an instance that is deleted or no longer offers a device manager loses its entry
 - (@GermanBluefox) Added: a quick filter in the menu. From 11 entries on, a magnifier appears next to the logo; it turns the header into a text field and hides the menu entries that do not match. Both the translated and the English name are searched, so the English name of a tab finds it in every language; Enter opens the first hit, Escape closes the filter

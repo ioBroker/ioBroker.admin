@@ -68,6 +68,7 @@ import {
     getPinnedConfigManagerInstances,
     setPinnedConfigManagerInstances,
 } from '@/helpers/configManagerPins';
+import { isPermissionError, retryDelay } from '@/helpers/retryDelay';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -75,6 +76,13 @@ export const DRAWER_EDIT_WIDTH = 250;
 
 /** From this many entries on, the menu gets the quick filter. A short menu is read faster than filtered */
 const MIN_TABS_FOR_FILTER = 10;
+
+/**
+ * Instance changes that arrive within this time are collected into one rebuild of the menu. The worker
+ * reports every changed instance object on its own, so an update or a reconnect would otherwise start
+ * one rebuild per instance - each with its own round-trip to a host that is busy at that very moment
+ */
+const INSTANCE_CHANGES_BURST_MS = 300;
 
 function ucFirst(str: string): string {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
@@ -341,6 +349,20 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
     private readonly refEditButton: RefObject<HTMLDivElement | null> = React.createRef();
 
+    /** Number of the latest `getTabs` run. A slower, older run must not overwrite the menu of a newer one */
+    private tabsRun = 0;
+
+    /** How many `getTabs` runs failed in a row - decides the pause before the next attempt */
+    private tabsFailures = 0;
+
+    /** The next attempt after a failed `getTabs` run */
+    private tabsRetryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    /** Collects a burst of instance changes into one rebuild */
+    private instanceChangesTimer: ReturnType<typeof setTimeout> | null = null;
+
+    private unmounted = false;
+
     constructor(props: DrawerProps) {
         super(props);
 
@@ -392,7 +414,35 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         return AdminUtils.countAdapterUpdates(installed, repository);
     }
 
-    instanceChangedHandler = (): Promise<void> => this.getTabs(true);
+    /**
+     * The worker calls this once per changed instance object. The changes of one update or reconnect
+     * arrive in a burst, and one rebuild of the menu covers all of them
+     */
+    instanceChangedHandler = (): void => {
+        if (this.instanceChangesTimer) {
+            clearTimeout(this.instanceChangesTimer);
+        }
+        this.instanceChangesTimer = setTimeout(() => {
+            this.instanceChangesTimer = null;
+            void this.getTabs(true);
+        }, INSTANCE_CHANGES_BURST_MS);
+    };
+
+    /**
+     * After a reconnect the menu is built anew only if the last attempt failed. A successful menu is
+     * kept up to date by the instance worker, which reads the instances again after every reconnect
+     * and reports the ones that changed
+     */
+    connectionHandler = (connected: boolean): void => {
+        if (connected && this.tabsFailures) {
+            this.tabsFailures = 0;
+            if (this.tabsRetryTimer) {
+                clearTimeout(this.tabsRetryTimer);
+                this.tabsRetryTimer = null;
+            }
+            void this.getTabs(true, true);
+        }
+    };
 
     async isDeviceManagerVisible(): Promise<boolean> {
         const instances: Record<string, ioBroker.InstanceObject> =
@@ -403,7 +453,8 @@ class Drawer extends Component<DrawerProps, DrawerState> {
 
     componentDidMount(): void {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
-        this.getTabs().catch(e => window.alert(`Cannot get tabs: ${e}`));
+        this.props.socket.registerConnectionHandler(this.connectionHandler);
+        void this.getTabs();
         window.addEventListener(CONFIG_MANAGER_PINS_CHANGED_EVENT, this.pinsChangedHandler);
         window.addEventListener('storage', this.pinsChangedHandler);
 
@@ -459,6 +510,16 @@ class Drawer extends Component<DrawerProps, DrawerState> {
     };
 
     componentWillUnmount(): void {
+        this.unmounted = true;
+        if (this.tabsRetryTimer) {
+            clearTimeout(this.tabsRetryTimer);
+            this.tabsRetryTimer = null;
+        }
+        if (this.instanceChangesTimer) {
+            clearTimeout(this.instanceChangesTimer);
+            this.instanceChangesTimer = null;
+        }
+        this.props.socket.unregisterConnectionHandler(this.connectionHandler);
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandler);
         this.props.hostsWorker.unregisterNotificationHandler(this.onNotificationsHandler);
         window.removeEventListener(CONFIG_MANAGER_PINS_CHANGED_EVENT, this.pinsChangedHandler);
@@ -491,9 +552,25 @@ class Drawer extends Component<DrawerProps, DrawerState> {
         }
     }
 
-    async getTabs(update?: boolean): Promise<void> {
+    /**
+     * Builds the menu. It never throws: a request the host does not answer in time (a busy host right
+     * after the admin was opened, or a lost connection) is tried again with a growing pause, so the menu
+     * does not stay empty until the page is reloaded.
+     *
+     * @param update read the compact instances anew instead of taking them from the cache
+     * @param afterFailure this is a new attempt after a failed one: everything is read anew, because the
+     * socket keeps a rejected request under its cache key, and the instance worker keeps the `null` of a
+     * failed read
+     */
+    async getTabs(update?: boolean, afterFailure?: boolean): Promise<void> {
+        const run = ++this.tabsRun;
+        if (this.tabsRetryTimer) {
+            clearTimeout(this.tabsRetryTimer);
+            this.tabsRetryTimer = null;
+        }
+
         try {
-            const _instances = await this.props.socket.getCompactInstances(update);
+            const _instances = await this.props.socket.getCompactInstances(update || afterFailure);
             const instances = _instances as any as Record<string, ioBroker.AdapterCommon>;
             const dynamicTabs: AdminTab[] = [];
             if (instances) {
@@ -584,9 +661,14 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             }
 
             // `getCompactInstances` delivers neither `supportedMessages` nor the title, only the full
-            // objects have them. The worker caches them, so this costs no additional request
-            const instanceObjects: Record<string, ioBroker.InstanceObject> =
-                (await this.props.instancesWorker.getObjects()) || {};
+            // objects have them. The worker caches them, so this costs no additional request.
+            // A failed read is `null` - not "no instances": taken for that, every pinned config manager
+            // below would be filtered out and deleted from the browser storage
+            const instanceObjects: Record<string, ioBroker.InstanceObject> | null =
+                await this.props.instancesWorker.getObjects(afterFailure);
+            if (!instanceObjects) {
+                throw new Error('instance objects not available');
+            }
 
             const pinnedInstances = getPinnedConfigManagerInstances();
             // an instance that was deleted or that no longer offers a device manager loses its shortcut
@@ -702,44 +784,102 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 return a.name > b.name ? 1 : a.name < b.name ? -1 : 0;
             });
 
-            // Convert
-            void this.props.socket.getCompactSystemConfig().then(systemConfig => {
-                const tabsVisible: { name: string; visible: boolean; color?: string }[] =
-                    systemConfig.common.tabsVisible || [];
+            // The saved order, visibility and colors come from the system config. Without it the menu is
+            // still shown - in its default order, with every entry visible - and the saved settings follow
+            // with the next attempt: an empty menu until the page is reloaded would be the alternative
+            let configError: unknown = null;
+            try {
+                const systemConfig = await this.props.socket.getCompactSystemConfig(afterFailure);
+                tabs = Drawer.applySavedTabs(tabs, systemConfig.common.tabsVisible || []);
+            } catch (error) {
+                configError = error;
+            }
 
-                tabs.forEach(tab => {
-                    const it = tabsVisible.find(el => el.name === tab.name);
-                    if (it) {
-                        tab.visible = it.visible;
-                        tab.color = it.color;
-                    }
-                });
+            if (run !== this.tabsRun || this.unmounted) {
+                // a newer run has taken over in the meantime
+                return;
+            }
 
-                const map: Record<string, number> = {};
-                tabsVisible.forEach((item, i) => (map[item.name] = i));
+            this.setState({ tabs }, () => this.props.provideTabsInfo(this.state.tabs));
 
-                // The tabs saved in the system config keep the position the user gave them. A tab that is not saved yet
-                // (e.g., of a freshly installed adapter) follows the tab that precedes it by `order`, instead of ending up last.
-                // The list is saved only when the user edits the menu, so that `adminTab.order` stays effective until then
-                const saved = tabs.filter(tab => map[tab.name] !== undefined).sort((a, b) => map[a.name] - map[b.name]);
-                if (saved.length) {
-                    const unsaved = new Map<AdminTab | null, AdminTab[]>();
-                    let previous: AdminTab | null = null;
-                    tabs.forEach(tab => {
-                        if (map[tab.name] !== undefined) {
-                            previous = tab;
-                        } else {
-                            unsaved.set(previous, [...(unsaved.get(previous) || []), tab]);
-                        }
-                    });
-                    tabs = [...(unsaved.get(null) || []), ...saved.flatMap(tab => [tab, ...(unsaved.get(tab) || [])])];
-                }
-
-                this.setState({ tabs }, () => this.props.provideTabsInfo(this.state.tabs));
-            });
+            if (configError) {
+                this.scheduleNextAttempt(configError, 'Cannot read the saved order of the menu');
+            } else {
+                this.tabsFailures = 0;
+            }
         } catch (error) {
-            window.alert(`Cannot get instances: ${error}`);
+            if (run !== this.tabsRun || this.unmounted) {
+                return;
+            }
+            this.scheduleNextAttempt(error, 'Cannot get instances');
         }
+    }
+
+    /**
+     * Sorts the tabs the way the user saved them and applies the saved visibility and colors.
+     *
+     * The tabs saved in the system config keep the position the user gave them. A tab that is not saved yet
+     * (e.g., of a freshly installed adapter) follows the tab that precedes it by `order`, instead of ending up last.
+     * The list is saved only when the user edits the menu, so that `adminTab.order` stays effective until then
+     */
+    static applySavedTabs(
+        tabs: AdminTab[],
+        tabsVisible: { name: string; visible: boolean; color?: string }[],
+    ): AdminTab[] {
+        tabs.forEach(tab => {
+            const it = tabsVisible.find(el => el.name === tab.name);
+            if (it) {
+                tab.visible = it.visible;
+                tab.color = it.color;
+            }
+        });
+
+        const map: Record<string, number> = {};
+        tabsVisible.forEach((item, i) => (map[item.name] = i));
+
+        const saved = tabs.filter(tab => map[tab.name] !== undefined).sort((a, b) => map[a.name] - map[b.name]);
+        if (!saved.length) {
+            return tabs;
+        }
+
+        const unsaved = new Map<AdminTab | null, AdminTab[]>();
+        let previous: AdminTab | null = null;
+        tabs.forEach(tab => {
+            if (map[tab.name] !== undefined) {
+                previous = tab;
+            } else {
+                unsaved.set(previous, [...(unsaved.get(previous) || []), tab]);
+            }
+        });
+        return [...(unsaved.get(null) || []), ...saved.flatMap(tab => [tab, ...(unsaved.get(tab) || [])])];
+    }
+
+    /**
+     * A `getTabs` run failed. A missing permission is reported once and not tried again - it does not go
+     * away by asking. Everything else (a timeout of a busy host, a lost connection) is tried again with a
+     * growing pause while the socket is connected; without a connection the next attempt is made by the
+     * connection handler as soon as the socket is back
+     */
+    private scheduleNextAttempt(error: unknown, what: string): void {
+        if (isPermissionError(error)) {
+            this.tabsFailures = 0;
+            window.alert(`${what}: ${error}`);
+            return;
+        }
+
+        const delay = retryDelay(this.tabsFailures);
+        this.tabsFailures++;
+
+        if (!this.props.socket.isConnected()) {
+            console.warn(`${what}: ${error}. Next attempt after the reconnect`);
+            return;
+        }
+
+        console.warn(`${what}: ${error}. Next attempt in ${delay / 1000} s`);
+        this.tabsRetryTimer = setTimeout(() => {
+            this.tabsRetryTimer = null;
+            void this.getTabs(true, true);
+        }, delay);
     }
 
     /**
