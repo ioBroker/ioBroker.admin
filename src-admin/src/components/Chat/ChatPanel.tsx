@@ -89,6 +89,14 @@ interface ChatPanelProps {
     executeCommand: (cmd: string, host?: string, callback?: ((exitCode?: number) => void) | null) => void;
     /** Navigate the admin UI to a tab. */
     onNavigate: (tab: string, instance?: string) => void;
+    /**
+     * The assistant wants to open a route itself. The app owns the hash: the panel only exists on
+     * admin's own tabs, so the app asks the user before a custom tab closes the assistant.
+     * Resolves with false if the user refused.
+     */
+    onAssistantNavigate?: (hash: string) => Promise<boolean>;
+    /** Reports whether a request is in flight, so the app can ask before its answer gets lost. */
+    onBusyChange?: (busy: boolean) => void;
     /** Reports how many px to reserve on the right so admin content isn't hidden (0 = overlay/closed). */
     onDockWidthChange?: (width: number) => void;
 }
@@ -232,9 +240,18 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [displayMode, open, width]);
 
-    // Release the reserved room when the panel unmounts (e.g. on disconnect).
+    // Let the app know when an answer is pending: leaving this tab would discard it.
+    useEffect(() => {
+        props.onBusyChange?.(loading);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loading]);
+
+    // Release the reserved room and the pending answer when the panel unmounts (e.g. on disconnect).
     useEffect(
-        () => () => props.onDockWidthChange?.(0),
+        () => () => {
+            props.onDockWidthChange?.(0);
+            props.onBusyChange?.(false);
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
     );
@@ -395,8 +412,18 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
             props.executeCommand(`install ${action.adapter}`, props.host);
             addItem({ role: 'assistant', text: I18n.t('Started installation of %s.', action.adapter), steps: [] });
         } else if (action.type === 'navigate') {
-            // The assistant navigates the admin UI itself by setting the URL hash.
-            window.location.hash = action.hash.startsWith('#') ? action.hash : `#${action.hash}`;
+            // The assistant navigates the admin UI itself by setting the URL hash. The app gets the
+            // route first: it asks the user before a custom tab closes the assistant.
+            const hash = action.hash.startsWith('#') ? action.hash : `#${action.hash}`;
+            if (props.onAssistantNavigate) {
+                void props.onAssistantNavigate(hash).then(allowed => {
+                    if (!allowed) {
+                        addItem({ role: 'assistant', text: I18n.t('Navigation to %s was declined.', hash), steps: [] });
+                    }
+                });
+            } else {
+                window.location.hash = hash;
+            }
         } else if (action.type === 'command') {
             runCliCommand(action.command);
         }

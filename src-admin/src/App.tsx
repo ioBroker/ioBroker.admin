@@ -127,6 +127,21 @@ import zhCNLocal from './i18n/zh-cn.json';
  */
 const TABS_WITH_OWN_TOOLBAR = ['tab-overview', 'tab-adapters', 'tab-instances', 'tab-logs'];
 
+/** Tabs that admin implements itself (see `getCurrentTab` and `App.isAdminTab`) */
+const ADMIN_OWN_TABS = [
+    'tab-overview',
+    'tab-intro',
+    'tab-adapters',
+    'tab-instances',
+    'tab-objects',
+    'tab-enums',
+    'tab-logs',
+    'tab-users',
+    'tab-hosts',
+    'tab-files',
+    'tab-devicemanager',
+];
+
 const Overview = React.lazy(() => import('./tabs/Overview'));
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
@@ -458,6 +473,18 @@ interface AppState {
         subTab?: string;
         param?: string;
     } | null;
+    /**
+     * Pending navigation that would take the AI assistant away. Set while the user is asked whether
+     * the assistant may be closed; `null` closes the question.
+     */
+    chatLeaveDialog: {
+        /** The navigation to execute if the user agrees */
+        target: { hash: string } | { tab: string; subTab?: string; param?: string };
+        /** Why the assistant is at stake: a request is still running, or it navigates there itself */
+        reason: 'busy' | 'assistant';
+        /** Reports the decision back to the assistant, so it can tell the user that it stayed */
+        resolve?: (agreed: boolean) => void;
+    } | null;
     baseSettingsOpened: boolean;
     unsavedDataInDialog: boolean;
     systemSettingsOpened: boolean;
@@ -534,6 +561,15 @@ class App extends Router<AppProps, AppState> {
     private newsInstance: number = 0;
     private doNotAskSessionExpiration: number = 0;
     private tabsInfo: AdminTab[] | null = null;
+
+    /** True while the AI assistant waits for an answer. Leaving its tab now would discard the answer */
+    private chatBusy = false;
+
+    /** The hash this app has already navigated to. Used to tell which tab is being left */
+    private lastHash: string = window.location.hash;
+
+    /** The user has agreed to lose the assistant, so the next navigation must not ask again */
+    private chatLeaveConfirmed = false;
 
     constructor(props: AppProps) {
         super(props);
@@ -659,6 +695,7 @@ class App extends Router<AppProps, AppState> {
                 tab: null,
                 dataNotStoredDialog: false,
                 dataNotStoredTab: null,
+                chatLeaveDialog: null,
 
                 baseSettingsOpened: false,
                 unsavedDataInDialog: false,
@@ -1958,12 +1995,97 @@ class App extends Router<AppProps, AppState> {
         this.logsWorker?.setCurrentHost(currentHost);
     };
 
+    /** The tab of a hash location: `#tab-objects/edit/<id>` -> `tab-objects` */
+    static tabOfHash(hash: string): string {
+        return hash.replace(/^#/, '').split('/')[0];
+    }
+
+    /**
+     * Is this one of the tabs admin implements itself (see `getCurrentTab`)? Only those show the AI
+     * assistant - a custom tab of an adapter is an iframe the assistant knows nothing about.
+     * No tab at all is the admin start page, so it counts as admin's own.
+     */
+    static isAdminTab(tab: string | undefined): boolean {
+        return !tab || ADMIN_OWN_TABS.includes(tab);
+    }
+
+    /**
+     * The assistant is unmounted as soon as one of admin's own tabs is left, so an answer it is
+     * still waiting for would be thrown away. Tells whether the user has to confirm that first.
+     *
+     * @param targetTab the tab that is about to be opened
+     */
+    private chatBlocksLeaving(targetTab: string | undefined): boolean {
+        // The user has already agreed in the dialog - this is that very navigation.
+        if (this.chatLeaveConfirmed) {
+            this.chatLeaveConfirmed = false;
+            return false;
+        }
+        return this.chatBusy && App.isAdminTab(App.tabOfHash(this.lastHash)) && !App.isAdminTab(targetTab);
+    }
+
     /**
      * Updates the current currentTab in the states
      */
     onHashChanged = (): void => {
+        const newHash = window.location.hash;
+
+        if (this.chatBlocksLeaving(App.tabOfHash(newHash))) {
+            // Put the old route back into the address bar (without a history entry and without a new
+            // `hashchange`) and let the user decide whether the pending answer may be lost.
+            window.history.replaceState(
+                null,
+                '',
+                this.lastHash || `${window.location.pathname}${window.location.search}`,
+            );
+            this.setState({ chatLeaveDialog: { target: { hash: newHash }, reason: 'busy' } });
+            return;
+        }
+
+        this.lastHash = newHash;
         this.setState({ currentTab: Router.getLocation() }, () => this.setCurrentTabTitle());
     };
+
+    /**
+     * The assistant navigates the admin UI itself. It only exists on admin's own tabs, so a custom
+     * tab would close it - that is the user's decision, not the assistant's.
+     *
+     * @param hash the route the assistant wants to open
+     * @returns false if the user refused, so the assistant can say so in the chat
+     */
+    assistantNavigate(hash: string): Promise<boolean> {
+        const normalized = hash.startsWith('#') ? hash : `#${hash}`;
+        if (App.isAdminTab(App.tabOfHash(normalized))) {
+            window.location.hash = normalized;
+            return Promise.resolve(true);
+        }
+        return new Promise<boolean>(resolve =>
+            this.setState({ chatLeaveDialog: { target: { hash: normalized }, reason: 'assistant', resolve } }),
+        );
+    }
+
+    /**
+     * The user answered the question whether the assistant may be given up.
+     *
+     * @param agreed true if the pending navigation shall be executed
+     */
+    private onChatLeaveDialog(agreed: boolean): void {
+        const dialog = this.state.chatLeaveDialog;
+        this.setState({ chatLeaveDialog: null }, () => {
+            // The assistant asked for this navigation and has to know that it did not happen
+            dialog?.resolve?.(agreed);
+            const target = dialog?.target;
+            if (!agreed || !target) {
+                return;
+            }
+            this.chatLeaveConfirmed = true;
+            if ('hash' in target) {
+                window.location.hash = target.hash;
+            } else {
+                this.handleNavigation(target.tab, target.subTab, target.param);
+            }
+        });
+    }
 
     /**
      * Get the used port
@@ -2528,8 +2650,15 @@ class App extends Router<AppProps, AppState> {
 
     handleNavigation = (tab: string | undefined, subTab?: string, param?: string): void => {
         if (tab) {
+            if (this.chatBlocksLeaving(tab)) {
+                this.setState({ chatLeaveDialog: { target: { tab, subTab, param }, reason: 'busy' } });
+                return;
+            }
             if (this._tempAllStored) {
                 Router.doNavigate(tab, subTab, param);
+
+                // The `hashchange` that follows must not ask again about the assistant
+                this.lastHash = window.location.hash;
 
                 this.setState({ currentTab: Router.getLocation() });
             } else {
@@ -2892,6 +3021,30 @@ class App extends Router<AppProps, AppState> {
                 ok={I18n.t('ra_Discard')}
                 cancel={I18n.t('ra_Cancel')}
                 onClose={(isYes: boolean) => (isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog())}
+            />
+        );
+    }
+
+    /**
+     * Asks whether the AI assistant may be left behind: it only lives on admin's own tabs, so a
+     * custom tab either discards the answer it is still waiting for or closes it altogether.
+     */
+    renderChatLeaveDialog(): JSX.Element | null {
+        if (!this.state.chatLeaveDialog) {
+            return null;
+        }
+        const busy = this.state.chatLeaveDialog.reason === 'busy';
+        return (
+            <DialogConfirm
+                title={I18n.t('ra_Please confirm')}
+                text={I18n.t(
+                    busy
+                        ? 'The assistant is still working on an answer, which is lost on this tab. Leave anyway?'
+                        : 'The assistant is not available on this tab and will be closed. Continue?',
+                )}
+                ok={I18n.t(busy ? 'Leave anyway' : 'Continue')}
+                cancel={I18n.t('ra_Cancel')}
+                onClose={(isYes: boolean) => this.onChatLeaveDialog(isYes)}
             />
         );
     }
@@ -3342,6 +3495,7 @@ class App extends Router<AppProps, AppState> {
         // configuration has been read `systemConfig` is null - the type says otherwise.
         const showAppBar = !!this.state.systemConfig?.common?.siteName;
         const menuButtonSpace = this.needsMenuButtonSpace();
+        const onAdminTab = App.isAdminTab(this.state.currentTab?.tab);
 
         if (this.state.cloudNotConnected) {
             return (
@@ -3538,6 +3692,7 @@ class App extends Router<AppProps, AppState> {
                     {this.renderExpertDialog()}
                     {this.getCurrentDialog()}
                     {this.renderDialogConfirm()}
+                    {this.renderChatLeaveDialog()}
                     {this.renderCommandDialog()}
                     {this.renderWizardDialog()}
                     {this.showRedirectDialog()}
@@ -3550,7 +3705,7 @@ class App extends Router<AppProps, AppState> {
                         <Connecting />
                     ) : null}
                     {this.renderShowGuiSettings()}
-                    {this.state.connected && this.socket && this.state.disableMcp === false ? (
+                    {this.state.connected && this.socket && this.state.disableMcp === false && onAdminTab ? (
                         <ChatPanel
                             socket={this.socket}
                             instance={this.adminInstance}
@@ -3559,6 +3714,8 @@ class App extends Router<AppProps, AppState> {
                             host={this.state.currentHost}
                             executeCommand={(cmd, host, callback) => this.executeCommand(cmd, host, callback)}
                             onNavigate={tab => this.handleNavigation(tab)}
+                            onAssistantNavigate={hash => this.assistantNavigate(hash)}
+                            onBusyChange={chatBusy => (this.chatBusy = chatBusy)}
                             onDockWidthChange={chatDockWidth => this.setState({ chatDockWidth })}
                         />
                     ) : null}
