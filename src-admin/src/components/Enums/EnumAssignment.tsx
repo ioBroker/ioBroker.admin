@@ -217,6 +217,8 @@ const styles: Record<string, any> = {
     },
     suggestionChip: {
         borderStyle: 'dashed',
+        // a suggestion must be clearly weaker than a real assignment
+        opacity: 0.7,
     },
     menuIcon: {
         width: 20,
@@ -426,6 +428,7 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     <Chip
                         size="small"
                         variant="outlined"
+                        color="primary"
                         label={props.getLabel(enumId)}
                         icon={chipIcon(enumId)}
                         onClick={props.onOpenEnum ? () => props.onOpenEnum?.(enumId) : undefined}
@@ -441,6 +444,7 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     <Chip
                         size="small"
                         variant="outlined"
+                        color="primary"
                         sx={styles.partialChip}
                         label={props.getLabel(enumId)}
                         icon={chipIcon(enumId)}
