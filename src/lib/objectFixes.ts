@@ -69,12 +69,13 @@ export async function checkCommonObjects(adapter: ioBroker.Adapter): Promise<voi
                     type: 'meta.user',
                     dontDelete: true,
                 },
+                native: {},
                 acl: {
                     owner: 'system.user.admin',
                     ownerGroup: 'system.group.administrator',
                     object: 1604,
                 },
-            } as ioBroker.MetaObject;
+            };
 
             await adapter.setForeignObject(userData._id, userData);
         }

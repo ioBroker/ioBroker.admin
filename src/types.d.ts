@@ -13,7 +13,7 @@ export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     certChained: string;
     certPrivate: string;
     certPublic: string;
-    defaultUser: string;
+    defaultUser: ioBroker.ObjectIDs.User;
     doNotCheckPublicIP: boolean;
     /** Speak HTTP/2 (with HTTP/1.1 fallback) if `secure` is set. Enabled if not set */
     http2?: boolean;

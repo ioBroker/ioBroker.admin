@@ -1833,7 +1833,6 @@ class Admin extends Adapter {
             return 'jsonl';
         }
         const diagData = await this.sendToHostAsync(this.host, 'getDiagData', 'normal');
-        // @ts-expect-error messages are special and cannot be typed easily
         return diagData.objectsType as 'jsonl' | 'file' | 'redis';
     }
 
@@ -1859,7 +1858,6 @@ class Admin extends Adapter {
             throw new Error('Host is offline');
         }
         const hostInfo = await this.sendToHostAsync(this.host, 'getHostInfo', {});
-        // @ts-expect-error messages are special and cannot be typed easily
         return hostInfo.NPM;
     }
 
@@ -1931,7 +1929,7 @@ class Admin extends Adapter {
             // so the GUI gets "no adapters" (as after its read timeout) instead of a fake adapter named "error".
             const answer: unknown =
                 command === 'getRepository' || command === 'getInstalled' ? {} : { error: 'timeout' };
-            cb(answer as ioBroker.Message);
+            cb(answer);
         });
     }
 
@@ -2364,11 +2362,11 @@ class Admin extends Adapter {
                 npm: CURRENT_MAX_MAJOR_NPM,
             };
         }
-        const repository: Record<string, ioBroker.RepositoryJsonAdapterContent> = (await this.sendToHostAsync(
+        const repository: Record<string, ioBroker.RepositoryJsonAdapterContent> = await this.sendToHostAsync(
             this.host,
             'getRepository',
             {},
-        )) as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>;
+        );
         const repoInfo: {
             repoTime: string;
             recommendedVersions: {
@@ -2465,15 +2463,12 @@ class Admin extends Adapter {
                                     this.log.info('Repository received successfully.');
 
                                     // Add repository read timestamp to the repository data
-                                    await this.addRepositoryReadTimestamp(
-                                        _repository as unknown as Record<string, any>,
-                                        active,
-                                    );
+                                    await this.addRepositoryReadTimestamp(_repository, active);
 
                                     socket?.repoUpdated();
-                                    this.checkRevokedVersions(
-                                        _repository as unknown as Record<string, ioBroker.RepositoryJsonAdapterContent>,
-                                    ).catch(e => this.log.error(`Cannot check revoked versions: ${e}`));
+                                    this.checkRevokedVersions(_repository).catch(e =>
+                                        this.log.error(`Cannot check revoked versions: ${e}`),
+                                    );
                                 }
 
                                 // start the next cycle

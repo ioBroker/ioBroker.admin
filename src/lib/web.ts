@@ -13,13 +13,12 @@ import axios from 'axios';
 import { Ajv, type ValidateFunction } from 'ajv';
 import { parse as JSON5 } from 'json5';
 import fileUpload from 'express-fileupload';
-
 import type { Store } from 'express-session';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import type { InternalStorageToken } from '@iobroker/socket-classes';
 import { McpServer, type McpConfig } from '@iobroker/mcp-server';
+
 import type { AdminAdapterConfig } from '../types';
 import { getAdminPublicPath } from './utils';
 
@@ -114,10 +113,10 @@ async function readFolderRecursive(
 
             if (file.file instanceof Buffer) {
                 filesOfDir.push({ name: url ? `${url}/${fileMeta.file}` : fileMeta.file, file: file.file });
-            } else {
+            } else if (file.file) {
                 filesOfDir.push({
                     name: url ? `${url}/${fileMeta.file}` : fileMeta.file,
-                    file: Buffer.from(file.file.toString(), 'utf-8'),
+                    file: Buffer.from(file.file?.toString(), 'utf-8'),
                 });
             }
         } else {
@@ -495,7 +494,9 @@ export default class Web {
                 // this.adapter.readFile is sanitized
                 if (await this.adapter.fileExists(`${adapterName}.admin`, fileName)) {
                     const { file } = await this.adapter.readFileAsync(`${adapterName}.admin`, fileName);
-                    return { fileName, text: file.toString() };
+                    if (file) {
+                        return { fileName, text: file.toString() };
+                    }
                 }
             } catch {
                 // try the next file or the local installation
@@ -764,7 +765,7 @@ export default class Web {
                     }
 
                     if (accessToken) {
-                        void this.adapter.getSession(`a:${accessToken}`, (token: InternalStorageToken): void => {
+                        void this.adapter.getSession(`a:${accessToken}`, (token: ioBroker.Session | null): void => {
                             if (!token?.user) {
                                 res.json({ expireInSec: 0 });
                             } else {
@@ -1290,7 +1291,7 @@ export default class Web {
                         const { mimeType, file } = await this.adapter.readFileAsync(adapterName, url);
 
                         // special case for svg stored into logo.png
-                        if (url.endsWith('.png') && file.length < 30000) {
+                        if (url.endsWith('.png') && file && file.length < 30000) {
                             const str = file.toString('utf8');
                             if (str.startsWith('<svg') || str.startsWith('<xml') || str.startsWith('<?xml')) {
                                 // it is svg

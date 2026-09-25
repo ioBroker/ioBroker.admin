@@ -166,6 +166,7 @@
       "einrichtung",
       "wartung"
     ],
+    "declareUsedResources": true,
     "compact": true,
     "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
     "authors": [
