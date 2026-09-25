@@ -6,6 +6,7 @@ import {
     Button,
     Checkbox,
     Chip,
+    CircularProgress,
     FormControlLabel,
     IconButton,
     LinearProgress,
@@ -503,6 +504,8 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [selected, setSelected] = useState<string[]>([]);
     const [menu, setMenu] = useState<MenuState | null>(null);
+    /** True while the changed enums are written and read back */
+    const [applying, setApplying] = useState(false);
     const [onlyDevices, setOnlyDevices] = useState(() => getStorage().getItem(ONLY_DEVICES_KEY) !== 'false');
 
     const detector = useMemo(() => new ChannelDetector(), []);
@@ -614,11 +617,24 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
     const currentPage = Math.min(page, maxPage);
     const pageRows = shownRows.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
+    /** Write the changes and show the progress until the assignments are read back */
+    const applyChanges = async (changes: MemberChanges): Promise<void> => {
+        if (!Object.keys(changes).length) {
+            return;
+        }
+        setApplying(true);
+        try {
+            await props.onChangeMembers(changes);
+        } finally {
+            setApplying(false);
+        }
+    };
+
     const toggleMember = (rowId: string, enumId: string): void => {
         const changes: MemberChanges = {};
         const index = enumId.startsWith(ROOMS) ? roomIndex : functionIndex;
         addChange(changes, enumId, getAssignment(rowId, index).direct.includes(enumId) ? 'remove' : 'add', rowId);
-        void props.onChangeMembers(changes);
+        void applyChanges(changes);
     };
 
     /** Replace the direct rooms or functions of the selected rows with the given enum, or remove them all */
@@ -632,7 +648,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                 addChange(changes, enumId, 'add', rowId);
             }
         }
-        void props.onChangeMembers(changes);
+        void applyChanges(changes);
     };
 
     const acceptSuggestions = (rowIds: string[]): void => {
@@ -643,7 +659,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                 addChange(changes, suggestion._id, 'add', rowId);
             }
         }
-        void props.onChangeMembers(changes);
+        void applyChanges(changes);
     };
 
     const renderMenu = (): JSX.Element | null => {
@@ -904,6 +920,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                     <Button
                         size="small"
                         variant="outlined"
+                        disabled={applying}
                         onClick={e => setMenu({ anchor: e.currentTarget, prefix: ROOMS, mode: 'set' })}
                     >
                         {t('Set room')}
@@ -911,6 +928,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                     <Button
                         size="small"
                         variant="outlined"
+                        disabled={applying}
                         onClick={e => setMenu({ anchor: e.currentTarget, prefix: FUNCTIONS, mode: 'set' })}
                     >
                         {t('Set function')}
@@ -918,7 +936,17 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                     <Button
                         size="small"
                         variant="contained"
-                        startIcon={<IconSuggestions />}
+                        disabled={applying}
+                        startIcon={
+                            applying ? (
+                                <CircularProgress
+                                    size={16}
+                                    color="inherit"
+                                />
+                            ) : (
+                                <IconSuggestions />
+                            )
+                        }
                         onClick={() => acceptSuggestions(selected)}
                     >
                         {t('Accept suggestions')}
@@ -933,7 +961,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                     </Button>
                 </Box>
             ) : null}
-            {!objects ? <LinearProgress /> : null}
+            {!objects || applying ? <LinearProgress /> : null}
             <TableContainer sx={styles.table}>
                 <Table
                     size="small"

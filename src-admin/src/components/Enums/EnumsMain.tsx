@@ -337,6 +337,9 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     /** This enum is selected as soon as it exists after the next update */
     private selectAfterUpdate: string | null = null;
 
+    /** The member changes are applied one after another, so that no write is based on outdated members */
+    private memberChangesQueue: Promise<void> = Promise.resolve();
+
     constructor(props: EnumsListProps) {
         super(props);
 
@@ -963,41 +966,59 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         this.selectEnum(enumId);
     };
 
-    changeMembers = async (changes: MemberChanges): Promise<void> => {
-        const enums = this.state.enums || {};
-        const newEnums: ioBroker.EnumObject[] = [];
-        for (const enumId of Object.keys(changes)) {
-            if (!enums[enumId]) {
-                continue;
-            }
-            const oldMembers = enums[enumId].common?.members || [];
-            const remove = changes[enumId].remove || [];
-            const members = oldMembers.filter(id => !remove.includes(id));
-            for (const id of changes[enumId].add || []) {
-                if (!members.includes(id)) {
-                    members.push(id);
-                }
-            }
-            if (JSON.stringify(members) !== JSON.stringify(oldMembers)) {
-                const newEnum: ioBroker.EnumObject = JSON.parse(JSON.stringify(enums[enumId]));
-                newEnum.common.members = members;
-                newEnums.push(newEnum);
-            }
-        }
-        if (!newEnums.length) {
+    /** The changes are queued: two clicks in a row must not write the members twice based on the same state */
+    changeMembers = (changes: MemberChanges): Promise<void> => {
+        const promise = this.memberChangesQueue.then(() => this.applyMemberChanges(changes));
+        this.memberChangesQueue = promise.catch((): undefined => undefined);
+        return promise;
+    };
+
+    async applyMemberChanges(changes: MemberChanges): Promise<void> {
+        const enumIds = Object.keys(changes).filter(enumId => this.state.enums?.[enumId]);
+        if (!enumIds.length) {
             return;
         }
 
-        await this.addUpdating(newEnums.map(enumObj => enumObj._id));
-        this.fastUpdate = true;
-        for (const newEnum of newEnums) {
+        await this.addUpdating(enumIds);
+
+        const written: Record<string, ioBroker.EnumObject> = {};
+        for (const enumId of enumIds) {
             try {
+                // read the enum again: the members could be changed by the write before or by someone else
+                const enumObj =
+                    ((await this.props.socket.getObject(enumId)) as ioBroker.EnumObject | null | undefined) ||
+                    this.state.enums?.[enumId];
+                if (!enumObj) {
+                    continue;
+                }
+                const oldMembers = enumObj.common?.members || [];
+                const remove = changes[enumId].remove || [];
+                const members = oldMembers.filter(id => !remove.includes(id));
+                for (const id of changes[enumId].add || []) {
+                    if (!members.includes(id)) {
+                        members.push(id);
+                    }
+                }
+                if (JSON.stringify(members) === JSON.stringify(oldMembers)) {
+                    continue;
+                }
+                const newEnum: ioBroker.EnumObject = JSON.parse(JSON.stringify(enumObj));
+                newEnum.common.members = members;
+                this.fastUpdate = true;
                 await this.props.socket.setObject(newEnum._id, newEnum);
+                written[newEnum._id] = newEnum;
             } catch (e) {
                 window.alert(`Cannot update enum: ${errorText(e)}`);
             }
         }
-    };
+
+        if (Object.keys(written).length) {
+            // show the result immediately: the change events arrive later and the view would still offer the same changes
+            await this.updateData({ ...(this.state.enums || {}), ...written });
+        } else {
+            this.setState({ updating: [] });
+        }
+    }
 
     /** Create the enums, which do not exist yet. Shorter IDs first, so the parents exist before their children */
     createEnums = async (newEnums: ioBroker.EnumObject[]): Promise<void> => {
