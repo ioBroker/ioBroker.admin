@@ -13,6 +13,9 @@ export interface LogLineSaved extends LogLine {
     key?: number;
 }
 
+/** A host that does not know `checkFeatureSupported` never answers it */
+const FEATURE_CHECK_TIMEOUT_MS = 5_000;
+
 /** Safari cannot parse `2020-01-01T10:00:00.000` as local time, so every number is parsed apart there */
 const IS_SAFARI =
     typeof navigator !== 'undefined' &&
@@ -106,8 +109,8 @@ export class LogsWorker {
 
     private logSize = 0;
 
-    /** Cached answer of the `CONTROLLER_GET_LOGS_LOG_LEVEL` feature check */
-    private logLevelFilterSupported: boolean | null = null;
+    /** Answer of the `CONTROLLER_GET_LOGS_LOG_LEVEL` feature check, per host */
+    private readonly logLevelFilterSupported: Map<string, Promise<boolean>> = new Map();
 
     /** Level the cached request was made with */
     private lastLogLevel: ioBroker.LogLevel | undefined;
@@ -211,6 +214,8 @@ export class LogsWorker {
     connectionHandler = (isConnected: boolean): void => {
         if (isConnected && !this.connected) {
             this.connected = true;
+            // a host may have been updated while the connection was gone, so it is asked anew
+            this.logLevelFilterSupported.clear();
             void this.getLogs(true);
         } else if (!isConnected && this.connected) {
             this.connected = false;
@@ -350,18 +355,80 @@ export class LogsWorker {
     }
 
     /**
-     * Does the connected controller understand `getLogs` with a log level?
+     * Send a command to the controller of a host.
      *
-     * Asked once and then cached. Without the feature the message must stay a plain number: older
-     * controllers compute the read offset as `150 * lines`, and an object there yields `NaN`, which
-     * makes them return the complete log file.
+     * `socket.getRawSocket()` on purpose: `AdminConnection` has typed wrappers for a few fixed host
+     * commands only, and none for `checkFeatureSupported`.
+     *
+     * @param host id of the host, e.g. `system.host.raspi`
+     * @param command name of the controller message
+     * @param message payload of the message
      */
-    private async isLogLevelFilterSupported(): Promise<boolean> {
-        this.logLevelFilterSupported ??= await this.socket
-            .checkFeatureSupported('CONTROLLER_GET_LOGS_LOG_LEVEL')
-            .catch(() => false);
+    private sendToHost<T>(host: string, command: string, message: unknown): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            // a controller that does not know the command never answers
+            const timer = setTimeout(() => reject(new Error('timeout')), FEATURE_CHECK_TIMEOUT_MS);
+            try {
+                this.socket.getRawSocket().emit('sendToHost', host, command, message, (answer: T) => {
+                    clearTimeout(timer);
+                    resolve(answer);
+                });
+            } catch (e) {
+                clearTimeout(timer);
+                reject(e instanceof Error ? e : new Error(String(e)));
+            }
+        });
+    }
 
-        return !!this.logLevelFilterSupported;
+    /**
+     * Ask the controller of a host whether it understands `getLogs` with a log level.
+     *
+     * The question goes to that host and not through `socket.checkFeatureSupported`: the latter is
+     * answered by the controller this admin runs on, and in a multihost system another host can run an
+     * older one. Only a js-controller from 7.2 on knows the question at all, so an older one is not asked.
+     *
+     * @param host id of the host, e.g. `system.host.raspi`
+     */
+    private async askHostForLogLevelFilter(host: string): Promise<boolean> {
+        const obj = await this.socket.getObject(host);
+        const version = (obj as ioBroker.HostObject | null | undefined)?.common?.installedVersion?.match(
+            /^(\d+)\.(\d+)/,
+        );
+        if (!version) {
+            return false;
+        }
+        const [major, minor] = [parseInt(version[1], 10), parseInt(version[2], 10)];
+        if (major < 7 || (major === 7 && minor < 2)) {
+            return false;
+        }
+
+        const answer = await this.sendToHost<{ result?: boolean } | null>(
+            host,
+            'checkFeatureSupported',
+            'CONTROLLER_GET_LOGS_LOG_LEVEL',
+        );
+
+        return answer?.result === true;
+    }
+
+    /**
+     * Does the controller of a host understand `getLogs` with a log level?
+     *
+     * Asked once per host and then cached. Without the feature the message must stay a plain number:
+     * older controllers compute the read offset as `150 * lines`, and an object there yields `NaN`,
+     * which makes them return the complete log file.
+     *
+     * @param host id of the host, e.g. `system.host.raspi`
+     */
+    private isLogLevelFilterSupported(host: string): Promise<boolean> {
+        let supported = this.logLevelFilterSupported.get(host);
+
+        if (!supported) {
+            supported = this.askHostForLogLevelFilter(host).catch(() => false);
+            this.logLevelFilterSupported.set(host, supported);
+        }
+
+        return supported;
     }
 
     /**
@@ -374,12 +441,13 @@ export class LogsWorker {
         logLevel?: ioBroker.LogLevel,
     ): Promise<(string | number)[] | string | { error: string } | null> {
         const lines = 200;
+        const host = this.currentHost;
 
-        if (logLevel && (await this.isLogLevelFilterSupported())) {
-            return this.socket.getLogs(this.currentHost, { lines, logLevel } as unknown as number);
+        if (logLevel && (await this.isLogLevelFilterSupported(host))) {
+            return this.socket.getLogs(host, { lines, logLevel } as unknown as number);
         }
 
-        return this.socket.getLogs(this.currentHost, lines);
+        return this.socket.getLogs(host, lines);
     }
 
     /**

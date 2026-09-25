@@ -492,8 +492,8 @@ class Admin extends Adapter {
      * Search the log files of another host.
      *
      * A js-controller that knows the host command `searchLogs` searches its files itself and sends only the
-     * matching entries. An older one sends every file with `getLogFile`, as for the download of a log file,
-     * and admin searches them.
+     * matching entries. An older one - and one that answers the command with an error - sends every file with
+     * `getLogFile`, as for the download of a log file, and admin searches them.
      *
      * @param host name of the host without `system.host.`
      * @param filters what to look for
@@ -531,10 +531,14 @@ class Admin extends Adapter {
             const answer = (await request('searchLogs', filters)) as Partial<SearchLogFilesResult> & {
                 error?: string;
             };
-            if (!answer || !Array.isArray(answer.lines)) {
-                throw new Error(answer?.error || `Host ${host} did not send the log entries`);
+            if (answer && Array.isArray(answer.lines)) {
+                return answer as SearchLogFilesResult;
             }
-            return answer as SearchLogFilesResult;
+            // The host knows the command but cannot do it, e.g. because it writes no log file at all.
+            // Its files are read the way those of an older controller are read.
+            this.log.debug(
+                `Host ${host} could not search its log files (${answer?.error || 'no answer'}), reading them instead`,
+            );
         }
 
         return searchLogFiles({ files: createRemoteLogFiles(request), ...filters });
