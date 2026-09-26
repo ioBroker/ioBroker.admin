@@ -30,7 +30,8 @@ jobs:
         with:
           node-version: '24.x'
           lint: true
-          install-command: 'npm ci && cd src-admin && npm ci -f'
+          # Change it to "ci" after the js-controller 8.0 is released
+          install-command: 'npm i && cd src-admin && npm i -f'
 
   adapter-tests:
     needs: [check-and-lint]
@@ -49,6 +50,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           os: ${{ matrix.os }}
           build: true
+          install-command: 'npm i && cd src-admin && npm i -f'
           screenshots-path: 'tmp/screenshots/**/*.png'
 
   deploy:
@@ -70,6 +72,7 @@ jobs:
       - uses: ioBroker/testing-action-deploy@v1
         with:
           node-version: '24.x'
+          install-command: 'npm i && cd src-admin && npm i -f'
           # npm-token: ${{ secrets.NPM_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
