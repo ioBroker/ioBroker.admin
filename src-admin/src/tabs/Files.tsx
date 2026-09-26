@@ -156,9 +156,9 @@ export default class Files extends Component<FilesProps> {
             return <LinearProgress />;
         }
 
-        // Derive the browser's navigation from the URL hash `#tab-files/<mode>/<encoded-id>`.
-        // File IDs contain "/" (e.g. "email.admin/custom/assets/x.js"), so the id segment is
-        // URL-encoded (the Router decodes it again in getLocation). The FileBrowser stays URL-agnostic.
+        // Derive the browser's navigation from the URL hash `#tab-files/<mode>/<id>`.
+        // File IDs contain "/" (e.g. "email.admin/custom/assets/x.js"); the Router encodes the id
+        // segment and decodes it again in getLocation. The FileBrowser stays URL-agnostic.
         // A dialog of the App (e.g., the system settings) replaces the route of the browser in the URL.
         // Meanwhile, the last target is kept and nothing is reported, otherwise the browser would write
         // its selection back into the URL and close the dialog immediately.
@@ -183,7 +183,7 @@ export default class Files extends Component<FilesProps> {
                             if (!nav?.id) {
                                 Router.doNavigate('tab-files');
                             } else {
-                                Router.doNavigate('tab-files', nav.mode, encodeURIComponent(nav.id));
+                                Router.doNavigate('tab-files', nav.mode, nav.id);
                             }
                         }}
                         showViewTypeButton
