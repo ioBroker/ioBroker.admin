@@ -78,7 +78,14 @@ const styles: Record<string, React.CSSProperties> = {
         padding: '0 8px',
     },
     littleRow: {
-        width: 110,
+        // The table has a fixed layout, which does not shrink the text: a long translation of the
+        // credential type ("Benutzerdefiniert") ran straight into the ID column (#3642). The column
+        // is wide enough for it now, and anything longer is cut with an ellipsis instead of
+        // overflowing into the neighbour.
+        width: 170,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
     iconRow: {
         width: 40,
@@ -798,7 +805,11 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
             return (
                 <TableRow key={credential._id}>
                     <TableCell style={styles.iconRow}>{getCredentialIcon(credential)}</TableCell>
-                    <TableCell style={styles.littleRow}>
+                    <TableCell
+                        style={styles.littleRow}
+                        // readable in full if the column ever cuts a longer translation
+                        title={this.props.t(`credential_type_${credential.native.type}`)}
+                    >
                         {this.props.t(`credential_type_${credential.native.type}`)}
                     </TableCell>
                     <TableCell>{credential._id.substring(CREDENTIALS_PREFIX.length)}</TableCell>
