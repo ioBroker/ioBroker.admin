@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.0.19 (2026-09-26)
 - (@GermanBluefox) Fixed: in the credentials of the system settings, a long translation of the type - "Benutzerdefiniert" in German - ran into the ID next to it, because the column had a fixed width that the text did not fit into. The column is wider now, and a translation that is longer still is cut with an ellipsis and shown in full as a tooltip (#3642)
 - (@GermanBluefox) Changed: an object of an adapter can only be deleted in the expert mode now - the delete button in the row, the entry in the context menu and the `Delete` key are gone without it. Deleting such an object can stop the adapter from working, and it is created again at its next start anyway. Objects a user creates themselves (`0_userdata.*` and `alias.*`) can still be deleted without the expert mode (#3639)
 - (@GermanBluefox) Fixed: an object whose ID contains a "/" - e.g. `ocpp.0./TACW1142021G1543.1.meterValues.Power_Active_Import` - could not be opened from the object tree. The ID went into the URL unencoded, so it was read back cut off at its first slash: the dialog showed the wrong title, the history settings started at 1 January 1970, the "Chart" tab disappeared and switching the tab ended in `can't access property "ocpp.0."`. The ID now survives the round trip through the URL (#3634). Needs `@iobroker/gui-components` 10.3.5
@@ -132,19 +132,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Fixed: the first "Did you know?" tip showed the raw `<img src='...' />` tag as text instead of the expert-mode icon. A tip may contain images now: the `src` is a file or a data URI, `width`, `height` and `alt` are optional, and `class='icon'` draws a monochrome icon in the color of the text, so that it stays visible in the dark themes as well
 - (@GermanBluefox) Fixed: the system settings closed by themselves right after opening them on the "Objects" or "Files" tab while an object or file was selected. The browser wrote its selection back into the URL and so replaced the dialog there
 - (@GermanBluefox) Changed: the country lists in the system settings and in the wizard start with Germany, Austria and Switzerland. A separator follows, and then all other countries, sorted by their name in the current language instead of the English one. Both lists are the same now, and the 29 countries without translation got one
-
-### 8.0.14 (2026-09-15)
-- (@GermanBluefox) Fixed: the old, non-React adapter configuration pages stayed bright in the `modernDark` theme. Their stylesheet only knows the theme names that existed when it was written, so `adapter-settings.js` maps every newer name - `modernDark`, `modernLight` and the vendor themes - down onto the plain `dark`/`light` it descends from. React-based configurations are untouched: they take the theme from the local storage and keep the new designs
-- (@GermanBluefox) Fixed: after saving an enum (e.g., a new icon) or dragging an object into it, the "Enums" tab showed only this one enum until the page was reloaded. The collected changes did not start from a copy of all enums any more, so the list was rebuilt from the changed enum alone; deleted enums did not disappear either
-- (@GermanBluefox) Added: the object list on the right side of the "Enums" tab can be hidden with a new toolbar button, and the choice is remembered. While it is hidden, a hint explains that states, channels and devices are added by dragging them from this list
-- (@GermanBluefox) Added: every enum in the "Enums" tab has an "Add objects" button, which opens the object selection with multi-select - adding members no longer requires drag and drop
-- (@GermanBluefox) Fixed: dropping a folder that is not an object itself (e.g. `0_userdata.0.lights`) onto an enum showed only a "TODO" alert. Now it asks whether to add the states, channels and devices found below it
-- (@GermanBluefox) Fixed: enum members whose object was deleted were hidden silently but stayed in the enum. They are shown now with a warning and can be removed
-- (@GermanBluefox) The "Enums" tab reads the members of all enums with a few bulk requests instead of one request per member
-- (@GermanBluefox) The icon selection of enums, users and groups offers the new icon library of `@iobroker/gui-components`: 448 icons in 15 categories with names in all languages and a search, next to the classic room and device icons
-- (@GermanBluefox) Fixed: rooms created by the setup wizard got the file name of their icon (e.g. "Living Room") instead of the icon itself, so they were shown without an icon
-- (@GermanBluefox) The room and function templates are taken from `@iobroker/gui-components` now, the admin's own copy of the template icons was removed
-- (@GermanBluefox) New layout of the "Enums" tab: a compact list of the entries of a category on the left (nested entries like floors can be opened and closed), the details of the selected entry in the middle and the object list on the right, which collapses into a narrow bar. The details group the members by device or channel and show their role, their current value and the rooms or functions they belong to - a click on one of them opens it. Objects, members and entries can be dragged onto the list and onto the details. On narrow screens the list and the details are shown one after another
 
 ## License
 
