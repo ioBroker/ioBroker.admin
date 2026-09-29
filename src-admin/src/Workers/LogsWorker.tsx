@@ -493,7 +493,20 @@ export class LogsWorker {
                     return { logs: empty, logSize: 0 };
                 }
 
-                const logSizeStr: string | null | undefined = lines ? (lines as string[]).pop() : null;
+                // A host that answered with anything but its log lines - a request that ran into its
+                // timeout, or a controller that reported something else entirely - must not end in
+                // a `TypeError: e.pop is not a function` while the answer is taken apart
+                if (!Array.isArray(lines)) {
+                    const empty: LogLineSaved[] = [];
+                    this.logs = empty;
+
+                    console.warn(`Cannot get logs: unexpected answer ${JSON.stringify(lines)}`);
+
+                    return { logs: empty, logSize: 0 };
+                }
+
+                // the host appends the size of the log file behind the last line
+                const logSizeStr: string | number | undefined = lines.pop();
                 let logSize = 0;
 
                 if (typeof logSizeStr === 'string') {

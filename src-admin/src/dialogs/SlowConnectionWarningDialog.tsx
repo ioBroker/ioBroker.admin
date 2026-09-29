@@ -44,10 +44,18 @@ export class SlowConnectionWarningDialogClass extends Component<
         this.mobile = window.innerWidth < MOBILE_WIDTH;
     }
 
+    /**
+     * Time a single read may take before it is given up on.
+     *
+     * The start of the admin asks the host for the repository and the installed versions, and it
+     * reads the objects - all of that on one single-threaded host, which answers the rest of the
+     * requests only in between. Fifteen seconds were not enough for that on a grown installation
+     * on modest hardware, so every start ended with a timeout (#3656)
+     */
     static getReadTimeoutMs(): number {
         return (
             parseInt(((window as any)._localStorage || window.localStorage).getItem('App.readTimeoutMs'), 10) ||
-            (AdminConnection.isCloud() ? 40_000 : 15_000)
+            (AdminConnection.isCloud() ? 60_000 : 30_000)
         );
     }
 

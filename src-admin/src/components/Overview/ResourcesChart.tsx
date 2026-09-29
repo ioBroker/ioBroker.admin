@@ -33,6 +33,13 @@ interface ResourcesChartProps {
      * heading is worse than no card.
      */
     onAvailabilityChange?: (available: boolean) => void;
+    /** Called whenever it is known whether cpu and mem of this host are being recorded */
+    onRecordingChange?: (recording: boolean) => void;
+    /**
+     * While true, nothing is read and nothing is checked. The parent sets it when the card is
+     * minimized: reading a history nobody looks at is what this card is meant to save.
+     */
+    paused?: boolean;
 }
 
 /** What keeps the chart from showing data, if anything */
@@ -81,7 +88,34 @@ export default class ResourcesChart extends Component<ResourcesChartProps, Resou
     }
 
     componentDidMount(): void {
-        void this.detectAndLoad();
+        if (!this.props.paused) {
+            void this.detectAndLoad();
+            this.startTimer();
+        }
+    }
+
+    componentDidUpdate(prevProps: ResourcesChartProps): void {
+        if (prevProps.currentHost !== this.props.currentHost) {
+            this.setState({ loading: true, cpu: [], mem: [] }, () => void this.detectAndLoad());
+        }
+
+        if (prevProps.paused !== this.props.paused) {
+            if (this.props.paused) {
+                this.stopTimer();
+            } else {
+                // Recording could have been switched on or off elsewhere while this was paused
+                void this.detectAndLoad();
+                this.startTimer();
+            }
+        }
+    }
+
+    componentWillUnmount(): void {
+        this.stopTimer();
+    }
+
+    startTimer(): void {
+        this.stopTimer();
         this.refreshTimer = setInterval(() => {
             if (this.state.blocker) {
                 // the history instance may have been started meanwhile - check again, otherwise the
@@ -93,13 +127,7 @@ export default class ResourcesChart extends Component<ResourcesChartProps, Resou
         }, REFRESH_MS);
     }
 
-    componentDidUpdate(prevProps: ResourcesChartProps): void {
-        if (prevProps.currentHost !== this.props.currentHost) {
-            this.setState({ loading: true, cpu: [], mem: [] }, () => void this.detectAndLoad());
-        }
-    }
-
-    componentWillUnmount(): void {
+    stopTimer(): void {
         if (this.refreshTimer) {
             clearInterval(this.refreshTimer);
             this.refreshTimer = null;
@@ -145,6 +173,8 @@ export default class ResourcesChart extends Component<ResourcesChartProps, Resou
                 !!(cpuObj?.common?.custom as Record<string, { enabled?: boolean }>)?.[historyInstance]?.enabled &&
                 !!(memObj?.common?.custom as Record<string, { enabled?: boolean }>)?.[historyInstance]?.enabled;
 
+            this.props.onRecordingChange?.(recorded);
+
             if (!recorded) {
                 this.setState({ historyInstance, blocker: 'notRecorded', loading: false });
                 return;
@@ -158,6 +188,27 @@ export default class ResourcesChart extends Component<ResourcesChartProps, Resou
 
     /** Switch on recording of cpu and mem for the default history instance */
     async enableRecording(): Promise<void> {
+        return this.setRecording(true);
+    }
+
+    /**
+     * Switch off recording of cpu and mem, so the history instance stops writing them.
+     *
+     * The other settings of the custom entry are kept, so switching the recording on again gives
+     * back the same configuration.
+     */
+    // called by the Overview through a ref, which the rule cannot see
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    async stopRecording(): Promise<void> {
+        return this.setRecording(false);
+    }
+
+    /**
+     * Switch recording of cpu and mem for the default history instance on or off
+     *
+     * @param enabled whether the history instance should record the two states
+     */
+    async setRecording(enabled: boolean): Promise<void> {
         this.setState({ enabling: true });
         try {
             const ids = this.getIds();
@@ -170,7 +221,7 @@ export default class ResourcesChart extends Component<ResourcesChartProps, Resou
                 (obj.common.custom as Record<string, unknown>)[this.state.historyInstance] = {
                     ...((obj.common.custom as Record<string, Record<string, unknown>>)[this.state.historyInstance] ||
                         {}),
-                    enabled: true,
+                    enabled,
                 };
                 await this.props.socket.setObject(id, obj);
             }

@@ -78,14 +78,24 @@ export class ObjectsWorker {
         );
     };
 
-    // be careful with this object. Do not change them.
+    /**
+     * All objects of the system. Be careful with the result: do not change it.
+     *
+     * The read is expensive - the whole object database goes over the connection - so the first one
+     * is kept and handed out again. `update` reads anew.
+     *
+     * @param update read anew instead of handing out what was read before
+     */
     getObjects(update?: boolean): Promise<void | Record<string, ioBroker.Object>> {
         if (!update && this.promise instanceof Promise) {
             return this.promise;
         }
 
         this.promise = this.socket
-            .getObjects(update, true)
+            // The connection answers a read without `update` from its own map of objects, and admin
+            // does not let it fill that - so every read of this worker has to be a forced one, or
+            // it comes back empty. The caching above is what keeps it to one read.
+            .getObjects(true, true)
             .then((objects: Record<string, ioBroker.Object>) => {
                 this.objects = objects;
                 return this.objects;

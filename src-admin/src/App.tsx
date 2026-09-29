@@ -883,14 +883,19 @@ class App extends Router<AppProps, AppState> {
             return;
         }
 
+        // A read that did not answer says nothing about whether the object exists. Only a read that
+        // came back empty may be answered with a fresh default object below - otherwise a timeout
+        // during the start would overwrite the stored settings of the user with the defaults
+        let readFailed = false;
         try {
             obj = (await this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)) as
                 ObjectGuiSettings | null | undefined;
         } catch (e) {
+            readFailed = true;
             console.warn(`Could not get "system.adapter.${this.adminInstance}.guiSettings": ${(e as Error).message}`);
         }
 
-        if (!obj) {
+        if (!obj && !readFailed) {
             obj = JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
             try {
                 await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, obj!);
@@ -1057,6 +1062,11 @@ class App extends Router<AppProps, AppState> {
                 name: 'admin',
                 admin5only: true,
                 port: App.getPort(),
+                // Default of the socket client is five seconds. The start of the admin sends its
+                // requests to a host that is busy with the repository and the objects at that
+                // moment, and those five seconds were over before it got around to answering -
+                // which left the app hanging on its loader (#3641)
+                cmdTimeout: this.state.readTimeoutMs,
                 autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' either. Every tab must subscribe itself to everything that it needs
                 autoSubscribeLog: true,
                 tokenTimeoutHandler: this.onSessionExpiration,
@@ -1179,20 +1189,36 @@ class App extends Router<AppProps, AppState> {
                     this.adminGuiConfig.admin!.login ||= {};
 
                     try {
-                        this.adminInstance ||= await this.socket.getCurrentInstance();
-                        if (!this.adminInstance) {
-                            console.error('Cannot read admin instance!');
-                        }
-                        const adminObj = await this.socket.getObject(`system.adapter.${this.adminInstance}`);
-                        // use instance language
-                        if (adminObj?.native?.language) {
-                            I18n.setLanguage(adminObj.native.language);
-                        } else {
+                        // None of these reads may end the start: a host that is busy with the
+                        // repository answers slowly, and the admin used to stay on its logo until
+                        // the user pressed F5 because one of them ran into its timeout (#3641)
+                        try {
+                            this.adminInstance ||= await this.socket.getCurrentInstance();
+                            if (!this.adminInstance) {
+                                console.error('Cannot read admin instance!');
+                            }
+                            const adminObj = await this.socket.getObject(`system.adapter.${this.adminInstance}`);
+                            // use instance language
+                            if (adminObj?.native?.language) {
+                                I18n.setLanguage(adminObj.native.language);
+                            } else {
+                                I18n.setLanguage(this.socket.systemLang);
+                            }
+                        } catch (e) {
+                            console.warn(`Cannot read the settings of this admin: ${(e as Error).message}`);
                             I18n.setLanguage(this.socket.systemLang);
                         }
 
                         this.languageSet = true;
-                        const isStrict = await this.socket.getIsEasyModeStrict();
+
+                        // The easy mode is the exception, so an unanswered question means "no":
+                        // the normal GUI is shown instead of nothing at all
+                        let isStrict = false;
+                        try {
+                            isStrict = await this.socket.getIsEasyModeStrict();
+                        } catch (e) {
+                            console.warn(`Cannot read the easy mode: ${(e as Error).message}`);
+                        }
 
                         await this.getGUISettings();
 
@@ -1315,6 +1341,10 @@ class App extends Router<AppProps, AppState> {
                     } catch (e) {
                         console.error(`Error in onReady: ${(e as Error).stack}`);
                         this.showAlert(`Error in onReady: ${(e as Error).stack}`, 'error');
+                        // Last resort: show the app instead of the loader. Whatever failed here, the
+                        // menu, the error message and the reconnect handling are more use than a logo
+                        // that never goes away and that only F5 got the user past (#3641)
+                        this.setState({ ready: true });
                     }
                 },
                 onError: (error: string | Error) => {
@@ -1393,7 +1423,9 @@ class App extends Router<AppProps, AppState> {
     };
 
     repoChangeHandler = (): void => {
-        void this.readRepoAndInstalledInfo(this.state.currentHost, true).then(() => console.log('Repo updated!'));
+        void this.readRepoAndInstalledInfo(this.state.currentHost, { update: true }).then(() =>
+            console.log('Repo updated!'),
+        );
     };
 
     adaptersChangeHandler = (events: AdapterEvent[]): void => {
@@ -1776,7 +1808,10 @@ class App extends Router<AppProps, AppState> {
                         objectsDbType = diagData?.objectsType;
                     }
 
-                    const objects = await this.objectsWorker?.getObjects(true);
+                    // Whatever the worker has is good enough for the number in a news condition. A
+                    // forced read pulled the whole object database a second time, right after the
+                    // start page had read it - tens of megabytes through a busy host (#3656)
+                    const objects = await this.objectsWorker?.getObjects();
                     const noObjects = Object.keys(objects || {}).length;
 
                     // The conditions of the news check the adapters and the version of js-controller. The start
@@ -1902,7 +1937,7 @@ class App extends Router<AppProps, AppState> {
                 onClose={readTimeoutMs => {
                     if (readTimeoutMs) {
                         this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () =>
-                            this.readRepoAndInstalledInfo(this.state.currentHost),
+                            this.readRepoAndInstalledInfo(this.state.currentHost, { offerLongerTimeout: true }),
                         );
                     } else {
                         this.setState({ showSlowConnectionWarning: false });
@@ -1916,17 +1951,37 @@ class App extends Router<AppProps, AppState> {
      * Reads the repository, the installed versions and the adapters of the host into the state.
      * The hosts are not part of it: they are kept up to date by the hosts worker, and a list taken
      * before the reads would overwrite its changes when a slow read finishes
+     *
+     * @param currentHost host to read from, e.g. `system.host.raspberrypi`
+     * @param options how to read
+     * @param options.update ask the host for fresh data instead of what it has cached
+     * @param options.offerLongerTimeout allow the dialog about a slow connection when a read times
+     * out - only for a read the user asked for. Nothing waits for the read of the start, so a dialog
+     * there interrupted a start that was going perfectly well otherwise (#3656)
      */
-    readRepoAndInstalledInfo(currentHost: string, update?: boolean): Promise<void> {
-        const promise = this.readRepoAndInstalledInfoRun(currentHost, ++this.repoInfoRun, update);
+    readRepoAndInstalledInfo(
+        currentHost: string,
+        options?: { update?: boolean; offerLongerTimeout?: boolean },
+    ): Promise<void> {
+        const promise = this.readRepoAndInstalledInfoRun(currentHost, ++this.repoInfoRun, options);
         this.repoInfoPromise = promise;
         return promise;
     }
 
-    private async readRepoAndInstalledInfoRun(currentHost: string, run: number, update?: boolean): Promise<void> {
+    private async readRepoAndInstalledInfoRun(
+        currentHost: string,
+        run: number,
+        options?: { update?: boolean; offerLongerTimeout?: boolean },
+    ): Promise<void> {
         if (!this.socket) {
             throw new Error('Socket not initialized');
         }
+        const update = options?.update;
+        const onTimeout = (): void => {
+            if (options?.offerLongerTimeout) {
+                this.setState({ showSlowConnectionWarning: true });
+            }
+        };
 
         // The three reads do not depend on each other, so they run at the same time. One after the
         // other they added up their waiting time: a host that cannot reach the repository server
@@ -1942,7 +1997,7 @@ class App extends Router<AppProps, AppState> {
                 .catch((e: unknown): CompactRepository => {
                     window.alert(`Cannot getRepositoryCompact: ${e as Error}`);
                     if ((e as Error).toString().includes('timeout')) {
-                        this.setState({ showSlowConnectionWarning: true });
+                        onTimeout();
                     }
                     return {};
                 }),
@@ -1951,7 +2006,7 @@ class App extends Router<AppProps, AppState> {
                 .catch((e: unknown): CompactInstalledInfo => {
                     window.alert(`Cannot getInstalled: ${e as Error}`);
                     if ((e as Error).toString().includes('timeout')) {
-                        this.setState({ showSlowConnectionWarning: true });
+                        onTimeout();
                     }
                     return {};
                 }),
@@ -2197,7 +2252,7 @@ class App extends Router<AppProps, AppState> {
                             async () => {
                                 this.logsWorkerChanged(host);
                                 (window._localStorage || window.localStorage).setItem('App.currentHost', host);
-                                await this.readRepoAndInstalledInfo(host);
+                                await this.readRepoAndInstalledInfo(host, { offerLongerTimeout: true });
                                 // read notifications from the host
                                 const notifications = await this.hostsWorker?.getNotifications(host);
                                 await this.handleNewNotifications(notifications);

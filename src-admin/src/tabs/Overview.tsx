@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 
-import { alpha, Box, Card, Chip, LinearProgress, Typography } from '@mui/material';
-import { Extension as AdapterIcon, Memory as StatusIcon, Storage as ObjectsIcon } from '@mui/icons-material';
+import { alpha, Box, Card, Chip, IconButton, LinearProgress, Tooltip, Typography } from '@mui/material';
+import {
+    Extension as AdapterIcon,
+    Memory as StatusIcon,
+    Storage as ObjectsIcon,
+    StopCircle as StopIcon,
+    UnfoldLess as UnfoldLessIcon,
+    UnfoldMore as UnfoldMoreIcon,
+} from '@mui/icons-material';
 
 import { IconInstance } from '@/icons/IconInstance';
 
@@ -26,8 +33,22 @@ import ResourcesChart from '@/components/Overview/ResourcesChart';
 
 /** How often the counters are refreshed */
 const REFRESH_MS = 30_000;
+/**
+ * How long the object count waits before it reads.
+ *
+ * Counting is not free even where the server does it, and on a backend without `getObjectsCount` it
+ * has to pull the whole object database - tens of megabytes on a grown installation. While the app
+ * starts, the host is busy with the repository and the installed versions, and either read on top of
+ * it delayed the requests of the start long enough to run into their timeout (#3656). The tile says
+ * that it is loading until then.
+ */
+const OBJECTS_COUNT_DELAY_MS = 5_000;
 /** Number of log lines shown in the log card */
 const LOG_LINES = 6;
+/** Number of log lines shown while the chart is minimized and the log has the room for them */
+const LOG_LINES_LARGE = 16;
+/** Where the collapsed state of the chart card is remembered */
+const CHART_MINIMIZED_KEY = 'App.overviewChartMinimized';
 /** Number of adapters shown in the adapters card */
 const ADAPTER_LINES = 5;
 /** Shown instead of a number while the value is still unknown - a "0" would be a wrong statement */
@@ -87,6 +108,10 @@ interface OverviewState {
     mem: number | null;
     /** False when no history instance exists or it is not running - then the chart card is hidden */
     chartAvailable: boolean;
+    /** Whether the history instance records cpu and mem of this host at the moment */
+    chartRecording: boolean;
+    /** Collapsed chart card: only its heading is left and the log card gets the room */
+    chartMinimized: boolean;
 }
 
 /**
@@ -95,6 +120,10 @@ interface OverviewState {
  */
 export default class Overview extends Component<OverviewProps, OverviewState> {
     private refreshTimer: ReturnType<typeof setInterval> | null = null;
+    /** Lets the button in the heading of the chart card switch the recording off */
+    private readonly chartRef = React.createRef<ResourcesChart>();
+    /** Delays the expensive object count until the start of the app is through */
+    private objectsTimer: ReturnType<typeof setTimeout> | null = null;
     private mounted = false;
     /** Host the live states are currently subscribed for */
     private subscribedHost = '';
@@ -118,34 +147,55 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
             mem: null,
             // assumed available until the chart reports otherwise, so it does not flicker in
             chartAvailable: true,
+            chartRecording: true,
+            chartMinimized: (window._localStorage || window.localStorage).getItem(CHART_MINIMIZED_KEY) === 'true',
         };
     }
 
     componentDidMount(): void {
         this.mounted = true;
         void this.readAll();
-        void this.readObjects();
+        this.objectsTimer = setTimeout(() => {
+            this.objectsTimer = null;
+            void this.readObjects();
+        }, OBJECTS_COUNT_DELAY_MS);
         this.subscribeHost();
         this.refreshTimer = setInterval(() => void this.readAll(), REFRESH_MS);
         this.props.logsWorker.registerHandler(this.onLogs);
     }
 
     /**
-     * Objects are system wide and expensive to transfer, so they are counted once instead of on
-     * every refresh. The worker only fetches them when `true` is passed.
+     * Numbers behind the "Objects" tile. The server counts them and answers with two numbers.
+     *
+     * An admin whose backend does not know the command yet falls back to reading every object - the
+     * way this worked before, and the reason the read is delayed at all.
      */
     async readObjects(): Promise<void> {
-        const objects = (await this.props.objectsWorker.getObjects(true)) || {};
+        let objectsCount: number;
+        let statesCount = 0;
+
+        try {
+            const count = await this.props.socket.getObjectsCount();
+            objectsCount = count.total;
+            statesCount = count.byType.state || 0;
+        } catch (e) {
+            console.warn(`Cannot count the objects on the server, reading them all: ${(e as Error).message}`);
+
+            // Whatever the worker already has is good enough for a count: a forced read pulled the
+            // whole database again although another tab had just read it
+            const objects = (await this.props.objectsWorker.getObjects()) || {};
+            objectsCount = Object.keys(objects).length;
+            for (const id of Object.keys(objects)) {
+                if (objects[id]?.type === 'state') {
+                    statesCount++;
+                }
+            }
+        }
+
         if (!this.mounted) {
             return;
         }
-        let statesCount = 0;
-        for (const id of Object.keys(objects)) {
-            if (objects[id]?.type === 'state') {
-                statesCount++;
-            }
-        }
-        this.setState({ objectsCount: Object.keys(objects).length, statesCount, objectsLoaded: true });
+        this.setState({ objectsCount, statesCount, objectsLoaded: true });
     }
 
     componentDidUpdate(prevProps: OverviewProps): void {
@@ -162,6 +212,10 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
         if (this.refreshTimer) {
             clearInterval(this.refreshTimer);
             this.refreshTimer = null;
+        }
+        if (this.objectsTimer) {
+            clearTimeout(this.objectsTimer);
+            this.objectsTimer = null;
         }
         this.unsubscribeHost();
         this.props.logsWorker.unregisterHandler(this.onLogs);
@@ -200,7 +254,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
 
     onLogs = (events: LogLineSaved[]): void => {
         if (this.mounted) {
-            this.setState(state => ({ logs: [...state.logs, ...events].slice(-LOG_LINES) }));
+            this.setState(state => ({ logs: [...state.logs, ...events].slice(-LOG_LINES_LARGE) }));
         }
     };
 
@@ -272,7 +326,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
             instancesAlive,
             hostInfo,
             adapters,
-            logs: (logs.logs || []).slice(-LOG_LINES),
+            logs: (logs.logs || []).slice(-LOG_LINES_LARGE),
         });
     }
 
@@ -443,6 +497,55 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
         );
     }
 
+    /**
+     * The one button in the heading of the chart card. It does one thing at a time, in this order:
+     * a collapsed card opens again; while the history still records, it switches the recording off;
+     * and once nothing is recorded any more, the card that has nothing left to show is collapsed.
+     *
+     * Collapsed comes first because a collapsed card is paused and therefore does not know whether
+     * anything is being recorded - only opening it can find that out again.
+     */
+    onChartButton = (): void => {
+        if (!this.state.chartMinimized && this.state.chartRecording) {
+            void this.chartRef.current?.stopRecording();
+            return;
+        }
+
+        const chartMinimized = !this.state.chartMinimized;
+        (window._localStorage || window.localStorage).setItem(CHART_MINIMIZED_KEY, chartMinimized ? 'true' : 'false');
+        this.setState({ chartMinimized });
+    };
+
+    /** The single button in the heading of the chart card - see `onChartButton` for the order */
+    renderChartButton(): React.JSX.Element {
+        const { t } = this.props;
+        let icon: React.JSX.Element;
+        let tooltip: string;
+
+        if (this.state.chartMinimized) {
+            icon = <UnfoldMoreIcon />;
+            tooltip = t('Maximize');
+        } else if (this.state.chartRecording) {
+            icon = <StopIcon />;
+            tooltip = t('Stop recording');
+        } else {
+            icon = <UnfoldLessIcon />;
+            tooltip = t('Minimize');
+        }
+
+        return (
+            <Tooltip title={tooltip}>
+                <IconButton
+                    size="small"
+                    onClick={this.onChartButton}
+                    aria-label={tooltip}
+                >
+                    {icon}
+                </IconButton>
+            </Tooltip>
+        );
+    }
+
     renderLog(): React.JSX.Element {
         const { t, theme } = this.props;
         const severityColor: Record<string, string> = {
@@ -457,7 +560,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                     action={{ text: t('Show all'), onClick: () => this.props.handleNavigation('tab-logs') }}
                 />
                 {this.state.logs.length ? (
-                    this.state.logs.map((line, i) => (
+                    this.state.logs.slice(-(this.state.chartMinimized ? LOG_LINES_LARGE : LOG_LINES)).map((line, i) => (
                         <Box
                             // `line.key` is the timestamp and is NOT unique: several messages can
                             // arrive in the same millisecond, so the index always takes part
@@ -645,22 +748,41 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                             flex: '2 1 460px',
                             p: 2.5,
                             minWidth: 0,
+                            // collapsed it must not be stretched to the height of the card beside it
+                            alignSelf: this.state.chartMinimized ? 'flex-start' : undefined,
                             display: this.state.chartAvailable ? undefined : 'none',
                         }}
                     >
-                        <CardTitle title={t('Resource usage')} />
-                        <ResourcesChart
-                            socket={this.props.socket}
-                            currentHost={this.props.currentHost}
-                            theme={this.props.theme}
-                            themeType={this.props.themeType}
-                            t={t}
-                            onAvailabilityChange={available => {
-                                if (available !== this.state.chartAvailable) {
-                                    this.setState({ chartAvailable: available });
-                                }
-                            }}
+                        <CardTitle
+                            title={t('Resource usage')}
+                            actions={this.renderChartButton()}
                         />
+                        {/*
+                         * Kept mounted while minimized, only hidden: it is what notices that the
+                         * history instance came back or that somebody switched the recording on
+                         * elsewhere. `paused` stops it from reading anything meanwhile.
+                         */}
+                        <Box sx={{ display: this.state.chartMinimized ? 'none' : undefined }}>
+                            <ResourcesChart
+                                ref={this.chartRef}
+                                socket={this.props.socket}
+                                currentHost={this.props.currentHost}
+                                theme={this.props.theme}
+                                themeType={this.props.themeType}
+                                t={t}
+                                paused={this.state.chartMinimized}
+                                onAvailabilityChange={available => {
+                                    if (available !== this.state.chartAvailable) {
+                                        this.setState({ chartAvailable: available });
+                                    }
+                                }}
+                                onRecordingChange={recording => {
+                                    if (recording !== this.state.chartRecording) {
+                                        this.setState({ chartRecording: recording });
+                                    }
+                                }}
+                            />
+                        </Box>
                     </Card>
                 </Box>
 
