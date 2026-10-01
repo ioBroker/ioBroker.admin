@@ -16,7 +16,7 @@ User interface for configuration and administration of ioBroker.
 
 ## JSON config schema
 
-The JSON config schema description can be found at [JSON config schema](/packages/jsonConfig/SCHEMA.md).
+The JSON config schema description can be found at [JSON config schema](/packages/jsonConfig/README.md).
 
 ## Using common.localLink
 
