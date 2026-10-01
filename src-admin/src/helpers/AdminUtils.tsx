@@ -1,7 +1,7 @@
 import semver from 'semver';
 import { type ThemeType, type Translate } from '@iobroker/gui-components';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
-import { replaceLink } from './utils';
+import { replaceLink, applyRemoteAccessToLink, detectRemoteAccess } from './utils';
 
 declare module '@mui/material/Button' {
     interface ButtonPropsColorOverrides {
@@ -474,7 +474,7 @@ export default class AdminUtils {
         hosts: Record<string, ioBroker.HostObject>,
         adminInstance: string,
         themeType: ThemeType,
-    ): Promise<{ href: string; adapterName: string; instanceNumber: number | null }> {
+    ): Promise<{ href: string; adapterName: string; instanceNumber: number | null; unreachable?: boolean }> {
         const instances = await instancesWorker.getObjects();
         let adapter = tab.replace(/^tab-/, '');
         const m = adapter.match(/-(\d+)$/);
@@ -512,6 +512,8 @@ export default class AdminUtils {
             href += `${href.includes('?') ? '&' : '?'}instance=${instanceNumber}`;
         }
 
+        let unreachable = false;
+
         if (href.includes('%')) {
             let _instNum: number;
             // fix for singletons
@@ -531,6 +533,19 @@ export default class AdminUtils {
             });
 
             href = hrefs ? hrefs[0]?.url : '';
+
+            // A tab like the one of node-red or xterm does not live in the admin, it points to the own
+            // server of the adapter. Opened through the remote access of ioBroker Cloud/Pro that address
+            // is in a network the browser is not in, and the iframe would stay empty.
+            const remoteAccess = detectRemoteAccess(instances || {}, window.location);
+            if (href && remoteAccess) {
+                const remoteHref = applyRemoteAccessToLink(href, hrefs?.[0]?.port, remoteAccess);
+                if (remoteHref === null) {
+                    unreachable = true;
+                } else {
+                    href = remoteHref;
+                }
+            }
         }
 
         // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
@@ -540,6 +555,7 @@ export default class AdminUtils {
             href,
             adapterName: adapter,
             instanceNumber,
+            unreachable,
         };
     }
 }

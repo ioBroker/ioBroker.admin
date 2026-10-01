@@ -258,9 +258,19 @@
     "loadingBackgroundImage": false,
     "doNotCheckPublicIP": false,
     "ssoActive": false,
+    "oidcIssuer": "",
+    "oidcClientId": "",
+    "oidcClientSecret": "",
+    "oidcScope": "openid profile email",
     "acmeChallenge": true,
     "disableMcp": true
   },
+  "protectedNative": [
+    "oidcClientSecret"
+  ],
+  "encryptedNative": [
+    "oidcClientSecret"
+  ],
   "notifications": [
     {
       "scope": "admin",

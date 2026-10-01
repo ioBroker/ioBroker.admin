@@ -130,14 +130,209 @@ function getHostname(
 }
 
 /**
+ * Split a link template into its origin and the rest.
+ *
+ * `%web_protocol%://%ip%:%web_port%/adapter/index.html?instance=%instance%` becomes
+ * `{ origin: '%web_protocol%://%ip%:%web_port%', path: 'adapter/index.html?instance=%instance%' }`.
+ * A link without an origin (`adapter/index.html`) gives `origin: null`.
+ *
+ * @param link pattern for link
+ */
+function splitLink(link: string): { origin: string | null; path: string } {
+    const match = link.match(/^[^/]*:\/\/[^/]*/);
+
+    if (!match) {
+        return { origin: null, path: link.replace(/^\//, '') };
+    }
+
+    return { origin: match[0], path: link.substring(match[0].length).replace(/^\//, '') };
+}
+
+/** How the remote access of ioBroker Cloud/Pro publishes the instances of this installation */
+export interface RemoteAccessInfo {
+    /** Origin the browser is talking to, e.g. `https://iobroker.pro` */
+    origin: string;
+    /** Port of the instance that is published under `/`, normally a web instance */
+    webPort?: number;
+    /** Port of the instance that is published under `/admin/` */
+    adminPort?: number;
+    /** Port of the instance that is published under `/lovelace/` */
+    lovelacePort?: number;
+}
+
+/**
+ * Host of an address that is not necessarily a complete URL, e.g. `iobroker.pro` for
+ * `https://iobroker.pro:10656` and for `iobroker.pro:10656`.
+ *
+ * @param address address from a configuration
+ */
+function getHostOfAddress(address: string): string {
+    if (!address) {
+        return '';
+    }
+    try {
+        return new URL(address.includes('://') ? address : `https://${address}`).hostname;
+    } catch {
+        return '';
+    }
+}
+
+/**
+ * Detect that this admin was not opened locally, but through the remote access of ioBroker Cloud/Pro.
+ *
+ * Both the `cloud` and the `iot` adapter publish the installation under fixed paths: the web instance
+ * at `/`, the admin instance at `/admin/` and lovelace at `/lovelace/`. Which instances those are is
+ * part of their own configuration, so nothing has to be guessed from the URL.
+ *
+ * @param instances Object with all instances
+ * @param location location of the browser (`window.location`)
+ * @param location.origin origin the page was loaded from
+ * @param location.hostname host the page was loaded from
+ * @param location.pathname path the page was loaded from
+ * @returns what the remote access publishes, or null if this admin was opened directly
+ */
+export function detectRemoteAccess(
+    instances: Record<string, ioBroker.InstanceObject>,
+    location: { origin: string; hostname: string; pathname: string },
+): RemoteAccessInfo | null {
+    // The remote access always serves the admin under `/admin/`
+    if (location.pathname !== '/admin' && !location.pathname.startsWith('/admin/')) {
+        return null;
+    }
+
+    const portOf = (id: string | undefined): number | undefined => {
+        if (!id) {
+            return undefined;
+        }
+        const obj = instances[id.startsWith('system.adapter.') ? id : `system.adapter.${id}`];
+        const port = obj?.native?.port;
+        return typeof port === 'number' ? port : undefined;
+    };
+
+    for (const id of Object.keys(instances)) {
+        const obj = instances[id];
+        if (!obj?.common?.enabled) {
+            continue;
+        }
+
+        if (obj.common.name === 'cloud') {
+            // `cloudUrl` is the address of the service, e.g. `https://iobroker.pro:10656`
+            if (getHostOfAddress(obj.native?.cloudUrl as string) === location.hostname) {
+                return {
+                    origin: location.origin,
+                    webPort: portOf(obj.native.instance as string),
+                    adminPort: portOf(obj.native.allowAdmin as string),
+                    lovelacePort: portOf(obj.native.lovelace as string),
+                };
+            }
+        } else if (obj.common.name === 'iot' && obj.native?.remote) {
+            // The remote access of `iot` runs over iobroker.pro, its own `cloudUrl` points to the
+            // AWS endpoint and says nothing about the address the browser uses.
+            if (location.hostname === 'iobroker.pro' || location.hostname.endsWith('.iobroker.pro')) {
+                return {
+                    origin: location.origin,
+                    webPort: portOf(obj.native.remoteWebInstance as string),
+                    adminPort: portOf(obj.native.remoteAdminInstance as string),
+                };
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Rewrite a link for the remote access of ioBroker Cloud/Pro.
+ *
+ * The links are built for the local network (`http://192.168.1.5:8082/vis/index.html`) and are of no
+ * use to somebody who opened the admin through the cloud. The same page is published there under the
+ * origin of the service (`https://iobroker.pro/vis/index.html`), so only origin and prefix change.
+ *
+ * @param link the link as it was built for the local network
+ * @param port port of the instance that serves the link, undefined for a link that addresses no instance
+ * @param remote what the remote access publishes
+ * @returns the link for the remote access, or null if that page is not published there at all
+ */
+export function applyRemoteAccessToLink(
+    link: string,
+    port: number | undefined,
+    remote: RemoteAccessInfo,
+): string | null {
+    // A link that addresses no instance of this installation (the documentation of an adapter, for
+    // example) is just as reachable from outside as from inside
+    if (!link || port === undefined) {
+        return link;
+    }
+
+    let prefix: string | null = null;
+    if (remote.webPort !== undefined && port === remote.webPort) {
+        prefix = '';
+    } else if (remote.adminPort !== undefined && port === remote.adminPort) {
+        prefix = '/admin';
+    } else if (remote.lovelacePort !== undefined && port === remote.lovelacePort) {
+        prefix = '/lovelace';
+    }
+
+    if (prefix === null) {
+        // the remote access does not publish this instance
+        return null;
+    }
+
+    return `${remote.origin}${prefix}/${splitLink(link).path}`;
+}
+
+/**
+ * The adapter that serves the page behind a link.
+ *
+ * The web server publishes the pages of an adapter under `/<adapterName>/`, so the first segment of
+ * the path names the adapter: `vis-2` for `http://host:8082/vis-2/index.html`.
+ *
+ * @param link absolute or relative link
+ * @returns the adapter name, or an empty string if the link has no path
+ */
+export function getLinkPageOwner(link: string): string {
+    if (!link) {
+        return '';
+    }
+
+    return splitLink(link).path.split(/[/?#]/)[0] || '';
+}
+
+/**
+ * Decide whether a newly built quick-access card must take the place of one that already points to
+ * the same link.
+ *
+ * The same page can be registered by several adapters: every vis-2 widget adapter links to the vis-2
+ * runtime, and an adapter can register its own page as `localLink` and in `welcomeScreen` at once.
+ * Only one card is shown per link, and it has to belong to the adapter that serves the page.
+ * Otherwise the card carries the name, the icon and the color of whichever adapter happened to be
+ * processed first - which is decided by the alphabetical order of the instance IDs.
+ *
+ * @param link the link both cards point to
+ * @param newAdapter adapter name of the card that was just built
+ * @param existingAdapter adapter name of the card that is already in the list
+ * @returns true if the new card must replace the existing one
+ */
+export function replacesExistingLink(link: string, newAdapter: string, existingAdapter: string): boolean {
+    if (!newAdapter || newAdapter === existingAdapter) {
+        return false;
+    }
+
+    return getLinkPageOwner(link) === newAdapter;
+}
+
+/**
  * Build the link(s) for an adapter that runs as a web-extension.
  *
  * Such adapters have no own web-server and therefore no reachable own port.
- * They are served by their host web instance(s) under the path `/<adapterName>/`.
+ * They are served by their host web instance(s), so the origin of the link is taken from the web
+ * instance. Everything the adapter placed after the origin - path, file name, query - is kept, and
+ * only a link without a path of its own falls back to `/<adapterName>/`.
  * `native.webInstance` contains the target web instance (e.g. `web.0`) or `*` for all web instances.
  *
  * @param adapter adapter name (e.g. `rest-api`)
  * @param instanceObj the web-extension instance object
+ * @param link pattern for link, its path is kept
  * @param context Context object
  * @param context.instances Object with all instances
  * @param context.hostname Actual host name
@@ -147,6 +342,7 @@ function getHostname(
 function getWebExtensionLinks(
     adapter: string,
     instanceObj: ioBroker.InstanceObject,
+    link: string,
     context: {
         instances: Record<string, ioBroker.InstanceObject>;
         hostname: string;
@@ -155,6 +351,8 @@ function getWebExtensionLinks(
     },
 ): { url: string; port: number | undefined; instance?: string }[] {
     const webInstance: string = instanceObj.native.webInstance;
+    // Placeholders that are still in the path are resolved by the caller
+    const path: string = splitLink(link).path || `${adapter}/`;
 
     // Determine which web instance(s) serve this extension
     let webInstanceIds: string[];
@@ -192,7 +390,7 @@ function getWebExtensionLinks(
         const port: number | undefined = webNative.port;
 
         urls.push({
-            url: `${protocol}://${ip || ''}${port ? `:${port}` : ''}/${adapter}/`,
+            url: `${protocol}://${ip || ''}${port ? `:${port}` : ''}/${path}`,
             port,
             instance: webId,
         });
@@ -305,14 +503,21 @@ export function replaceLink(
         const instanceObj = context.instances[`system.adapter.${adapter}.${instance}`];
         const native = instanceObj?.native || {};
 
-        // Adapters running as web-extension have no own web-server / port.
-        // They are served by their host web instance(s) under the path /<adapterName>/.
+        // Adapters running as web-extension have no own web-server / port. They are served by their
+        // host web instance(s), so the origin of the link has to be taken from the web instance.
+        // The links are only pre-filled here: the placeholders that are left in their path are
+        // resolved below, together with the ones of a normal link.
+        // A link with a hard-coded origin (e.g. to the documentation of the adapter) points exactly
+        // where it says and is left alone.
         if (instanceObj?.common.webExtension && native.webInstance) {
-            const webExtensionUrls = getWebExtensionLinks(adapter, instanceObj, context);
-            if (webExtensionUrls.length) {
-                return webExtensionUrls;
+            const origin = splitLink(link).origin;
+            if (origin === null || origin.includes('%')) {
+                _urls.push(...getWebExtensionLinks(adapter, instanceObj, link, context));
             }
         }
+        // `native.webInstance` already decided which web instances serve this extension,
+        // so no further link may be added below
+        const fixedUrls = _urls.length > 0;
 
         const placeholders = link.match(/%(\w+)%/g);
 
@@ -456,6 +661,22 @@ export function replaceLink(
                                             context.hosts,
                                             context.hostname,
                                             context.adminInstance,
+                                        );
+                                    } else if (fixedUrls) {
+                                        // The instance does not serve this web-extension. Only resolve
+                                        // a placeholder that is still left in the existing links.
+                                        _urls.forEach(
+                                            entry =>
+                                                (entry.url = _replaceLink(
+                                                    entry.url,
+                                                    context.instances,
+                                                    id,
+                                                    attr,
+                                                    placeholder,
+                                                    context.hosts,
+                                                    context.hostname,
+                                                    context.adminInstance,
+                                                )),
                                         );
                                     } else {
                                         // add new

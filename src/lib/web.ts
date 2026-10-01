@@ -1,5 +1,5 @@
 import { commonTools, EXIT_CODES, I18n } from '@iobroker/adapter-core';
-import { checkPublicIP, WebServer, createOAuth2Server, type OAuth2Model } from '@iobroker/webserver';
+import { checkPublicIP, WebServer, createOAuth2Server, type OAuth2Model, type OidcConfig } from '@iobroker/webserver';
 import express from 'express';
 import type { Express, Response, Request, NextFunction } from 'express';
 import type { Server } from 'node:http';
@@ -7,7 +7,7 @@ import { readFileSync, existsSync, createReadStream, readdirSync, lstatSync } fr
 import { join, normalize, parse, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import compression from 'compression';
-import { getType } from 'mime';
+import { lookup as getMimeType } from 'mime-types';
 import { gunzipSync } from 'node:zlib';
 import axios from 'axios';
 import { Ajv, type ValidateFunction } from 'ajv';
@@ -309,12 +309,44 @@ export default class Web {
         return this.oauth2Model?.processMessage(msg) ?? false;
     }
 
+    /**
+     * Configuration of the identity provider for the single sign-on.
+     *
+     * Only a complete configuration is handed over. Without it, the webserver does not register the
+     * SSO routes at all, and the login page does not offer the button.
+     */
+    getOidcConfig(): OidcConfig | undefined {
+        if (!this.adapter.config.ssoActive) {
+            return undefined;
+        }
+
+        const issuer = (this.adapter.config.oidcIssuer || '').trim();
+        const clientId = (this.adapter.config.oidcClientId || '').trim();
+
+        if (!issuer || !clientId) {
+            this.adapter.log.warn(
+                'Single sign-on is switched on, but the issuer or the client ID of the identity provider is missing. SSO stays off.',
+            );
+            return undefined;
+        }
+
+        return {
+            issuer,
+            clientId,
+            clientSecret: this.adapter.config.oidcClientSecret || undefined,
+            scope: (this.adapter.config.oidcScope || '').trim() || undefined,
+        };
+    }
+
     async prepareIndex(index: string): Promise<string> {
         let template = readFileSync(join(this.wwwDir, index)).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g) || [];
         for (let pattern of m) {
             pattern = pattern.replace(/@/g, '').replace(/'/g, '').replace(/"/g, '');
-            if (pattern === 'disableDataReporting') {
+            if (pattern === 'ssoActive') {
+                // The button on the login page may only appear if the SSO really works
+                template = template.replace('@@ssoActive@@', this.getOidcConfig() ? 'true' : 'false');
+            } else if (pattern === 'disableDataReporting') {
                 // read sentry state
                 const state = await this.adapter.getForeignStateAsync(
                     `system.adapter.${this.adapter.namespace}.plugins.sentry.enabled`,
@@ -731,6 +763,7 @@ export default class Web {
 
                 this.oauth2Model = createOAuth2Server(this.adapter, {
                     app: this.server.app,
+                    oidc: this.getOidcConfig(),
                     secure: this.settings.secure,
                     accessLifetime: this.settings.ttl,
                     refreshLifetime: this.settings.refreshTokenTtlDays * 24 * 60 * 60,
@@ -1172,7 +1205,7 @@ export default class Web {
                     if (url.startsWith(this.dirName)) {
                         try {
                             if (existsSync(url)) {
-                                res.contentType(getType(url) || 'text/javascript');
+                                res.contentType(getMimeType(url) || 'text/javascript');
                                 createReadStream(url).pipe(res);
                             } else {
                                 res.status(404).send(this.get404Page('File not found'));
@@ -1229,7 +1262,7 @@ export default class Web {
                             res.contentType(mimeType);
                         } else {
                             try {
-                                const _mimeType = getType(url);
+                                const _mimeType = getMimeType(url);
                                 res.contentType(_mimeType || 'text/javascript');
                             } catch {
                                 res.contentType('text/javascript');

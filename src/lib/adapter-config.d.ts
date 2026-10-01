@@ -42,6 +42,14 @@ declare global {
             refreshTokenTtlDays: number;
             /** If the experimental SSO feature is enabled */
             ssoActive: boolean;
+            /** Issuer URL of the OpenID Connect identity provider used for the single sign-on */
+            oidcIssuer: string;
+            /** Client ID registered at the identity provider */
+            oidcClientId: string;
+            /** Secret of a confidential client, empty for a public client (PKCE) */
+            oidcClientSecret: string;
+            /** Scopes to request, default `openid profile email` */
+            oidcScope: string;
             disableMcp?: boolean;
         }
     }

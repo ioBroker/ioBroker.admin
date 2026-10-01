@@ -1,6 +1,13 @@
 const assert = require('node:assert');
 
-const { replaceLink, getAdminPublicPath } = require('../build/lib/utils');
+const {
+    replaceLink,
+    getAdminPublicPath,
+    getLinkPageOwner,
+    replacesExistingLink,
+    detectRemoteAccess,
+    applyRemoteAccessToLink,
+} = require('../build/lib/utils');
 
 const instances = {
     'system.adapter.admin.0': {
@@ -7692,6 +7699,428 @@ describe('Test replace link in front-end', function () {
         assert.strictEqual(result[0].port, 8082);
 
         done();
+    });
+});
+
+// https://github.com/ioBroker/ioBroker.admin/issues/3661
+// A web-extension has no own web server, so the origin of its link is taken from the web instance
+// that serves it. Everything the adapter put after the origin - path, file, query - must survive.
+describe('Test replace link of a web-extension', function () {
+    const hostname = '123.456.789.123';
+    const adminInstance = 'admin.0';
+
+    /**
+     * @param {string} link link template
+     * @param {Record<string, any>} [instancesOverride] instances to use instead of the default ones
+     * @returns {{url: string, port: number|undefined, instance?: string}[]} the resulting links
+     */
+    function replaceCamerasLink(link, instancesOverride) {
+        return replaceLink(link, 'cameras', 0, {
+            instances: instancesOverride || instances,
+            hostname,
+            adminInstance,
+            hosts,
+        });
+    }
+
+    it('keeps the path and the query of the link', function () {
+        // This is the structure reported in the issue: the adapter serves its own page under a path
+        // and needs its instance number as a query parameter
+        const result = replaceCamerasLink('%web_protocol%://%ip%:%web_port%/cameras/index.html?instance=%instance%');
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:8082/cameras/index.html?instance=0');
+        assert.strictEqual(result[0].port, 8082);
+    });
+
+    it('keeps the path when the link addresses the own instance', function () {
+        // `%protocol%`, `%ip%` and `%port%` of a web-extension are not reachable, they are replaced
+        // by the ones of the web instance - but the path stays
+        const result = replaceCamerasLink('%protocol%://%ip%:%port%/cameras/?instance=%instance%');
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:8082/cameras/?instance=0');
+        assert.strictEqual(result[0].port, 8082);
+    });
+
+    it('falls back to /<adapter>/ if the link has no path', function () {
+        for (const link of ['%protocol%://%ip%:%port%/', '%protocol%://%ip%:%port%', 'http%s%://%ip%:%port%/']) {
+            const result = replaceCamerasLink(link);
+            assert.strictEqual(result.length, 1, link);
+            assert.strictEqual(result[0].url, 'http://123.456.789.123:8082/cameras/', link);
+        }
+    });
+
+    it('never uses the own port of the extension', function () {
+        // cameras has `native.port: 8200` and `native.bind: 127.0.0.1`, but nothing listens there
+        const result = replaceCamerasLink('%protocol%://%ip%:%port%/cameras/index.html');
+
+        assert.strictEqual(result.length, 1);
+        assert.ok(!result[0].url.includes('8200'), `port 8200 of the extension used: ${result[0].url}`);
+        assert.ok(!result[0].url.includes('127.0.0.1'), `bind of the extension used: ${result[0].url}`);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:8082/cameras/index.html');
+    });
+
+    it('leaves a link with a hard-coded origin untouched', function () {
+        // Adapters register additional links, e.g. to their documentation. Such a link points where
+        // it says and must not be redirected to the web instance
+        const link = 'https://www.example.com/wiki/cameras/';
+        const result = replaceCamerasLink(link);
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, link);
+    });
+
+    it('resolves a relative link against the web instance', function () {
+        const result = replaceCamerasLink('cameras/index.html?instance=%instance%');
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:8082/cameras/index.html?instance=0');
+    });
+
+    it('uses the one web instance named in `native.webInstance`', function () {
+        const _instances = {
+            ...instances,
+            'system.adapter.web.1': {
+                ...instances['system.adapter.web.0'],
+                _id: 'system.adapter.web.1',
+                native: { ...instances['system.adapter.web.0'].native, port: 8083 },
+            },
+            'system.adapter.cameras.0': {
+                ...instances['system.adapter.cameras.0'],
+                native: { ...instances['system.adapter.cameras.0'].native, webInstance: 'web.1' },
+            },
+        };
+
+        const result = replaceCamerasLink('%web_protocol%://%ip%:%web_port%/cameras/?instance=%instance%', _instances);
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:8083/cameras/?instance=0');
+        assert.strictEqual(result[0].port, 8083);
+    });
+
+    it('returns one link per web instance for `native.webInstance: "*"`', function () {
+        const _instances = {
+            ...instances,
+            'system.adapter.web.1': {
+                ...instances['system.adapter.web.0'],
+                _id: 'system.adapter.web.1',
+                native: { ...instances['system.adapter.web.0'].native, port: 8083 },
+            },
+        };
+
+        const result = replaceCamerasLink('%web_protocol%://%ip%:%web_port%/cameras/?instance=%instance%', _instances);
+
+        assert.deepStrictEqual(result.map(item => item.url).sort(), [
+            'http://123.456.789.123:8082/cameras/?instance=0',
+            'http://123.456.789.123:8083/cameras/?instance=0',
+        ]);
+    });
+
+    it('takes the protocol and the port from the web instance', function () {
+        const _instances = {
+            ...instances,
+            'system.adapter.web.0': {
+                ...instances['system.adapter.web.0'],
+                native: { ...instances['system.adapter.web.0'].native, secure: true, port: 8443 },
+            },
+        };
+
+        const result = replaceCamerasLink('%web_protocol%://%ip%:%web_port%/cameras/', _instances);
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'https://123.456.789.123:8443/cameras/');
+        assert.strictEqual(result[0].port, 8443);
+    });
+
+    it('does not touch the link of an adapter that is no web-extension', function () {
+        // control case: `web` itself has an own server, its own port must be used
+        const result = replaceLink('%web_protocol%://%ip%:%web_port%/index.html?x=%instance%', 'web', 0, {
+            instances,
+            hostname,
+            adminInstance,
+            hosts,
+        });
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://123.456.789.123:8082/index.html?x=0');
+    });
+});
+
+// The quick access shows one card per link. Several adapters can register the same page, so the card
+// has to belong to the adapter that serves it instead of the one that is processed first.
+describe('owner of a link', () => {
+    describe('getLinkPageOwner', () => {
+        it('takes the adapter from the first segment of the path', () => {
+            assert.strictEqual(getLinkPageOwner('http://localhost:8082/vis-2/index.html'), 'vis-2');
+            assert.strictEqual(getLinkPageOwner('https://localhost:8443/habpanel/index.html'), 'habpanel');
+            assert.strictEqual(getLinkPageOwner('http://localhost:8082/cameras/'), 'cameras');
+        });
+
+        it('ignores the query and the hash', () => {
+            assert.strictEqual(
+                getLinkPageOwner('http://localhost:8082/energiefluss-erweitert/?instance=0'),
+                'energiefluss-erweitert',
+            );
+            assert.strictEqual(getLinkPageOwner('http://localhost:8082/vis-2?edit'), 'vis-2');
+            assert.strictEqual(getLinkPageOwner('http://localhost:8082/vis-2#main'), 'vis-2');
+        });
+
+        it('works with a relative link', () => {
+            assert.strictEqual(getLinkPageOwner('habpanel/index.html'), 'habpanel');
+            assert.strictEqual(getLinkPageOwner('/habpanel/index.html'), 'habpanel');
+        });
+
+        it('returns an empty string if the link has no path', () => {
+            assert.strictEqual(getLinkPageOwner('http://www.dwd.de/'), '');
+            assert.strictEqual(getLinkPageOwner('http://localhost:8088'), '');
+            assert.strictEqual(getLinkPageOwner(''), '');
+            assert.strictEqual(getLinkPageOwner(undefined), '');
+        });
+    });
+
+    describe('replacesExistingLink', () => {
+        it('lets the adapter of the page win over another adapter', () => {
+            // every vis-2 widget adapter registers a link to the vis-2 runtime, and
+            // `vis-2-widgets-inventwo.0` sorts before `vis-2.0`
+            assert.strictEqual(
+                replacesExistingLink('http://localhost:8082/vis-2/index.html', 'vis-2', 'vis-2-widgets-inventwo'),
+                true,
+            );
+        });
+
+        it('does not take the card away from the adapter of the page', () => {
+            assert.strictEqual(
+                replacesExistingLink('http://localhost:8082/vis-2/index.html', 'vis-2-widgets-inventwo', 'vis-2'),
+                false,
+            );
+        });
+
+        it('keeps the first card if the same adapter registers the page twice', () => {
+            // `localLink` and `welcomeScreen` of one adapter end up on the same page
+            assert.strictEqual(
+                replacesExistingLink('http://localhost:8082/habpanel/index.html', 'habpanel', 'habpanel'),
+                false,
+            );
+        });
+
+        it('keeps the first card if no adapter owns the page', () => {
+            assert.strictEqual(replacesExistingLink('http://www.dwd.de/', 'dwd', 'accuweather'), false);
+            assert.strictEqual(
+                replacesExistingLink('http://localhost:8081/adapter/scenes/tab.html', 'scenes', 'text2command'),
+                false,
+            );
+        });
+
+        it('keeps the first card if neither adapter serves the page', () => {
+            assert.strictEqual(
+                replacesExistingLink(
+                    'http://localhost:8082/vis-2/index.html',
+                    'vis-2-widgets-sip',
+                    'vis-2-widgets-inventwo',
+                ),
+                false,
+            );
+        });
+    });
+});
+
+// The admin can be opened through the remote access of ioBroker Cloud/Pro. The links of the quick
+// access are then built for a network the browser is not in, and have to be moved onto the service.
+describe('remote access of ioBroker Cloud/Pro', () => {
+    /**
+     * @param {Record<string, any>} [overrides] instances to add or replace
+     * @returns {Record<string, any>} instances for the test
+     */
+    function makeInstances(overrides) {
+        const base = {
+            'system.adapter.admin.0': {
+                _id: 'system.adapter.admin.0',
+                common: { name: 'admin', enabled: true },
+                native: { port: 8081 },
+            },
+            'system.adapter.web.0': {
+                _id: 'system.adapter.web.0',
+                common: { name: 'web', enabled: true },
+                native: { port: 8082 },
+            },
+            'system.adapter.lovelace.0': {
+                _id: 'system.adapter.lovelace.0',
+                common: { name: 'lovelace', enabled: true },
+                native: { port: 8091 },
+            },
+            'system.adapter.node-red.0': {
+                _id: 'system.adapter.node-red.0',
+                common: { name: 'node-red', enabled: true },
+                native: { port: 1880 },
+            },
+            'system.adapter.cloud.0': {
+                _id: 'system.adapter.cloud.0',
+                common: { name: 'cloud', enabled: true },
+                native: {
+                    cloudUrl: 'https://iobroker.pro:10656',
+                    instance: 'web.0',
+                    allowAdmin: 'system.adapter.admin.0',
+                    lovelace: 'system.adapter.lovelace.0',
+                },
+            },
+        };
+        return { ...base, ...(overrides || {}) };
+    }
+
+    const proLocation = {
+        origin: 'https://iobroker.pro',
+        hostname: 'iobroker.pro',
+        pathname: '/admin/',
+    };
+
+    describe('detectRemoteAccess', () => {
+        it('reads what the cloud adapter publishes', () => {
+            assert.deepStrictEqual(detectRemoteAccess(makeInstances(), proLocation), {
+                origin: 'https://iobroker.pro',
+                webPort: 8082,
+                adminPort: 8081,
+                lovelacePort: 8091,
+            });
+        });
+
+        it('does not trigger when the admin is opened locally', () => {
+            assert.strictEqual(
+                detectRemoteAccess(makeInstances(), {
+                    origin: 'http://192.168.1.5:8081',
+                    hostname: '192.168.1.5',
+                    pathname: '/',
+                }),
+                null,
+            );
+        });
+
+        it('does not trigger on another host, even below /admin/', () => {
+            // a reverse proxy of the user that serves the admin under /admin/ is configured
+            // in the admin settings and must not be overruled here
+            assert.strictEqual(
+                detectRemoteAccess(makeInstances(), {
+                    origin: 'https://home.example.com',
+                    hostname: 'home.example.com',
+                    pathname: '/admin/',
+                }),
+                null,
+            );
+        });
+
+        it('does not trigger if the cloud instance is disabled', () => {
+            const instances = makeInstances();
+            instances['system.adapter.cloud.0'].common.enabled = false;
+            assert.strictEqual(detectRemoteAccess(instances, proLocation), null);
+        });
+
+        it('follows a changed cloudUrl', () => {
+            const instances = makeInstances();
+            instances['system.adapter.cloud.0'].native.cloudUrl = 'https://iobroker.net:10555';
+            assert.strictEqual(detectRemoteAccess(instances, proLocation), null);
+            const netAccess = detectRemoteAccess(instances, {
+                origin: 'https://iobroker.net',
+                hostname: 'iobroker.net',
+                pathname: '/admin/',
+            });
+            assert.strictEqual(netAccess?.webPort, 8082);
+        });
+
+        it('leaves out what the cloud adapter does not publish', () => {
+            const instances = makeInstances();
+            instances['system.adapter.cloud.0'].native.allowAdmin = '';
+            instances['system.adapter.cloud.0'].native.lovelace = '';
+            assert.deepStrictEqual(detectRemoteAccess(instances, proLocation), {
+                origin: 'https://iobroker.pro',
+                webPort: 8082,
+                adminPort: undefined,
+                lovelacePort: undefined,
+            });
+        });
+
+        it('also recognizes the remote access of the iot adapter', () => {
+            const instances = makeInstances({
+                'system.adapter.iot.0': {
+                    _id: 'system.adapter.iot.0',
+                    common: { name: 'iot', enabled: true },
+                    native: {
+                        cloudUrl: 'a18wym7vjdl22g.iot.eu-west-1.amazonaws.com',
+                        remote: true,
+                        remoteAdminInstance: 'admin.0',
+                        remoteWebInstance: 'web.0',
+                    },
+                },
+            });
+            delete instances['system.adapter.cloud.0'];
+
+            assert.deepStrictEqual(detectRemoteAccess(instances, proLocation), {
+                origin: 'https://iobroker.pro',
+                webPort: 8082,
+                adminPort: 8081,
+            });
+        });
+
+        it('ignores an iot instance whose remote access is off', () => {
+            const instances = makeInstances({
+                'system.adapter.iot.0': {
+                    _id: 'system.adapter.iot.0',
+                    common: { name: 'iot', enabled: true },
+                    native: { remote: false, remoteWebInstance: 'web.0' },
+                },
+            });
+            delete instances['system.adapter.cloud.0'];
+            assert.strictEqual(detectRemoteAccess(instances, proLocation), null);
+        });
+    });
+
+    describe('applyRemoteAccessToLink', () => {
+        const remote = { origin: 'https://iobroker.pro', webPort: 8082, adminPort: 8081, lovelacePort: 8091 };
+
+        it('moves a page of the web instance onto the root of the service', () => {
+            assert.strictEqual(
+                applyRemoteAccessToLink('http://192.168.1.5:8082/vis-2/index.html', 8082, remote),
+                'https://iobroker.pro/vis-2/index.html',
+            );
+            assert.strictEqual(
+                applyRemoteAccessToLink('http://192.168.1.5:8082/energiefluss-erweitert/?instance=0', 8082, remote),
+                'https://iobroker.pro/energiefluss-erweitert/?instance=0',
+            );
+        });
+
+        it('moves a page of the admin instance under /admin/', () => {
+            assert.strictEqual(
+                applyRemoteAccessToLink('http://192.168.1.5:8081/adapter/scenes/tab.html', 8081, remote),
+                'https://iobroker.pro/admin/adapter/scenes/tab.html',
+            );
+        });
+
+        it('moves lovelace under /lovelace/', () => {
+            assert.strictEqual(
+                applyRemoteAccessToLink('http://192.168.1.5:8091/', 8091, remote),
+                'https://iobroker.pro/lovelace/',
+            );
+        });
+
+        it('reports a page that the service does not publish', () => {
+            // node-red on 1880 is not forwarded by the cloud
+            assert.strictEqual(applyRemoteAccessToLink('http://192.168.1.5:1880/', 1880, remote), null);
+            // a second admin instance is not published either
+            assert.strictEqual(applyRemoteAccessToLink('http://192.168.1.5:8088/', 8088, remote), null);
+        });
+
+        it('leaves a link alone that addresses no instance', () => {
+            const link = 'https://www.example.com/docs/adapter/';
+            assert.strictEqual(applyRemoteAccessToLink(link, undefined, remote), link);
+        });
+
+        it('does not publish lovelace or admin if the service does not forward them', () => {
+            const webOnly = { origin: 'https://iobroker.pro', webPort: 8082 };
+            assert.strictEqual(
+                applyRemoteAccessToLink('http://192.168.1.5:8082/vis/index.html', 8082, webOnly),
+                'https://iobroker.pro/vis/index.html',
+            );
+            assert.strictEqual(applyRemoteAccessToLink('http://192.168.1.5:8081/', 8081, webOnly), null);
+        });
     });
 });
 
