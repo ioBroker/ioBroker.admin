@@ -1338,9 +1338,17 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderLink(): JSX.Element {
+        // Through the remote access only a part of the instances is published. If none of the links
+        // of this instance is among them, the button has nothing to offer.
+        const onlyLocal = !!this.props.instance.links?.length && this.props.instance.links.every(l => l.unreachable);
+
         return (
             <Tooltip
-                title={this.props.context.t('Instance link %s', this.props.instance.id)}
+                title={
+                    onlyLocal
+                        ? this.props.context.t('Only reachable in the local network')
+                        : this.props.context.t('Instance link %s', this.props.instance.id)
+                }
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div>
@@ -1352,7 +1360,7 @@ export default abstract class InstanceGeneric<
                                 ? this.styles.hide
                                 : undefined),
                         }}
-                        disabled={!this.props.item.running}
+                        disabled={!this.props.item.running || onlyLocal}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();

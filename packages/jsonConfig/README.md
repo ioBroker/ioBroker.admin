@@ -1956,6 +1956,13 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.0.9 (2026-10-01)
+- (@krobipd) Fixed: a table with `encryptedAttributes` showed the stored secrets still encrypted and encrypted them a second time on the next save, so the adapter could no longer decrypt them. Since 8.5.0 the rows were only decrypted when the attribute was empty (`||=` instead of `&&=`); they are decrypted again when set, and a table stored as an object (`objKeyName`) no longer throws there
+- (@GermanBluefox) Fixed: the same table decrypted its rows directly in the live configuration instead of in a copy. That encryption is a simple XOR, so a second pass turns a secret back into plain text: switching a tab remounts the table and encrypted the shown secrets again, and saving any other field wrote the table secrets unencrypted into the instance object. The rows are decrypted in a copy now, as the save path already did. A secret that a table stored this way since 8.5.0 should be entered once again
+
+### 10.0.8 (2026-09-30)
+- (@GermanBluefox) Corrected table and tabs layout
+
 ### 10.0.7 (2026-09-26)
 - (@GermanBluefox) Fixed: a `selectSendTo` with `multiple: true` could not be used when the adapter answers with numeric values (`{ label: 'Heat', value: 9 }`). The checkbox of a menu item compared the value as text but stored it as a number, so it never appeared as checked and every click added the entry again instead of removing it - the configuration filled up with duplicates. The comparison is tolerant about the type now, which also repairs a configuration that was written this way, and the entries are sorted as numbers instead of as text (ioBroker.admin#3636)
 - (@GermanBluefox) Fixed: in the same component, clicking a checkbox and clicking the text of a menu item disagreed about where the value lives. After the first click on a checkbox, selecting an item by its text no longer changed anything visible, because the rendered list was frozen on the internal state while only the data behind it changed

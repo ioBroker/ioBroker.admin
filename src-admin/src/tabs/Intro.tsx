@@ -25,7 +25,15 @@ import type { HostInfo } from '@iobroker/socket-client';
 import type { InstancesWorker, InstanceEvent } from '@/Workers/InstancesWorker';
 import type { HostsWorker, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
-import { replaceLink, applyReverseProxyToLink, type ReverseProxyItem } from '@/helpers/utils';
+import {
+    replaceLink,
+    applyReverseProxyToLink,
+    applyRemoteAccessToLink,
+    detectRemoteAccess,
+    replacesExistingLink,
+    type RemoteAccessInfo,
+    type ReverseProxyItem,
+} from '@/helpers/utils';
 import IntroCard from '@/components/Intro/IntroCard';
 import EditIntroLinkDialog from '@/components/Intro/EditIntroLinkDialog';
 
@@ -179,6 +187,8 @@ interface IntroInstanceItem {
     linkName?: string;
     order?: number;
     info: string;
+    /** The admin was opened through the remote access, and this page is not published there */
+    unreachable?: boolean;
     port?: number;
 }
 
@@ -288,6 +298,9 @@ class Intro extends React.Component<IntroProps, IntroState> {
     private introLinksOriginal?: string;
 
     private deactivatedOriginal?: string[];
+
+    /** Set if this admin was opened through the remote access of ioBroker Cloud/Pro */
+    private remoteAccess: RemoteAccessInfo | null = null;
 
     private readonly t: Translate;
 
@@ -566,6 +579,7 @@ class Intro extends React.Component<IntroProps, IntroState> {
                                 : undefined
                         }
                         enabled={enabled}
+                        unreachable={!!instance.unreachable}
                         disabled={!hostData || typeof hostData !== 'object'}
                         getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
                         toggleActivation={() => this.toggleCard(instance.id, instance.linkName || '')}
@@ -911,13 +925,33 @@ class Intro extends React.Component<IntroProps, IntroState> {
         if (_urls.length) {
             instance.link = _urls[0].url;
             instance.port = _urls[0].port;
-            instance.link =
-                applyReverseProxyToLink(instance.link, instance.id, instances, webReverseProxyPath) || instance.link;
+
+            if (this.remoteAccess) {
+                // The admin was opened through the remote access, so an address inside the local
+                // network leads nowhere. The reverse proxy settings describe a different way into
+                // the installation and do not apply here.
+                const remoteLink = applyRemoteAccessToLink(instance.link, instance.port, this.remoteAccess);
+                if (remoteLink === null) {
+                    // keep the local link, the card shows it but does not offer it as a target
+                    instance.unreachable = true;
+                } else {
+                    instance.link = remoteLink;
+                }
+            } else {
+                instance.link =
+                    applyReverseProxyToLink(instance.link, instance.id, instances, webReverseProxyPath) ||
+                    instance.link;
+            }
 
             // if a link already exists => ignore
             const lll = introInstances.find(item => item.link === instance.link);
             if (!lll) {
                 introInstances.push(instance);
+            } else if (replacesExistingLink(instance.link, common.name, lll.id.split('.')[0])) {
+                // The card belongs to the adapter that serves the page. Without this, the card of
+                // e.g. the vis-2 runtime would get the name, the icon and the color of whichever
+                // vis-2 widget adapter links to the same page and was processed first.
+                introInstances[introInstances.indexOf(lll)] = instance;
             } else {
                 console.log(`Double links: "${instance.id}" and "${lll.id}"`);
             }
@@ -1256,6 +1290,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
             const instances: Record<string, ioBroker.InstanceObject> = {};
             // Array to the mapped object
             objects.forEach(obj => (instances[obj._id] = obj));
+
+            this.remoteAccess = detectRemoteAccess(instances, window.location);
 
             objects.forEach(obj => {
                 if (!obj) {

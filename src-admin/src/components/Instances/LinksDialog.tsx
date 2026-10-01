@@ -18,6 +18,8 @@ export interface InstanceLink {
     link: string;
     port?: number;
     color?: string;
+    /** The admin was opened through the remote access, and this address only works in the local network */
+    unreachable?: boolean;
 }
 
 interface LinksDialogProps {
@@ -46,8 +48,10 @@ class LinksDialog extends Component<LinksDialogProps> {
                 <List>
                     {this.props.links.map(link => (
                         <ListItemButton
+                            disabled={link.unreachable}
+                            title={link.unreachable ? this.props.t('Only reachable in the local network') : undefined}
                             style={
-                                link.color
+                                link.color && !link.unreachable
                                     ? {
                                           backgroundColor: link.color,
                                           color: Utils.getInvertedColor(link.color, this.props.themeType, true),
@@ -56,6 +60,9 @@ class LinksDialog extends Component<LinksDialogProps> {
                             }
                             onClick={e => {
                                 e.stopPropagation();
+                                if (link.unreachable) {
+                                    return;
+                                }
                                 // replace IPv6 Address with [ipv6]:port
                                 let url = link.link;
                                 url = url.replace(

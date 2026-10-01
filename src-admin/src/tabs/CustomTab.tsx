@@ -61,6 +61,8 @@ interface CustomTabState {
     jsonData: Record<string, any>;
     loadingKey: number;
     loading: boolean;
+    /** The tab lives on an own server of the adapter that the remote access does not publish */
+    unreachable: boolean;
 }
 
 export default class CustomTab extends Component<CustomTabProps, CustomTabState> {
@@ -80,6 +82,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
             jsonData: {},
             loadingKey: 0,
             loading: true,
+            unreachable: false,
         };
     }
 
@@ -166,6 +169,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
             instanceNumber: result.instanceNumber,
             schema,
             jsonData,
+            unreachable: !!result.unreachable,
         });
         // check if href exists
         // fetch(href)
@@ -252,6 +256,30 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
                     AceEditor={AceEditor}
                 />
+            );
+        }
+
+        if (this.state.unreachable) {
+            // This tab does not live in the admin but on an own server of the adapter, and the remote
+            // access does not publish it. Loading it into the iframe would only give an empty page.
+            return (
+                <div
+                    style={{
+                        padding: 10,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        flexDirection: 'column',
+                        fontSize: 18,
+                        gap: 20,
+                        textAlign: 'center',
+                    }}
+                >
+                    <div>{I18n.t('Only reachable in the local network')}</div>
+                    <div>{I18n.t('This page is not provided by the remote access of ioBroker Cloud/Pro.')}</div>
+                    <div style={{ opacity: 0.7, fontSize: 16 }}>{this.state.href}</div>
+                </div>
             );
         }
 

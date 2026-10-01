@@ -36,7 +36,13 @@ import {
 import type { HostInfo } from '@iobroker/socket-client';
 
 import AdminUtils from '@/helpers/AdminUtils';
-import { replaceLink, applyReverseProxyToLink, type ReverseProxyItem } from '@/helpers/utils';
+import {
+    replaceLink,
+    applyReverseProxyToLink,
+    applyRemoteAccessToLink,
+    detectRemoteAccess,
+    type ReverseProxyItem,
+} from '@/helpers/utils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
@@ -487,8 +493,21 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 }
             });
 
-            // Reverse proxy mapping (similar to Intro) applied after links prepared
-            if (instance.links?.length && this.state.reverseProxy?.length) {
+            // The admin was opened through the remote access of ioBroker Cloud/Pro: an address inside
+            // the local network leads nowhere there. The reverse proxy settings describe a different
+            // way into the installation and do not apply in that case.
+            const remoteAccess = detectRemoteAccess(instancesFromWorker, window.location);
+            if (instance.links?.length && remoteAccess) {
+                instance.links.forEach(l => {
+                    const remoteLink = applyRemoteAccessToLink(l.link, l.port, remoteAccess);
+                    if (remoteLink === null) {
+                        // keep the local address, it is shown but no longer offered as a target
+                        l.unreachable = true;
+                    } else {
+                        l.link = remoteLink;
+                    }
+                });
+            } else if (instance.links?.length && this.state.reverseProxy?.length) {
                 const currentPath = window.location.pathname;
                 const proxyConfig =
                     this.state.reverseProxy.find(p => {

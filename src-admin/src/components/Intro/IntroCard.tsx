@@ -260,6 +260,11 @@ export interface IntroCardProps {
     lang: ioBroker.Languages;
     /** Shows a warning on the card with given text if configured */
     warning?: string;
+    /**
+     * The page is not published by the remote access of ioBroker Cloud/Pro. The card stays visible,
+     * but it is dimmed and offers no link, because the address only works in the local network.
+     */
+    unreachable?: boolean;
     edit?: boolean;
     toggleActivation?: () => void;
     enabled: boolean;
@@ -453,7 +458,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
     render(): JSX.Element {
         const { theme } = this.props;
         const accent = this.props.color || theme.palette.primary.main;
-        const clickable = !this.props.edit && !!this.props.action?.link;
+        const clickable = !this.props.edit && !!this.props.action?.link && !this.props.unreachable;
 
         // for an instance this is the "host:port" of its web interface, for a link the name the user gave it
         const meta = AdminUtils.getText(this.props.action?.text, this.props.lang);
@@ -498,6 +503,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                 },
                             },
                             this.props.edit && !this.props.enabled && styles.cardOff,
+                            this.props.unreachable && styles.cardOff,
                         )}
                         onClick={e => {
                             e.stopPropagation();
@@ -510,7 +516,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                     theme,
                                     styles.icon,
                                     { backgroundColor: this.props.color || tint(theme.palette.text.primary, 0.07) },
-                                    this.props.offline && styles.iconOffline,
+                                    (this.props.offline || this.props.unreachable) && styles.iconOffline,
                                 )}
                             >
                                 <Box
@@ -526,9 +532,12 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                                     sx={styles.title}
                                 >
                                     {this.props.title}
-                                    {this.props.warning ? (
+                                    {this.props.warning || this.props.unreachable ? (
                                         <Tooltip
-                                            title={this.props.warning}
+                                            title={
+                                                this.props.warning ||
+                                                this.props.t('Only reachable in the local network')
+                                            }
                                             slotProps={{ popper: { sx: styles.tooltip } }}
                                         >
                                             <WarningIcon sx={styles.warning} />
