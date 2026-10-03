@@ -575,7 +575,7 @@ function formatScriptLogs(logs: unknown): string[] {
 const MIN_JAVASCRIPT_VERSION = '9.3.1';
 
 /**
- * Run a one-off JS/TS script INSIDE the javascript adapter (full ioBroker scripting API) by sending it
+ * Run a one-off JS/TS script INSIDE the JavaScript adapter (full ioBroker scripting API) by sending it
  * an `execute` message. High-risk (arbitrary code) — only reached after per-call confirmation.
  */
 async function runJavaScript(adapter: ioBroker.Adapter, args: Record<string, unknown>): Promise<AdminLocalResult> {
@@ -588,7 +588,7 @@ async function runJavaScript(adapter: ioBroker.Adapter, args: Record<string, unk
         lang === 'ts' || lang === 'typescript' ? 'TypeScript/ts' : 'Javascript/js';
     const timeout = Math.min(Math.max(Number(args.timeout) || 10000, 500), 60000);
 
-    // Pick the javascript instance: an explicit one, otherwise the first (preferably enabled) instance.
+    // Pick the JavaScript instance: an explicit one, otherwise the first (preferably enabled) instance.
     let instance = argStr(args.instance).replace(/^system\.adapter\./, '');
     let instanceObj: ioBroker.Object | null | undefined;
     if (!instance) {
@@ -623,7 +623,7 @@ async function runJavaScript(adapter: ioBroker.Adapter, args: Record<string, unk
     const result = await Promise.race([
         adapter.sendToAsync(instance, 'execute', message) as Promise<unknown>,
         new Promise<Record<string, unknown>>(resolve =>
-            setTimeout(
+            adapter.setTimeout(
                 () =>
                     resolve({ ok: false, error: `No response from ${instance} within ${guardMs} ms (is it running?)` }),
                 guardMs,
