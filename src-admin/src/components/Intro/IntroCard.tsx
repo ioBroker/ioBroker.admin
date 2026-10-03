@@ -244,11 +244,6 @@ export const styles: Record<string, any> = {
     infoBody: {
         fontSize: '0.9rem',
         lineHeight: 1.5,
-        // the card needs tight rows, the dialog has room to breathe
-        '& > div': {
-            columnGap: '24px',
-            rowGap: '6px',
-        },
     },
 };
 

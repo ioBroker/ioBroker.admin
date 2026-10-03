@@ -6,11 +6,27 @@ import { Box, Fab, Grid, Snackbar, Tooltip, LinearProgress, Skeleton } from '@mu
 
 import {
     Add as AddIcon,
+    Apps as AppsIcon,
+    Cancel as DeadIcon,
     Check as CheckIcon,
+    CheckCircle as AliveIcon,
     Close as CloseIcon,
+    Computer as ComputerIcon,
     Create as CreateIcon,
+    DeveloperBoard as ArchitectureIcon,
+    Extension as ExtensionIcon,
+    FolderOpen as FolderIcon,
+    Memory as RamIcon,
+    PowerSettingsNew as BootIcon,
+    Public as TimeZoneIcon,
     Refresh as RefreshIcon,
+    Schedule as ClockIcon,
+    Speed as SpeedIcon,
+    Storage as DiskIcon,
+    Timer as UptimeIcon,
 } from '@mui/icons-material';
+
+import { FaApple, FaFreebsd, FaLinux, FaMicrochip, FaNodeJs, FaNpm, FaWindows } from 'react-icons/fa';
 
 import {
     type AdminConnection,
@@ -130,9 +146,42 @@ const styles: Record<string, any> = {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
     },
+    /** The info dialog has an icon in front of every name, so it has one column more than the card */
+    hostInfoStats: {
+        display: 'grid',
+        gridTemplateColumns: 'auto auto minmax(0, 1fr)',
+        columnGap: '12px',
+        // the card needs tight rows, the dialog has room to breathe
+        rowGap: '6px',
+        alignItems: 'center',
+    },
+    hostInfoIcon: (theme: IobTheme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        color: theme.palette.text.disabled,
+        fontSize: 18,
+        '& svg': {
+            fontSize: 18,
+        },
+    }),
     /** In the info dialog nothing is cut off, even a long path or JSON value wraps */
     hostInfoValue: {
         overflowWrap: 'anywhere',
+    },
+    diskValue: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+    },
+    diskBar: {
+        flex: '1 1 auto',
+        minWidth: 60,
+        maxWidth: 160,
+        height: 8,
+        borderRadius: 4,
+    },
+    diskText: {
+        whiteSpace: 'nowrap',
     },
     updateIcon: {
         cursor: 'pointer',
@@ -152,6 +201,16 @@ const styles: Record<string, any> = {
         pb: '64px',
     },
 };
+
+/** One line of the host info dialog */
+interface HostInfoRow {
+    /** Name of the value, as the host reports it */
+    name: string;
+    /** The value as plain text, used for the clipboard */
+    text: string;
+    /** Rendered value, if it is more than its text, like the disk bar */
+    value?: JSX.Element;
+}
 
 type HostInfoEx = HostInfo & {
     alive?: boolean;
@@ -199,7 +258,6 @@ const formatInfo: Record<string, (seconds: number, t?: Translate) => string> = {
     Speed: AdminUtils.formatSpeed,
     'Disk size': AdminUtils.formatBytes,
     'Disk free': AdminUtils.formatBytes,
-    Time: (ts: number): string => new Date(ts).toLocaleString(),
     // the host reports `Date.getTimezoneOffset()`: minutes, and negative east of Greenwich
     timeOffset: (minutes: number): string => {
         const abs = Math.abs(minutes);
@@ -208,6 +266,100 @@ const formatInfo: Record<string, (seconds: number, t?: Translate) => string> = {
         return `UTC${minutes > 0 ? '-' : '+'}${hours}${rest ? `:${rest.toString().padStart(2, '0')}` : ''}`;
     },
 };
+
+/**
+ * The host sends its `time` as a timestamp and its `timeOffset` as `Date.getTimezoneOffset()`, so the wall clock of the
+ * host is the timestamp shifted by that offset and then read as UTC. Showing it in the local time zone of the browser
+ * or in UTC would be the time of somebody else.
+ *
+ * @param time timestamp of the host
+ * @param timeOffset `Date.getTimezoneOffset()` of the host: minutes, negative east of Greenwich
+ * @param lang language of the GUI
+ */
+function formatHostTime(time: number, timeOffset: number | undefined, lang: ioBroker.Languages): string {
+    const offset = typeof timeOffset === 'number' ? timeOffset : new Date().getTimezoneOffset();
+    const shifted = new Date(time - offset * 60_000);
+    try {
+        return shifted.toLocaleString(lang === 'zh-cn' ? 'zh-CN' : lang, { timeZone: 'UTC' });
+    } catch {
+        // some browsers do not know every language tag
+        return shifted.toUTCString().replace(' GMT', '');
+    }
+}
+
+/** The names are headings of the info dialog, so they all start with a capital letter */
+function capitalize(name: string): string {
+    return name ? name[0].toUpperCase() + name.substring(1) : name;
+}
+
+/** The icon in front of the platform tells at a glance which system the host runs on */
+function platformIcon(platform: string): JSX.Element {
+    const name = platform.toLowerCase();
+    // "darwin" has to be asked before "win", it contains it
+    if (name.includes('darwin') || name.includes('osx') || name.includes('mac')) {
+        return <FaApple />;
+    }
+    if (name.includes('win')) {
+        return <FaWindows />;
+    }
+    if (name.includes('bsd')) {
+        return <FaFreebsd />;
+    }
+    // docker runs on linux, so the penguin fits it as well
+    if (name.includes('linux') || name.includes('docker') || name.includes('android')) {
+        return <FaLinux />;
+    }
+    return <ComputerIcon />;
+}
+
+/**
+ * The icon for one line of the host info dialog
+ *
+ * @param name name of the value, as the host reports it
+ * @param hostData all values of the host, needed for the platform and for the alive state
+ */
+function hostInfoIcon(name: string, hostData: Record<string, any>): JSX.Element | null {
+    switch (name) {
+        case 'Platform':
+        case 'os':
+            return platformIcon(`${hostData.Platform || ''} ${hostData.os || ''}`);
+        case 'Architecture':
+            return <ArchitectureIcon />;
+        case 'CPUs':
+        case 'Model':
+            return <FaMicrochip />;
+        case 'Speed':
+            return <SpeedIcon />;
+        case 'RAM':
+            return <RamIcon />;
+        case 'System uptime':
+            return <BootIcon />;
+        case 'Uptime':
+            return <UptimeIcon />;
+        case 'Node.js':
+            return <FaNodeJs />;
+        case 'NPM':
+            return <FaNpm />;
+        case 'time':
+            return <ClockIcon />;
+        case 'timeOffset':
+            return <TimeZoneIcon />;
+        case 'adapters count':
+            return <ExtensionIcon />;
+        case 'Disk size':
+        case 'Disk free':
+            return <DiskIcon />;
+        case 'Active instances':
+            return <AppsIcon />;
+        case 'location':
+            return <FolderIcon />;
+        case 'alive':
+        case 'active':
+            return hostData[name] ? <AliveIcon color="success" /> : <DeadIcon color="error" />;
+        default:
+            return null;
+    }
+}
 
 interface IntroProps {
     showAlert: (message: string, type?: 'error' | 'warning' | 'info' | 'success') => void;
@@ -1535,43 +1687,97 @@ class Intro extends React.Component<IntroProps, IntroState> {
         );
     }
 
+    /** The disk is not two numbers but one bar: how much of the disk is still free */
+    renderDiskRow(hostData: Record<string, any>): HostInfoRow {
+        const size: number = hostData['Disk size'];
+        const free: number = hostData['Disk free'];
+        const percent = size > 0 ? Math.max(0, Math.min(100, (free / size) * 100)) : 0;
+        const text = `${AdminUtils.formatBytes(free)} / ${AdminUtils.formatBytes(size)}`;
+        // the bar shows the free space, so an almost empty bar is the alarming one
+        const color = percent < 10 ? 'error' : percent < 25 ? 'warning' : 'success';
+
+        return {
+            name: 'Disk free',
+            text,
+            value: (
+                <Box sx={styles.diskValue}>
+                    <Tooltip
+                        title={`${Math.round(percent)}% ${this.t('Free')}`}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
+                    >
+                        <LinearProgress
+                            variant="determinate"
+                            value={percent}
+                            color={color}
+                            sx={styles.diskBar}
+                        />
+                    </Tooltip>
+                    <Box
+                        component="span"
+                        sx={styles.diskText}
+                    >
+                        {text}
+                    </Box>
+                </Box>
+            ),
+        };
+    }
+
+    /** One line of the host info dialog: the value as it is shown and as it is copied to the clipboard */
+    renderHostInfoRow(name: string, hostData: Record<string, any>): HostInfoRow {
+        const value = hostData[name];
+
+        if (name === 'time') {
+            return { name, text: formatHostTime(value as number, hostData.timeOffset, this.props.lang) };
+        }
+        // "true"/"false" means nothing to a user
+        if (typeof value === 'boolean') {
+            return { name, text: value ? this.t('Yes') : this.t('No') };
+        }
+        if (formatInfo[name]) {
+            return { name, text: formatInfo[name](value as number, this.t) || '--' };
+        }
+        if (typeof value === 'object') {
+            return { name, text: JSON.stringify(value) };
+        }
+        return { name, text: value.toString() || '--' };
+    }
+
     getHostDescriptionAll(id: string): { el: JSX.Element; text: string } {
-        const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
-        const rows: { name: string; value: string }[] =
-            hostData && typeof hostData === 'object'
-                ? Object.keys(hostData)
-                      .filter(
-                          name =>
-                              !name.startsWith('_') &&
-                              (hostData as any)[name] !== null &&
-                              (hostData as any)[name] !== undefined,
-                      )
-                      .map(name => {
-                          const value = (hostData as any)[name];
-                          return {
-                              name,
-                              value:
-                                  (formatInfo[name]
-                                      ? formatInfo[name](value as number, this.t)
-                                      : typeof value === 'object'
-                                        ? JSON.stringify(value)
-                                        : value.toString()) || '--',
-                          };
-                      })
-                : [];
+        const hostData: Record<string, any> | null =
+            this.state.hostsData && typeof this.state.hostsData[id] === 'object' ? this.state.hostsData[id] : null;
+        const rows: HostInfoRow[] = [];
+
+        if (hostData) {
+            for (const name of Object.keys(hostData)) {
+                // the entries starting with "_" are the newest node.js and npm versions, they are shown on the card
+                if (name.startsWith('_') || hostData[name] === null || hostData[name] === undefined) {
+                    continue;
+                }
+                if (name === 'Disk size' && typeof hostData['Disk free'] === 'number') {
+                    rows.push(this.renderDiskRow(hostData));
+                } else if (name === 'Disk free' && typeof hostData['Disk size'] === 'number') {
+                    // already shown as a bar together with the disk size
+                    continue;
+                } else {
+                    rows.push(this.renderHostInfoRow(name, hostData));
+                }
+            }
+        }
 
         return {
             el: (
-                <Box sx={styles.hostStats}>
+                <Box sx={styles.hostInfoStats}>
                     {rows.map(row => (
                         <React.Fragment key={row.name}>
-                            <Box sx={styles.hostStatLabel}>{this.t(row.name)}</Box>
-                            <Box sx={styles.hostInfoValue}>{row.value}</Box>
+                            <Box sx={styles.hostInfoIcon}>{hostInfoIcon(row.name, hostData || {})}</Box>
+                            <Box sx={styles.hostStatLabel}>{capitalize(this.t(row.name))}</Box>
+                            <Box sx={styles.hostInfoValue}>{row.value ?? row.text}</Box>
                         </React.Fragment>
                     ))}
                 </Box>
             ),
-            text: rows.map(row => `${this.t(row.name)}: ${row.value}`).join('\n'),
+            text: rows.map(row => `${capitalize(this.t(row.name))}: ${row.text}`).join('\n'),
         };
     }
 
