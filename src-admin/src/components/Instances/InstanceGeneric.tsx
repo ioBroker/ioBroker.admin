@@ -36,6 +36,7 @@ import {
     Delete as DeleteIcon,
     Close as CloseIcon,
     Warning as WarningIcon,
+    Error as ErrorIcon,
     Settings as SettingsIcon,
     Schedule as ScheduleIcon,
     Memory as MemoryIcon,
@@ -231,6 +232,11 @@ export const styles: Record<string, any> = {
         border: '2px solid grey',
         borderRadius: 20,
     },
+    statusIcon_missing: {
+        // the icon brings its own shape
+        border: 0,
+        borderRadius: 0,
+    },
     orangeDevice: {
         // backgroundColor: orange[700]
         color: orange[300],
@@ -398,6 +404,15 @@ export interface InstanceItem {
     sentry: boolean;
     host: string;
     status: InstanceStatusType;
+    /**
+     * The adapter of this instance is not installed on the host the instance is assigned to.
+     *
+     * Such an instance can never start, and nothing told about it so far: it simply stayed red like
+     * every stopped one. A restored backup leaves them behind - the objects of an adapter come back
+     * with the backup, while the code of an adapter that has left the repository cannot be installed
+     * any more. False as long as the host did not answer, see `getInstalledAdaptersPerHost`.
+     */
+    adapterMissing: boolean;
     allowInstanceSettings: boolean;
     allowInstanceDelete: boolean;
     allowInstanceLink: boolean;
@@ -1047,6 +1062,23 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderModeIcon(status: InstanceStatusType): JSX.Element {
+        // Without its adapter the instance cannot start, whatever its mode says. The indicator shows
+        // the error instead of the usual icon, because a red dot alone cannot be told apart from an
+        // instance that is merely stopped - which is exactly what made this hard to recognize.
+        if (this.props.item.adapterMissing) {
+            return (
+                <div
+                    style={{
+                        ...this.styles.smallAvatar,
+                        ...this.styles.statusIndicator,
+                        ...this.styles.red,
+                    }}
+                >
+                    <ErrorIcon style={this.styles.statusIcon_missing} />
+                </div>
+            );
+        }
+
         return (
             <div
                 style={{
@@ -1129,6 +1161,14 @@ export default abstract class InstanceGeneric<
         }
 
         return [
+            item.adapterMissing ? (
+                <State
+                    key={0}
+                    state={false}
+                >
+                    {this.props.context.t('The adapter is not installed on host "%s"', item.host)}
+                </State>
+            ) : null,
             item.stoppedWhenWebExtension !== undefined ? (
                 <State
                     key={1}
@@ -1545,6 +1585,11 @@ export default abstract class InstanceGeneric<
         return (
             <>
                 {!hideName ? <span style={this.styles.instanceName}>{this.props.instance.id}</span> : undefined}
+                {this.props.item.adapterMissing && (
+                    <State state={false}>
+                        {this.props.context.t('The adapter is not installed on host "%s"', this.props.item.host)}
+                    </State>
+                )}
                 {this.props.item.stoppedWhenWebExtension !== undefined && (
                     <State state={this.props.item.stoppedWhenWebExtension}>
                         {this.props.context.t('Runs as web-extension')}

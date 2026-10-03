@@ -801,3 +801,73 @@ export function applyReverseProxyToLink(
     });
     return link;
 }
+
+/** The adapters that are really installed, per host name (`system.host.` prefix removed) */
+export type InstalledAdaptersPerHost = Record<string, Set<string>>;
+
+/** The part of the socket that {@link getInstalledAdaptersPerHost} needs */
+interface InstalledAdaptersReader {
+    getState: (id: string) => Promise<ioBroker.State | null | undefined>;
+    getCompactInstalled: (
+        host: string,
+        update?: boolean,
+        cmdTimeout?: number,
+    ) => Promise<Record<string, { version: string }>>;
+}
+
+/**
+ * Asks every host which adapters are really installed on it.
+ *
+ * Only the host itself knows that, because it reads its `node_modules`. The objects of an adapter
+ * (`system.adapter.<name>` and `system.host.<host>.adapter.<name>`) say nothing about it: a restored
+ * backup brings them back even if the code could not be installed afterwards - because the adapter
+ * has left the repository, for example - and the instance then never starts.
+ *
+ * A host that does not run is left out instead of being reported as having nothing installed: it
+ * cannot answer, and a wrong "not installed" on every one of its instances would be worse than no
+ * answer at all. The same holds for a host that answers with an error.
+ *
+ * The answers are cached per host by the socket, and the current host has been asked already while
+ * the repository was read, so a single host system pays nothing for this.
+ */
+export async function getInstalledAdaptersPerHost(
+    socket: InstalledAdaptersReader,
+    hosts: { _id: string }[],
+    options?: { update?: boolean; cmdTimeout?: number },
+): Promise<InstalledAdaptersPerHost> {
+    const result: InstalledAdaptersPerHost = {};
+
+    await Promise.all(
+        hosts.map(async host => {
+            try {
+                const alive = await socket.getState(`${host._id}.alive`);
+                if (!alive?.val) {
+                    return;
+                }
+                const installed = await socket.getCompactInstalled(host._id, options?.update, options?.cmdTimeout);
+                result[host._id.replace(/^system\.host\./, '')] = new Set(Object.keys(installed || {}));
+            } catch (e) {
+                console.warn(`Cannot read the installed adapters of "${host._id}": ${e as Error}`);
+            }
+        }),
+    );
+
+    return result;
+}
+
+/**
+ * Is the adapter of this instance missing on the host the instance is assigned to?
+ *
+ * `false` as long as nothing is known about the host - it does not run, it did not answer, or the
+ * instance names a host that is not there any more.
+ */
+export function isAdapterMissing(obj: ioBroker.InstanceObject, installedPerHost: InstalledAdaptersPerHost): boolean {
+    const host = obj?.common?.host;
+    const adapterName = obj?.common?.name;
+    if (!host || !adapterName) {
+        return false;
+    }
+    const installed = installedPerHost[host];
+
+    return !!installed && !installed.has(adapterName);
+}

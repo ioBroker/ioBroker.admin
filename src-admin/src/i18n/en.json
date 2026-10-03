@@ -1330,6 +1330,7 @@
     "The end of line character to be added to the end of the message (Default: Message without modifications).": "The end of line character to be added to the end of the message (Default: Message without modifications).",
     "The expert mode allows you to view and edit system internal details.": "The expert mode allows you to view and edit system internal details.",
     "The following hosts do not fulfill the required version %s of %s:": "The following hosts do not fulfill the required version %s of %s:",
+    "The adapter is not installed on host \"%s\"": "The adapter is not installed on host \"%s\"",
     "The history instance %s is not running": "The history instance %s is not running",
     "The host %s will be attached to this system.": "The host %s will be attached to this system.",
     "The host running syslogd, defaults to localhost": "The host running syslogd, defaults to localhost",
