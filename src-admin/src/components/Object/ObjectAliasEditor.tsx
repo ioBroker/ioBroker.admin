@@ -20,6 +20,7 @@ import {
     FormControl,
     Autocomplete,
     createFilterOptions,
+    Tooltip,
 } from '@mui/material';
 
 // Icons
@@ -28,6 +29,7 @@ import { Close, Link as IconLink, AddLink, Close as IconClose } from '@mui/icons
 import { I18n, IconFx, type IobTheme, type AdminConnection, type Translate } from '@iobroker/gui-components';
 
 import { DEFAULT_ROLES } from './ObjectBrowserEditObject';
+import { onCtrlEnter } from '@/helpers/ctrlEnter';
 
 import type { ioBrokerObject } from '@/types';
 
@@ -202,6 +204,78 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
         return bigRoleArray;
     }
 
+    /** Creates the new alias object. The "Create" button and CTRL+ENTER end up here */
+    onCreateAlias = async (): Promise<void> => {
+        const obj: ioBrokerObject = {
+            _id: `alias.0.${this.state.newAliasId}`,
+            type: 'state',
+            common: {
+                name: this.state.newAliasName,
+                type: this.props.obj.common.type,
+                alias: {
+                    id: this.props.obj._id,
+                },
+            },
+            native: {},
+        } as ioBrokerObject;
+        if (this.state.newAliasDesc) {
+            obj.common.desc = this.state.newAliasDesc;
+        }
+        if (this.state.newAliasType) {
+            obj.common.type = this.state.newAliasType;
+        }
+        if (this.state.newAliasType === 'number' && this.state.newAliasUnit) {
+            obj.common.unit = this.state.newAliasUnit;
+        }
+        if (this.state.newAliasRole) {
+            obj.common.role = this.state.newAliasRole;
+        }
+        if (this.state.newAliasType === 'number' && this.state.newAliasMin) {
+            obj.common.min = parseFloat(this.state.newAliasMin);
+        }
+        if (this.state.newAliasType === 'number' && this.state.newAliasMax) {
+            obj.common.max = parseFloat(this.state.newAliasMax);
+        }
+        if (this.state.newAliasRole) {
+            obj.common.role = this.state.newAliasRole;
+        }
+        if (this.state.newAliasRead !== undefined && this.state.newAliasRead !== null) {
+            obj.common.read = this.state.newAliasRead;
+        }
+        if (this.state.newAliasWrite !== undefined && this.state.newAliasWrite !== null) {
+            obj.common.write = this.state.newAliasWrite;
+        }
+        if (this.state.newAliasColor) {
+            obj.common.color = this.state.newAliasColor;
+        }
+        if (this.state.newAliasIcon) {
+            obj.common.icon = this.state.newAliasIcon;
+        }
+        if (this.state.newAliasCopyStates && this.props.obj.common.states) {
+            obj.common.states = this.props.obj.common.states;
+        }
+        if (this.state.newAliasUseFormula) {
+            if (
+                obj.common.read !== false &&
+                this.state.newAliasReadFormula &&
+                this.state.newAliasReadFormula !== 'val'
+            ) {
+                obj.common.alias.read = this.state.newAliasReadFormula;
+            }
+            if (
+                obj.common.write !== false &&
+                this.state.newAliasWriteFormula &&
+                this.state.newAliasWriteFormula !== 'val'
+            ) {
+                obj.common.alias.write = this.state.newAliasWriteFormula;
+            }
+        }
+        await this.props.socket.setObject(obj._id, obj);
+        this.setState({ showAddNewAlias: false });
+        this.props.onRedirect(obj._id, 2000);
+        this.props.onClose();
+    };
+
     renderAddNewAlias(): JSX.Element | null {
         if (!this.state.showAddNewAlias) {
             return null;
@@ -211,6 +285,13 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
             <Dialog
                 open={!0}
                 onClose={() => this.setState({ showAddNewAlias: false })}
+                onKeyDown={e =>
+                    onCtrlEnter(e, () => {
+                        if (this.state.newAliasId && !this.props.objects[`alias.0.${this.state.newAliasId}`]) {
+                            void this.onCreateAlias();
+                        }
+                    })
+                }
             >
                 <DialogTitle>{I18n.t('Create new alias: %s', `alias.0.${this.state.newAliasId}`)}</DialogTitle>
                 <DialogContent>
@@ -576,84 +657,21 @@ export default class ObjectAliasEditor extends Component<ObjectAliasEditorProps,
                     ) : null}
                 </DialogContent>
                 <DialogActions>
-                    <Button
-                        variant="contained"
-                        disabled={!this.state.newAliasId || !!this.props.objects[`alias.0.${this.state.newAliasId}`]}
-                        onClick={async () => {
-                            const obj: ioBrokerObject = {
-                                _id: `alias.0.${this.state.newAliasId}`,
-                                type: 'state',
-                                common: {
-                                    name: this.state.newAliasName,
-                                    type: this.props.obj.common.type,
-                                    alias: {
-                                        id: this.props.obj._id,
-                                    },
-                                },
-                                native: {},
-                            } as ioBrokerObject;
-                            if (this.state.newAliasDesc) {
-                                obj.common.desc = this.state.newAliasDesc;
-                            }
-                            if (this.state.newAliasType) {
-                                obj.common.type = this.state.newAliasType;
-                            }
-                            if (this.state.newAliasType === 'number' && this.state.newAliasUnit) {
-                                obj.common.unit = this.state.newAliasUnit;
-                            }
-                            if (this.state.newAliasRole) {
-                                obj.common.role = this.state.newAliasRole;
-                            }
-                            if (this.state.newAliasType === 'number' && this.state.newAliasMin) {
-                                obj.common.min = parseFloat(this.state.newAliasMin);
-                            }
-                            if (this.state.newAliasType === 'number' && this.state.newAliasMax) {
-                                obj.common.max = parseFloat(this.state.newAliasMax);
-                            }
-                            if (this.state.newAliasRole) {
-                                obj.common.role = this.state.newAliasRole;
-                            }
-                            if (this.state.newAliasRead !== undefined && this.state.newAliasRead !== null) {
-                                obj.common.read = this.state.newAliasRead;
-                            }
-                            if (this.state.newAliasWrite !== undefined && this.state.newAliasWrite !== null) {
-                                obj.common.write = this.state.newAliasWrite;
-                            }
-                            if (this.state.newAliasColor) {
-                                obj.common.color = this.state.newAliasColor;
-                            }
-                            if (this.state.newAliasIcon) {
-                                obj.common.icon = this.state.newAliasIcon;
-                            }
-                            if (this.state.newAliasCopyStates && this.props.obj.common.states) {
-                                obj.common.states = this.props.obj.common.states;
-                            }
-                            if (this.state.newAliasUseFormula) {
-                                if (
-                                    obj.common.read !== false &&
-                                    this.state.newAliasReadFormula &&
-                                    this.state.newAliasReadFormula !== 'val'
-                                ) {
-                                    obj.common.alias.read = this.state.newAliasReadFormula;
+                    <Tooltip title={I18n.t('Press CTRL+ENTER to confirm')}>
+                        <span>
+                            <Button
+                                variant="contained"
+                                disabled={
+                                    !this.state.newAliasId || !!this.props.objects[`alias.0.${this.state.newAliasId}`]
                                 }
-                                if (
-                                    obj.common.write !== false &&
-                                    this.state.newAliasWriteFormula &&
-                                    this.state.newAliasWriteFormula !== 'val'
-                                ) {
-                                    obj.common.alias.write = this.state.newAliasWriteFormula;
-                                }
-                            }
-                            await this.props.socket.setObject(obj._id, obj);
-                            this.setState({ showAddNewAlias: false });
-                            this.props.onRedirect(obj._id, 2000);
-                            this.props.onClose();
-                        }}
-                        startIcon={<AddLink />}
-                        color="primary"
-                    >
-                        {this.props.t('Create')}
-                    </Button>
+                                onClick={() => void this.onCreateAlias()}
+                                startIcon={<AddLink />}
+                                color="primary"
+                            >
+                                {this.props.t('Create')}
+                            </Button>
+                        </span>
+                    </Tooltip>
                     <Button
                         variant="contained"
                         onClick={() => this.setState({ showAddNewAlias: false })}

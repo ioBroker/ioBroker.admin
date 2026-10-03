@@ -39,6 +39,7 @@ import { type AdminConnection, type IobTheme, type ThemeType, type Translate } f
 import ObjectChart from './ObjectChart';
 import { localeMap } from './utils';
 import Editor from '../Editor';
+import { onCtrlEnter } from '@/helpers/ctrlEnter';
 
 const styles: Record<string, any> = {
     formControl: {
@@ -233,7 +234,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         }, 200);
     }
 
-    onUpdate(e: React.KeyboardEvent | React.MouseEvent): void {
+    onUpdate(e?: React.KeyboardEvent | React.MouseEvent | null): void {
         if (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -277,6 +278,13 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
             expire: parseInt(this.expire as any as string, 10) || undefined,
         });
     }
+
+    /** CTRL+ENTER triggers the same action as the "Set value" button */
+    onCtrlEnter = (): void => {
+        if (this.state.valid) {
+            this.onUpdate();
+        }
+    };
 
     /**
      * Check if a number value is valid according to the objects common properties
@@ -368,6 +376,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         return (
             <Editor
                 error={this.state.jsonError}
+                onCtrlEnter={this.onCtrlEnter}
                 editValueMode
                 themeType={this.props.themeType}
                 defaultValue={(this.propsValue || '').toString()}
@@ -489,6 +498,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 }
                 fullScreen={this.state.type === 'json' && this.state.fullScreen}
                 onClose={() => this.props.onClose()}
+                onKeyDown={e => onCtrlEnter(e, this.onCtrlEnter)}
                 aria-labelledby="edit-value-dialog-title"
                 aria-describedby="edit-value-dialog-description"
                 sx={{ '&. MuiDialog-paper': this.state.type === 'json' ? styles.dialog : undefined }}
@@ -534,7 +544,11 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                     <form
                         noValidate
                         autoComplete="off"
-                        onSubmit={() => false}
+                        // Without this, the browser submits the form - ENTER in a one line input or
+                        // CTRL+ENTER in a text area is enough - and as the form has no `action`, the
+                        // current address is requested anew: the whole GUI reloads. Returning false
+                        // from a react handler does not prevent anything.
+                        onSubmit={e => e.preventDefault()}
                         style={{ ...styles.dialogForm, height: '100%' }}
                     >
                         <Grid
@@ -826,16 +840,23 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                 <DialogActions sx={styles.wrapperButton}>
                     {!this.props.expertMode ? ackCheckbox : null}
                     {!this.props.expertMode ? <div style={{ flexGrow: 1 }} /> : null}
-                    <Button
-                        variant="contained"
-                        disabled={!this.state.valid}
-                        onClick={e => this.onUpdate(e)}
-                        color="primary"
-                        startIcon={this.props.width !== 'xs' ? <IconCheck /> : undefined}
-                        style={this.props.object.common?.write === false ? styles.readOnly : undefined}
+                    <Tooltip
+                        title={this.props.t('Press CTRL+ENTER to write the value')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
                     >
-                        {this.props.width !== 'xs' ? this.props.t('Set value') : <IconCheck fontSize="large" />}
-                    </Button>
+                        <span>
+                            <Button
+                                variant="contained"
+                                disabled={!this.state.valid}
+                                onClick={e => this.onUpdate(e)}
+                                color="primary"
+                                startIcon={this.props.width !== 'xs' ? <IconCheck /> : undefined}
+                                style={this.props.object.common?.write === false ? styles.readOnly : undefined}
+                            >
+                                {this.props.width !== 'xs' ? this.props.t('Set value') : <IconCheck fontSize="large" />}
+                            </Button>
+                        </span>
+                    </Tooltip>
                     <Button
                         variant="contained"
                         onClick={() => this.props.onClose()}

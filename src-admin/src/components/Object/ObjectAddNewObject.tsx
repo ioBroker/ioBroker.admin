@@ -13,12 +13,14 @@ import {
     DialogContent,
     InputAdornment,
     IconButton,
+    Tooltip,
 } from '@mui/material';
 
 import { Check as CheckIcon, Close as CloseIcon, AddBox as AddIcon } from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/gui-components';
 import type { ioBrokerObject } from '@/types';
+import { onCtrlEnter } from '@/helpers/ctrlEnter';
 
 const stateTypeArray = ['array', 'boolean', 'file', 'json', 'mixed', 'number', 'object', 'string'];
 
@@ -159,6 +161,8 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
 
     const lang = I18n.getLanguage();
 
+    const disabled = !name || !type || !unique || (type === 'state' && !stateType);
+
     return (
         <Dialog
             open={!0}
@@ -166,6 +170,13 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
             maxWidth="md"
             // titleButtonApply="add"
             onClose={onClose}
+            onKeyDown={e =>
+                onCtrlEnter(e, () => {
+                    if (!disabled) {
+                        onLocalApply();
+                    }
+                })
+            }
             // onApply={() => onLocalApply()}
         >
             <DialogTitle>
@@ -299,16 +310,20 @@ const ObjectAddNewObject: React.FC<ObjectAddNewObjectProps> = ({
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button
-                    id="add-new-object-dialog-add"
-                    startIcon={<CheckIcon />}
-                    disabled={!name || !type || !unique || (type === 'state' && !stateType)}
-                    onClick={() => onLocalApply()}
-                    variant="contained"
-                    color="primary"
-                >
-                    {I18n.t('add')}
-                </Button>
+                <Tooltip title={I18n.t('Press CTRL+ENTER to confirm')}>
+                    <span>
+                        <Button
+                            id="add-new-object-dialog-add"
+                            startIcon={<CheckIcon />}
+                            disabled={disabled}
+                            onClick={() => onLocalApply()}
+                            variant="contained"
+                            color="primary"
+                        >
+                            {I18n.t('add')}
+                        </Button>
+                    </span>
+                </Tooltip>
                 <Button
                     id="add-new-object-dialog-cancel"
                     color="grey"

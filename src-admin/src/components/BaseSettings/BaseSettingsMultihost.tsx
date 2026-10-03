@@ -93,6 +93,8 @@ export default class BaseSettingsMultihost extends Component<BaseSettingsMultiho
                     style={styles.form}
                     noValidate
                     autoComplete="off"
+                    // see ObjectBrowserValue: without it, ENTER reloads the whole GUI
+                    onSubmit={e => e.preventDefault()}
                 >
                     <Grid style={styles.gridSettings}>
                         <Grid

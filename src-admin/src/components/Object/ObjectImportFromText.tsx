@@ -1,12 +1,14 @@
 import React from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Tooltip } from '@mui/material';
 import MonacoEditor from 'react-monaco-editor';
 
 // Icons
 import { Close, ContentPaste } from '@mui/icons-material';
 
 import { type IobTheme, type ThemeType, type Translate } from '@iobroker/gui-components';
+
+import { onCtrlEnter } from '@/helpers/ctrlEnter';
 
 const styles: Record<string, any> = {
     dialog: {
@@ -48,6 +50,8 @@ interface ObjectImportFromTextDialogProps {
 
 export function ObjectImportFromTextDialog(props: ObjectImportFromTextDialogProps): React.JSX.Element {
     const [text, setText] = React.useState<string>('');
+    // the command is registered once, so it has to reach the current state over a reference
+    const onImportRef = React.useRef<() => void>(() => {});
 
     let error = false;
     try {
@@ -56,12 +60,22 @@ export function ObjectImportFromTextDialog(props: ObjectImportFromTextDialogProp
         error = true;
     }
 
+    /** CTRL+ENTER triggers the same action as the "Import objects" button */
+    const onImport = (): void => {
+        if (!error && text.trim()) {
+            props.onClose(text);
+        }
+    };
+
+    onImportRef.current = onImport;
+
     return (
         <Dialog
             style={styles.dialog}
             open={!0}
             maxWidth="lg"
             onClose={() => props.onClose()}
+            onKeyDown={e => onCtrlEnter(e, onImport)}
             fullWidth
         >
             <DialogTitle>{props.t('Insert JSON with objects here')}</DialogTitle>
@@ -74,19 +88,27 @@ export function ObjectImportFromTextDialog(props: ObjectImportFromTextDialogProp
                     value={text}
                     options={{ selectOnLineNumbers: true }}
                     onChange={newValue => setText(newValue)}
-                    editorDidMount={(editor /* , monaco */) => editor.focus()}
+                    editorDidMount={(editor, monaco) => {
+                        editor.focus();
+                        // monaco inserts a line on CTRL+ENTER, so the combination has to be taken away from it
+                        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => onImportRef.current());
+                    }}
                 />
             </DialogContent>
             <DialogActions>
-                <Button
-                    variant="contained"
-                    disabled={error || !text.trim()}
-                    onClick={() => props.onClose(text)}
-                    startIcon={<ContentPaste />}
-                    color="primary"
-                >
-                    {props.t('Import objects')}
-                </Button>
+                <Tooltip title={props.t('Press CTRL+ENTER to confirm')}>
+                    <span>
+                        <Button
+                            variant="contained"
+                            disabled={error || !text.trim()}
+                            onClick={() => props.onClose(text)}
+                            startIcon={<ContentPaste />}
+                            color="primary"
+                        >
+                            {props.t('Import objects')}
+                        </Button>
+                    </span>
+                </Tooltip>
                 <Button
                     variant="contained"
                     onClick={() => props.onClose()}

@@ -1228,6 +1228,8 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                     <form
                         noValidate
                         autoComplete="off"
+                        // see ObjectBrowserValue: without it, ENTER reloads the whole GUI
+                        onSubmit={e => e.preventDefault()}
                     >
                         {typeof this.state.edit.val === 'boolean' ? (
                             <FormControlLabel

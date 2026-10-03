@@ -1,6 +1,17 @@
 import React, { type JSX } from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, AppBar, Tabs, Tab, Box } from '@mui/material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    AppBar,
+    Tabs,
+    Tab,
+    Box,
+    Tooltip,
+} from '@mui/material';
 
 import {
     I18n,
@@ -16,6 +27,7 @@ import {
 // Icons
 import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material';
 
+import { onCtrlEnter } from '@/helpers/ctrlEnter';
 import ObjectCustomEditor from '@/components/Object/ObjectCustomEditor';
 import ObjectHistoryData from '@/components/Object/ObjectHistoryData';
 import ObjectChart from '@/components/Object/ObjectChart';
@@ -208,6 +220,21 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
         );
     }
 
+    /** CTRL+ENTER triggers the same action as the "Save & close" button */
+    onCtrlEnter = (): void => {
+        // the confirmation dialogs are rendered inside this dialog, so their events end up here too
+        if (this.state.confirmDialog || this.state.showWarning || this.state.currentTab !== 0) {
+            return;
+        }
+        if (this.state.hasChanges && !this.state.error && !this.state.progressRunning) {
+            if (this.saveFunc) {
+                this.saveFunc(error => !error && this.onClose());
+            } else {
+                this.onClose();
+            }
+        }
+    };
+
     onClose(): void {
         if (this.state.hasChanges) {
             this.setState({ confirmDialog: true });
@@ -247,6 +274,7 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                 scroll="paper"
                 open={!0}
                 onClose={() => this.props.onClose()}
+                onKeyDown={e => onCtrlEnter(e, this.onCtrlEnter)}
                 fullWidth
                 maxWidth="xl"
                 aria-labelledby="form-dialog-title"
@@ -348,21 +376,19 @@ class ObjectCustomDialog extends MobileDialog<ObjectCustomDialogProps, ObjectCus
                         </Button>
                     )}
                     {this.state.currentTab === 0 && (
-                        <Button
-                            id="object-custom-dialog-save-close"
-                            variant="contained"
-                            color="primary"
-                            disabled={!this.state.hasChanges || this.state.error || this.state.progressRunning}
-                            onClick={() => {
-                                if (this.saveFunc) {
-                                    this.saveFunc(error => !error && this.onClose());
-                                } else {
-                                    this.onClose();
-                                }
-                            }}
-                        >
-                            {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
-                        </Button>
+                        <Tooltip title={this.props.t('Press CTRL+ENTER to confirm')}>
+                            <span>
+                                <Button
+                                    id="object-custom-dialog-save-close"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={!this.state.hasChanges || this.state.error || this.state.progressRunning}
+                                    onClick={this.onCtrlEnter}
+                                >
+                                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
+                                </Button>
+                            </span>
+                        </Tooltip>
                     )}
                     <Button
                         id="object-custom-dialog-close"

@@ -8,6 +8,7 @@ import {
     IconButton,
     TextField,
     Button,
+    Tooltip,
     InputAdornment,
     type Breakpoint,
     useMediaQuery,
@@ -17,6 +18,8 @@ import {
 import { Check as CheckIcon, Close as CloseIcon, Language as LanguageIcon } from '@mui/icons-material';
 
 import { I18n, type IobTheme, Utils } from '@iobroker/gui-components';
+
+import { onCtrlEnter } from '@/helpers/ctrlEnter';
 
 const styles: Record<string, any> = {
     modalDialog: {
@@ -108,6 +111,15 @@ const CustomModal = ({
 
     const languageButtonActive = Utils.getStyle(theme, styles.languageButtonActive);
 
+    const applyDisabled = disableApply || progress || (disableApplyIfNotChanged && defaultValue === value);
+
+    /** CTRL+ENTER triggers the same action as the apply button */
+    const onConfirm = (): void => {
+        if (!applyDisabled && (applyButton === undefined || applyButton)) {
+            onApply?.(textInput ? (value ?? '') : '');
+        }
+    };
+
     return (
         <Dialog
             open={!0}
@@ -115,6 +127,7 @@ const CustomModal = ({
             fullWidth={!!fullWidth}
             fullScreen={isSmallScreen}
             onClose={onClose}
+            onKeyDown={e => onCtrlEnter(e, onConfirm)}
             sx={{ '& .MuiPaper-root': isSmallScreen ? {} : styles.modalDialog /* paper: classes.background */ }}
         >
             {title && (
@@ -171,15 +184,19 @@ const CustomModal = ({
             </DialogContent>
             <DialogActions>
                 {(applyButton === undefined || applyButton) && (
-                    <Button
-                        startIcon={<CheckIcon />}
-                        disabled={disableApply || progress || (disableApplyIfNotChanged && defaultValue === value)}
-                        onClick={() => onApply && onApply(textInput ? (value ?? '') : '')}
-                        variant="contained"
-                        color="primary"
-                    >
-                        {I18n.t(titleButtonApply || 'Ok')}
-                    </Button>
+                    <Tooltip title={I18n.t('Press CTRL+ENTER to confirm')}>
+                        <span>
+                            <Button
+                                startIcon={<CheckIcon />}
+                                disabled={applyDisabled}
+                                onClick={onConfirm}
+                                variant="contained"
+                                color="primary"
+                            >
+                                {I18n.t(titleButtonApply || 'Ok')}
+                            </Button>
+                        </span>
+                    </Tooltip>
                 )}
                 <Button
                     color="grey"

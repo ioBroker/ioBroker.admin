@@ -1009,6 +1009,8 @@
     "Port to check the domain:": "Порт для проверки доступности домена:",
     "Portugal": "Португалия",
     "Preserve ID": "ID не изменять",
+    "Press CTRL+ENTER to confirm": "Нажмите CTRL + ENTER для подтверждения",
+    "Press CTRL+ENTER to write the value": "Нажмите CTRL + ENTER, чтобы записать значение",
     "Press CTRL+ENTER to write the value, when focused": "Нажмите CTRL + ENTER, чтобы записать значение, когда сфокусирован",
     "Press ENTER to write the value, when focused": "Нажмите ENTER, чтобы ввести значение, когда сфокусирован",
     "Preview": "Предосмотр",

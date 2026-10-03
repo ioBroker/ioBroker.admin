@@ -5,6 +5,8 @@ import AceEditor from './AceEditor';
 
 import type { ThemeType } from '@iobroker/gui-components';
 
+import { CTRL_ENTER_KEY } from '../helpers/ctrlEnter';
+
 export interface EditorProps {
     fontSize?: number;
     value?: string;
@@ -17,6 +19,8 @@ export interface EditorProps {
     editValueMode?: boolean;
     error?: boolean;
     style?: React.CSSProperties;
+    /** Called if the user pressed CTRL+ENTER (CMD+ENTER on mac) inside the editor */
+    onCtrlEnter?: () => void;
 }
 
 class Editor extends Component<EditorProps> {
@@ -29,6 +33,17 @@ class Editor extends Component<EditorProps> {
                     minHeight: 200,
                     ...this.props.style,
                 }}
+                commands={
+                    this.props.onCtrlEnter
+                        ? [
+                              {
+                                  name: 'writeValue',
+                                  bindKey: CTRL_ENTER_KEY,
+                                  exec: () => this.props.onCtrlEnter?.(),
+                              },
+                          ]
+                        : undefined
+                }
                 mode={this.props.mode || 'json'}
                 width="100%"
                 height="100%"

@@ -63,6 +63,7 @@ import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '
 
 import Editor from '../Editor';
 import AceEditor from '../AceEditor';
+import { onCtrlEnter } from '@/helpers/ctrlEnter';
 
 const styles: Record<string, any> = {
     divWithoutTitle: {
@@ -885,6 +886,17 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
         this.setState(newState as ObjectBrowserEditObjectState, () => cb && cb());
     }
+
+    /** CTRL+ENTER triggers the same action as the "Write" button */
+    onCtrlEnter = (): void => {
+        // the sub-dialogs are rendered inside this dialog, so their events end up here too
+        if (this.state.showCopyDialog || this.state.selectId || this.state.selectRead || this.state.selectWrite) {
+            return;
+        }
+        if (!this.state.error && this.state.changed && !this.state.customError) {
+            this.onUpdate();
+        }
+    };
 
     onUpdate(): void {
         try {
@@ -2309,6 +2321,14 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 maxWidth="md"
                 fullWidth
                 onClose={() => this.setState({ showCopyDialog: '' })}
+                onKeyDown={e =>
+                    onCtrlEnter(e, () => {
+                        if (!this.props.objects[this.state.newId]) {
+                            this.setState({ showCopyDialog: '' });
+                            this.onClone(this.state.showCopyDialog, this.state.newId);
+                        }
+                    })
+                }
             >
                 <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
                 <DialogContent>
@@ -2379,17 +2399,11 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     ...(withAlias ? styles.divWithoutTitleAndTab : undefined),
                     ...(this.state.error ? styles.error : undefined),
                 }}
-                onKeyDown={e => {
-                    if (e.ctrlKey && e.key === 'Enter') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.onUpdate();
-                    }
-                }}
             >
                 <Editor
                     value={this.state.text}
                     onChange={newValue => this.onChange(newValue)}
+                    onCtrlEnter={this.onCtrlEnter}
                     name="UNIQUE_ID_OF_DIV"
                     themeType={this.props.themeType}
                 />
@@ -2425,6 +2439,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                 fullWidth
                 fullScreen={false}
                 onClose={() => this.props.onClose()}
+                onKeyDown={e => onCtrlEnter(e, this.onCtrlEnter)}
                 aria-labelledby="edit-value-dialog-title"
                 aria-describedby="edit-value-dialog-description"
             >
@@ -2501,15 +2516,22 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             )}
                         </Button>
                     )}
-                    <Button
-                        variant="contained"
-                        disabled={this.state.error || !this.state.changed || this.state.customError}
-                        onClick={() => this.onUpdate()}
-                        startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
-                        color="primary"
+                    <Tooltip
+                        title={this.props.t('Press CTRL+ENTER to confirm')}
+                        slotProps={{ popper: { sx: styles.tooltip } }}
                     >
-                        {this.props.width === 'xs' ? <IconCheck fontSize="large" /> : this.props.t('Write')}
-                    </Button>
+                        <span>
+                            <Button
+                                variant="contained"
+                                disabled={this.state.error || !this.state.changed || this.state.customError}
+                                onClick={() => this.onUpdate()}
+                                startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
+                                color="primary"
+                            >
+                                {this.props.width === 'xs' ? <IconCheck fontSize="large" /> : this.props.t('Write')}
+                            </Button>
+                        </span>
+                    </Tooltip>
                     <Button
                         color="grey"
                         variant="contained"
