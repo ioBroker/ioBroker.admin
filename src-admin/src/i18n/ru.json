@@ -1325,6 +1325,7 @@
     "The end of line character to be added to the end of the message (Default: Message without modifications).": "Символ конца строки, добавляемый в конец сообщения (по умолчанию: сообщение без изменений).",
     "The expert mode allows you to view and edit system internal details.": "Экспертный режим позволяет просматривать и редактировать внутренние детали системы.",
     "The following hosts do not fulfill the required version %s of %s:": "Следующие хосты не соответствуют требуемой версии %s для %s:",
+    "The adapter is not installed on host \"%s\"": "Драйвер не установлен на хосте \"%s\"",
     "The history instance %s is not running": "Экземпляр истории %s не запущен",
     "The host %s will be attached to this system.": "Сервер %s будет подключён к этой системе.",
     "The host running syslogd, defaults to localhost": "Хост, на котором запущен syslogd, по умолчанию - localhost",

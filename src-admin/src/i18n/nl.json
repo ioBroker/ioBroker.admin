@@ -1325,6 +1325,7 @@
     "The end of line character to be added to the end of the message (Default: Message without modifications).": "Het teken voor het einde van de regel dat aan het einde van het bericht moet worden toegevoegd (standaard: bericht zonder wijzigingen).",
     "The expert mode allows you to view and edit system internal details.": "In de expertmodus kunt u interne systeemdetails bekijken en bewerken.",
     "The following hosts do not fulfill the required version %s of %s:": "De volgende hosts voldoen niet aan de vereiste versie %s van %s:",
+    "The adapter is not installed on host \"%s\"": "De adapter is niet geïnstalleerd op host \"%s\"",
     "The history instance %s is not running": "De history-instantie %s draait niet",
     "The host %s will be attached to this system.": "De host %s wordt aan dit systeem gekoppeld.",
     "The host running syslogd, defaults to localhost": "De host waarop syslogd draait, is standaard localhost",

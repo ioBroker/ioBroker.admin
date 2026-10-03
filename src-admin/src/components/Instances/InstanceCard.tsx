@@ -1,8 +1,8 @@
 import React, { type JSX } from 'react';
 
-import { Box, Card, CardContent, CardMedia, Fab, IconButton, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@mui/material';
 
-import { MoreVert as MoreVertIcon, Close as IconClose } from '@mui/icons-material';
+import { MoreVert as MoreVertIcon, Close as IconClose, Error as ErrorIcon } from '@mui/icons-material';
 
 import { Utils, type IobTheme } from '@iobroker/gui-components';
 
@@ -51,6 +51,10 @@ const styles: Record<string, any> = {
         justifyContent: 'space-between',
     }),
     versionDate: {
+        alignSelf: 'center',
+    },
+    adapterMissingIcon: {
+        ...genericStyles.red,
         alignSelf: 'center',
     },
     adapter: {
@@ -305,6 +309,17 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                         image={instance.image || 'img/no-image.svg'}
                     />
                     <div style={styles.adapter}>{instance.id}</div>
+                    {/* The adapter is missing on the host of this instance. A tile says nothing else
+                        about it before it is unfolded, and the colour of this block only tells that the
+                        instance is not alive - like every stopped one */}
+                    {item.adapterMissing ? (
+                        <Tooltip
+                            title={this.props.context.t('The adapter is not installed on host "%s"', item.host)}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <ErrorIcon style={styles.adapterMissingIcon} />
+                        </Tooltip>
+                    ) : null}
                     <div style={styles.versionDate}>
                         {/* {expertMode && item.checkCompact && <Tooltip title={t('compact groups')}>
                     <ViewCompactIcon color="action" style={{ margin: 10 }} />

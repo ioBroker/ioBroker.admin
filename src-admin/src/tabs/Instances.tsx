@@ -41,6 +41,9 @@ import {
     applyReverseProxyToLink,
     applyRemoteAccessToLink,
     detectRemoteAccess,
+    getInstalledAdaptersPerHost,
+    isAdapterMissing,
+    type InstalledAdaptersPerHost,
     type ReverseProxyItem,
 } from '@/helpers/utils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
@@ -165,6 +168,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     private adapters: ioBroker.AdapterObject[];
 
+    /** Which adapters are really installed, per host - see `InstanceItem.adapterMissing` */
+    private installedPerHost: InstalledAdaptersPerHost = {};
+
     private statesUpdateTimer: ReturnType<typeof setTimeout> | null = null;
 
     private typingTimer: ReturnType<typeof setTimeout> | null = null;
@@ -180,6 +186,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
     private readonly refTabContent: React.RefObject<HTMLDivElement | null>;
 
     private subscribed: boolean = false;
+
+    private unmounted: boolean = false;
 
     private _cacheList: InstanceItem[] | null = null;
 
@@ -307,6 +315,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
     }
 
     componentWillUnmount(): void {
+        this.unmounted = true;
         this.subscribeStates(true);
         this.props.instancesWorker.unregisterHandler(this.getInstances);
     }
@@ -623,6 +632,11 @@ class Instances extends Component<InstancesProps, InstancesState> {
             console.log(error);
         }
 
+        // Deliberately not awaited: a host reads its `node_modules` to answer this and can take seconds
+        // for it, and nobody should look at an empty instance list meanwhile. The marks appear as soon
+        // as the answers are there
+        void this.readInstalledPerHost(update);
+
         if (!this.states) {
             return;
         }
@@ -631,6 +645,30 @@ class Instances extends Component<InstancesProps, InstancesState> {
             this.subscribed = true;
             this.subscribeStates();
         }
+    }
+
+    /**
+     * Reads which adapters are really installed on which host and shows the instances anew.
+     *
+     * It renders in any case, also because the reload button of the toolbar has nothing else behind
+     * it: at the start `getInstances` follows, but a reload only read into the fields of the class
+     * and the list kept showing what was read before.
+     */
+    async readInstalledPerHost(update?: boolean): Promise<void> {
+        let installedPerHost: InstalledAdaptersPerHost = {};
+        try {
+            installedPerHost = await getInstalledAdaptersPerHost(this.props.socket, this.props.hosts, { update });
+        } catch (e) {
+            console.warn(`Cannot read the installed adapters: ${e as Error}`);
+        }
+
+        if (this.unmounted) {
+            return;
+        }
+
+        this.installedPerHost = installedPerHost;
+        this._cacheList = null;
+        this.forceUpdate();
     }
 
     onStateChange = (id: string, state: ioBroker.State | null | undefined): void => {
@@ -837,6 +875,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 id,
                 running,
                 host: instance.host,
+                adapterMissing: isAdapterMissing(instance.obj, this.installedPerHost),
                 nameId: instance.id,
                 compactGroup,
                 checkCompact,

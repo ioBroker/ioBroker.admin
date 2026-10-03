@@ -1325,6 +1325,7 @@
     "The end of line character to be added to the end of the message (Default: Message without modifications).": "Le caractère de fin de ligne à ajouter à la fin du message (Par défaut: Message sans modifications).",
     "The expert mode allows you to view and edit system internal details.": "Le mode expert vous permet d'afficher et de modifier les détails internes du système.",
     "The following hosts do not fulfill the required version %s of %s:": "Les hôtes suivants ne remplissent pas la version %s requise de %s :",
+    "The adapter is not installed on host \"%s\"": "L’adaptateur n’est pas installé sur l’hôte « %s »",
     "The history instance %s is not running": "L'instance d'historique %s n'est pas en cours d'exécution",
     "The host %s will be attached to this system.": "L'hôte %s sera rattaché à ce système.",
     "The host running syslogd, defaults to localhost": "L'hôte exécutant syslogd, par défaut sur localhost",

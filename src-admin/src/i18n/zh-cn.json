@@ -1325,6 +1325,7 @@
     "The end of line character to be added to the end of the message (Default: Message without modifications).": "要添加到消息末尾的行尾字符（默认值：不做任何修改的消息）。",
     "The expert mode allows you to view and edit system internal details.": "专家模式可让您查看和编辑系统内部详细信息。",
     "The following hosts do not fulfill the required version %s of %s:": "以下主机不满足 %s 所需的版本 %s：",
+    "The adapter is not installed on host \"%s\"": "适配器未安装在主机 \"%s\" 上",
     "The history instance %s is not running": "历史记录实例 %s 未运行",
     "The host %s will be attached to this system.": "主机 %s 将被接入本系统。",
     "The host running syslogd, defaults to localhost": "运行syslogd的主机，默认为localhost",
