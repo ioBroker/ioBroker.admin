@@ -45,6 +45,14 @@ import 'moment/locale/zh-cn';
 import type { AdapterDependencies } from './AddInstanceDialog';
 
 const styles: Record<string, any> = {
+    dependencyEntry: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    dependencyWrongHosts: {
+        color: '#f5614d',
+        fontSize: 'smaller',
+    },
     closeButton: (theme: IobTheme) => ({
         position: 'absolute',
         right: 8,
@@ -451,14 +459,40 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
     }
 
     getDependencies(): JSX.Element[] {
-        return (this.props.dependencies || []).map(dependency => (
-            <State
-                key={dependency.name}
-                state={dependency.rightVersion}
-            >
-                {`${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`}
-            </State>
-        ));
+        return (this.props.dependencies || []).map(dependency => {
+            const text = `${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`;
+
+            // A global dependency must be fulfilled on EVERY host of a multihost system, but only one
+            // version fits in the line above. Without naming the hosts that still run a too old version,
+            // the entry looks simply wrong (e.g. "admin (>=8.0.0): 8.0.14" marked with a red cross).
+            if (dependency.wrongHosts?.length) {
+                return (
+                    <State
+                        key={dependency.name}
+                        state={false}
+                    >
+                        <span style={styles.dependencyEntry}>
+                            <span>{text}</span>
+                            <span style={styles.dependencyWrongHosts}>
+                                {this.t(
+                                    'Not fulfilled on the following hosts: %s',
+                                    dependency.wrongHosts.map(h => `${h.host} (${h.installedVersion})`).join(', '),
+                                )}
+                            </span>
+                        </span>
+                    </State>
+                );
+            }
+
+            return (
+                <State
+                    key={dependency.name}
+                    state={dependency.rightVersion}
+                >
+                    {text}
+                </State>
+            );
+        });
     }
 
     getNews(): JSX.Element[] {

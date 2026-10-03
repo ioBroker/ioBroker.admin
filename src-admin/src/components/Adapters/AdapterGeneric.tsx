@@ -493,6 +493,16 @@ export default abstract class AdapterGeneric<
         for (const adapter of dependencies) {
             if (!adapter.installedVersion) {
                 array.push(this.props.context.t('No version of %s', adapter.name, adapter.name));
+            } else if (adapter.wrongHosts?.length) {
+                // Global dependency of a multihost system: name the hosts that still run a too old version,
+                // because the version shown for the adapter itself may well fulfill the requirement.
+                array.push(
+                    `${this.props.context.t(
+                        'The following hosts do not fulfill the required version %s of %s:',
+                        adapter.version || 'unknown',
+                        adapter.name,
+                    )} ${adapter.wrongHosts.map(h => `${h.host} (${h.installedVersion})`).join(', ')}`,
+                );
             } else if (!adapter.rightVersion) {
                 array.push(
                     `${this.props.context.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version || 'unknown')}${adapter.installedVersion}`,
