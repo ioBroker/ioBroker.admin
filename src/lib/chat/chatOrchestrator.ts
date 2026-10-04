@@ -61,6 +61,10 @@ export interface OrchestratorRunParams {
     allowSelfSignedCerts?: boolean;
     /** What to ask of the reasoning; empty (the default) leaves the parameter out entirely. */
     reasoningEffort?: ReasoningEffort;
+    /** Output budget of one request - only Anthropic requires it (already clamped by the caller). */
+    maxTokens?: number;
+    /** How long one request to the endpoint may take (already clamped by the caller). */
+    timeoutMs?: number;
     /** Maximum number of tool-call rounds before forcing a final answer (default 8). */
     maxToolRounds?: number;
     /** `read` (default) = read-only; `act` = expose write/action tools (still confirmed per action). */
@@ -384,6 +388,8 @@ export class ChatOrchestrator {
                 tools,
                 allowSelfSignedCerts: params.allowSelfSignedCerts,
                 reasoningEffort: params.reasoningEffort,
+                maxTokens: params.maxTokens,
+                timeoutMs: params.timeoutMs,
             });
 
             // Some models/endpoints emit tool calls as TEXT (the `<invoke …>` format) instead of as
@@ -422,6 +428,8 @@ export class ChatOrchestrator {
             messages,
             allowSelfSignedCerts: params.allowSelfSignedCerts,
             reasoningEffort: params.reasoningEffort,
+            maxTokens: params.maxTokens,
+            timeoutMs: params.timeoutMs,
         });
         const finalContent =
             finalResponse.content ||

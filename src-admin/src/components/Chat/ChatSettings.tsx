@@ -25,13 +25,16 @@ import { I18n, type AdminConnection, Icon } from '@iobroker/gui-components';
 
 import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';
 import ChatCreateCredentialDialog from './ChatCreateCredentialDialog';
-import type {
-    AiCredentialEntry,
-    AiProvider,
-    ChatProvidersResponse,
-    ChatSettingsValue,
-    ChatTestResponse,
-    ReasoningEffort,
+import {
+    DEFAULT_CHAT_MAX_TOKENS,
+    MAX_CHAT_MAX_TOKENS,
+    MIN_CHAT_MAX_TOKENS,
+    type AiCredentialEntry,
+    type AiProvider,
+    type ChatProvidersResponse,
+    type ChatSettingsValue,
+    type ChatTestResponse,
+    type ReasoningEffort,
 } from './chatTypes';
 
 interface ChatSettingsProps {
@@ -304,6 +307,24 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                                 ))}
                             </Select>
                         </FormControl>
+                    ) : null}
+
+                    {/* Only Anthropic insists on the parameter, so it is only offered for it */}
+                    {value.provider === 'anthropic' ? (
+                        <TextField
+                            variant="standard"
+                            type="number"
+                            label={I18n.t('Maximum answer length')}
+                            helperText={I18n.t('A longer answer is cut off when the limit is reached.')}
+                            value={value.maxTokens || ''}
+                            placeholder={String(DEFAULT_CHAT_MAX_TOKENS)}
+                            slotProps={{
+                                htmlInput: { min: MIN_CHAT_MAX_TOKENS, max: MAX_CHAT_MAX_TOKENS, step: 1024 },
+                            }}
+                            // An empty field means "use the default": the backend falls back to it
+                            onChange={e => update({ maxTokens: parseInt(e.target.value, 10) || 0 })}
+                            fullWidth
+                        />
                     ) : null}
 
                     <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>

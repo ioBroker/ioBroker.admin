@@ -45,6 +45,7 @@ import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobr
 
 import ChatSettings from './ChatSettings';
 import ChatMcpInfoDialog from './ChatMcpInfoDialog';
+import { sendPushRequest } from '../../helpers/pushRequest';
 import {
     CHAT_SETTINGS_OBJECT_ID,
     chatSettingsReady,
@@ -435,7 +436,9 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
     ): Promise<void> => {
         setLoading(true);
         try {
-            const result = await props.socket.sendTo<ChatSendResponse>(props.instance, 'chat:send', {
+            // Not a plain `sendTo`: a turn takes longer than the 30 s a socket callback lives, so the
+            // answer is pushed as an instance message. See `helpers/pushRequest.ts`.
+            const result = await sendPushRequest<ChatSendResponse>(props.socket, props.instance, 'chat:send', {
                 messages: apiMessagesRef.current,
                 provider: settings.provider,
                 model: settings.model,
@@ -443,6 +446,7 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
                 baseUrl: settings.baseUrl || undefined,
                 allowSelfSignedCerts: settings.allowSelfSignedCerts,
                 reasoningEffort: settings.reasoningEffort || undefined,
+                maxTokens: settings.maxTokens || undefined,
                 mode,
                 approvals,
                 autoApprove: autoApproveList,

@@ -40,7 +40,13 @@ import {
 import { McpClientManager } from './lib/chat/mcpClientManager';
 import { buildSystemPromptMessage, ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
 import { resolveAiKey } from './lib/chat/credentials';
-import { listModels, type AiProvider, type ReasoningEffort } from './lib/chat/llmProvider';
+import {
+    listModels,
+    resolveMaxTokens,
+    resolveRequestTimeout,
+    type AiProvider,
+    type ReasoningEffort,
+} from './lib/chat/llmProvider';
 import type { OpenAIMessage } from './lib/chat/anthropicAdapter';
 import type { AdminAdapterConfig } from './types';
 import {
@@ -70,6 +76,9 @@ const LOG_SEARCH_HOST_TIMEOUT_MS = 60_000;
 /** How long another host may take to tell whether it supports a feature */
 const FEATURE_CHECK_TIMEOUT_MS = 5_000;
 const ERROR_PERMISSION = 'permissionError';
+
+/** Instance-message type for pushed answers of a long request. Shared verbatim with the frontend. */
+const UI_PUSH_MESSAGE_TYPE = 'pushedAnswer';
 
 const CURRENT_MAX_MAJOR_NODEJS = 22;
 const CURRENT_MAX_MAJOR_NPM = 10;
@@ -174,6 +183,14 @@ class Admin extends Adapter {
     /** Where the log files of this host are. Found at the first search in the Log tab */
     private logLocation: LogLocation | null = null;
 
+    /**
+     * GUI pages waiting for pushed answers: the session token the page invented when it subscribed,
+     * mapped to the client id the messaging controller gave us. A `chat:send` or `admin:searchLogs`
+     * message carries the token, which is how a request is matched back to the browser tab that sent
+     * it - the message itself has no socket id.
+     */
+    private readonly uiPushClients = new Map<string, string>();
+
     constructor(options: Partial<AdapterOptions> = {}) {
         options = {
             ...options,
@@ -181,6 +198,18 @@ class Admin extends Adapter {
             logTransporter: true, // receive the logs
             systemConfig: true,
             install: () => void null,
+            /*
+             * The GUI subscribes here so that the answer of a long request can be *pushed* to it. A turn
+             * of the assistant (the LLM plus its tool rounds) and a search through the log files of
+             * another host regularly run longer than 30 s, and `@iobroker/ws` answers every socket
+             * callback with the string "timeout" after exactly that (socket.io.js:
+             * `Date.now() + 30_000`). The answer then arrived in a dead callback: an empty chat, a
+             * search that never ends, and nothing in any log. So the page gets an immediate
+             * acknowledgement and the result later as an instance message.
+             */
+            uiClientSubscribe: (info: { clientId: string; message: ioBroker.Message }) =>
+                this.onUiClientSubscribe(info),
+            uiClientUnsubscribe: (info: { clientId: string }) => this.onUiClientUnsubscribe(info),
         };
 
         super(options as AdapterOptions);
@@ -466,9 +495,9 @@ class Admin extends Adapter {
             response = { error: (error as Error).message };
         }
 
-        if (obj.callback) {
-            this.sendTo(obj.from, obj.command, response, obj.callback);
-        }
+        // Searching the files of another host can take longer than a socket callback lives, so the
+        // answer is pushed if the Log tab asked for it. See `buildPushResponder`.
+        this.buildPushResponder<SearchLogFilesResult | { error: string }>(obj)(response);
     }
 
     /** The log files of the host this instance runs on, read from the disk */
@@ -586,6 +615,95 @@ class Admin extends Adapter {
     }
 
     /**
+     * A GUI page registers itself for pushed answers.
+     *
+     * The page sends a token it made up; we remember which messaging-controller client it belongs to.
+     * Only our own message type is accepted - anything else is some other UI asking for something we
+     * do not serve.
+     *
+     * @param info client id and the subscribe message, as the messaging controller hands it over
+     * @param info.clientId the id to address this client with later
+     * @param info.message the subscribe message, carrying the type and the page's session token
+     */
+    private onUiClientSubscribe(info: { clientId: string; message: ioBroker.Message }): {
+        accepted: boolean;
+        error?: string;
+    } {
+        const message = info.message?.message as { type?: string; data?: { sessionToken?: string } } | undefined;
+        if (message?.type !== UI_PUSH_MESSAGE_TYPE) {
+            return { accepted: false, error: `Unknown subscription type "${message?.type || ''}"` };
+        }
+        const token = (message.data?.sessionToken || '').trim();
+        if (!token) {
+            return { accepted: false, error: 'No session token provided' };
+        }
+        this.uiPushClients.set(token, info.clientId);
+        this.log.debug(`GUI session subscribed for pushed answers (${this.uiPushClients.size} open)`);
+        return { accepted: true };
+    }
+
+    /**
+     * A GUI page went away - drop every token that pointed at it.
+     *
+     * @param info the client the messaging controller is retiring
+     * @param info.clientId the id that is going away
+     */
+    private onUiClientUnsubscribe(info: { clientId: string }): void {
+        for (const [token, clientId] of this.uiPushClients) {
+            if (clientId === info.clientId) {
+                this.uiPushClients.delete(token);
+            }
+        }
+        this.log.debug(`GUI session unsubscribed (${this.uiPushClients.size} open)`);
+    }
+
+    /**
+     * Build the function that delivers the answer of one long request (`chat:*`, `admin:searchLogs`).
+     *
+     * If the page registered for pushed answers and named itself in the message, the answer goes out as
+     * an instance message and the socket callback is acknowledged right away - the request takes longer
+     * than the 30 s the callback lives. Everything else - an older frontend, a script talking to us -
+     * keeps the plain request/response behaviour.
+     *
+     * @param obj the incoming sendTo message
+     */
+    private buildPushResponder<T extends object>(obj: ioBroker.Message): (response: T) => void {
+        const token = (obj.message?.uiSession || '').toString().trim();
+        const requestId = (obj.message?.requestId || '').toString().trim();
+        const clientId = token ? this.uiPushClients.get(token) : undefined;
+
+        if (!clientId || !requestId) {
+            return response => {
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, response, obj.callback);
+                }
+            };
+        }
+
+        // Release the socket callback immediately - it has 30 s to live, the request has more.
+        this.sendTo(obj.from, obj.command, { accepted: true, requestId }, obj.callback);
+        let sent = false;
+        return response => {
+            if (sent) {
+                return;
+            }
+            sent = true;
+            this.sendToUI({
+                clientId,
+                data: { type: UI_PUSH_MESSAGE_TYPE, requestId, ...response },
+            }).catch(e => {
+                // The tab was closed, or the subscription was dropped in the meantime.
+                this.uiPushClients.delete(token);
+                this.log.warn(
+                    `Cannot deliver the answer of "${obj.command}" to the GUI: ${
+                        e instanceof Error ? e.message : String(e)
+                    }`,
+                );
+            });
+        };
+    }
+
+    /**
      * Handle `chat:*` messages from the admin GUI chat helper.
      *
      * - `chat:getProviders` — list the AI credentials the user can pick (id + name, no secrets).
@@ -597,11 +715,9 @@ class Admin extends Adapter {
      * @param obj the message object
      */
     private async processChatMessage(obj: ioBroker.Message): Promise<void> {
-        const respond = (response: Record<string, unknown>): void => {
-            if (obj.callback) {
-                this.sendTo(obj.from, obj.command, response, obj.callback);
-            }
-        };
+        // Answers go through this from here on: either straight back through the socket callback, or -
+        // for a panel that registered for it - pushed as an instance message. See `buildPushResponder`.
+        const respond = this.buildPushResponder<Record<string, unknown>>(obj);
         const fail = (error: unknown): void =>
             respond({
                 error:
@@ -813,6 +929,10 @@ class Admin extends Adapter {
                 approvals?: Record<string, boolean>;
                 autoApprove?: string[];
                 uiContext?: { hash?: string };
+                /** Output budget for the answer - only Anthropic requires it. Clamped below. */
+                maxTokens?: number;
+                /** How long the caller is willing to wait for the endpoint, in ms. Clamped below. */
+                timeout?: number;
             };
             try {
                 if (!Array.isArray(message.messages) || !message.messages.length) {
@@ -847,6 +967,8 @@ class Admin extends Adapter {
                     approvals: message.approvals,
                     autoApprove: message.autoApprove,
                     uiContext: message.uiContext,
+                    maxTokens: resolveMaxTokens(message.maxTokens),
+                    timeoutMs: resolveRequestTimeout(message.timeout),
                 });
                 respond({ success: true, ...result });
             } catch (e) {
