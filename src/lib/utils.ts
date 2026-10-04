@@ -1,3 +1,18 @@
+import type { CSSProperties } from 'react';
+
+/**
+ * Masks the content of an input like a password field does, without the input being one.
+ *
+ * The password managers of the browsers only act on `input[type=password]`: Chrome offers to generate a
+ * "strong password" as soon as such a field is focused and wants to store it afterwards. An API key or the
+ * password of a foreign service that ioBroker keeps has no business in the password manager of the browser,
+ * so these fields stay normal text inputs and are masked by CSS.
+ *
+ * `-webkit-text-security` is understood by Chrome, Edge, Safari and Firefox (since 114), but it is no part
+ * of the CSS typings, hence the cast.
+ */
+export const SECRET_INPUT_STYLE = { WebkitTextSecurity: 'disc' } as CSSProperties;
+
 /** Url where controller changelog is reachable */
 export const CONTROLLER_CHANGELOG_URL = 'https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md';
 
