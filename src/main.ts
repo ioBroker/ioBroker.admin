@@ -1762,11 +1762,9 @@ class Admin extends Adapter {
 
             if (showIt) {
                 this.log.info(`register notification ${message.class}`);
-                await this.registerNotification(
-                    'admin',
-                    `${message.class}News`,
-                    `${message.title.en}\n${message.content.en}`,
-                );
+                const title = message.title[systemLanguage] || message.title.en;
+                const content = message.content[systemLanguage] || message.content.en;
+                await this.registerNotification('admin', `${message.class}News`, `${title}\n${content}`);
             }
         }
     }
