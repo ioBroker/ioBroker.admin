@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@krobipd) Fixed: with the GUI settings stored on the server, a window of the admin threw away what others had saved in the meantime. It read the settings once at the start and wrote that copy back as a whole on every change, so two windows or devices took each other's settings away - a column width, an opened folder - and any other change to the object was undone as well, e.g. a history setting that had been switched off came back on. A window now remembers only what it changed itself, reads the stored settings anew right before writing and applies just these changes. A write that fails because the connection is lost is no longer an unhandled error: the change stays and is written after the reconnect
+
 ### 8.0.23 (2026-10-03)
 - (@GermanBluefox) Changed: the info dialog of a host on the quick access page shows what it knows instead of what the host sends. Every line has an icon in front of it - the penguin, the window, the apple or the daemon for the platform, a chip for the CPU, a clock for the time - the names start with a capital letter, and a `true` is now a "Yes". The disk is no longer two lines with two numbers but one bar that fills with the free space, `11.8 GB / 26.2 GB`, red as soon as less than a tenth is left. The time of the host was a bare timestamp like `1790980340380` because the entry was looked up under `Time` while the host calls it `time`; it is now the wall clock of the host, shifted by the time zone the host reports, so neither UTC nor the time zone of the browser is shown
 - (@GermanBluefox) Changed: "adapters count" is called "Adapters in repository" now. It counts the adapters that the active repository offers - 812 of them - and was read as the number of the installed ones
