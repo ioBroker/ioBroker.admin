@@ -24,6 +24,7 @@ import {
     I18n,
 } from '@iobroker/adapter-core';
 import { SocketAdmin, type Server, type Store as SocketStore, type SocketSettings } from '@iobroker/socket-classes';
+import type { SocketACL } from '@iobroker/ws-server';
 import type { Store } from 'express-session';
 import { SocketIO } from '@iobroker/ws-server';
 import { getAdapterUpdateText } from './lib/translations';
@@ -80,6 +81,26 @@ const ERROR_PERMISSION = 'permissionError';
 /** Instance-message type for pushed answers of a long request. Shared verbatim with the frontend. */
 const UI_PUSH_MESSAGE_TYPE = 'pushedAnswer';
 
+/**
+ * The `chat:*` commands that reach the tools, an AI endpoint or the configuration of the assistant,
+ * and therefore only run for a known GUI session. `chat:getProviders` - the names of the stored AI
+ * credentials, without a single secret - is the only one left open.
+ */
+const CHAT_COMMANDS_NEEDING_SESSION = [
+    'chat:send',
+    'chat:getTools',
+    'chat:callTool',
+    'chat:testConnection',
+    'chat:getMcpInfo',
+];
+
+/** Refusal for the operations that require the `execute` right - the one `cmdExec` is checked against. */
+const CHAT_NO_EXECUTE_RIGHTS =
+    'No permission: this requires the "execute" right, the same one a command on the host needs';
+
+/** The object that holds the system-wide assistant configuration, written by the settings dialog. */
+const CHAT_SETTINGS_OBJECT_ID = 'system.ai';
+
 const CURRENT_MAX_MAJOR_NODEJS = 22;
 const CURRENT_MAX_MAJOR_NPM = 10;
 
@@ -128,6 +149,41 @@ interface NodeVersionInformation {
     npm: string;
 }
 
+/**
+ * One GUI page that subscribed for pushed answers.
+ *
+ * `user` and `mayExecute` are taken from the ACL the socket layer calculated for that connection when
+ * it subscribed - the same ACL every other socket command is checked against. They decide what the
+ * assistant may do on behalf of this page; the page itself cannot influence them.
+ */
+/** The assistant configuration as the settings dialog stores it in the `native` of `system.ai`. */
+interface ChatSettings {
+    provider?: AiProvider;
+    model?: string;
+    /** Id of a `system.credentials.*` entry of type `ai` - the key itself never leaves the store. */
+    credentialId?: string;
+    /** Endpoint of the custom (OpenAI-compatible) provider, ignored for the others */
+    baseUrl?: string;
+    allowSelfSignedCerts?: boolean;
+    reasoningEffort?: ReasoningEffort;
+    maxTokens?: number;
+}
+
+interface UiPushSession {
+    /** The messaging-controller client id the answer is pushed to */
+    clientId: string;
+    /** The ioBroker user of the socket that subscribed, `''` if it had none */
+    user: string;
+    /** Whether that user has the `execute` right (the one `cmdExec` needs) - the gate for "act" mode */
+    mayExecute: boolean;
+    /**
+     * The tool calls the assistant proposed in the last turn and that are still unanswered, by their
+     * tool-call id, with the arguments as the model wrote them. Only these may be executed when the
+     * next request brings the conversation back - see `processChatMessage`.
+     */
+    proposedActions: Map<string, { tool: string; args: string }>;
+}
+
 interface WellKnownUserPassword {
     login: string;
     password: string;
@@ -174,8 +230,11 @@ class Admin extends Adapter {
 
     private changedPasswords: WellKnownUserPassword[] = [];
 
-    /** In-process ioBroker/mcp-server connection backing the chat helper. Created on first chat message. */
-    private mcpChat: McpClientManager | null = null;
+    /**
+     * In-process ioBroker/mcp-server connections backing the chat helper, one per ioBroker user, so
+     * every tool call runs under the ACLs of the user who asked. Created on their first chat message.
+     */
+    private readonly mcpChats = new Map<string, McpClientManager>();
 
     /** True if the adapter runs on a CI system (GitHub Actions, Travis, AppVeyor, ...). See `sendToHost` */
     private readonly ciSystem: boolean = isCiSystem();
@@ -184,12 +243,14 @@ class Admin extends Adapter {
     private logLocation: LogLocation | null = null;
 
     /**
-     * GUI pages waiting for pushed answers: the session token the page invented when it subscribed,
-     * mapped to the client id the messaging controller gave us. A `chat:send` or `admin:searchLogs`
-     * message carries the token, which is how a request is matched back to the browser tab that sent
-     * it - the message itself has no socket id.
+     * GUI sessions, by the secret this adapter handed out when the page subscribed for pushed answers.
+     *
+     * A `chat:send` or `admin:searchLogs` message carries the secret as `uiSession`; the message itself
+     * has neither a socket id nor a user, so this map is the only thing that ties a request back to the
+     * browser tab that sent it - and to the ioBroker user behind it. The secret is generated here and
+     * never by the caller: a page may only ever name a session it was given.
      */
-    private readonly uiPushClients = new Map<string, string>();
+    private readonly uiPushSessions = new Map<string, UiPushSession>();
 
     constructor(options: Partial<AdapterOptions> = {}) {
         options = {
@@ -316,21 +377,31 @@ class Admin extends Adapter {
     };
 
     /**
-     * Lazily create the in-process MCP connection backing the chat helper.
+     * Lazily create the in-process MCP connection backing the chat helper, for one ioBroker user.
+     *
+     * Every tool call runs under the ACLs of the user whose browser session asked, so the assistant can
+     * never read or write more than that user may - it used to run as `system.user.admin` for everyone.
+     * One connection per user is kept, which is cheap: the MCP server is in-process, without a port.
      *
      * `allowSetState` is enabled so the `set_state`/`set_states` tools exist; the orchestrator only
-     * offers them in "act" mode and only runs them after explicit per-action confirmation. Raw
-     * object/file changes stay disabled — state creation goes through the namespace-guarded
-     * admin-local `create_user_state` tool instead.
+     * offers them in "act" mode and only runs them after explicit per-action confirmation (and the
+     * state ACLs of the user still apply). Raw object/file changes stay disabled — state creation goes
+     * through the namespace-guarded admin-local `create_user_state` tool instead.
+     *
+     * @param user the ioBroker user the tools run as, e.g. `system.user.admin`
      */
-    private getMcpChat(): McpClientManager {
-        this.mcpChat ||= new McpClientManager(this, {
-            defaultUser: 'system.user.admin',
-            language: systemLanguage,
-            allowSetState: true,
-            allowObjectChange: false,
-        });
-        return this.mcpChat;
+    private getMcpChat(user: `system.user.${string}`): McpClientManager {
+        let manager = this.mcpChats.get(user);
+        if (!manager) {
+            manager = new McpClientManager(this, {
+                defaultUser: user,
+                language: systemLanguage,
+                allowSetState: true,
+                allowObjectChange: false,
+            });
+            this.mcpChats.set(user, manager);
+        }
+        return manager;
     }
 
     /**
@@ -473,6 +544,27 @@ class Admin extends Adapter {
             obj.message && typeof obj.message === 'object' ? (obj.message as Record<string, unknown>) : {};
         let response: SearchLogFilesResult | { error: string };
 
+        /*
+         * The log files of a host, read from its disk. They hold whatever any adapter ever logged -
+         * tokens, passwords in a stack trace, the contents of a request - so this needs the right that
+         * reading the log over the socket needs (`readLogs`: "other"."execute"). The message itself
+         * names no user, so the identity comes from the GUI session that subscribed for pushed answers;
+         * without one there is nobody to check, and the search is refused.
+         */
+        // Searching the files of another host can take longer than a socket callback lives, so the
+        // answer is pushed if the Log tab asked for it. See `buildPushResponder` - building it releases
+        // the callback, so it happens once for every way out of this function.
+        const respond = this.buildPushResponder<SearchLogFilesResult | { error: string }>(obj);
+        const session = this.getUiSession(obj);
+        if (!session?.user) {
+            respond({ error: 'The log search can only be used from a subscribed admin GUI session' });
+            return;
+        }
+        if (!session.mayExecute) {
+            respond({ error: 'No permission: searching the log files requires the "execute" right' });
+            return;
+        }
+
         try {
             const host =
                 typeof message.host === 'string' && message.host
@@ -495,9 +587,7 @@ class Admin extends Adapter {
             response = { error: (error as Error).message };
         }
 
-        // Searching the files of another host can take longer than a socket callback lives, so the
-        // answer is pushed if the Log tab asked for it. See `buildPushResponder`.
-        this.buildPushResponder<SearchLogFilesResult | { error: string }>(obj)(response);
+        respond(response);
     }
 
     /** The log files of the host this instance runs on, read from the disk */
@@ -615,46 +705,91 @@ class Admin extends Adapter {
     }
 
     /**
-     * A GUI page registers itself for pushed answers.
+     * A GUI page registers itself for pushed answers, and gets the secret of its session back.
      *
-     * The page sends a token it made up; we remember which messaging-controller client it belongs to.
+     * The subscription is the only moment at which this adapter can see *who* is on the other end: the
+     * socket layer runs in this process and hands over the id of the connection, whose ACL it has
+     * already calculated. User and rights are recorded here, and the page gets a secret to name the
+     * session with - a later `chat:send` carries that secret instead of claiming a user itself.
+     *
      * Only our own message type is accepted - anything else is some other UI asking for something we
      * do not serve.
      *
      * @param info client id and the subscribe message, as the messaging controller hands it over
      * @param info.clientId the id to address this client with later
-     * @param info.message the subscribe message, carrying the type and the page's session token
+     * @param info.message the subscribe message, carrying the type and the socket id of the page
      */
     private onUiClientSubscribe(info: { clientId: string; message: ioBroker.Message }): {
         accepted: boolean;
         error?: string;
+        session?: string;
     } {
-        const message = info.message?.message as { type?: string; data?: { sessionToken?: string } } | undefined;
+        const message = info.message?.message as { type?: string; sid?: string } | undefined;
         if (message?.type !== UI_PUSH_MESSAGE_TYPE) {
             return { accepted: false, error: `Unknown subscription type "${message?.type || ''}"` };
         }
-        const token = (message.data?.sessionToken || '').trim();
-        if (!token) {
-            return { accepted: false, error: 'No session token provided' };
-        }
-        this.uiPushClients.set(token, info.clientId);
-        this.log.debug(`GUI session subscribed for pushed answers (${this.uiPushClients.size} open)`);
-        return { accepted: true };
+        const acl = this.getSocketAcl(message.sid);
+        const session = randomBytes(24).toString('hex');
+        this.uiPushSessions.set(session, {
+            clientId: info.clientId,
+            user: acl?.user || '',
+            // The socket layer calculated this right for `cmdExec` when the connection was opened, the
+            // whitelist restrictions of the address included. Recalculating it from the groups of the
+            // user here would silently widen it again.
+            mayExecute: !!acl?.other?.execute,
+            proposedActions: new Map(),
+        });
+        this.log.debug(
+            `GUI session of "${acl?.user || 'unknown'}" subscribed for pushed answers (${
+                this.uiPushSessions.size
+            } open)`,
+        );
+        return { accepted: true, session };
     }
 
     /**
-     * A GUI page went away - drop every token that pointed at it.
+     * A GUI page went away - drop every session that pointed at it.
      *
      * @param info the client the messaging controller is retiring
      * @param info.clientId the id that is going away
      */
     private onUiClientUnsubscribe(info: { clientId: string }): void {
-        for (const [token, clientId] of this.uiPushClients) {
-            if (clientId === info.clientId) {
-                this.uiPushClients.delete(token);
+        for (const [session, entry] of this.uiPushSessions) {
+            if (entry.clientId === info.clientId) {
+                this.uiPushSessions.delete(session);
             }
         }
-        this.log.debug(`GUI session unsubscribed (${this.uiPushClients.size} open)`);
+        this.log.debug(`GUI session unsubscribed (${this.uiPushSessions.size} open)`);
+    }
+
+    /**
+     * The ACL the socket layer calculated for one open connection of this instance's web server.
+     *
+     * With authentication it belongs to the logged-in user, without it to the configured default user,
+     * and in both cases a whitelist of the address has already been applied to it.
+     *
+     * @param sid the socket id, as the `clientSubscribe` message carries it
+     */
+    private getSocketAcl(sid?: string): SocketACL | null {
+        if (!sid) {
+            return null;
+        }
+        const sockets = socket?.getSocketsList();
+        if (!sockets) {
+            return null;
+        }
+        const clients = Array.isArray(sockets) ? sockets : Object.values(sockets);
+        return clients.find(client => client.id === sid)?._acl || null;
+    }
+
+    /**
+     * The session a request names in `uiSession`, if it is one this adapter handed out.
+     *
+     * @param obj the incoming sendTo message
+     */
+    private getUiSession(obj: ioBroker.Message): UiPushSession | undefined {
+        const session = (obj.message?.uiSession || '').toString().trim();
+        return session ? this.uiPushSessions.get(session) : undefined;
     }
 
     /**
@@ -668,9 +803,9 @@ class Admin extends Adapter {
      * @param obj the incoming sendTo message
      */
     private buildPushResponder<T extends object>(obj: ioBroker.Message): (response: T) => void {
-        const token = (obj.message?.uiSession || '').toString().trim();
+        const session = (obj.message?.uiSession || '').toString().trim();
         const requestId = (obj.message?.requestId || '').toString().trim();
-        const clientId = token ? this.uiPushClients.get(token) : undefined;
+        const clientId = this.getUiSession(obj)?.clientId;
 
         if (!clientId || !requestId) {
             return response => {
@@ -693,7 +828,7 @@ class Admin extends Adapter {
                 data: { type: UI_PUSH_MESSAGE_TYPE, requestId, ...response },
             }).catch(e => {
                 // The tab was closed, or the subscription was dropped in the meantime.
-                this.uiPushClients.delete(token);
+                this.uiPushSessions.delete(session);
                 this.log.warn(
                     `Cannot deliver the answer of "${obj.command}" to the GUI: ${
                         e instanceof Error ? e.message : String(e)
@@ -704,6 +839,26 @@ class Admin extends Adapter {
     }
 
     /**
+     * The system-wide assistant configuration from `system.ai`, as the settings dialog saved it.
+     *
+     * This is the only source for the endpoint, the model and the credential of a chat request. The
+     * dialog writes the object, which needs object-write rights - so configuring the assistant is a
+     * separate permission from using it.
+     */
+    private async getChatSettings(): Promise<ChatSettings> {
+        try {
+            const config = await this.getForeignObjectAsync(CHAT_SETTINGS_OBJECT_ID);
+            const native = config?.native;
+            if (native && typeof native === 'object') {
+                return native as ChatSettings;
+            }
+        } catch {
+            // no object yet, or no permission to read it - the caller reports the missing model
+        }
+        return {};
+    }
+
+    /**
      * Handle `chat:*` messages from the admin GUI chat helper.
      *
      * - `chat:getProviders` — list the AI credentials the user can pick (id + name, no secrets).
@@ -711,6 +866,12 @@ class Admin extends Adapter {
      * - `chat:send` — run one chat turn: the backend drives the LLM ↔ MCP tool loop and returns the
      *   final answer, the new messages and the executed tool steps.
      * - `chat:getTools` / `chat:callTool` — low-level access to the in-process MCP tool layer (A1).
+     *
+     * A message box message carries neither a socket id nor a user: whoever may call `sendTo` at all
+     * can send any of these commands, and nothing in the message can be trusted to say on whose behalf
+     * it comes. Every command that reaches the tools therefore requires `uiSession` - the secret of a
+     * GUI session this adapter handed out when the page subscribed (see `onUiClientSubscribe`) - and
+     * runs with the user and the rights recorded for that session.
      *
      * @param obj the message object
      */
@@ -724,9 +885,22 @@ class Admin extends Adapter {
                     error instanceof Error ? error.message : typeof error === 'string' ? error : JSON.stringify(error),
             });
 
+        const session = this.getUiSession(obj);
+        // Everything below this line talks to the tools or to an AI endpoint. Without a session there
+        // is nobody to attribute it to, so there is nothing to authorize it with either.
+        if (CHAT_COMMANDS_NEEDING_SESSION.includes(obj.command) && !session?.user) {
+            fail(
+                session
+                    ? 'The assistant can only be used from an admin GUI session of a known user'
+                    : 'The assistant can only be used from a subscribed admin GUI session',
+            );
+            return;
+        }
+        const user = (session?.user || '') as `system.user.${string}`;
+
         if (obj.command === 'chat:getTools') {
             try {
-                const tools = await this.getMcpChat().getTools();
+                const tools = await this.getMcpChat(user).getTools();
                 respond({ tools });
             } catch (e) {
                 fail(e);
@@ -740,8 +914,14 @@ class Admin extends Adapter {
                 fail('Tool name is required');
                 return;
             }
+            // A single tool call without the loop around it has no confirmation step, so it stays with
+            // the users who may run commands anyway. The tools themselves run under their ACLs.
+            if (!session?.mayExecute) {
+                fail(CHAT_NO_EXECUTE_RIGHTS);
+                return;
+            }
             try {
-                const result = await this.getMcpChat().callTool(message.name, message.args);
+                const result = await this.getMcpChat(user).callTool(message.name, message.args);
                 respond({ ...result });
             } catch (e) {
                 fail(e);
@@ -781,6 +961,14 @@ class Admin extends Adapter {
                 baseUrl?: string;
                 allowSelfSignedCerts?: boolean;
             };
+            // This one takes the endpoint and the key straight from the settings form, because that is
+            // the point of it: trying them before they are saved. It therefore makes this instance
+            // fetch a URL of the caller's choosing and stays with the users who may configure the
+            // assistant - which is the same right that lets them run a command directly.
+            if (!session?.mayExecute) {
+                fail(CHAT_NO_EXECUTE_RIGHTS);
+                return;
+            }
             try {
                 const provider = message.provider || 'openai';
                 // Prefer an explicit key from the settings form; otherwise resolve from the store.
@@ -805,6 +993,13 @@ class Admin extends Adapter {
             // Everything the "use the assistant without an API" help dialog needs: the exact system
             // prompts the assistant runs with, and the HTTP endpoint(s) that expose the MCP server so the
             // user can wire an external AI client (Claude/Codex/Gemini/…) straight to ioBroker.
+            //
+            // It names every address at which this system offers its tooling, and it exists to set up a
+            // client against it - the same purpose, and the same right, as the connection test.
+            if (!session?.mayExecute) {
+                fail(CHAT_NO_EXECUTE_RIGHTS);
+                return;
+            }
             try {
                 const promptRead = buildSystemPromptMessage(systemLanguage, 'read').content || '';
                 const promptAct = buildSystemPromptMessage(systemLanguage, 'act').content || '';
@@ -916,21 +1111,19 @@ class Admin extends Adapter {
         }
 
         if (obj.command === 'chat:send') {
+            /*
+             * Only the conversation and what the user decided come from the message. Which endpoint is
+             * asked, with which key, is read from `system.ai` below: a caller who could name the
+             * endpoint could make this instance post the conversation - and the credentials it resolves
+             * - to a host of their choosing, and point a stored key at it.
+             */
             const message = (obj.message || {}) as {
                 messages?: OpenAIMessage[];
-                provider?: AiProvider;
-                model?: string;
-                credentialId?: string;
-                baseUrl?: string;
-                allowSelfSignedCerts?: boolean;
-                reasoningEffort?: ReasoningEffort;
                 maxToolRounds?: number;
                 mode?: ChatMode;
                 approvals?: Record<string, boolean>;
                 autoApprove?: string[];
                 uiContext?: { hash?: string };
-                /** Output budget for the answer - only Anthropic requires it. Clamped below. */
-                maxTokens?: number;
                 /** How long the caller is willing to wait for the endpoint, in ms. Clamped below. */
                 timeout?: number;
             };
@@ -939,37 +1132,69 @@ class Admin extends Adapter {
                     fail('messages are required');
                     return;
                 }
-                const provider = message.provider || 'openai';
-                const model = (message.model || '').trim();
-                if (!model) {
-                    fail('model is required');
+                // Acting needs the right that a command on the host needs, because that is what the
+                // action tools amount to. Reading stays open to everyone who may use the assistant.
+                if (message.mode === 'act' && !session?.mayExecute) {
+                    fail(CHAT_NO_EXECUTE_RIGHTS);
                     return;
                 }
-                const apiKey = message.credentialId ? await resolveAiKey(this, message.credentialId) : '';
+                const settings = await this.getChatSettings();
+                const provider = settings.provider || 'openai';
+                const model = (settings.model || '').trim();
+                if (!model) {
+                    fail('No model configured for the assistant');
+                    return;
+                }
+                const apiKey = settings.credentialId ? await resolveAiKey(this, settings.credentialId) : '';
                 // Only the custom (OpenAI-compatible, e.g. local Ollama) provider may run without a key.
                 // A base URL is custom-only, so a stale one must not let a keyless OpenAI request through.
                 if (!apiKey && provider !== 'custom') {
                     fail('No API key configured for the selected provider');
                     return;
                 }
-                const orchestrator = new ChatOrchestrator(this.getMcpChat(), this);
+                /*
+                 * A decision only counts for an action this adapter itself proposed in the previous turn
+                 * of this session, and the tool call that comes back with the conversation has to be the
+                 * one it proposed. The caller writes the conversation it sends, so without this it could
+                 * put an action into it and approve it in the same message - the confirmation would be
+                 * nothing but a field the caller fills in.
+                 */
+                const proposedActions = session?.proposedActions || new Map();
+                const approvals: Record<string, boolean> = {};
+                for (const [id, approved] of Object.entries(message.approvals || {})) {
+                    if (proposedActions.has(id)) {
+                        approvals[id] = !!approved;
+                    }
+                }
+                const orchestrator = new ChatOrchestrator(this.getMcpChat(user), this);
                 const result = await orchestrator.run({
                     provider,
                     model,
                     apiKey,
-                    baseUrl: message.baseUrl,
+                    baseUrl: settings.baseUrl,
                     messages: message.messages,
                     language: systemLanguage,
-                    allowSelfSignedCerts: message.allowSelfSignedCerts,
-                    reasoningEffort: message.reasoningEffort,
+                    allowSelfSignedCerts: settings.allowSelfSignedCerts,
+                    reasoningEffort: settings.reasoningEffort,
                     maxToolRounds: message.maxToolRounds,
                     mode: message.mode,
-                    approvals: message.approvals,
+                    approvals,
                     autoApprove: message.autoApprove,
                     uiContext: message.uiContext,
-                    maxTokens: resolveMaxTokens(message.maxTokens),
+                    maxTokens: resolveMaxTokens(settings.maxTokens),
                     timeoutMs: resolveRequestTimeout(message.timeout),
+                    proposedActions,
                 });
+                if (session) {
+                    // What is open now replaces what was open before: an id of a finished turn must not
+                    // stay approvable, and one of an aborted turn must not come back later.
+                    session.proposedActions = new Map(
+                        (result.openToolCalls || []).map(action => [
+                            action.id,
+                            { tool: action.tool, args: action.args },
+                        ]),
+                    );
+                }
                 respond({ success: true, ...result });
             } catch (e) {
                 fail(e);
@@ -1210,10 +1435,10 @@ class Admin extends Adapter {
             this.updaterTimeout = undefined;
         }
 
-        if (this.mcpChat) {
-            void this.mcpChat.close();
-            this.mcpChat = null;
+        for (const manager of this.mcpChats.values()) {
+            void manager.close();
         }
+        this.mcpChats.clear();
 
         try {
             this.log.info(`terminating http${this.config.secure ? 's' : ''} server on port ${this.config.port}`);

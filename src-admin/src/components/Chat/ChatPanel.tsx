@@ -436,17 +436,17 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
     ): Promise<void> => {
         setLoading(true);
         try {
-            // Not a plain `sendTo`: a turn takes longer than the 30 s a socket callback lives, so the
-            // answer is pushed as an instance message. See `helpers/pushRequest.ts`.
+            /*
+             * Not a plain `sendTo`: a turn takes longer than the 30 s a socket callback lives, so the
+             * answer is pushed as an instance message (see `helpers/pushRequest.ts`), which is also what
+             * identifies this session to the backend.
+             *
+             * Which endpoint, model and credential are used is NOT sent along: the backend reads that
+             * from `system.ai` itself, so a request can neither point the stored key at another host nor
+             * pick a provider the settings do not name.
+             */
             const result = await sendPushRequest<ChatSendResponse>(props.socket, props.instance, 'chat:send', {
                 messages: apiMessagesRef.current,
-                provider: settings.provider,
-                model: settings.model,
-                credentialId: settings.credentialId || undefined,
-                baseUrl: settings.baseUrl || undefined,
-                allowSelfSignedCerts: settings.allowSelfSignedCerts,
-                reasoningEffort: settings.reasoningEffort || undefined,
-                maxTokens: settings.maxTokens || undefined,
                 mode,
                 approvals,
                 autoApprove: autoApproveList,

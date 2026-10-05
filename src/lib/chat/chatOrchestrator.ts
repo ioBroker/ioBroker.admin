@@ -40,6 +40,18 @@ export interface ChatStep {
     result: string;
 }
 
+/**
+ * A tool call the assistant proposed and that is still unanswered, as the backend remembers it.
+ *
+ * The caller sends the conversation back with its decision, so the tool call that comes in has to be
+ * matched against what was proposed: `args` is the argument string exactly as the model wrote it.
+ */
+export interface ProposedAction {
+    id: string;
+    tool: string;
+    args: string;
+}
+
 /** A write/action tool call awaiting the user's confirmation. */
 export interface PendingAction {
     /** The tool-call id (echoed back in `approvals`). */
@@ -73,6 +85,14 @@ export interface OrchestratorRunParams {
     approvals?: Record<string, boolean>;
     /** Tool names the user has granted blanket approval for ("don't ask again") — run without prompting. */
     autoApprove?: string[];
+    /**
+     * The tool calls this backend proposed in the previous turn of the same session, by their id.
+     *
+     * A tool call that arrives with the conversation is only executed when it is found here and carries
+     * the same name and arguments. Without that, a caller could write an action into the conversation
+     * it sends and have it executed - the confirmation is part of the same message, after all.
+     */
+    proposedActions?: Map<string, { tool: string; args: string }>;
     /** Current admin UI context (e.g. the route hash) so the assistant knows where the user is. */
     uiContext?: { hash?: string };
 }
@@ -88,6 +108,12 @@ export interface OrchestratorResult {
     steps: ChatStep[];
     /** Set when `status === 'confirm'`: the write/action tool calls awaiting a decision. */
     pendingActions?: PendingAction[];
+    /**
+     * Every tool call of this turn that is still unanswered - the ones awaiting a decision and the ones
+     * that were not reached because of it. The caller stores them per session and hands them back as
+     * `proposedActions` with the next request, which is what makes the confirmation binding.
+     */
+    openToolCalls?: ProposedAction[];
     /** Actions the frontend must perform after this turn (install adapter, navigate UI). */
     clientActions?: ClientAction[];
 }
@@ -338,10 +364,46 @@ export class ChatOrchestrator {
         const clientActions: ClientAction[] = [];
         const maxRounds = params.maxToolRounds ?? DEFAULT_MAX_TOOL_ROUNDS;
 
+        /*
+         * The tool calls that arrived with the request, as opposed to the ones the model produces while
+         * the loop below runs. Only these are checked against `proposedActions`: what the model asks for
+         * in this turn has not been through a caller's hands.
+         */
+        const submitted = new Set(unansweredToolCalls(messages).map(toolCall => toolCall.id));
+        const proposed = params.proposedActions || new Map<string, { tool: string; args: string }>();
+        const isProposed = (toolCall: OpenAIToolCall): boolean => {
+            const entry = proposed.get(toolCall.id);
+            return (
+                !!entry && entry.tool === toolCall.function.name && entry.args === (toolCall.function.arguments || '')
+            );
+        };
+
         for (let round = 0; round < maxRounds; round++) {
             const pending = unansweredToolCalls(messages);
 
             if (pending.length) {
+                // Came in with the conversation, but is not what was proposed: answer it with a refusal
+                // instead of running it. The next round then continues with the remaining calls.
+                const unproposed = pending.filter(toolCall => submitted.has(toolCall.id) && !isProposed(toolCall));
+                if (unproposed.length) {
+                    for (const toolCall of unproposed) {
+                        const text = JSON.stringify({
+                            ok: false,
+                            error: 'This action was not proposed by the assistant and was not executed.',
+                        });
+                        const message: OpenAIMessage = { role: 'tool', tool_call_id: toolCall.id, content: text };
+                        messages.push(message);
+                        newMessages.push(message);
+                        steps.push({
+                            tool: toolCall.function.name,
+                            args: parseToolArgs(toolCall.function.arguments),
+                            ok: false,
+                            result: '✗ not proposed by the assistant — ignored',
+                        });
+                    }
+                    continue;
+                }
+
                 // A write/action tool call needs a decision unless the user already decided it
                 // (approvals) or granted blanket approval for that tool (autoApprove).
                 const needsDecision = (tc: OpenAIToolCall): boolean =>
@@ -361,7 +423,20 @@ export class ChatOrchestrator {
                         args: parseToolArgs(tc.function.arguments),
                         kind: toolKind(tc.function.name),
                     }));
-                    return { status: 'confirm', content: lastText, newMessages, steps, pendingActions };
+                    return {
+                        status: 'confirm',
+                        content: lastText,
+                        newMessages,
+                        steps,
+                        pendingActions,
+                        // Everything still unanswered, not only the cards the user sees: the calls that
+                        // were not reached come back with the conversation too and must be known then.
+                        openToolCalls: pending.map(toolCall => ({
+                            id: toolCall.id,
+                            tool: toolCall.function.name,
+                            args: toolCall.function.arguments || '',
+                        })),
+                    };
                 }
 
                 for (const toolCall of pending) {
