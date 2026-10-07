@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixed: compressed log files (`.gz`) are shown unpacked again
+
 ### 8.1.0 (2026-10-07)
 - (@GermanBluefox) Fixed: "Save & Close" of the base settings was active while the settings were still loading
 - (@GermanBluefox) Changed: the news in the update dialogs are rendered as Markdown
