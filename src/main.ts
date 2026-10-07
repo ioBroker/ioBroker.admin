@@ -2178,7 +2178,8 @@ class Admin extends Adapter {
             return 'jsonl';
         }
         const diagData = await this.sendToHostAsync(this.host, 'getDiagData', 'normal');
-        return diagData.objectsType as 'jsonl' | 'file' | 'redis';
+        // a host that does not answer is treated like one that is offline
+        return (diagData?.objectsType as 'jsonl' | 'file' | 'redis' | undefined) || 'jsonl';
     }
 
     /**
@@ -2203,6 +2204,9 @@ class Admin extends Adapter {
             throw new Error('Host is offline');
         }
         const hostInfo = await this.sendToHostAsync(this.host, 'getHostInfo', {});
+        if (!hostInfo?.NPM) {
+            throw new Error('Host did not report its npm version');
+        }
         return hostInfo.NPM;
     }
 

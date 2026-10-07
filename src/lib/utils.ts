@@ -415,6 +415,28 @@ function getWebExtensionLinks(
 }
 
 // internal use
+/**
+ * A service address as an adapter keeps it - `localhost:5000`, `http://127.0.0.1:8080` - is right for
+ * the adapter, which runs on that host, and wrong for the browser, which would look for the service
+ * on its own machine. The host part of such an address is replaced by the address under which the
+ * browser reaches the host of the instance; every other value is left as it is.
+ *
+ * @param value the value of a `native` attribute, as it goes into a link
+ * @param hostAddress the address of the host of the instance, as seen from the browser - asked only
+ * where it is needed
+ */
+function toBrowserAddress(value: unknown, hostAddress: () => string | null): unknown {
+    if (typeof value !== 'string') {
+        return value;
+    }
+    const match = value.match(/^(https?:\/\/)?(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(?=[:/]|$)/i);
+    if (!match) {
+        return value;
+    }
+    const address = hostAddress();
+    return address ? `${match[1] || ''}${address}${value.substring(match[0].length)}` : value;
+}
+
 function _replaceLink(
     link: string,
     objects: Record<string, ioBroker.InstanceObject>,
@@ -456,10 +478,15 @@ function _replaceLink(
                     } else {
                         link = link.replace(`%${placeholder}%`, ip || '');
                     }
-                } else if (!link.includes(`%${placeholder}%`)) {
-                    link = link.replace(`%native_${placeholder}%`, value);
                 } else {
-                    link = link.replace(`%${placeholder}%`, value);
+                    value = toBrowserAddress(value, () => getHostname(object, objects, hosts, hostname, adminInstance));
+                    if (!link.includes(`%${placeholder}%`)) {
+                        link = link.replace(`%native_${placeholder}%`, value);
+                    } else {
+                        link = link.replace(`%${placeholder}%`, value);
+                    }
+                    // a link that names the scheme itself, around a value that carries one too
+                    link = link.replace(/^https?:\/\/(?=https?:\/\/)/i, '');
                 }
             }
         } else {
