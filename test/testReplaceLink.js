@@ -8204,3 +8204,47 @@ describe('admin public path (reverse proxy)', () => {
         });
     });
 });
+
+describe('Test replace link: service addresses of an adapter', function () {
+    // an adapter that keeps the address of an external service - like frigate with `friurl`
+    const withService = friurl => ({
+        ...instances,
+        'system.adapter.frigate.0': {
+            _id: 'system.adapter.frigate.0',
+            type: 'instance',
+            common: {
+                name: 'frigate',
+                // the same host as admin, so the browser reaches it under the address it reaches admin
+                host: instances['system.adapter.admin.0'].common.host,
+                enabled: true,
+                localLinks: { _default: { link: 'http://%native_friurl%' } },
+            },
+            native: { friurl },
+        },
+    });
+    const resolve = friurl =>
+        replaceLink('http://%native_friurl%', 'frigate', 0, {
+            instances: withService(friurl),
+            hostname: '192.168.1.129',
+            adminInstance: 'admin.0',
+            hosts,
+        })[0].url;
+
+    it('opens a service on "localhost" on the host of the instance, not on the machine of the browser', function () {
+        assert.strictEqual(resolve('localhost:5000'), 'http://192.168.1.129:5000');
+        assert.strictEqual(resolve('127.0.0.1:5000'), 'http://192.168.1.129:5000');
+        assert.strictEqual(resolve('0.0.0.0:5000/live'), 'http://192.168.1.129:5000/live');
+    });
+
+    it('leaves an address that names another machine as it is', function () {
+        assert.strictEqual(resolve('192.168.1.50:5000'), 'http://192.168.1.50:5000');
+        assert.strictEqual(resolve('frigate.local:5000'), 'http://frigate.local:5000');
+        // a host that only starts like a loopback name is a different host
+        assert.strictEqual(resolve('localhostname:5000'), 'http://localhostname:5000');
+    });
+
+    it('keeps one scheme where the value brings its own', function () {
+        assert.strictEqual(resolve('http://127.0.0.1:5000'), 'http://192.168.1.129:5000');
+        assert.strictEqual(resolve('https://frigate.local:8971'), 'https://frigate.local:8971');
+    });
+});
