@@ -97,6 +97,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@krobipd) Fixed: with the GUI settings stored on the server, a window of the admin threw away what others had saved in the meantime. It read the settings once at the start and wrote that copy back as a whole on every change, so two windows or devices took each other's settings away - a column width, an opened folder - and any other change to the object was undone as well, e.g. a history setting that had been switched off came back on. A window now remembers only what it changed itself, reads the stored settings anew right before writing and applies just these changes. A write that fails because the connection is lost is no longer an unhandled error: the change stays and is written after the reconnect
 - (@GermanBluefox) Fixed: compressed log files (`.gz`) are shown unpacked again
 
 ### 8.1.0 (2026-10-07)
