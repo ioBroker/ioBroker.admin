@@ -606,7 +606,18 @@ export default class Web {
         }
     }
 
-    unzipFile(fileName: string, data: string, res: Response): void {
+    /** Buffers sent via sendTo arrive serialized as `{ type: 'Buffer', data: number[] }` */
+    static toBuffer(data: Buffer | string | { type: 'Buffer'; data: number[] }): Buffer {
+        if (Buffer.isBuffer(data)) {
+            return data;
+        }
+        if (typeof data === 'object' && data?.type === 'Buffer' && Array.isArray(data.data)) {
+            return Buffer.from(data.data);
+        }
+        return Buffer.from(data as string, 'utf8');
+    }
+
+    unzipFile(fileName: string, data: Buffer, res: Response): void {
         // extract the file
         try {
             const text = gunzipSync(data).toString('utf8');
@@ -942,7 +953,12 @@ export default class Web {
                         'getLogFile',
                         { filename: fileName, transport },
                         result => {
-                            const _result = result as { error?: string; data?: string; size?: number; gz?: boolean };
+                            const _result = result as {
+                                error?: string;
+                                data?: Buffer | string | { type: 'Buffer'; data: number[] };
+                                size?: number;
+                                gz?: boolean;
+                            };
                             if (!_result || _result.error) {
                                 if (_result.error) {
                                     this.adapter.log.warn(`Cannot read log file ${fileName}: ${_result.error}`);
@@ -952,15 +968,16 @@ export default class Web {
                                 if (_result.data === undefined || _result.data === null) {
                                     res.status(404).send(this.get404Page('File %s not found', fileName));
                                 } else if (_result.gz) {
+                                    const data = Web.toBuffer(_result.data);
                                     if ((_result.size || 0) > 1024 * 1024) {
                                         res.header('Content-Type', 'application/gzip');
-                                        res.send(_result.data);
+                                        res.send(data);
                                     } else {
                                         try {
-                                            this.unzipFile(fileName, _result.data, res);
+                                            this.unzipFile(fileName, data, res);
                                         } catch (e) {
                                             res.header('Content-Type', 'application/gzip');
-                                            res.send(_result.data);
+                                            res.send(data);
                                             this.adapter.log.error(
                                                 `Cannot extract file ${fileName}: ${(e as Error).toString()}`,
                                             );
@@ -968,10 +985,12 @@ export default class Web {
                                     }
                                 } else if ((_result.size || 0) > 2 * 1024 * 1024) {
                                     res.header('Content-Type', 'text/plain');
-                                    res.send(_result.data);
+                                    res.send(Web.toBuffer(_result.data).toString('utf8'));
                                 } else {
                                     res.header('Content-Type', 'text/html');
-                                    res.send(this.decorateLogFile(fileName, _result.data));
+                                    res.send(
+                                        this.decorateLogFile(fileName, Web.toBuffer(_result.data).toString('utf8')),
+                                    );
                                 }
                             }
                         },
@@ -1019,11 +1038,7 @@ export default class Web {
                                         res.sendFile(fileName);
                                     } else {
                                         try {
-                                            this.unzipFile(
-                                                fileName,
-                                                readFileSync(fileName, { encoding: 'utf-8' }),
-                                                res,
-                                            );
+                                            this.unzipFile(fileName, readFileSync(fileName), res);
                                         } catch (e) {
                                             res.header('Content-Type', 'application/gzip');
                                             res.sendFile(fileName);

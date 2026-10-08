@@ -98,6 +98,19 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@krobipd) Fixed: with the GUI settings stored on the server, a window of the admin threw away what others had saved in the meantime. It read the settings once at the start and wrote that copy back as a whole on every change, so two windows or devices took each other's settings away - a column width, an opened folder - and any other change to the object was undone as well, e.g. a history setting that had been switched off came back on. A window now remembers only what it changed itself, reads the stored settings anew right before writing and applies just these changes. A write that fails because the connection is lost is no longer an unhandled error: the change stays and is written after the reconnect
+- (@GermanBluefox) Fixed: compressed log files (`.gz`) are shown unpacked again
+
+### 8.1.0 (2026-10-07)
+- (@GermanBluefox) Fixed: "Save & Close" of the base settings was active while the settings were still loading
+- (@GermanBluefox) Changed: the news in the update dialogs are rendered as Markdown
+- (@GermanBluefox) Fixed: links with `localhost`, `127.0.0.1` or `0.0.0.0` (e.g. `http://%native_friurl%`) now use the address of the instance's host
+- (@GermanBluefox) Fixed: the log search and the MCP info dialog require the `execute` right
+- (@GermanBluefox) Fixed: the AI assistant no longer trusts endpoint, permissions and confirmations from the request; tools run with the rights of the user who asked. Reported by two external security researchers
+- (@GermanBluefox) Fixed: AI assistant answers and log searches longer than 30 seconds ended in an empty answer or "timeout"; the result is pushed to the browser now
+- (@GermanBluefox) Added: "Maximum answer length" in the settings of the AI assistant (Anthropic)
+- (@GermanBluefox) Fixed: the news of the notification dialog were always shown in English (#3534)
+- (@GermanBluefox) Fixed: the notification dialog showed "undefined" when a translation was missing
+- (@GermanBluefox) Fixed: Chrome offered to generate and store a password in the API key fields of the credentials
 
 ### 8.0.23 (2026-10-03)
 - (@GermanBluefox) Changed: the info dialog of a host on the quick access page shows what it knows instead of what the host sends. Every line has an icon in front of it - the penguin, the window, the apple or the daemon for the platform, a chip for the CPU, a clock for the time - the names start with a capital letter, and a `true` is now a "Yes". The disk is no longer two lines with two numbers but one bar that fills with the free space, `11.8 GB / 26.2 GB`, red as soon as less than a tenth is left. The time of the host was a bare timestamp like `1790980340380` because the entry was looked up under `Time` while the host calls it `time`; it is now the wall clock of the host, shifted by the time zone the host reports, so neither UTC nor the time zone of the browser is shown
@@ -134,16 +147,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Fixed: in a multihost system, the Log tab asked its own controller whether `getLogs` understands a log level, but sent the request to the selected host. If that host still ran an older js-controller, it answered with the complete log file. The question now goes to the host whose log is shown
 - (@GermanBluefox) Fixed: if a host knows the command `searchLogs` but cannot carry it out - e.g. because it writes no log file at all - the Log tab showed its error. Its files are now read the way those of an older controller are read
 - (@GermanBluefox) The assistant is shown only on admin tabs, not on the config pages of other adapters.
-
-### 8.0.18 (2026-09-23)
-- (@krobipd) Fixed: the admin showed its start screen for half a minute when the host could not reach the repository server (no internet, firewall). The start no longer waits for the repository and the installed versions; only the adapters tab needs them, and it fills itself as soon as they arrive
-- (@krobipd) Fixed: on a slow or busy host, the admin start ended with "Cannot get hosts: Error: timeout" and an empty menu column until the page was reloaded. The menu and the host selector now try again (after 2 s, 5 s, then every 10 s) and after a reconnect, without an alert for each failed attempt; a missing permission is still reported once
-- (@krobipd) Fixed: when the instance objects could not be read, the pinned config manager entries were deleted from the menu
-- (@krobipd) Changed: several instance changes in a row rebuild the menu only once, and an older rebuild can no longer overwrite a newer one
-- (@GermanBluefox) Changed: in the categories, an object dragged from one room or function onto another one is moved there; it is copied only if Shift, Ctrl or Alt is held while dropping (formerly only Alt, and the object often appeared to be copied anyway). The preview at the pointer shows whether it will be moved or copied, and a hint below the members explains the keys
-- (@GermanBluefox) Fixed: after an object was moved to another room or function, it was still shown in the old one until the page was reloaded
-- (@GermanBluefox) Added: the "Default History" selection in the base settings shows the icons of the history adapters, in the list and in the field
-- (@GermanBluefox) Added: the base settings open with the tab that was used last, unless the link names a tab
 
 ## License
 

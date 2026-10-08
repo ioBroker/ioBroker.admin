@@ -9,6 +9,7 @@ import {
     Fab,
     FormControl,
     IconButton,
+    InputAdornment,
     InputLabel,
     MenuItem,
     Paper,
@@ -34,10 +35,13 @@ import {
     Person as PersonIcon,
     SmartToy as SmartToyIcon,
     Tune as TuneIcon,
+    Visibility as VisibilityIcon,
+    VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 
 import { DialogConfirm, type AdminConnection, type Translate, Utils } from '@iobroker/gui-components';
 
+import { SECRET_INPUT_STYLE } from '@/helpers/utils';
 import IoBrokerLogo from '@/assets/logo.svg';
 import AdminUtils from '../../helpers/AdminUtils';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -323,6 +327,8 @@ interface CredentialsDialogState {
     deleteIndex: number | null;
     /** Map of credential ID to instances that reference it */
     usage: Record<string, UsageEntry[]>;
+    /** Secret fields of the edit dialog that are shown in clear text, by field name */
+    visibleSecrets: Record<string, boolean>;
 }
 
 export default class CredentialsDialog extends BaseSystemSettingsDialog<
@@ -340,11 +346,19 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
             addName: '',
             deleteIndex: null,
             usage: {},
+            visibleSecrets: {},
         };
     }
 
     componentDidMount(): void {
         void this.detectUsage();
+    }
+
+    componentDidUpdate(_prevProps: CredentialsDialogProps, prevState: CredentialsDialogState): void {
+        // every credential starts masked again, so a key does not stay visible when the dialog is reopened
+        if (prevState.editIndex !== this.state.editIndex && Object.keys(this.state.visibleSecrets).length) {
+            this.setState({ visibleSecrets: {} });
+        }
     }
 
     /**
@@ -495,6 +509,36 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
     }
 
     /**
+     * Eye that unmasks one secret field.
+     *
+     * @param name name of the field in `native`
+     * @param disabled nothing to show: the field is empty or holds the placeholder of a stored secret
+     */
+    renderVisibilityButton(name: string, disabled: boolean): JSX.Element {
+        const visible = !!this.state.visibleSecrets[name];
+
+        return (
+            <InputAdornment position="end">
+                <IconButton
+                    tabIndex={-1}
+                    size="small"
+                    edge="end"
+                    disabled={disabled || this.props.saving}
+                    aria-label={this.props.t(visible ? 'Hide password' : 'Show password')}
+                    title={this.props.t(visible ? 'Hide password' : 'Show password')}
+                    onClick={() =>
+                        this.setState({
+                            visibleSecrets: { ...this.state.visibleSecrets, [name]: !visible },
+                        })
+                    }
+                >
+                    {visible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+            </InputAdornment>
+        );
+    }
+
+    /**
      * Renders one input field of the edit dialog.
      * Enter jumps to the next field (`nextField`) or, in the last field, applies the dialog.
      */
@@ -544,13 +588,20 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
             );
         }
 
+        const secret = field.type === 'password';
+        const masked = secret && !this.state.visibleSecrets[field.name];
+
         return (
             <TextField
                 key={field.name}
                 id={`credential_${field.name}`}
                 variant="standard"
                 style={styles.field}
-                type={field.type === 'password' ? 'password' : 'text'}
+                // Deliberately no `type="password"`: the password managers of the browsers only act on such
+                // fields. Chrome offered to generate a "strong password" for an API key and wanted to store it
+                // afterwards - these credentials belong to other services and are kept by ioBroker, not by the
+                // browser. The secret is masked by CSS instead, so no password manager is involved at all.
+                type="text"
                 label={this.props.t(field.label)}
                 value={value === undefined || value === null ? '' : value}
                 disabled={this.props.saving}
@@ -558,15 +609,25 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
                 error={field.required && !value}
                 slotProps={{
                     inputLabel: { shrink: true },
-                    // "new-password" suppresses the browser autofill on password/key fields
-                    htmlInput: { autoComplete: field.type === 'password' ? 'new-password' : 'off' },
+                    htmlInput: {
+                        autoComplete: 'off',
+                        autoCorrect: 'off',
+                        autoCapitalize: 'off',
+                        spellCheck: false,
+                        style: masked ? SECRET_INPUT_STYLE : undefined,
+                    },
+                    input: secret
+                        ? {
+                              endAdornment: this.renderVisibilityButton(field.name, !value || value === SOME_PASSWORD),
+                          }
+                        : undefined,
                 }}
                 onChange={e => {
                     const newCredential = AdminUtils.clone(credential);
                     newCredential.native[field.name] = e.target.value;
                     this.onChangeCredential(index, newCredential);
                 }}
-                onFocus={field.type === 'password' && value === SOME_PASSWORD ? e => e.target.select() : undefined}
+                onFocus={secret && value === SOME_PASSWORD ? e => e.target.select() : undefined}
                 onKeyDown={e => {
                     if (e.key === 'Enter') {
                         e.preventDefault();

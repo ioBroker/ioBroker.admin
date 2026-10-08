@@ -45,6 +45,7 @@ import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobr
 
 import ChatSettings from './ChatSettings';
 import ChatMcpInfoDialog from './ChatMcpInfoDialog';
+import { sendPushRequest } from '../../helpers/pushRequest';
 import {
     CHAT_SETTINGS_OBJECT_ID,
     chatSettingsReady,
@@ -435,14 +436,17 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
     ): Promise<void> => {
         setLoading(true);
         try {
-            const result = await props.socket.sendTo<ChatSendResponse>(props.instance, 'chat:send', {
+            /*
+             * Not a plain `sendTo`: a turn takes longer than the 30 s a socket callback lives, so the
+             * answer is pushed as an instance message (see `helpers/pushRequest.ts`), which is also what
+             * identifies this session to the backend.
+             *
+             * Which endpoint, model and credential are used is NOT sent along: the backend reads that
+             * from `system.ai` itself, so a request can neither point the stored key at another host nor
+             * pick a provider the settings do not name.
+             */
+            const result = await sendPushRequest<ChatSendResponse>(props.socket, props.instance, 'chat:send', {
                 messages: apiMessagesRef.current,
-                provider: settings.provider,
-                model: settings.model,
-                credentialId: settings.credentialId || undefined,
-                baseUrl: settings.baseUrl || undefined,
-                allowSelfSignedCerts: settings.allowSelfSignedCerts,
-                reasoningEffort: settings.reasoningEffort || undefined,
                 mode,
                 approvals,
                 autoApprove: autoApproveList,

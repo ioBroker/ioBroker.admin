@@ -6,14 +6,21 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    IconButton,
     InputAdornment,
     TextField,
 } from '@mui/material';
-import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
+import {
+    Check as CheckIcon,
+    Close as CloseIcon,
+    Visibility as VisibilityIcon,
+    VisibilityOff as VisibilityOffIcon,
+} from '@mui/icons-material';
 import { I18n, Utils, Icon, type AdminConnection } from '@iobroker/gui-components';
 
 import { CREDENTIALS_PREFIX, CREDENTIALS_VERSION, CREDENTIAL_FORMS } from '../SystemSettings/credentialTypes';
 import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';
+import { SECRET_INPUT_STYLE } from '@/helpers/utils';
 import type { AiProvider } from './chatTypes';
 
 /** Suggested unique name and icon for a freshly created credential, by provider. */
@@ -44,6 +51,7 @@ export default function ChatCreateCredentialDialog(props: ChatCreateCredentialDi
     const defaults = PROVIDER_DEFAULTS[props.provider] || PROVIDER_DEFAULTS.custom;
     const [name, setName] = useState<string>(defaults.name);
     const [apiKey, setApiKey] = useState<string>('');
+    const [keyVisible, setKeyVisible] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
 
@@ -133,14 +141,38 @@ export default function ChatCreateCredentialDialog(props: ChatCreateCredentialDi
                 <TextField
                     variant="standard"
                     fullWidth
-                    type="password"
+                    // No `type="password"`: that would hand the API key to the password manager of the browser,
+                    // which offers to generate a password for it. It is masked by CSS instead.
+                    type="text"
                     required
                     label={I18n.t('API key')}
                     value={apiKey}
                     slotProps={{
                         inputLabel: { shrink: true },
-                        // "new-password" suppresses the browser autofill on the key field
-                        htmlInput: { autoComplete: 'new-password' },
+                        htmlInput: {
+                            autoComplete: 'off',
+                            autoCorrect: 'off',
+                            autoCapitalize: 'off',
+                            spellCheck: false,
+                            style: keyVisible ? undefined : SECRET_INPUT_STYLE,
+                        },
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        tabIndex={-1}
+                                        size="small"
+                                        edge="end"
+                                        disabled={!apiKey}
+                                        aria-label={I18n.t(keyVisible ? 'Hide password' : 'Show password')}
+                                        title={I18n.t(keyVisible ? 'Hide password' : 'Show password')}
+                                        onClick={() => setKeyVisible(!keyVisible)}
+                                    >
+                                        {keyVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        },
                     }}
                     onChange={e => {
                         setApiKey(e.target.value);

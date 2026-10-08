@@ -45,6 +45,11 @@ export type ClientAction =
 export interface ChatSendResponse {
     success?: boolean;
     error?: string;
+    /**
+     * Only in the immediate acknowledgement: the backend took the request and will push the real
+     * answer as an instance message (see `helpers/pushRequest.ts`).
+     */
+    accepted?: boolean;
     status?: 'done' | 'confirm';
     content?: string;
     newMessages?: ApiMessage[];
@@ -113,9 +118,20 @@ export interface ChatSettingsValue {
      * parameter out and lets the endpoint decide; `none` is what a small local model wants.
      */
     reasoningEffort: ReasoningEffort;
+    /**
+     * Output budget of one answer in tokens. Only Anthropic requires the parameter; the backend
+     * clamps the value into the range every model accepts and falls back to the default on 0.
+     */
+    maxTokens: number;
     /** Hide the floating launcher button; reveal it by moving the mouse to the bottom-right corner. */
     hideFab: boolean;
 }
+
+/** What the backend sends to Anthropic when no own value is configured. */
+export const DEFAULT_CHAT_MAX_TOKENS = 8192;
+/** The range the backend accepts - outside of it every model answers 400. */
+export const MIN_CHAT_MAX_TOKENS = 1024;
+export const MAX_CHAT_MAX_TOKENS = 200_000;
 
 /** What the chat panel renders as a single conversation entry. */
 export type DisplayItem =
@@ -134,6 +150,7 @@ export const DEFAULT_CHAT_SETTINGS: ChatSettingsValue = {
     baseUrl: '',
     allowSelfSignedCerts: false,
     reasoningEffort: '',
+    maxTokens: DEFAULT_CHAT_MAX_TOKENS,
     hideFab: false,
 };
 

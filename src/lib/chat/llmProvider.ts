@@ -47,9 +47,47 @@ export interface LlmChatResult {
     tool_calls?: OpenAIToolCall[];
 }
 
-const DEFAULT_TIMEOUT = 600_000;
-const DEFAULT_MAX_TOKENS = 8192;
+/** Ceiling for one LLM request, and the budget when the caller names none */
+export const MAX_REQUEST_TIMEOUT_MS = 600_000;
+/** What Anthropic gets as `max_tokens` when the setting is empty or unusable */
+export const DEFAULT_MAX_TOKENS = 8192;
+/** Smallest `max_tokens` worth sending: below that not even a short answer with its reasoning fits */
+export const MIN_MAX_TOKENS = 1024;
+/** Highest `max_tokens` the setting may ask for - beyond this every current model answers 400 */
+export const MAX_MAX_TOKENS = 200_000;
 const OPENAI_BASE = 'https://api.openai.com/v1';
+
+/**
+ * How long to wait for an AI endpoint, from the `timeout` the caller put in the message.
+ *
+ * @param requestedTimeout the value from the `chat:send` message, in milliseconds
+ */
+export function resolveRequestTimeout(requestedTimeout?: unknown): number {
+    const requested = parseInt(requestedTimeout as string, 10);
+    // Nothing usable, or a zero - which is how Node itself spells "no timeout" - gets the ceiling
+    if (isNaN(requested) || requested <= 0) {
+        return MAX_REQUEST_TIMEOUT_MS;
+    }
+    // A second is the floor: below that not even a local model gets a chance to answer
+    return Math.min(Math.max(requested, 1000), MAX_REQUEST_TIMEOUT_MS);
+}
+
+/**
+ * The output budget for an Anthropic request.
+ *
+ * Anthropic insists on `max_tokens`, so there is no "let the endpoint decide". Too small and the
+ * answer is cut off mid-line; too large and the model rejects the request outright, so the
+ * configured value is clamped into a range every model can live with.
+ *
+ * @param configured the value from the assistant settings
+ */
+export function resolveMaxTokens(configured?: unknown): number {
+    const requested = parseInt(configured as string, 10);
+    if (isNaN(requested) || requested <= 0) {
+        return DEFAULT_MAX_TOKENS;
+    }
+    return Math.min(Math.max(requested, MIN_MAX_TOKENS), MAX_MAX_TOKENS);
+}
 
 /**
  * Models that refuse function tools unless the reasoning is switched off explicitly.
@@ -175,7 +213,7 @@ export async function chatCompletion(params: LlmChatParams): Promise<LlmChatResu
     const { url, headers, body } = buildChatRequest(params);
     const config: AxiosRequestConfig = {
         headers,
-        timeout: params.timeoutMs ?? DEFAULT_TIMEOUT,
+        timeout: params.timeoutMs ?? MAX_REQUEST_TIMEOUT_MS,
         validateStatus: () => true,
         // Accepting self-signed certs only makes sense for a custom endpoint; never weaken TLS for the
         // official provider hosts even if the flag is left over from a previous custom configuration.

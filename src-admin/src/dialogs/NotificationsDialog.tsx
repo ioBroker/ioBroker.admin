@@ -243,6 +243,26 @@ interface MessagesPerScope {
     [scope: string]: Record<string, Message & { host: string }>;
 }
 
+/**
+ * Text of a translated name or description in the language of the GUI.
+ *
+ * Scopes and categories are described by every adapter in its own io-package, so a translation can be
+ * missing for the current language or be no object at all. English is the fallback, and if even that is
+ * missing, the name of the category is still more helpful than "undefined".
+ *
+ * @param text translated text as it came with the notification
+ * @param fallback text to show if no translation exists
+ */
+function getTranslation(text: ioBroker.StringOrTranslated | undefined, fallback = ''): string {
+    if (!text) {
+        return fallback;
+    }
+    if (typeof text === 'string') {
+        return text;
+    }
+    return text[I18n.getLanguage()] || text.en || fallback;
+}
+
 function onLink(linkCommand: BackEndCommandOpenLink, instanceId: string, onClose: () => void): void {
     let target;
     let url = '';
@@ -437,7 +457,7 @@ const NotificationsDialog = ({
                                         disabled={disabled.includes(key)}
                                         key={key}
                                         value={key}
-                                        label={`${entry.name[I18n.getLanguage()]}`}
+                                        label={getTranslation(entry.name, name)}
                                         icon={
                                             <Status
                                                 severity={entry.severity}
@@ -462,13 +482,13 @@ const NotificationsDialog = ({
                                 sx={styles.headerText}
                                 style={{ fontWeight: 'bold' }}
                             >
-                                {entry.name[I18n.getLanguage()]}
+                                {getTranslation(entry.name, currentName)}
                             </Box>
                             <Box
                                 component="div"
                                 sx={styles.descriptionHeaderText}
                             >
-                                {entry.description[I18n.getLanguage()]}
+                                {getTranslation(entry.description)}
                             </Box>
                             <div>
                                 {entry.instances

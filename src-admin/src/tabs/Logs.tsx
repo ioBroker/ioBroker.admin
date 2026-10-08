@@ -63,6 +63,7 @@ import { parseLogFileLine, type LogLineSaved, type LogsWorker } from '@/Workers/
 import type { CompactAdapterInfo, CompactHost } from '@/types';
 
 import AdminUtils from '../helpers/AdminUtils';
+import { sendPushRequest } from '../helpers/pushRequest';
 
 const MAX_LOGS = 3000;
 
@@ -74,6 +75,15 @@ const SEARCH_RANGES = [0, 1, 6, 24, 72, 168, 720];
 
 /** Time range of a search started with Enter, as long as none was chosen */
 const DEFAULT_SEARCH_HOURS = 24;
+
+/**
+ * How long to wait for the result of a search in the log files.
+ *
+ * The admin instance reads the files of its own host itself and asks the js-controller of another host
+ * for them, which it gives a minute of its own. Far more than the 30 s a socket callback lives, so the
+ * answer is pushed as an instance message instead.
+ */
+const SEARCH_TIMEOUT_MS = 120_000;
 
 const styles: Record<string, any> = {
     container: {
@@ -612,16 +622,24 @@ class Logs extends Component<LogsProps, LogsState> {
             this.state.source !== '1' && this.state.sources[this.state.source] ? this.state.source : undefined;
 
         try {
-            const result = await this.props.socket.sendTo<
+            // Not a plain `sendTo`: reading the files takes longer than a socket callback lives, so the
+            // answer is pushed as an instance message. See `helpers/pushRequest.ts`.
+            const result = await sendPushRequest<
                 { lines?: string[]; truncated?: boolean; until?: number; error?: string } | string | null
-            >(this.state.searchInstance, 'admin:searchLogs', {
-                host: this.state.currentHost,
-                hours,
-                level: this.state.severity,
-                source,
-                text: this.state.message || undefined,
-                maxRows: MAX_LOGS,
-            });
+            >(
+                this.props.socket,
+                this.state.searchInstance,
+                'admin:searchLogs',
+                {
+                    host: this.state.currentHost,
+                    hours,
+                    level: this.state.severity,
+                    source,
+                    text: this.state.message || undefined,
+                    maxRows: MAX_LOGS,
+                },
+                SEARCH_TIMEOUT_MS,
+            );
             if (request !== this.logsRequest) {
                 return;
             }

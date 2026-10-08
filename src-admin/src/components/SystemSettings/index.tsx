@@ -620,16 +620,19 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
     }
 
     render(): JSX.Element {
-        const changed = !(
-            JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
-            JSON.stringify(this.state.systemConfig) === this.originalConfig &&
-            JSON.stringify(this.state.systemCertificates) === this.originalCertificates &&
-            JSON.stringify(this.state.systemCredentials) === this.originalCredentials &&
-            JSON.stringify({
-                login: this.state.systemLicenses?.native.login,
-                password: this.state.systemLicenses?.native.password,
-            }) === this.originalLicenses
-        );
+        // nothing can be changed before everything is loaded - the originals are still empty until then
+        const changed =
+            !this.state.loading &&
+            !(
+                JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
+                JSON.stringify(this.state.systemConfig) === this.originalConfig &&
+                JSON.stringify(this.state.systemCertificates) === this.originalCertificates &&
+                JSON.stringify(this.state.systemCredentials) === this.originalCredentials &&
+                JSON.stringify({
+                    login: this.state.systemLicenses?.native.login,
+                    password: this.state.systemLicenses?.native.password,
+                }) === this.originalLicenses
+            );
 
         const tabsList = this.getTabs().filter(tab => {
             if (!this.state.licenseManager && tab.name === 'tabLicenses') {

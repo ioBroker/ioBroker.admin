@@ -27,6 +27,7 @@ import { I18n, type IobTheme, Utils } from '@iobroker/gui-components';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import { checkCondition } from '@/components/Adapters/AdapterUpdateDialog';
 import type { RepoAdapterObject, RepoInfo } from '@/components/Adapters/Utils';
+import NewsLine, { stripNewsMarker } from '@/components/Adapters/NewsLine';
 
 interface GetNewsResultEntry {
     version: string;
@@ -376,9 +377,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                         const news = newsText
                             .split('\n')
                             .map(line =>
-                                line
-                                    .trim()
-                                    .replace(/^\*\s?/, '')
+                                stripNewsMarker(line.trim())
                                     .replace(/<!--[^>]*->/g, '')
                                     .replace(/<! -[^>]*->/g, '')
                                     .trim(),
@@ -405,13 +404,10 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                     ) : null}
                                 </Typography>
                                 {news.map((value, index) => (
-                                    <Typography
+                                    <NewsLine
                                         key={`${version}-${index}`}
-                                        component="div"
-                                        variant="body2"
-                                    >
-                                        {`• ${value}`}
-                                    </Typography>
+                                        text={value}
+                                    />
                                 ))}
                             </Grid>,
                         );

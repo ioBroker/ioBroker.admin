@@ -43,6 +43,7 @@ import 'moment/locale/ru';
 import 'moment/locale/uk';
 import 'moment/locale/zh-cn';
 import type { AdapterDependencies } from './AddInstanceDialog';
+import NewsLine, { stripNewsMarker } from './NewsLine';
 
 const styles: Record<string, any> = {
     dependencyEntry: {
@@ -513,9 +514,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
         this.props.news?.forEach(entry => {
             const news: string[] = (entry.news ? entry.news.split('\n') : [])
                 .map((line: string) =>
-                    line
-                        .trim()
-                        .replace(/^\*\s*/, '')
+                    stripNewsMarker(line.trim())
                         .replace(/<!--[^>]*->/, '')
                         .replace(/<! -[^>]*->/, '')
                         .replace(/<!--|--!?>/g, '')
@@ -556,13 +555,10 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                         ) : null}
                     </Typography>
                     {news.map((value, index) => (
-                        <Typography
+                        <NewsLine
                             key={`${entry.version}-${index}`}
-                            component="div"
-                            variant="body2"
-                        >
-                            {`• ${value}`}
-                        </Typography>
+                            text={value}
+                        />
                     ))}
                 </Grid>,
             );
