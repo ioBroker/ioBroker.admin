@@ -99,6 +99,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 - (@krobipd) Fixed: with the GUI settings stored on the server, a window of the admin threw away what others had saved in the meantime
 - (@GermanBluefox) Fixed: compressed log files (`.gz`) are shown unpacked again
+- (@GermanBluefox) Fixed: the link of a web extension to its own service (e.g. `http://%native_friurl%` of frigate) was sent to the web instance
 
 ### 8.1.0 (2026-10-07)
 - (@GermanBluefox) Fixed: "Save & Close" of the base settings was active while the settings were still loading
