@@ -414,6 +414,23 @@ function getWebExtensionLinks(
     return urls;
 }
 
+/** Placeholders that stand for the address of the instance itself: protocol, IP and port */
+const OWN_ADDRESS_PLACEHOLDERS = ['ip', 'bind', 'port', 'webinterfacePort', 'protocol', 'secure', 's'];
+
+/**
+ * Whether the origin of a link is built from the address of the instance itself (`%protocol%://%ip%:%port%`)
+ * or of another instance (`%web_port%`). An origin that takes any other attribute of the instance, like
+ * `http://%native_friurl%`, is the address of a service the adapter connects to and stays as it is.
+ *
+ * @param origin origin of the link template, e.g. `%protocol%://%ip%:%port%`
+ */
+function isOwnAddressOrigin(origin: string): boolean {
+    return (origin.match(/%(\w+)%/g) || []).every(placeholder => {
+        const name = placeholder.replace(/%/g, '').replace(/^native_/, '');
+        return name.includes('_') || OWN_ADDRESS_PLACEHOLDERS.includes(name);
+    });
+}
+
 // internal use
 /**
  * A service address as an adapter keeps it - `localhost:5000`, `http://127.0.0.1:8080` - is right for
@@ -550,10 +567,11 @@ export function replaceLink(
         // The links are only pre-filled here: the placeholders that are left in their path are
         // resolved below, together with the ones of a normal link.
         // A link with a hard-coded origin (e.g. to the documentation of the adapter) points exactly
-        // where it says and is left alone.
+        // where it says and is left alone - as does one whose origin is an address the adapter keeps
+        // itself (e.g. `http://%native_friurl%`): that is a service of its own, not the web extension.
         if (instanceObj?.common.webExtension && native.webInstance) {
             const origin = splitLink(link).origin;
-            if (origin === null || origin.includes('%')) {
+            if (origin === null || (origin.includes('%') && isOwnAddressOrigin(origin))) {
                 _urls.push(...getWebExtensionLinks(adapter, instanceObj, link, context));
             }
         }

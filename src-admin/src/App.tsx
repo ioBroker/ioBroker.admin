@@ -379,6 +379,55 @@ interface ObjectGuiSettings extends ioBroker.StateObject {
     };
 }
 
+/** Changes to the stored GUI settings, per storage: the new value, or `null` for a removed entry */
+interface GuiSettingsChanges {
+    localStorage: Record<string, string | null>;
+    sessionStorage: Record<string, string | null>;
+}
+
+/** Brings the settings of an older admin - stored flat in `native` - into the current form */
+function normalizeGuiSettings(obj: ObjectGuiSettings): ObjectGuiSettings {
+    obj.native ||= { localStorage: {}, sessionStorage: {} };
+    if (!obj.native.localStorage) {
+        obj.native = { localStorage: obj.native, sessionStorage: {} };
+    }
+    obj.native.sessionStorage ||= {};
+    return obj;
+}
+
+/**
+ * The writes of the GUI settings run one after another, and neither the read nor the write of the socket client
+ * times out by itself (a lost connection rejects them, a server that does not answer does not) - so a request
+ * without an answer must not hold back every later write
+ */
+const GUI_SETTINGS_TIMEOUT = 10_000;
+
+/** A write that got no answer while the connection is up is tried again after this time */
+const GUI_SETTINGS_RETRY = 5_000;
+
+function guiSettingsTimeout<T>(promise: Promise<T>, what: string): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    return Promise.race([
+        promise,
+        new Promise<never>((_resolve, reject) => {
+            timer = setTimeout(() => reject(new Error(`${what} got no answer`)), GUI_SETTINGS_TIMEOUT);
+        }),
+    ]).finally(() => clearTimeout(timer));
+}
+
+/** Applies the changes to the stored settings */
+function applyGuiSettingsChanges(native: ObjectGuiSettings['native'], changes: GuiSettingsChanges): void {
+    for (const storage of ['localStorage', 'sessionStorage'] as const) {
+        for (const [name, value] of Object.entries(changes[storage])) {
+            if (value === null) {
+                delete native[storage][name];
+            } else {
+                native[storage][name] = value;
+            }
+        }
+    }
+}
+
 const DEFAULT_GUI_SETTINGS_OBJECT: ObjectGuiSettings = {
     _id: '',
     type: 'state',
@@ -554,7 +603,19 @@ class App extends Router<AppProps, AppState> {
     /** Number of the latest `readRepoAndInstalledInfo` run. A slower, older run must not overwrite a newer one */
     private repoInfoRun = 0;
     private guiSettings: ObjectGuiSettings | null = null;
+
+    /**
+     * What this window changed in the stored GUI settings since its last write - `null` removes the entry.
+     * A write applies only these changes to a fresh read of the object. Writing the copy read at the start
+     * threw away everything saved since then: the settings of a second window or device, and any other
+     * change to the object, e.g. a custom setting in `common.custom`
+     */
+    private guiSettingsChanges: GuiSettingsChanges = { localStorage: {}, sessionStorage: {} };
+
+    /** The writes of the GUI settings run one after another, so a slow write cannot overtake a newer one */
+    private guiSettingsWrite: Promise<void> = Promise.resolve();
     private localStorageTimer: ReturnType<typeof setTimeout> | null = null;
+    private guiSettingsRetryTimer: ReturnType<typeof setTimeout> | null = null;
     private languageSet: boolean = false;
     private socket: AdminConnection | null = null;
     private adminInstance: string = '';
@@ -822,6 +883,7 @@ class App extends Router<AppProps, AppState> {
         }
         if (this.guiSettings) {
             this.guiSettings.native.localStorage[name] = value.toString();
+            this.guiSettingsChanges.localStorage[name] = value.toString();
         }
 
         this.localStorageSave();
@@ -830,6 +892,7 @@ class App extends Router<AppProps, AppState> {
     localStorageRemoveItem = (name: string): void => {
         if (this.guiSettings && Object.prototype.hasOwnProperty.call(this.guiSettings.native.localStorage, name)) {
             delete this.guiSettings.native.localStorage[name];
+            this.guiSettingsChanges.localStorage[name] = null;
             this.localStorageSave();
         }
     };
@@ -845,6 +908,7 @@ class App extends Router<AppProps, AppState> {
         }
         if (this.guiSettings) {
             this.guiSettings.native.sessionStorage[name] = value.toString();
+            this.guiSettingsChanges.sessionStorage[name] = value.toString();
         }
         this.localStorageSave();
     };
@@ -852,6 +916,7 @@ class App extends Router<AppProps, AppState> {
     sessionStorageRemoveItem = (name: string): void => {
         if (this.guiSettings && Object.prototype.hasOwnProperty.call(this.guiSettings.native.sessionStorage, name)) {
             delete this.guiSettings.native.sessionStorage[name];
+            this.guiSettingsChanges.sessionStorage[name] = null;
             this.localStorageSave();
         }
     };
@@ -860,12 +925,61 @@ class App extends Router<AppProps, AppState> {
         if (this.localStorageTimer) {
             clearTimeout(this.localStorageTimer);
         }
-        this.localStorageTimer = setTimeout(async () => {
+        if (this.guiSettingsRetryTimer) {
+            clearTimeout(this.guiSettingsRetryTimer);
+            this.guiSettingsRetryTimer = null;
+        }
+        this.localStorageTimer = setTimeout(() => {
             this.localStorageTimer = null;
-            if (this.guiSettings && this.socket) {
-                await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
-            }
+            this.guiSettingsWrite = this.guiSettingsWrite.then(() => this.writeGuiSettings());
         }, 200);
+    }
+
+    /**
+     * Writes the changes of this window into the stored GUI settings. The object is read anew right before,
+     * and only the changed entries are applied to it, so what another window, another device or anybody else
+     * wrote to it since this window read it stays. The window keeps the fresh object afterwards
+     */
+    async writeGuiSettings(): Promise<void> {
+        const changes = this.guiSettingsChanges;
+        if (
+            !this.guiSettings ||
+            !this.socket ||
+            (!Object.keys(changes.localStorage).length && !Object.keys(changes.sessionStorage).length)
+        ) {
+            return;
+        }
+        this.guiSettingsChanges = { localStorage: {}, sessionStorage: {} };
+        const id = `system.adapter.${this.adminInstance}.guiSettings`;
+
+        try {
+            const stored = (await guiSettingsTimeout(this.socket.getObject(id), 'Reading')) as
+                ObjectGuiSettings | null | undefined;
+            // Without a stored object (deleted meanwhile) the copy of this window is written, as before
+            const obj = normalizeGuiSettings(stored || JSON.parse(JSON.stringify(this.guiSettings)));
+            applyGuiSettingsChanges(obj.native, changes);
+            await guiSettingsTimeout(this.socket.setObject(id, obj), 'Writing');
+
+            if (this.guiSettings) {
+                // Changes made while this write was running are still to be written - keep them visible
+                this.guiSettings = obj;
+                applyGuiSettingsChanges(this.guiSettings.native, this.guiSettingsChanges);
+            }
+        } catch (e) {
+            // Keep the changes for the next write. A change made in the meantime is newer and wins
+            for (const storage of ['localStorage', 'sessionStorage'] as const) {
+                this.guiSettingsChanges[storage] = { ...changes[storage], ...this.guiSettingsChanges[storage] };
+            }
+            console.warn(`Could not save "${id}": ${(e as Error).message}`);
+            // A lost connection writes the changes on the reconnect. Without it (the server did not answer)
+            // nothing else would write them until the next change, so try again
+            if (this.socket?.isConnected() && !this.localStorageTimer && !this.guiSettingsRetryTimer) {
+                this.guiSettingsRetryTimer = setTimeout(() => {
+                    this.guiSettingsRetryTimer = null;
+                    this.localStorageSave();
+                }, GUI_SETTINGS_RETRY);
+            }
+        }
     }
 
     toggleTranslation = (): void => {
@@ -913,10 +1027,14 @@ class App extends Router<AppProps, AppState> {
             state = { val: false };
         }
         if (state?.val) {
-            this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
-            this.guiSettings!.native ||= { localStorage: {}, sessionStorage: {} };
-            if (!this.guiSettings!.native.localStorage) {
-                this.guiSettings!.native = { localStorage: this.guiSettings!.native, sessionStorage: {} };
+            this.guiSettings = normalizeGuiSettings(obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT)));
+            // A reconnect reads the settings anew - a change that could not be written yet stays and is written
+            if (
+                Object.keys(this.guiSettingsChanges.localStorage).length ||
+                Object.keys(this.guiSettingsChanges.sessionStorage).length
+            ) {
+                applyGuiSettingsChanges(this.guiSettings.native, this.guiSettingsChanges);
+                this.localStorageSave();
             }
 
             // @ts-expect-error it is not a full implementation of storage
@@ -1030,6 +1148,11 @@ class App extends Router<AppProps, AppState> {
             );
 
             this.guiSettings = null;
+            this.guiSettingsChanges = { localStorage: {}, sessionStorage: {} };
+            if (this.guiSettingsRetryTimer) {
+                clearTimeout(this.guiSettingsRetryTimer);
+                this.guiSettingsRetryTimer = null;
+            }
 
             try {
                 await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
@@ -1391,6 +1514,10 @@ class App extends Router<AppProps, AppState> {
         if (this.expireInSecInterval) {
             clearInterval(this.expireInSecInterval);
             this.expireInSecInterval = null;
+        }
+        if (this.guiSettingsRetryTimer) {
+            clearTimeout(this.guiSettingsRetryTimer);
+            this.guiSettingsRetryTimer = null;
         }
 
         if (window._localStorage) {

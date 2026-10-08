@@ -7771,6 +7771,22 @@ describe('Test replace link of a web-extension', function () {
         assert.strictEqual(result[0].url, link);
     });
 
+    it('leaves a link to a service the adapter keeps the address of', function () {
+        // frigate runs as web-extension, but its link `http://%native_friurl%` opens the Frigate server
+        // itself, not the pages it serves through the web instance
+        const _instances = {
+            ...instances,
+            'system.adapter.cameras.0': {
+                ...instances['system.adapter.cameras.0'],
+                native: { ...instances['system.adapter.cameras.0'].native, friurl: '192.168.1.187:5000' },
+            },
+        };
+        const result = replaceCamerasLink('http://%native_friurl%', _instances);
+
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].url, 'http://192.168.1.187:5000');
+    });
+
     it('resolves a relative link against the web instance', function () {
         const result = replaceCamerasLink('cameras/index.html?instance=%instance%');
 
