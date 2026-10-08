@@ -402,6 +402,9 @@ function normalizeGuiSettings(obj: ObjectGuiSettings): ObjectGuiSettings {
  */
 const GUI_SETTINGS_TIMEOUT = 10_000;
 
+/** A write that got no answer while the connection is up is tried again after this time */
+const GUI_SETTINGS_RETRY = 5_000;
+
 function guiSettingsTimeout<T>(promise: Promise<T>, what: string): Promise<T> {
     let timer: ReturnType<typeof setTimeout> | undefined;
     return Promise.race([
@@ -612,6 +615,7 @@ class App extends Router<AppProps, AppState> {
     /** The writes of the GUI settings run one after another, so a slow write cannot overtake a newer one */
     private guiSettingsWrite: Promise<void> = Promise.resolve();
     private localStorageTimer: ReturnType<typeof setTimeout> | null = null;
+    private guiSettingsRetryTimer: ReturnType<typeof setTimeout> | null = null;
     private languageSet: boolean = false;
     private socket: AdminConnection | null = null;
     private adminInstance: string = '';
@@ -921,6 +925,10 @@ class App extends Router<AppProps, AppState> {
         if (this.localStorageTimer) {
             clearTimeout(this.localStorageTimer);
         }
+        if (this.guiSettingsRetryTimer) {
+            clearTimeout(this.guiSettingsRetryTimer);
+            this.guiSettingsRetryTimer = null;
+        }
         this.localStorageTimer = setTimeout(() => {
             this.localStorageTimer = null;
             this.guiSettingsWrite = this.guiSettingsWrite.then(() => this.writeGuiSettings());
@@ -963,6 +971,14 @@ class App extends Router<AppProps, AppState> {
                 this.guiSettingsChanges[storage] = { ...changes[storage], ...this.guiSettingsChanges[storage] };
             }
             console.warn(`Could not save "${id}": ${(e as Error).message}`);
+            // A lost connection writes the changes on the reconnect. Without it (the server did not answer)
+            // nothing else would write them until the next change, so try again
+            if (this.socket?.isConnected() && !this.localStorageTimer && !this.guiSettingsRetryTimer) {
+                this.guiSettingsRetryTimer = setTimeout(() => {
+                    this.guiSettingsRetryTimer = null;
+                    this.localStorageSave();
+                }, GUI_SETTINGS_RETRY);
+            }
         }
     }
 
@@ -1133,6 +1149,10 @@ class App extends Router<AppProps, AppState> {
 
             this.guiSettings = null;
             this.guiSettingsChanges = { localStorage: {}, sessionStorage: {} };
+            if (this.guiSettingsRetryTimer) {
+                clearTimeout(this.guiSettingsRetryTimer);
+                this.guiSettingsRetryTimer = null;
+            }
 
             try {
                 await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
@@ -1494,6 +1514,10 @@ class App extends Router<AppProps, AppState> {
         if (this.expireInSecInterval) {
             clearInterval(this.expireInSecInterval);
             this.expireInSecInterval = null;
+        }
+        if (this.guiSettingsRetryTimer) {
+            clearTimeout(this.guiSettingsRetryTimer);
+            this.guiSettingsRetryTimer = null;
         }
 
         if (window._localStorage) {
