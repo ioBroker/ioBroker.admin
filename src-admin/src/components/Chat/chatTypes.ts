@@ -1,25 +1,22 @@
 /** Shared types for the admin chat helper frontend, mirroring the backend `chat:*` message API. */
 
 import type { AdminConnection } from '@iobroker/gui-components';
+import type { AiProvider, AiReasoningEffort, OpenAIMessage } from '@iobroker/ai-core/build/shared/types';
+import { DEFAULT_AI_MAX_TOKENS } from '@iobroker/ai-core/build/shared/limits';
 
-export type AiProvider = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'custom';
-
-/**
- * `reasoning_effort` for the OpenAI-compatible providers, mirroring `ReasoningEffort` of the backend.
- * Empty leaves the parameter out of the request and lets the endpoint decide.
+/*
+ * Providers, messages and limits are the ones of `@iobroker/ai-core`, which the backend talks to the
+ * providers with. An empty `ReasoningEffort` leaves the parameter out and lets the endpoint decide.
  */
-export type ReasoningEffort = '' | 'none' | 'minimal' | 'low' | 'medium' | 'high';
+export type { AiProvider, AiReasoningEffort as ReasoningEffort, OpenAIMessage as ApiMessage };
+export {
+    DEFAULT_AI_MAX_TOKENS as DEFAULT_CHAT_MAX_TOKENS,
+    MIN_AI_MAX_TOKENS as MIN_CHAT_MAX_TOKENS,
+    MAX_AI_MAX_TOKENS as MAX_CHAT_MAX_TOKENS,
+} from '@iobroker/ai-core/build/shared/limits';
 
 /** Permission mode: `read` = answer/inspect only, `act` = may propose write/action tools. */
 export type ChatMode = 'read' | 'act';
-
-/** A message in OpenAI chat-completion format (the conversation the backend continues each turn). */
-export interface ApiMessage {
-    role: 'system' | 'user' | 'assistant' | 'tool';
-    content?: string | null;
-    tool_calls?: unknown[];
-    tool_call_id?: string;
-}
 
 /** One executed tool call returned by the backend, for display. */
 export interface ChatStep {
@@ -52,7 +49,7 @@ export interface ChatSendResponse {
     accepted?: boolean;
     status?: 'done' | 'confirm';
     content?: string;
-    newMessages?: ApiMessage[];
+    newMessages?: OpenAIMessage[];
     steps?: ChatStep[];
     pendingActions?: PendingAction[];
     clientActions?: ClientAction[];
@@ -117,7 +114,7 @@ export interface ChatSettingsValue {
      * What to ask of the reasoning of an OpenAI-compatible endpoint. Empty - the default - leaves the
      * parameter out and lets the endpoint decide; `none` is what a small local model wants.
      */
-    reasoningEffort: ReasoningEffort;
+    reasoningEffort: AiReasoningEffort;
     /**
      * Output budget of one answer in tokens. Only Anthropic requires the parameter; the backend
      * clamps the value into the range every model accepts and falls back to the default on 0.
@@ -126,12 +123,6 @@ export interface ChatSettingsValue {
     /** Hide the floating launcher button; reveal it by moving the mouse to the bottom-right corner. */
     hideFab: boolean;
 }
-
-/** What the backend sends to Anthropic when no own value is configured. */
-export const DEFAULT_CHAT_MAX_TOKENS = 8192;
-/** The range the backend accepts - outside of it every model answers 400. */
-export const MIN_CHAT_MAX_TOKENS = 1024;
-export const MAX_CHAT_MAX_TOKENS = 200_000;
 
 /** What the chat panel renders as a single conversation entry. */
 export type DisplayItem =
@@ -150,7 +141,7 @@ export const DEFAULT_CHAT_SETTINGS: ChatSettingsValue = {
     baseUrl: '',
     allowSelfSignedCerts: false,
     reasoningEffort: '',
-    maxTokens: DEFAULT_CHAT_MAX_TOKENS,
+    maxTokens: DEFAULT_AI_MAX_TOKENS,
     hideFab: false,
 };
 
@@ -240,7 +231,7 @@ export const CHAT_MODE_KEY = 'App.chatHelperMode';
 /** The persisted conversation: what is rendered plus the OpenAI-format messages sent to the backend. */
 export interface ChatHistory {
     items: DisplayItem[];
-    apiMessages: ApiMessage[];
+    apiMessages: OpenAIMessage[];
 }
 
 /** Restore the conversation from localStorage (empty if none or malformed). */

@@ -250,7 +250,12 @@ export default abstract class AdapterGeneric<
             : true;
 
         return (
-            <IsVisible value={allowAdapterInstall}>
+            <IsVisible
+                value={
+                    allowAdapterInstall !== false &&
+                    !AdapterInstallDialog.isSingletonInstalled(this.props.adapterName, this.props.context)
+                }
+            >
                 <Tooltip
                     title={this.props.context.t('Add instance')}
                     slotProps={{ popper: { sx: this.styles.tooltip } }}

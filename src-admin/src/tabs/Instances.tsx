@@ -59,6 +59,10 @@ import InstanceRow from '../components/Instances/InstanceRow';
 import CustomSelectButton from '../components/CustomSelectButton';
 import InstanceFilterDialog from '../components/Instances/InstanceFilterDialog';
 import InstanceCategory from '../components/Instances/InstanceCategory';
+import { collectUsedResources, type HostUsedResource } from '../helpers/usedResources';
+
+/** The exclusive resources registered on the hosts (js-controller 8.0 on), see `helpers/usedResources` */
+const USED_RESOURCES_PATTERN = 'system.host.*.usedResources.*';
 
 const styles: Record<string, any> = {
     paper: {
@@ -154,6 +158,8 @@ interface InstancesState {
     sortColumn: SortColumn | null;
     sortDirection: SortDirection;
     reverseProxy?: ReverseProxyItem[] | null;
+    /** The resources each instance registered on its host, by instance (`mqtt.0`) */
+    usedResources: Record<string, HostUsedResource[]>;
 }
 
 // every tab should get their data itself from server
@@ -254,6 +260,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 : null,
             sortColumn: (this.localStorage.getItem('Instances.sortColumn') as SortColumn) || null,
             sortDirection: (this.localStorage.getItem('Instances.sortDirection') as SortDirection) || 'asc',
+            usedResources: {},
         };
 
         // this.columns = {
@@ -301,6 +308,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             console.warn('Cannot read reverseProxy config for Instances page:', e);
         }
         await this.updateData();
+        void this.readUsedResources();
         const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
         if (deleteCustomSupported) {
             this.setState({ deleteCustomSupported });
@@ -317,7 +325,43 @@ class Instances extends Component<InstancesProps, InstancesState> {
     componentWillUnmount(): void {
         this.unmounted = true;
         this.subscribeStates(true);
+        this.props.socket.unsubscribeState(USED_RESOURCES_PATTERN, this.onUsedResourcesChange);
         this.props.instancesWorker.unregisterHandler(this.getInstances);
+    }
+
+    /** The `usedResources` states of all hosts, as far as read or reported */
+    private usedResourcesStates: Record<string, ioBroker.State | null | undefined> = {};
+
+    /** Read the registered resources of all hosts and follow their changes */
+    async readUsedResources(): Promise<void> {
+        try {
+            const states = await this.props.socket.getForeignStates(USED_RESOURCES_PATTERN);
+            this.usedResourcesStates = { ...(states || {}), ...this.usedResourcesStates };
+            this.updateUsedResources();
+        } catch (e) {
+            console.warn(`Cannot read the used resources: ${e}`);
+        }
+        if (!this.unmounted) {
+            await this.props.socket.subscribeState(USED_RESOURCES_PATTERN, this.onUsedResourcesChange);
+        }
+    }
+
+    onUsedResourcesChange = (id: string, state: ioBroker.State | null | undefined): void => {
+        this.usedResourcesStates = { ...this.usedResourcesStates, [id]: state };
+        this.updateUsedResources();
+    };
+
+    updateUsedResources(): void {
+        if (this.unmounted) {
+            return;
+        }
+        const usedResources: Record<string, HostUsedResource[]> = {};
+        for (const resource of collectUsedResources(this.usedResourcesStates)) {
+            usedResources[resource.instance] ||= [];
+            usedResources[resource.instance].push(resource);
+        }
+        this._cacheList = null;
+        this.setState({ usedResources });
     }
 
     getStates(update?: boolean): Promise<Record<string, ioBroker.State>> {
@@ -867,9 +911,15 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const checkSentry = InstanceGeneric.getSentrySettings(instance.obj); // is it possible to enable/disable sentry for this adapter
             const currentSentry = this.isSentry(id);
 
-            const rawPort = instance.obj.native?.port;
+            // the port the instance registered on its host says what it really listens on; the
+            // configuration only what it was told to
+            const usedResources = this.state.usedResources[instance.id] || [];
+            const registeredPort = usedResources.find(r => r.type === 'tcpPort' || r.type === 'udpPort')?.data.port;
+            const rawPort = registeredPort ?? instance.obj.native?.port;
             const port: number | null =
-                rawPort === undefined || rawPort === null || rawPort === '' ? null : parseInt(rawPort, 10) || null;
+                rawPort === undefined || rawPort === null || rawPort === ''
+                    ? null
+                    : parseInt(String(rawPort), 10) || null;
 
             const item: InstanceItem = {
                 id,
@@ -899,6 +949,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 memoryLimitMB,
                 isPython,
                 port,
+                usedResources,
                 stoppedWhenWebExtension: instance.stoppedWhenWebExtension,
                 allowInstanceSettings: this.props.repository[instance.adapter]
                     ? this.props.repository[instance.adapter].allowInstanceSettings

@@ -409,11 +409,28 @@ export default class AdminUtils {
         return `https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${adapterName}/README.md`;
     }
 
-    static updateAvailable(oldVersion: string, newVersion: string): boolean {
+    /**
+     * Whether `newVersion` is newer than `oldVersion`. A version not known (empty) is not newer - e.g.
+     * a repository that does not list the adapter - and is not worth a warning (#3679)
+     *
+     * @param oldVersion the installed version
+     * @param newVersion the available version
+     * @param what what the versions are of, for the warning, e.g. `adapter "mqtt"`
+     */
+    static updateAvailable(
+        oldVersion: string | null | undefined,
+        newVersion: string | null | undefined,
+        what?: string,
+    ): boolean {
+        if (!oldVersion || !newVersion) {
+            return false;
+        }
         try {
             return semver.gt(newVersion, oldVersion) === true;
         } catch {
-            console.warn(`[ADAPTERS] Cannot compare "${newVersion}" and "${oldVersion}"`);
+            console.warn(
+                `[ADAPTERS] Cannot compare the available version "${newVersion}" with the installed "${oldVersion}"${what ? ` of ${what}` : ''}`,
+            );
             return false;
         }
     }
@@ -444,7 +461,7 @@ export default class AdminUtils {
                 _installed?.version &&
                 adapter?.version &&
                 _installed.ignoreVersion !== adapter.version &&
-                AdminUtils.updateAvailable(_installed.version, adapter.version)
+                AdminUtils.updateAvailable(_installed.version, adapter.version, `adapter "${name}"`)
             ) {
                 count++;
             }

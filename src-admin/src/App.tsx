@@ -119,6 +119,7 @@ import esLocal from './i18n/es.json';
 import plLocal from './i18n/pl.json';
 import ukLocal from './i18n/uk.json';
 import zhCNLocal from './i18n/zh-cn.json';
+import { isChunkLoadError, lazyWithReload, onPreloadError } from './helpers/lazyWithReload';
 
 // Tabs
 /**
@@ -142,19 +143,19 @@ const ADMIN_OWN_TABS = [
     'tab-devicemanager',
 ];
 
-const Overview = React.lazy(() => import('./tabs/Overview'));
-const Adapters = React.lazy(() => import('./tabs/Adapters'));
-const Instances = React.lazy(() => import('./tabs/Instances'));
-const Intro = React.lazy(() => import('./tabs/Intro'));
-const Logs = React.lazy(() => import('./tabs/Logs'));
-const Files = React.lazy(() => import('./tabs/Files'));
-const Objects = React.lazy(() => import('./tabs/Objects'));
-const Users = React.lazy(() => import('./tabs/Users'));
-const Enums = React.lazy(() => import('./tabs/Enums'));
-const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
-const DeviceManagerTab = React.lazy(() => import('./tabs/ConfigManager'));
-const Hosts = React.lazy(() => import('./tabs/Hosts'));
-const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
+const Overview = lazyWithReload(() => import('./tabs/Overview'));
+const Adapters = lazyWithReload(() => import('./tabs/Adapters'));
+const Instances = lazyWithReload(() => import('./tabs/Instances'));
+const Intro = lazyWithReload(() => import('./tabs/Intro'));
+const Logs = lazyWithReload(() => import('./tabs/Logs'));
+const Files = lazyWithReload(() => import('./tabs/Files'));
+const Objects = lazyWithReload(() => import('./tabs/Objects'));
+const Users = lazyWithReload(() => import('./tabs/Users'));
+const Enums = lazyWithReload(() => import('./tabs/Enums'));
+const CustomTab = lazyWithReload(() => import('./tabs/CustomTab'));
+const DeviceManagerTab = lazyWithReload(() => import('./tabs/ConfigManager'));
+const Hosts = lazyWithReload(() => import('./tabs/Hosts'));
+const EasyMode = lazyWithReload(() => import('./tabs/EasyMode'));
 
 declare global {
     interface Window {
@@ -1169,6 +1170,7 @@ class App extends Router<AppProps, AppState> {
     componentDidMount(): void {
         // check if we are mounted as SSO response
         App.checkSsoResponse();
+        window.addEventListener('vite:preloadError', onPreloadError);
 
         if (!this.state.login) {
             window.addEventListener('hashchange', this.onHashChanged, false);
@@ -1504,6 +1506,7 @@ class App extends Router<AppProps, AppState> {
 
     componentWillUnmount(): void {
         window.removeEventListener('hashchange', this.onHashChanged, false);
+        window.removeEventListener('vite:preloadError', onPreloadError);
         this.socket?.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
         void this.socket?.unsubscribeObject('system.discovery', this.onDiscoveryObject);
 
@@ -3559,6 +3562,22 @@ class App extends Router<AppProps, AppState> {
     renderSampleError(): JSX.Element {
         const message = this.state.hasGlobalError?.message;
         const stack = this.state.hasGlobalError?.stack;
+
+        if (isChunkLoadError(this.state.hasGlobalError)) {
+            // not a bug: the page is older than the admin, which was updated or restarted meanwhile (#3678)
+            return (
+                <div style={{ textAlign: 'center', fontSize: 22, marginTop: 50 }}>
+                    <h2>{I18n.t('The admin was updated. Please load the page anew.')}</h2>
+                    <Button
+                        variant="contained"
+                        onClick={() => window.location.reload()}
+                    >
+                        {I18n.t('Reload')}
+                    </Button>
+                    <div style={{ color: '#888', fontSize: 14, marginTop: 20 }}>{message}</div>
+                </div>
+            );
+        }
 
         return (
             <div

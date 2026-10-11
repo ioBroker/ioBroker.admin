@@ -260,6 +260,15 @@ export default abstract class AdapterInstallDialog<
             '',
         );
 
+        if (!options.customUrl) {
+            // the host would refuse it anyway, but only with the output of the CLI (#3677)
+            const refusal = await AdapterInstallDialog.getSingletonRefusal(options.adapterName, host, options.context);
+            if (refusal) {
+                window.alert(refusal);
+                return false;
+            }
+        }
+
         try {
             await new Promise<void>((resolve, reject) => {
                 options.context.executeCommand(
@@ -278,6 +287,61 @@ export default abstract class AdapterInstallDialog<
         }
 
         return true;
+    }
+
+    /**
+     * Whether the adapter allows only one instance in the whole system (`common.singleton`) and has it
+     * already, so another one cannot be added
+     *
+     * @param adapterName the adapter name, e.g. `alias-workbench`
+     * @param context the adapters context
+     */
+    static isSingletonInstalled(adapterName: string, context: AdaptersContext): boolean {
+        if (!context.adapters[`system.adapter.${adapterName}`]?.common?.singleton) {
+            return false;
+        }
+        const prefix = `system.adapter.${adapterName}.`;
+        return Object.keys(context.compactInstances).some(id => id.startsWith(prefix));
+    }
+
+    /**
+     * Why the host would refuse another instance of the adapter: it allows only one instance in the
+     * system (`common.singleton`) or on one host (`common.singletonHost`) and has it already
+     *
+     * @param adapterName the adapter name, e.g. `alias-workbench`
+     * @param host the host the instance should run on, without `system.host.`
+     * @param context the adapters context
+     * @returns the text for the user, or `null` if the instance may be added
+     */
+    static async getSingletonRefusal(
+        adapterName: string,
+        host: string,
+        context: AdaptersContext,
+    ): Promise<string | null> {
+        const common = context.adapters[`system.adapter.${adapterName}`]?.common;
+        if (!common?.singleton && !common?.singletonHost) {
+            return null;
+        }
+        const instances = (await context.instancesWorker.getObjects().catch((): null => null)) || {};
+        const prefix = `system.adapter.${adapterName}.`;
+        const existing = Object.values(instances).filter(obj => obj?._id.startsWith(prefix));
+        if (common.singleton && existing.length) {
+            return context.t(
+                'Adapter "%s" allows only one instance, and %s exists already',
+                adapterName,
+                existing[0]._id.substring('system.adapter.'.length),
+            );
+        }
+        const onHost = existing.find(obj => obj.common.host === host);
+        if (common.singletonHost && onHost) {
+            return context.t(
+                'Adapter "%s" allows only one instance per host, and %s exists already on host "%s"',
+                adapterName,
+                onHost._id.substring('system.adapter.'.length),
+                host,
+            );
+        }
+        return null;
     }
 
     /**

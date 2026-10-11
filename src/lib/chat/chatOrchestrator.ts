@@ -12,8 +12,14 @@
  * The LLM never touches ioBroker directly — every action goes through the tool layer.
  */
 import type { McpClientManager, OpenAiFunctionTool } from './mcpClientManager';
-import { chatCompletion, type AiProvider, type ReasoningEffort } from './llmProvider';
-import type { OpenAIMessage, OpenAIToolCall } from './anthropicAdapter';
+import {
+    AiRequestError,
+    chatCompletion,
+    type AiProvider,
+    type AiReasoningEffort,
+    type OpenAIMessage,
+    type OpenAIToolCall,
+} from '@iobroker/ai-core';
 import {
     ADMIN_LOCAL_TOOL_DEFS,
     ALWAYS_CONFIRM_TOOLS,
@@ -72,7 +78,7 @@ export interface OrchestratorRunParams {
     language?: ioBroker.Languages;
     allowSelfSignedCerts?: boolean;
     /** What to ask of the reasoning; empty (the default) leaves the parameter out entirely. */
-    reasoningEffort?: ReasoningEffort;
+    reasoningEffort?: AiReasoningEffort;
     /** Output budget of one request - only Anthropic requires it (already clamped by the caller). */
     maxTokens?: number;
     /** How long one request to the endpoint may take (already clamped by the caller). */
@@ -495,20 +501,28 @@ export class ChatOrchestrator {
         }
 
         // Round limit reached: force a final, tool-free answer so the user always gets a response.
-        const finalResponse = await chatCompletion({
-            provider: params.provider,
-            model: params.model,
-            apiKey: params.apiKey,
-            baseUrl: params.baseUrl,
-            messages,
-            allowSelfSignedCerts: params.allowSelfSignedCerts,
-            reasoningEffort: params.reasoningEffort,
-            maxTokens: params.maxTokens,
-            timeoutMs: params.timeoutMs,
-        });
-        const finalContent =
-            finalResponse.content ||
-            'I reached the maximum number of tool calls for this question. Please refine your request.';
+        let finalContent: string;
+        try {
+            const finalResponse = await chatCompletion({
+                provider: params.provider,
+                model: params.model,
+                apiKey: params.apiKey,
+                baseUrl: params.baseUrl,
+                messages,
+                allowSelfSignedCerts: params.allowSelfSignedCerts,
+                reasoningEffort: params.reasoningEffort,
+                maxTokens: params.maxTokens,
+                timeoutMs: params.timeoutMs,
+            });
+            finalContent = finalResponse.content;
+        } catch (e) {
+            // ai-core reports an empty answer as an error. Here the turn has done its work in the tool
+            // steps, so it ends with a note instead of losing them
+            if (!(e instanceof AiRequestError) || !e.message.startsWith('The API answered without any content')) {
+                throw e;
+            }
+            finalContent = 'I reached the maximum number of tool calls for this question. Please refine your request.';
+        }
         newMessages.push({ role: 'assistant', content: finalContent });
         return { status: 'done', content: finalContent, newMessages, steps, clientActions };
     }

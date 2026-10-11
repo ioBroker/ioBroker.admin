@@ -20,6 +20,7 @@ import { I18n, type AdminConnection, type ThemeType } from '@iobroker/gui-compon
 
 import { type ChatMcpInfoResponse, type ChatMode, type McpEndpoint } from './chatTypes';
 import { adminHref } from '@/helpers/utils';
+import { sendPushRequest } from '@/helpers/pushRequest';
 
 interface ChatMcpInfoDialogProps {
     socket: AdminConnection;
@@ -99,8 +100,8 @@ export default function ChatMcpInfoDialog(props: ChatMcpInfoDialogProps): React.
 
     useEffect(() => {
         let cancelled = false;
-        props.socket
-            .sendTo<ChatMcpInfoResponse>(props.instance, 'chat:getMcpInfo', {})
+        // only answered for a known GUI session, so with its secret - like every other chat request
+        sendPushRequest<ChatMcpInfoResponse>(props.socket, props.instance, 'chat:getMcpInfo', {}, 30_000)
             .then(result => {
                 if (cancelled) {
                     return;

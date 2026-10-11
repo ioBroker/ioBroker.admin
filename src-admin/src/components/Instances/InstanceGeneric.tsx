@@ -68,6 +68,8 @@ import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
 import State from '@/components/State';
 import InstanceInfo from '@/components/Instances/InstanceInfo';
+import { usedResourceConflictText, usedResourceIcon, usedResourceTypeName } from '@/components/UsedResources';
+import { describeUsedResource, type HostUsedResource } from '@/helpers/usedResources';
 import sentry from '@/assets/sentry.svg';
 import noSentry from '@/assets/sentryNo.svg';
 import CustomModal from '../CustomModal';
@@ -383,6 +385,8 @@ export interface InstanceItem {
      */
     isPython: boolean;
     port: number | null;
+    /** What the instance registered on its host: ports, serial ports, USB devices... (js-controller 8.0 on) */
+    usedResources: HostUsedResource[];
     name: string;
     stoppedWhenWebExtension: boolean | undefined;
     running: boolean;
@@ -1264,13 +1268,58 @@ export default abstract class InstanceGeneric<
         if (!this.props.item.port) {
             return null;
         }
+        const ports = this.props.item.usedResources.filter(r => r.type === 'tcpPort' || r.type === 'udpPort');
+        const conflicts = ports.filter(r => r.conflicts.length);
         return (
             <InstanceInfo
-                icon={<PortIcon />}
-                tooltip={this.props.context.t('Port')}
+                icon={conflicts.length ? <WarningIcon color="warning" /> : <PortIcon />}
+                tooltip={
+                    conflicts.length
+                        ? conflicts.map(r => usedResourceConflictText(r, this.props.context.t)).join('\n')
+                        : this.props.context.t('Port')
+                }
             >
-                {this.props.item.port.toString()}
+                {ports.length
+                    ? [...new Set(ports.map(r => String(r.data.port)))].join(', ')
+                    : this.props.item.port.toString()}
             </InstanceInfo>
+        );
+    }
+
+    /** Everything the instance registered on its host, one line per resource */
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderUsedResources(): JSX.Element | null {
+        const { t } = this.props.context;
+        if (!this.props.item.usedResources.length) {
+            return null;
+        }
+        return (
+            <>
+                {this.props.item.usedResources.map(resource => {
+                    const description = describeUsedResource(resource);
+                    const state = resource.isBlocked
+                        ? t('The instance runs and holds the resource')
+                        : t('The instance does not run and would take the resource when started');
+                    return (
+                        <InstanceInfo
+                            key={`${resource.type}|${description}`}
+                            icon={
+                                resource.conflicts.length ? (
+                                    <WarningIcon color="warning" />
+                                ) : (
+                                    usedResourceIcon(resource.type)
+                                )
+                            }
+                            tooltip={
+                                resource.conflicts.length ? `${state}. ${usedResourceConflictText(resource, t)}` : state
+                            }
+                            style={resource.isBlocked ? undefined : { opacity: 0.6 }}
+                        >
+                            {`${usedResourceTypeName(resource.type, t)}: ${description}`}
+                        </InstanceInfo>
+                    );
+                })}
+            </>
         );
     }
 

@@ -244,7 +244,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     }
                 } catch {
                     // ignore it
-                    console.warn(`Cannot compare "${version}" and "${installed.version}"`);
+                    console.warn(`Cannot compare "${version}" and "${installed.version}" of adapter ${adapter}`);
                 }
             });
         }
@@ -261,7 +261,8 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
             // during installation, this adapter was uninstalled
             return null;
         }
-        const image = `.${this.props.installed[adapter].localIcon}`;
+        const localIcon = this.props.installed[adapter].localIcon;
+        const image = localIcon ? `.${localIcon}` : this.props.repository[adapter]?.extIcon || 'img/no-image.svg';
 
         return (
             <ListItem
@@ -414,7 +415,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     }
                 } catch {
                     // ignore it
-                    console.warn(`Cannot compare "${version}" and "${fromVersion}"`);
+                    console.warn(`Cannot compare "${version}" and "${fromVersion}" of adapter ${adapter}`);
                 }
             });
         }

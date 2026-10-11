@@ -501,7 +501,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 if (
                     repositoryEntry &&
                     repositoryEntry.version !== version &&
-                    AdminUtils.updateAvailable(version, repositoryEntry.version) &&
+                    AdminUtils.updateAvailable(version, repositoryEntry.version, `adapter "${adapterName}"`) &&
                     !updateAvailable.includes(adapterName)
                 ) {
                     updateAvailable.push(adapterName);
@@ -1465,8 +1465,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                             this.cache.adapters![adapterName] = {
                                 title,
                                 desc,
+                                // an adapter without an icon has no `localIcon`, which gave `./.undefined` (#3679)
                                 image:
-                                    installed && this.state.adapters[`system.adapter.${adapterName}`]
+                                    installed?.localIcon && this.state.adapters[`system.adapter.${adapterName}`]
                                         ? `.${installed.localIcon}`
                                         : adapter.extIcon || '',
                                 connectionType: adapter.connectionType ? adapter.connectionType : '-',
