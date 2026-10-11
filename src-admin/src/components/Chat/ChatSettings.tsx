@@ -22,8 +22,10 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Check as CheckIcon, Close as CloseIcon, Tune as TuneIcon } from '@mui/icons-material';
 import { I18n, type AdminConnection, Icon } from '@iobroker/gui-components';
+import { isChatModel } from '@iobroker/ai-core/build/shared/models';
 
 import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';
+import { sendPushRequest } from '../../helpers/pushRequest';
 import ChatCreateCredentialDialog from './ChatCreateCredentialDialog';
 import {
     DEFAULT_CHAT_MAX_TOKENS,
@@ -156,14 +158,21 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
         setError('');
         setInfo('');
         setModels([]);
-        props.socket
-            .sendTo(props.instance, 'chat:testConnection', {
+        // The backend only talks to an AI endpoint for a known GUI session, so this goes the same way
+        // as a chat turn: with the session secret, the answer pushed back
+        sendPushRequest<ChatTestResponse>(
+            props.socket,
+            props.instance,
+            'chat:testConnection',
+            {
                 provider: value.provider,
                 credentialId: value.credentialId,
                 baseUrl: value.baseUrl,
                 allowSelfSignedCerts: value.allowSelfSignedCerts,
-            })
-            .then((result: ChatTestResponse) => {
+            },
+            60_000,
+        )
+            .then(result => {
                 if (reqId !== reqRef.current) {
                     return; // a newer request superseded this one
                 }
@@ -171,8 +180,10 @@ export default function ChatSettings(props: ChatSettingsProps): React.JSX.Elemen
                     setError(result.error);
                     setModels([]);
                 } else {
-                    setModels(result?.models || []);
-                    setInfo(I18n.t('Connection OK: %s models', String(result?.count ?? result?.models?.length ?? 0)));
+                    // only what can chat: embeddings, speech and image models would only fail as the assistant
+                    const chatModels = (result?.models || []).filter(isChatModel);
+                    setModels(chatModels);
+                    setInfo(I18n.t('Connection OK: %s models', String(chatModels.length)));
                 }
             })
             .catch(e => {

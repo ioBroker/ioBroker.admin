@@ -7,6 +7,7 @@ import { MoreVert as MoreVertIcon, Close as IconClose } from '@mui/icons-materia
 import { Utils, type IobTheme } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
+import { HostUsedResources } from '@/components/UsedResources';
 import HostGeneric, {
     boxShadow,
     boxShadowHover,
@@ -264,6 +265,11 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                                 </IconButton>
                             </div>
                             {description}
+                            <HostUsedResources
+                                socket={this.props.socket}
+                                hostId={this.props.hostId}
+                                t={this.props.t}
+                            />
                         </CardContent>
                         <Box
                             component="div"

@@ -197,6 +197,7 @@ class InstanceCard extends InstanceGeneric<InstanceGenericProps, InstanceCardSta
                         {this.renderMemoryUsage()}
 
                         {item.port ? <div style={styles.displayFlex}>{this.renderPort()}</div> : null}
+                        {this.renderUsedResources()}
 
                         {item.running && this.props.context.expertMode && (
                             <div style={styles.displayFlex}>{this.renderInputOutput()}</div>

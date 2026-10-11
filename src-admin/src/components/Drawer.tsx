@@ -406,7 +406,13 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             const jsControllerVersion = repository['js-controller']?.version || '';
             let count = 0;
             hosts.forEach(element => {
-                if (AdminUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
+                if (
+                    AdminUtils.updateAvailable(
+                        element.common.installedVersion,
+                        jsControllerVersion,
+                        `js-controller on ${element._id}`,
+                    )
+                ) {
                     count++;
                 }
             });

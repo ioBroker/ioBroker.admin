@@ -263,6 +263,7 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             )}
                             <Grid sx={styles.visible1050}>{this.renderMemoryUsage()}</Grid>
                             {item.port ? <Grid sx={styles.visible1400}>{this.renderPort()}</Grid> : null}
+                            {this.renderUsedResources()}
                             {item.modeSchedule && (
                                 <Box
                                     component="div"

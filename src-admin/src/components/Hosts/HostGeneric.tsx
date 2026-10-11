@@ -977,7 +977,9 @@ export default abstract class HostGeneric<
                     }
                 } catch {
                     // ignore it
-                    console.warn(`Cannot compare "${version}" and "${installed}"`);
+                    console.warn(
+                        `Cannot compare "${version}" and "${installed}" of js-controller on ${this.props.host._id}`,
+                    );
                 }
             });
         }

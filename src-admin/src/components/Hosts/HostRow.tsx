@@ -5,6 +5,7 @@ import { Box, CardContent, CardMedia, Skeleton, Typography } from '@mui/material
 import { Utils, type IobTheme } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
+import { HostUsedResources } from '@/components/UsedResources';
 import HostGeneric, {
     boxShadow,
     boxShadowHover,
@@ -408,6 +409,13 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                             {description}
                             {this.renderCopyButton({ height: 44, width: 44 })}
                         </CardContent>
+                        {this.state.openCollapse ? (
+                            <HostUsedResources
+                                socket={this.props.socket}
+                                hostId={this.props.hostId}
+                                t={this.props.t}
+                            />
+                        ) : null}
                         <Box
                             component="div"
                             sx={styles.footerBlock}

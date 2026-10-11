@@ -41,7 +41,13 @@ export function ContextWrapperProvider({ children }: { children: JSX.Element[] |
         const jsControllerVersion = repository['js-controller']?.version;
         let count = 0;
         hosts.forEach(element => {
-            if (AdminUtils.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
+            if (
+                AdminUtils.updateAvailable(
+                    element.common.installedVersion,
+                    jsControllerVersion,
+                    `js-controller on ${element._id}`,
+                )
+            ) {
                 count++;
             }
         });
@@ -62,7 +68,7 @@ export function ContextWrapperProvider({ children }: { children: JSX.Element[] |
                 _installed?.version &&
                 adapter?.version &&
                 _installed.ignoreVersion !== adapter.version &&
-                AdminUtils.updateAvailable(_installed.version, adapter.version)
+                AdminUtils.updateAvailable(_installed.version, adapter.version, `adapter "${element}"`)
             ) {
                 count++;
             }

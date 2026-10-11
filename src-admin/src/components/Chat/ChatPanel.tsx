@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import {
     Accordion,
     AccordionDetails,
@@ -42,6 +40,7 @@ import {
     WebAsset as OverlayIcon,
 } from '@mui/icons-material';
 import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobroker/gui-components';
+import { MarkdownText } from '@iobroker/ai-gui';
 
 import ChatSettings from './ChatSettings';
 import ChatMcpInfoDialog from './ChatMcpInfoDialog';
@@ -115,35 +114,20 @@ function asStr(value: unknown): string {
 }
 
 /**
- * Renders a markdown link. Internal admin routes (e.g. `#tab-instances`, `/#tab-objects/edit/<id>`)
- * navigate the SPA via the hash (no page reload); external links open in a new tab.
+ * A link in an answer was clicked. Internal admin routes (e.g. `#tab-instances`, `/#tab-objects/edit/<id>`,
+ * also a full address of this admin with `#tab-`) navigate the SPA via the hash - no page reload, and
+ * `/#` would leave an admin that is served under a path of a reverse proxy. Anything else opens in a new tab.
+ *
+ * @param href the address of the link
+ * @returns true when the click was handled here
  */
-function ChatLink({ href, children }: { href?: string; children?: React.ReactNode }): React.JSX.Element {
-    const url = href || '';
-    const hashAt = url.indexOf('#');
-    const internal = hashAt >= 0 && (url[0] === '#' || url.startsWith('/#') || url.includes('#tab-'));
-    if (internal) {
-        return (
-            <a
-                href={url}
-                onClick={e => {
-                    e.preventDefault();
-                    window.location.hash = url.substring(hashAt);
-                }}
-            >
-                {children}
-            </a>
-        );
+function onChatLink(href: string): boolean {
+    const hashAt = href.indexOf('#');
+    if (hashAt >= 0 && (href[0] === '#' || href.startsWith('/#') || href.includes('#tab-'))) {
+        window.location.hash = href.substring(hashAt);
+        return true;
     }
-    return (
-        <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            {children}
-        </a>
-    );
+    return false;
 }
 
 /** A short, human-readable description of a proposed action for the confirmation card. */
@@ -1031,28 +1015,13 @@ function ChatItemView({
                     bgcolor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
                     borderRadius: 2,
                     px: 1.5,
-                    py: 0.5,
-                    wordBreak: 'break-word',
-                    '& p': { my: 0.5 },
-                    '& ul, & ol': { my: 0.5, pl: 2.5 },
-                    '& pre': {
-                        m: 0,
-                        p: 1,
-                        borderRadius: 1,
-                        overflowX: 'auto',
-                        bgcolor: dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.08)',
-                    },
-                    '& code': { fontFamily: 'monospace' },
-                    '& table': { borderCollapse: 'collapse' },
-                    '& th, & td': { border: '1px solid', borderColor: 'divider', px: 0.75, py: 0.25 },
+                    py: 1,
                 }}
             >
-                <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{ a: ChatLink }}
-                >
-                    {item.text || ''}
-                </ReactMarkdown>
+                <MarkdownText
+                    text={item.text || ''}
+                    onLink={onChatLink}
+                />
             </Box>
             {item.steps.length ? (
                 <Accordion

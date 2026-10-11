@@ -40,15 +40,16 @@ import {
 } from './lib/objectFixes';
 import { McpClientManager } from './lib/chat/mcpClientManager';
 import { buildSystemPromptMessage, ChatOrchestrator, type ChatMode } from './lib/chat/chatOrchestrator';
-import { resolveAiKey } from './lib/chat/credentials';
 import {
+    AiCredentialStore,
     listModels,
     resolveMaxTokens,
     resolveRequestTimeout,
+    SYSTEM_AI_OBJECT_ID,
     type AiProvider,
-    type ReasoningEffort,
-} from './lib/chat/llmProvider';
-import type { OpenAIMessage } from './lib/chat/anthropicAdapter';
+    type OpenAIMessage,
+    type SystemAiNative,
+} from '@iobroker/ai-core';
 import type { AdminAdapterConfig } from './types';
 import {
     createLocalLogFiles,
@@ -97,9 +98,6 @@ const CHAT_COMMANDS_NEEDING_SESSION = [
 /** Refusal for the operations that require the `execute` right - the one `cmdExec` is checked against. */
 const CHAT_NO_EXECUTE_RIGHTS =
     'No permission: this requires the "execute" right, the same one a command on the host needs';
-
-/** The object that holds the system-wide assistant configuration, written by the settings dialog. */
-const CHAT_SETTINGS_OBJECT_ID = 'system.ai';
 
 const CURRENT_MAX_MAJOR_NODEJS = 22;
 const CURRENT_MAX_MAJOR_NPM = 10;
@@ -156,19 +154,6 @@ interface NodeVersionInformation {
  * it subscribed - the same ACL every other socket command is checked against. They decide what the
  * assistant may do on behalf of this page; the page itself cannot influence them.
  */
-/** The assistant configuration as the settings dialog stores it in the `native` of `system.ai`. */
-interface ChatSettings {
-    provider?: AiProvider;
-    model?: string;
-    /** Id of a `system.credentials.*` entry of type `ai` - the key itself never leaves the store. */
-    credentialId?: string;
-    /** Endpoint of the custom (OpenAI-compatible) provider, ignored for the others */
-    baseUrl?: string;
-    allowSelfSignedCerts?: boolean;
-    reasoningEffort?: ReasoningEffort;
-    maxTokens?: number;
-}
-
 interface UiPushSession {
     /** The messaging-controller client id the answer is pushed to */
     clientId: string;
@@ -235,6 +220,9 @@ class Admin extends Adapter {
      * every tool call runs under the ACLs of the user who asked. Created on their first chat message.
      */
     private readonly mcpChats = new Map<string, McpClientManager>();
+
+    /** The AI keys of the central credential store - only entries of type `ai` are handed out */
+    private readonly aiCredentials = new AiCredentialStore(this);
 
     /** True if the adapter runs on a CI system (GitHub Actions, Travis, AppVeyor, ...). See `sendToHost` */
     private readonly ciSystem: boolean = isCiSystem();
@@ -845,12 +833,12 @@ class Admin extends Adapter {
      * dialog writes the object, which needs object-write rights - so configuring the assistant is a
      * separate permission from using it.
      */
-    private async getChatSettings(): Promise<ChatSettings> {
+    private async getChatSettings(): Promise<SystemAiNative> {
         try {
-            const config = await this.getForeignObjectAsync(CHAT_SETTINGS_OBJECT_ID);
+            const config = await this.getForeignObjectAsync(SYSTEM_AI_OBJECT_ID);
             const native = config?.native;
             if (native && typeof native === 'object') {
-                return native as ChatSettings;
+                return native as SystemAiNative;
             }
         } catch {
             // no object yet, or no permission to read it - the caller reports the missing model
@@ -974,7 +962,7 @@ class Admin extends Adapter {
                 // Prefer an explicit key from the settings form; otherwise resolve from the store.
                 let apiKey = (message.apiKey || '').trim();
                 if (!apiKey && message.credentialId) {
-                    apiKey = await resolveAiKey(this, message.credentialId);
+                    apiKey = await this.aiCredentials.getKey(message.credentialId);
                 }
                 const models = await listModels({
                     provider,
@@ -1145,7 +1133,7 @@ class Admin extends Adapter {
                     fail('No model configured for the assistant');
                     return;
                 }
-                const apiKey = settings.credentialId ? await resolveAiKey(this, settings.credentialId) : '';
+                const apiKey = settings.credentialId ? await this.aiCredentials.getKey(settings.credentialId) : '';
                 // Only the custom (OpenAI-compatible, e.g. local Ollama) provider may run without a key.
                 // A base URL is custom-only, so a stale one must not let a keyless OpenAI request through.
                 if (!apiKey && provider !== 'custom') {
