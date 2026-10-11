@@ -1956,6 +1956,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.1 (2026-10-11)
+- (@GermanBluefox) Fixed: the config validation URL when admin is opened via `index.html`, e.g. in the cloud
+
 ### 10.1.0 (2026-10-07)
 - (@GermanBluefox) Fixed: an `encryptedNative` entry that reaches into `native`, like `hosts.password` for a table, was neither decrypted when the configuration was loaded nor encrypted when it was saved. The attribute name was looked up in `native` as it is, so `password` hit and `hosts.password` missed, and the secrets of a table went into the instance object as plain text - the adapter then decrypted plain text on start and got garbage. Such a path is resolved now, through every row of a table. A value that is already stored encrypted keeps working, and the plain text of an affected installation is encrypted the next time the configuration is saved, so nothing has to be entered again
 
