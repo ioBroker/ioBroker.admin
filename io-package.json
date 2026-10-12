@@ -18,19 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "8.1.3": {
-        "en": "Fixed: iobroker.pro cloud can open the instance settings now",
-        "de": "Behoben: iobroker.pro cloud öffnet jetzt Instanzeinstellungen",
-        "ru": "Исправлено: облако iobroker.pro теперь может открывать настройки экземпляра",
-        "pt": "Corrigido: a nuvem iobroker.pro pode abrir a instância agora",
-        "nl": "Opgelost: iobroker.pro cloud kan nu de instantie-instellingen openen",
-        "fr": "Corrigé : le cloud iobroker.pro peut ouvrir les paramètres de l'instance",
-        "it": "Risolto: iobroker.pro cloud ora può aprire le istanze",
-        "es": "Corregido: la nube iobroker.pro ya puede abrir la instancia",
-        "pl": "Naprawiono: iobroker.pro cloud może teraz otworzyć ustawienia instancji",
-        "uk": "Виправлено: хмара iobroker.pro може відкрити налаштування екземпляра зараз",
-        "zh-cn": "修复：iobroker.pro cloud 现在可以打开实例设置了"
-      },
       "8.1.2": {
         "en": "Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`\nFixed: loading the AI models and MCP info\nAdded: used host resources (ports, serial, USB...) on the hosts and instances tabs\nFixed: \"Add instance\" is hidden for single-instance adapters (#3677)\nFixed: \"Error in GUI\" after an admin update (#3678)\nFixed: unclear \"Cannot compare\" warnings and a request of `/.undefined` (#3679)",
         "de": "Geändert: Der KI-Assistent nutzt die Bibliotheken @iobroker /ai-core und @iobroker /ai-gui\nBehoben: KI-Modelle und MCP-Info laden\nHinzugefügt: Benutzte Ressourcen (Ports, Seriell, USB...)\nBehoben: „Instanz hinzufügen“ ist für Einzeladapter versteckt (#3677)\nBehoben: „GUI“ nach Admin-Update (#3678)\nBehoben: Unklare Vergleichswarnungen und Anfrage von `/.undefined` (#3679)",

@@ -1956,6 +1956,10 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.2 (2026-10-12)
+- (@GermanBluefox) Fixed: loading of `crypto-js` for encrypted settings when admin is opened via `index.html`, e.g. in the cloud
+- (@GermanBluefox) Fixed: reading of `jsonConfig.json5` and i18n files delivered as `ArrayBuffer`, e.g. in the cloud
+
 ### 10.1.1 (2026-10-11)
 - (@GermanBluefox) Fixed: the config validation URL when admin is opened via `index.html`, e.g. in the cloud
 

@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### 8.1.3 (2026-10-11)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Fixed: iobroker.pro cloud can open the instance settings now
 
 ### 8.1.2 (2026-10-11)
