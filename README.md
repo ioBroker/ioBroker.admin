@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) The used resources added (Only js-controller 8)
+
 ### 8.2.0 (2026-10-12)
 - (@GermanBluefox) Fixed: iobroker.pro cloud can open the instance settings now
 

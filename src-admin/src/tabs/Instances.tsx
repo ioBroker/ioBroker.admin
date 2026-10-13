@@ -59,10 +59,12 @@ import InstanceRow from '../components/Instances/InstanceRow';
 import CustomSelectButton from '../components/CustomSelectButton';
 import InstanceFilterDialog from '../components/Instances/InstanceFilterDialog';
 import InstanceCategory from '../components/Instances/InstanceCategory';
-import { collectUsedResources, type HostUsedResource } from '../helpers/usedResources';
-
-/** The exclusive resources registered on the hosts (js-controller 8.0 on), see `helpers/usedResources` */
-const USED_RESOURCES_PATTERN = 'system.host.*.usedResources.*';
+import {
+    collectUsedResources,
+    readUsedResourceStates,
+    USED_RESOURCES_PATTERN,
+    type HostUsedResource,
+} from '../helpers/usedResources';
 
 const styles: Record<string, any> = {
     paper: {
@@ -308,7 +310,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             console.warn('Cannot read reverseProxy config for Instances page:', e);
         }
         await this.updateData();
-        void this.readUsedResources();
+        void this.subscribeUsedResources();
         const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
         if (deleteCustomSupported) {
             this.setState({ deleteCustomSupported });
@@ -332,17 +334,34 @@ class Instances extends Component<InstancesProps, InstancesState> {
     /** The `usedResources` states of all hosts, as far as read or reported */
     private usedResourcesStates: Record<string, ioBroker.State | null | undefined> = {};
 
-    /** Read the registered resources of all hosts and follow their changes */
+    /** Read the registered resources of all hosts */
     async readUsedResources(): Promise<void> {
         try {
-            const states = await this.props.socket.getForeignStates(USED_RESOURCES_PATTERN);
-            this.usedResourcesStates = { ...(states || {}), ...this.usedResourcesStates };
+            const states = await readUsedResourceStates(
+                this.props.socket,
+                this.props.hosts.map(host => host._id),
+            );
+            // what already arrived through the subscription is newer than the read
+            this.usedResourcesStates = { ...states, ...this.usedResourcesStates };
             this.updateUsedResources();
         } catch (e) {
             console.warn(`Cannot read the used resources: ${e}`);
         }
+    }
+
+    /** Read the registered resources and follow their changes */
+    async subscribeUsedResources(): Promise<void> {
+        await this.readUsedResources();
         if (!this.unmounted) {
             await this.props.socket.subscribeState(USED_RESOURCES_PATTERN, this.onUsedResourcesChange);
+        }
+    }
+
+    componentDidUpdate(prevProps: InstancesProps): void {
+        // a host that only appears now brings its own registry states, and reading them by id
+        // requires its name - the subscription alone would wait for the next change
+        if (prevProps.hosts.map(host => host._id).join(',') !== this.props.hosts.map(host => host._id).join(',')) {
+            void this.readUsedResources();
         }
     }
 
@@ -1109,9 +1128,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             this.cacheInstances();
         }
 
-        // If at least one shown instance has a port, the port column is displayed and
-        // all rows (even those without a port) must reserve a placeholder to keep the columns aligned
-        const hasAnyPort = (this._cacheList || []).some(item => item.port !== null);
+        // If at least one shown instance has a port or registered a resource, the resources column is
+        // displayed and all rows (even the empty ones) must reserve a placeholder to keep the columns aligned
+        const hasAnyResource = (this._cacheList || []).some(item => item.port !== null || !!item.usedResources.length);
 
         const context = {
             adminInstance: this.props.adminInstance,
@@ -1130,7 +1149,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             getInstanceStatus: this.getInstanceStatus,
             theme: this.props.theme,
             onRegisterClose: this.onRegisterClose,
-            hasAnyPort,
+            hasAnyResource,
         };
 
         const list = (this._cacheList || []).map((item, idx) => {

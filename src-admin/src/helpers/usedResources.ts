@@ -7,6 +7,11 @@
  * has the shape js-controller writes (`hasRegisteredResourceShape` in common-db).
  */
 
+import type { AdminConnection } from '@iobroker/gui-components';
+
+/** Pattern of the registry states of all hosts */
+export const USED_RESOURCES_PATTERN = 'system.host.*.usedResources.*';
+
 /** One registered resource, as js-controller stores it */
 export interface UsedResource {
     /** Kind of the resource, e.g. `serialPort` - also the last segment of the state id */
@@ -116,6 +121,70 @@ export function usedResourcesOverlap(type: string, a: UsedResource['data'], b: U
     return subset(a, b) || subset(b, a);
 }
 
+/** Readable names of the types js-controller knows; anything else is shown as it is called */
+export const USED_RESOURCE_TYPE_NAMES: Record<string, string> = {
+    serialPort: 'Serial port',
+    tcpPort: 'TCP port',
+    udpPort: 'UDP port',
+    usb: 'USB device',
+    bluetooth: 'Bluetooth',
+    gpio: 'GPIO',
+};
+
+/**
+ * The ids of the registry states of the given hosts, for the types js-controller knows
+ *
+ * @param hostIds the hosts, e.g. `system.host.MSI`
+ */
+export function usedResourceStateIds(hostIds: string[]): string[] {
+    return hostIds.flatMap(hostId =>
+        Object.keys(USED_RESOURCE_TYPE_NAMES).map(type => `${hostId}.usedResources.${type}`),
+    );
+}
+
+/**
+ * Reads the registry states of the given hosts.
+ *
+ * Twice on purpose. By their ids, because `getForeignStates` resolves a pattern through the objects DB,
+ * and the objects of these states can be missing: when js-controller starts, it deletes every object
+ * under `system.host.<name>.` that is none of its own states, while the states themselves stay and are
+ * written further. And by the pattern, which also catches a resource type that only an adapter knows.
+ * The subscription needs no object either way, so changes arrive in both cases.
+ *
+ * @param socket the connection
+ * @param hostIds the hosts to read, e.g. `system.host.MSI`
+ */
+export async function readUsedResourceStates(
+    socket: AdminConnection,
+    hostIds: string[],
+): Promise<Record<string, ioBroker.State | null | undefined>> {
+    const ids = usedResourceStateIds(hostIds);
+    const pattern = hostIds.length === 1 ? `${hostIds[0]}.usedResources.*` : USED_RESOURCES_PATTERN;
+
+    const [byId, byPattern] = await Promise.all([
+        // an array of ids is passed through to the host as it is - only the typing knows the pattern alone
+        ids.length
+            ? socket.getForeignStates(ids as unknown as string).catch((e: unknown) => {
+                  console.warn(`Cannot read the used resources: ${e as string}`);
+                  return {};
+              })
+            : Promise.resolve({}),
+        socket.getForeignStates(pattern).catch((e: unknown) => {
+            console.warn(`Cannot read ${pattern}: ${e as string}`);
+            return {};
+        }),
+    ]);
+
+    const states: Record<string, ioBroker.State | null | undefined> = { ...byId, ...byPattern };
+    // an id that does not exist comes back empty and would look like a host without a registry
+    for (const id of Object.keys(states)) {
+        if (!states[id]) {
+            delete states[id];
+        }
+    }
+    return states;
+}
+
 /**
  * All entries of all hosts, each with the instances of the same host that registered the same resource
  *
@@ -150,16 +219,6 @@ export function collectUsedResources(states: Record<string, ioBroker.State | nul
             a.instance.localeCompare(b.instance),
     );
 }
-
-/** Readable names of the types js-controller knows; anything else is shown as it is called */
-export const USED_RESOURCE_TYPE_NAMES: Record<string, string> = {
-    serialPort: 'Serial port',
-    tcpPort: 'TCP port',
-    udpPort: 'UDP port',
-    usb: 'USB device',
-    bluetooth: 'Bluetooth',
-    gpio: 'GPIO',
-};
 
 /**
  * The resource itself in one short text, e.g. `1883 (127.0.0.1, IPv4)` or `/dev/ttyUSB0 (115200 Bd)`

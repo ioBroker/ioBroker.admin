@@ -1,7 +1,7 @@
 import React, { type JSX } from 'react';
 import { Grid, Tooltip, Typography } from '@mui/material';
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, any> = {
     nowrap: {
         flexFlow: 'nowrap',
         overflow: 'hidden',
@@ -12,6 +12,8 @@ const styles: Record<string, React.CSSProperties> = {
     },
     tooltip: {
         pointerEvents: 'none',
+        // a tooltip can list several lines, e.g. all resources an instance occupies
+        '& .MuiTooltip-tooltip': { whiteSpace: 'pre-line' },
     },
 };
 

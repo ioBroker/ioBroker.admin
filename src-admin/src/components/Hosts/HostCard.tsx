@@ -306,7 +306,8 @@ class HostCard extends HostGeneric<HostCardProps, HostCardState> {
                     </Box>
                     {!this.state.openCollapse ? (
                         <Fab
-                            disabled={typeof description === 'string'}
+                            // Also for a host that is not alive: its description is only the word "offline"
+                            // then, but the resources its instances would take are the more interesting
                             onClick={() => this.setState({ openCollapse: true })}
                             style={styles.fab}
                             color="primary"

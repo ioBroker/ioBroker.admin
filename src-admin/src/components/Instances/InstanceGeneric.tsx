@@ -439,8 +439,11 @@ export interface InstanceContext {
     states: Record<string, ioBroker.State>;
     onToggleExpanded: (inst: string, expanded: boolean) => void;
     onRegisterClose: (inst: string, close: (() => void) | null) => void;
-    /** True if at least one of the currently shown instances has a port, so the port column is displayed */
-    hasAnyPort: boolean;
+    /**
+     * True if at least one of the currently shown instances has a port or registered a resource on its
+     * host, so the resources column is displayed
+     */
+    hasAnyResource: boolean;
 }
 
 export interface InstanceGenericProps {
@@ -1263,7 +1266,6 @@ export default abstract class InstanceGeneric<
         );
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderPort(): JSX.Element | null {
         if (!this.props.item.port) {
             return null;
@@ -1282,6 +1284,45 @@ export default abstract class InstanceGeneric<
                 {ports.length
                     ? [...new Set(ports.map(r => String(r.data.port)))].join(', ')
                     : this.props.item.port.toString()}
+            </InstanceInfo>
+        );
+    }
+
+    /**
+     * Everything the instance occupies, short enough for the column of the list: the first resource,
+     * how many others there are, and all of them in the tooltip. A conflict colors the whole entry.
+     */
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    renderResourcesColumn(): JSX.Element | null {
+        const { t } = this.props.context;
+        const resources = this.props.item.usedResources;
+
+        // a controller before 8.0 keeps no registry, there the configured port is all that is known
+        if (!resources.length) {
+            return this.renderPort();
+        }
+
+        const conflicts = resources.filter(resource => resource.conflicts.length);
+        const first = resources[0];
+        const description = describeUsedResource(first);
+        const tooltip = resources
+            .map(resource => {
+                const line = `${usedResourceTypeName(resource.type, t)}: ${describeUsedResource(resource)}`;
+                return resource.conflicts.length ? `${line} - ${usedResourceConflictText(resource, t)}` : line;
+            })
+            .join('\n');
+
+        return (
+            <InstanceInfo
+                icon={conflicts.length ? <WarningIcon color="warning" /> : usedResourceIcon(first.type)}
+                tooltip={tooltip}
+                style={{
+                    ...(conflicts.length ? { color: this.props.context.theme.palette.warning.main } : undefined),
+                    // nothing of it is held at the moment: the instance does not run
+                    ...(resources.every(resource => !resource.isBlocked) ? { opacity: 0.6 } : undefined),
+                }}
+            >
+                {resources.length > 1 ? `${description} +${resources.length - 1}` : description}
             </InstanceInfo>
         );
     }

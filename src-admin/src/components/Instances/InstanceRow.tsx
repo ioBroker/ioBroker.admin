@@ -262,7 +262,11 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                 </Box>
                             )}
                             <Grid sx={styles.visible1050}>{this.renderMemoryUsage()}</Grid>
-                            {item.port ? <Grid sx={styles.visible1400}>{this.renderPort()}</Grid> : null}
+                            {/* the resources below say the same and more, so the port stands on its
+                                own line only if the host keeps no registry */}
+                            {item.port && !item.usedResources.length ? (
+                                <Grid sx={styles.visible1400}>{this.renderPort()}</Grid>
+                            ) : null}
                             {this.renderUsedResources()}
                             {item.modeSchedule && (
                                 <Box
@@ -567,8 +571,8 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                                 {item.loglevelIcon}
                             </Avatar>
                         </Tooltip>
-                        {this.props.context.hasAnyPort ? (
-                            <Grid sx={{ ...styles.hidden1400, width: 100 }}>{this.renderPort()}</Grid>
+                        {this.props.context.hasAnyResource ? (
+                            <Grid sx={{ ...styles.hidden1400, width: 150 }}>{this.renderResourcesColumn()}</Grid>
                         ) : null}
                         <Grid
                             sx={{

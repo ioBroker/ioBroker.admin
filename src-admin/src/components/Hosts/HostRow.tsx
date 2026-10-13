@@ -41,20 +41,19 @@ const styles: Record<string, any> = {
         alignItems: 'baseline',
     },
     collapse: {
-        height: 215,
+        // The host data stay where they always were: visible without expanding the row. Only the table
+        // of the used resources comes below them and brings its own scrollbar - with a fixed height it
+        // ran out of the block and over the rows below it.
+        height: 'auto',
         backgroundColor: 'rgba(128, 128, 128, 0.1)',
         // position: 'absolute',
         width: '100%',
         zIndex: 3,
         marginTop: 'auto',
         bottom: 0,
-        transition: 'height 0.3s',
         justifyContent: 'space-between',
         display: 'flex',
         flexDirection: 'column',
-    },
-    collapseOn: {
-        animation: 'height 1s',
     },
     onOff: {
         alignSelf: 'center',
@@ -124,7 +123,10 @@ const styles: Record<string, any> = {
         paddingTop: 0,
         justifyContent: 'center',
         display: 'flex',
-        height: '100%',
+        // The host data keep their own height: as a flex item with "100%" they were squeezed as soon
+        // as the table of the used resources stood below them in the block
+        height: 'auto',
+        flexShrink: 0,
         position: 'relative',
         // alignItems: 'center'
     },
@@ -397,31 +399,39 @@ class HostRow extends HostGeneric<HostRowProps, HostRowState> {
                         </div>
                     </CardContent>
                 </Box>
-                {typeof description === 'object' && (
+                {/* The arrow opens the host data. A host that is not alive has none - its description is
+                    only the word "offline" - but the resources its instances would take are worth showing */}
+                {this.state.openCollapse ? (
                     <div
-                        style={{
-                            ...styles.collapse,
-                            ...(!this.state.openCollapse ? styles.collapseOff : styles.collapseOn),
-                        }}
+                        style={styles.collapse}
                         onClick={event => event.stopPropagation()}
                     >
                         <CardContent style={styles.cardContentInfo}>
-                            {description}
-                            {this.renderCopyButton({ height: 44, width: 44 })}
+                            {typeof description === 'object' ? (
+                                <>
+                                    {description}
+                                    {this.renderCopyButton({ height: 44, width: 44 })}
+                                </>
+                            ) : (
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                >
+                                    {description}
+                                </Typography>
+                            )}
                         </CardContent>
-                        {this.state.openCollapse ? (
-                            <HostUsedResources
-                                socket={this.props.socket}
-                                hostId={this.props.hostId}
-                                t={this.props.t}
-                            />
-                        ) : null}
+                        <HostUsedResources
+                            socket={this.props.socket}
+                            hostId={this.props.hostId}
+                            t={this.props.t}
+                        />
                         <Box
                             component="div"
                             sx={styles.footerBlock}
                         />
                     </div>
-                )}
+                ) : null}
             </Box>
         );
     }

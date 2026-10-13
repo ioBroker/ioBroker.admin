@@ -4,6 +4,7 @@ import {
     Bluetooth as BluetoothIcon,
     Cable as SerialIcon,
     DeviceHub as OtherIcon,
+    ExpandMore as ExpandMoreIcon,
     Lan as PortIcon,
     Memory as GpioIcon,
     Usb as UsbIcon,
@@ -12,9 +13,11 @@ import {
 
 import type { AdminConnection, Translate } from '@iobroker/gui-components';
 
+import { adminHref } from '@/helpers/utils';
 import {
     collectUsedResources,
     describeUsedResource,
+    readUsedResourceStates,
     USED_RESOURCE_TYPE_NAMES,
     type HostUsedResource,
 } from '@/helpers/usedResources';
@@ -58,16 +61,17 @@ export function usedResourceConflictText(resource: HostUsedResource, t: Translat
 }
 
 /**
- * The registered resources under a pattern, kept up to date. `null` while nothing has been read, and
- * also when no host has such a state at all - a js-controller before 8.0 does not keep them
+ * The registered resources of one host, kept up to date. `null` while nothing has been read, and also
+ * when the host has no such state at all - a js-controller before 8.0 does not keep them
  *
  * @param socket the connection
- * @param pattern e.g. `system.host.*.usedResources.*` or `system.host.MSI.usedResources.*`
+ * @param hostId the host, e.g. `system.host.MSI`
  */
-export function useUsedResources(socket: AdminConnection, pattern: string): HostUsedResource[] | null {
+export function useUsedResources(socket: AdminConnection, hostId: string): HostUsedResource[] | null {
     const [resources, setResources] = useState<HostUsedResource[] | null>(null);
 
     useEffect(() => {
+        const pattern = `${hostId}.usedResources.*`;
         let states: Record<string, ioBroker.State | null | undefined> = {};
         let active = true;
         const update = (): void => {
@@ -80,25 +84,68 @@ export function useUsedResources(socket: AdminConnection, pattern: string): Host
             update();
         };
 
-        void socket
-            .getForeignStates(pattern)
-            .then(result => {
-                states = { ...(result || {}), ...states };
-                update();
-            })
-            .catch(e => console.warn(`Cannot read ${pattern}: ${e}`));
+        void readUsedResourceStates(socket, [hostId]).then(result => {
+            // what already arrived through the subscription is newer than the read
+            states = { ...result, ...states };
+            update();
+        });
         void socket.subscribeState(pattern, onChange);
 
         return () => {
             active = false;
             socket.unsubscribeState(pattern, onChange);
         };
-    }, [socket, pattern]);
+    }, [socket, hostId]);
 
     return resources;
 }
 
+/** The icon of an adapter is the same in every row and every table, so it is read only once */
+const ADAPTER_ICON_CACHE: Record<string, Promise<string>> = {};
+
+/**
+ * The icon of the adapter an instance belongs to. An adapter that brings no icon keeps the place free,
+ * so the instance names stay under each other
+ *
+ * @param props the connection and the instance, e.g. `mqtt.0`
+ */
+function InstanceIcon(props: { socket: AdminConnection; instance: string }): JSX.Element {
+    const adapter = props.instance.split('.')[0];
+    const [icon, setIcon] = useState('');
+
+    useEffect(() => {
+        let active = true;
+        ADAPTER_ICON_CACHE[adapter] ||= props.socket
+            .getObject(`system.adapter.${adapter}`)
+            .then(obj => (obj?.common?.icon ? adminHref(`adapter/${adapter}/${obj.common.icon}`) : ''))
+            .catch(() => '');
+
+        void ADAPTER_ICON_CACHE[adapter].then(url => {
+            if (active) {
+                setIcon(url);
+            }
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [props.socket, adapter]);
+
+    return (
+        <Box sx={{ width: 20, height: 20, flexShrink: 0 }}>
+            {icon ? (
+                <img
+                    src={icon}
+                    alt=""
+                    style={{ width: 20, height: 20, objectFit: 'contain' }}
+                />
+            ) : null}
+        </Box>
+    );
+}
+
 interface UsedResourcesTableProps {
+    socket: AdminConnection;
     resources: HostUsedResource[];
     t: Translate;
     /** Leave the instance column out, when all entries belong to one instance */
@@ -146,7 +193,24 @@ export function UsedResourcesTable(props: UsedResourcesTableProps): JSX.Element 
                                     ) : null}
                                 </Box>
                             </TableCell>
-                            {props.hideInstance ? null : <TableCell>{resource.instance}</TableCell>}
+                            {props.hideInstance ? null : (
+                                <TableCell>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1,
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        <InstanceIcon
+                                            socket={props.socket}
+                                            instance={resource.instance}
+                                        />
+                                        {resource.instance}
+                                    </Box>
+                                </TableCell>
+                            )}
                             <TableCell>
                                 <Tooltip
                                     title={
@@ -158,7 +222,7 @@ export function UsedResourcesTable(props: UsedResourcesTableProps): JSX.Element 
                                     <Chip
                                         size="small"
                                         variant={resource.isBlocked ? 'filled' : 'outlined'}
-                                        color={resource.isBlocked ? 'success' : 'default'}
+                                        color={resource.isBlocked ? 'success' : 'info'}
                                         label={resource.isBlocked ? t('In use') : t('Reserved')}
                                     />
                                 </Tooltip>
@@ -181,38 +245,96 @@ interface HostUsedResourcesProps {
 }
 
 /**
- * The block "Used resources" of a host. Shows nothing for a host whose controller does not keep the
- * registry (before js-controller 8.0)
+ * The block "Used resources" of a host: a line that tells how many resources are registered and opens
+ * the table when it is clicked. A host whose controller does not keep the registry (before
+ * js-controller 8.0) shows nothing at all
  */
 export function HostUsedResources(props: HostUsedResourcesProps): JSX.Element | null {
-    const resources = useUsedResources(props.socket, `${props.hostId}.usedResources.*`);
+    const resources = useUsedResources(props.socket, props.hostId);
+    const [open, setOpen] = useState(false);
+
     if (!resources) {
         return null;
     }
+
+    const conflicts = resources.filter(resource => resource.conflicts.length);
+
     return (
         <Box
-            sx={{ width: '100%', mt: 1, px: 2 }}
+            sx={{ width: '100%', px: 2, pb: 1 }}
             onClick={e => e.stopPropagation()}
         >
-            <Typography
-                variant="subtitle2"
-                sx={{ fontWeight: 'bold' }}
+            <Box
+                sx={theme => ({
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    py: 0.5,
+                    pl: 0.5,
+                    pr: 1.5,
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    border: `1px solid ${theme.palette.divider}`,
+                    backgroundColor: theme.palette.action.hover,
+                    '&:hover': { backgroundColor: theme.palette.action.selected },
+                })}
+                onClick={() => setOpen(!open)}
             >
-                {props.t('Used resources')}
-            </Typography>
-            {resources.length ? (
-                <UsedResourcesTable
-                    resources={resources}
-                    t={props.t}
+                <ExpandMoreIcon
+                    fontSize="small"
+                    sx={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : undefined }}
                 />
-            ) : (
                 <Typography
-                    variant="body2"
-                    color="textSecondary"
+                    variant="subtitle2"
+                    sx={{ fontWeight: 'bold' }}
                 >
-                    {props.t('No instance has registered a resource')}
+                    {props.t('Used resources')}
                 </Typography>
-            )}
+                <Chip
+                    size="small"
+                    label={resources.length}
+                />
+                {conflicts.length ? (
+                    <Tooltip
+                        title={
+                            <span style={{ whiteSpace: 'pre-line' }}>
+                                {conflicts
+                                    .map(
+                                        resource =>
+                                            `${describeUsedResource(resource)}: ${usedResourceConflictText(resource, props.t)}`,
+                                    )
+                                    .join('\n')}
+                            </span>
+                        }
+                    >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'warning.main' }}>
+                            <WarningIcon
+                                fontSize="small"
+                                color="warning"
+                            />
+                            {conflicts.length}
+                        </Box>
+                    </Tooltip>
+                ) : null}
+            </Box>
+            {open ? (
+                <Box sx={{ mt: 1, maxHeight: 400, overflowY: 'auto' }}>
+                    {resources.length ? (
+                        <UsedResourcesTable
+                            socket={props.socket}
+                            resources={resources}
+                            t={props.t}
+                        />
+                    ) : (
+                        <Typography
+                            variant="body2"
+                            color="textSecondary"
+                        >
+                            {props.t('No instance has registered a resource')}
+                        </Typography>
+                    )}
+                </Box>
+            ) : null}
         </Box>
     );
 }
