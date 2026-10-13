@@ -2967,17 +2967,26 @@ class App extends Router<AppProps, AppState> {
                     toggleTheme={this.toggleTheme}
                     lang={I18n.getLanguage()}
                     onClose={(redirect?: string) => {
-                        this.setState({ wizard: false, showRedirect: redirect, redirectCountDown: 10 }, () => {
-                            if (this.state.showRedirect) {
-                                setInterval(() => {
-                                    if (this.state.redirectCountDown > 0) {
-                                        this.setState({ redirectCountDown: this.state.redirectCountDown - 1 });
-                                    } else {
-                                        window.location.href = this.state.showRedirect!;
-                                    }
-                                }, 1_000);
-                            }
-                        });
+                        // The language could be changed in the wizard
+                        this.setState(
+                            {
+                                wizard: false,
+                                showRedirect: redirect,
+                                redirectCountDown: 10,
+                                lang: I18n.getLanguage(),
+                            },
+                            () => {
+                                if (this.state.showRedirect) {
+                                    setInterval(() => {
+                                        if (this.state.redirectCountDown > 0) {
+                                            this.setState({ redirectCountDown: this.state.redirectCountDown - 1 });
+                                        } else {
+                                            window.location.href = this.state.showRedirect!;
+                                        }
+                                    }, 1_000);
+                                }
+                            },
+                        );
                     }}
                     onNavigate={(tab: string, subTab?: string, param?: string) => {
                         // In wizard mode, many of the objects are not loaded yet.

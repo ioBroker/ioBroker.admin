@@ -255,6 +255,11 @@ export default class WizardDialog extends Component<WizardDialogProps, WizardDia
                             obj.common.language = settings.lang;
                         }
                         await this.props.socket.setSystemConfig(obj);
+                        if (settings.lang) {
+                            // The socket client reads the system language only once at the start. Without this,
+                            // the admin switches back to the old language after the next reconnect
+                            this.props.socket.systemLang = settings.lang;
+                        }
 
                         this.setState(
                             { lang: settings.lang || obj.common.language || I18n.getLanguage(), requesting: false },
@@ -397,9 +402,15 @@ export default class WizardDialog extends Component<WizardDialogProps, WizardDia
             return;
         }
 
+        // The language of the admin instance has priority over the system language,
+        // so the language selected in the wizard must be written there too
+        const languageChanged =
+            !!this.adminInstance.native.language && this.adminInstance.native.language !== this.state.lang;
+
         if (
             this.adminInstance.native.secure === this.state.secure &&
-            this.adminInstance.native.auth === this.state.auth
+            this.adminInstance.native.auth === this.state.auth &&
+            !languageChanged
         ) {
             // Nothing to change, so no restart of admin is required
             Router.doNavigate('tab-adapters', discovery?.val ? 'discovery' : undefined);
@@ -433,6 +444,9 @@ export default class WizardDialog extends Component<WizardDialogProps, WizardDia
 
         this.adminInstance.native.auth = this.state.auth;
         this.adminInstance.native.secure = this.state.secure;
+        if (languageChanged) {
+            this.adminInstance.native.language = this.state.lang;
+        }
         if (this.state.secure) {
             this.adminInstance.native.certPublic = this.adminInstance.native.certPublic || certPublic;
             this.adminInstance.native.certPrivate = this.adminInstance.native.certPrivate || certPrivate;
