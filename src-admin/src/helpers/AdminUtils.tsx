@@ -525,6 +525,19 @@ export default class AdminUtils {
                 href = `adapter/${adapter}/tab.html${instanceNumber !== null && instanceNumber !== undefined ? `?${instanceNumber}` : ''}`;
             }
         }
+        // fix for singletons
+        const instNum = instanceNumber === null ? parseInt(instance._id.split('.').pop() || '', 10) : instanceNumber;
+
+        // The own web server of the adapter is reached through admin: `%protocol%://%ip%:%port%%httpAdminRoot%`
+        // becomes `proxy/node-red.0%httpAdminRoot%`. The tab then lives on the address of admin, also through the
+        // remote access of ioBroker Cloud/Pro and with HTTPS for admin.
+        const proxied = !!(instance.common.adminTab as { proxy?: boolean }).proxy && /^[^/]*:\/\/[^/]*/.test(href);
+        if (proxied) {
+            const path = href.replace(/^[^/]*:\/\/[^/]*/, '');
+            // the trailing slash is needed, else the browser resolves the relative URLs of the page next to it
+            href = `proxy/${adapter}.${instNum}${path.startsWith('/') || path.startsWith('%') ? path : `/${path}`}`;
+        }
+
         if (!instance.common.adminTab.singleton && instanceNumber !== null && instanceNumber !== undefined) {
             href += `${href.includes('?') ? '&' : '?'}instance=${instanceNumber}`;
         }
@@ -532,16 +545,8 @@ export default class AdminUtils {
         let unreachable = false;
 
         if (href.includes('%')) {
-            let _instNum: number;
-            // fix for singletons
-            if (instanceNumber === null) {
-                _instNum = parseInt(instance._id.split('.').pop() || '', 10);
-            } else {
-                _instNum = instanceNumber;
-            }
-
             // replace
-            const hrefs = replaceLink(href, adapter, _instNum, {
+            const hrefs = replaceLink(href, adapter, instNum, {
                 hostname,
                 // it cannot be void
                 instances: instances || {},
@@ -554,7 +559,7 @@ export default class AdminUtils {
             // A tab like the one of node-red or xterm does not live in the admin, it points to the own
             // server of the adapter. Opened through the remote access of ioBroker Cloud/Pro that address
             // is in a network the browser is not in, and the iframe would stay empty.
-            const remoteAccess = detectRemoteAccess(instances || {}, window.location);
+            const remoteAccess = proxied ? null : detectRemoteAccess(instances || {}, window.location);
             if (href && remoteAccess) {
                 const remoteHref = applyRemoteAccessToLink(href, hrefs?.[0]?.port, remoteAccess);
                 if (remoteHref === null) {

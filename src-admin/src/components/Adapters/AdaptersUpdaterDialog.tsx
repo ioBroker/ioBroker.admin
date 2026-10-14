@@ -53,12 +53,22 @@ const styles: Record<string, any> = {
     }),
     container: {
         overflow: 'hidden',
-        height: 'calc(100% - 48px)',
+        // takes what the toolbar leaves: a fixed 48px did not match the real toolbar height and the padding,
+        // so the content scrolled as well, next to the list
+        flex: '1 1 auto',
+        minHeight: 0,
+        flexWrap: 'nowrap',
         '@media screen and (max-width: 602px)': {
-            height: 'auto',
+            flex: 'none',
+            flexWrap: 'wrap',
         },
     },
     content: {
+        display: 'flex',
+        flexDirection: 'column',
+        '& > .MuiToolbar-root': {
+            flexShrink: 0,
+        },
         '@media screen and (max-width: 500px)': {
             p: 1,
         },
@@ -234,10 +244,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                         ) : null}
                     </div>
                 </DialogTitle>
-                <DialogContent
-                    sx={{ '&.MuiDialogContent-root': styles.content }}
-                    style={{ height: '100%' }}
-                >
+                <DialogContent sx={{ '&.MuiDialogContent-root': styles.content }}>
                     <Grid
                         container
                         direction="row"

@@ -199,6 +199,7 @@ const styles: Record<string, any> = {
     },
     rowGridLine: {
         marginTop: -2,
+        overflow: 'hidden',
     },
 };
 
@@ -455,8 +456,13 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
             >
                 <AccordionSummary
                     sx={{
-                        '&.MuiAccordionSummary-root': rootStyle,
-                        '& .MuiAccordionSummary-content': this.desktop ? styles.desktopRowContent : undefined,
+                        // ButtonBase centers its content: a row wider than the page would overflow on both sides,
+                        // and the status on the left would be cut off where no scrollbar can reach it
+                        '&.MuiAccordionSummary-root': { ...rootStyle, justifyContent: 'flex-start' },
+                        '& .MuiAccordionSummary-content': {
+                            minWidth: 0,
+                            ...(this.desktop ? styles.desktopRowContent : undefined),
+                        },
                     }}
                     expandIcon={<ExpandMoreIcon style={this.desktop ? styles.desktopButton : undefined} />}
                 >
@@ -572,7 +578,9 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             </Avatar>
                         </Tooltip>
                         {this.props.context.hasAnyResource ? (
-                            <Grid sx={{ ...styles.hidden1400, width: 150 }}>{this.renderResourcesColumn()}</Grid>
+                            <Grid sx={{ ...styles.hidden1400, flex: '0 1 150px', minWidth: 0, overflow: 'hidden' }}>
+                                {this.renderResourcesColumn()}
+                            </Grid>
                         ) : null}
                         <Grid
                             sx={{

@@ -21,6 +21,7 @@ import { McpServer, type McpConfig } from '@iobroker/mcp-server';
 
 import type { AdminAdapterConfig } from '../types';
 import { getAdminPublicPath } from './utils';
+import { InstanceProxy } from './instanceProxy';
 
 let AdapterStore;
 /** Content of a socket-io file */
@@ -235,6 +236,8 @@ export default class Web {
     private checkTimeout: ioBroker.Timeout | undefined;
     private oauth2Model: OAuth2Model | null = null;
     private mcpServer: McpServer | null = null;
+    /** Passes `/proxy/<instance>/` on to the own web server of an instance, e.g., of xterm */
+    private instanceProxy: InstanceProxy;
 
     /**
      * Create a new instance of Web
@@ -261,6 +264,7 @@ export default class Web {
 
         this.systemLanguage = this.options?.systemLanguage || 'en';
         this.publicPath = getAdminPublicPath(this.settings.reverseProxy, this.adapter.namespace);
+        this.instanceProxy = new InstanceProxy(this.adapter, this.publicPath);
 
         void this.#init();
     }
@@ -666,7 +670,13 @@ export default class Web {
     async #init(): Promise<void> {
         if (this.settings.port) {
             this.server.app = express();
-            this.server.app.use(compression());
+            // A proxied answer is passed on as the instance sends it: compressed, if the instance compresses, and
+            // without the buffering of compression, which would hold back a stream like server-sent events
+            this.server.app.use(
+                compression({
+                    filter: (req, res) => !this.instanceProxy.matches(req.url) && compression.filter(req, res),
+                }),
+            );
 
             this.settings.ttl = Math.round(this.settings.ttl) || 3_600;
             // Days a login is renewed without a password, i.e. the lifetime of the refresh token
@@ -790,8 +800,17 @@ export default class Web {
                 this.store = new AdapterStore({ adapter: this.adapter });
 
                 this.server.app.use(cookieParser());
-                this.server.app.use(bodyParser.urlencoded({ extended: true }));
-                this.server.app.use(bodyParser.json());
+                // The body of a proxied request belongs to the instance and must reach it unread
+                const urlencodedParser = bodyParser.urlencoded({ extended: true });
+                const jsonParser = bodyParser.json();
+                this.server.app.use((req: Request, res: Response, next: NextFunction): void =>
+                    this.instanceProxy.matches(req.url) ? next() : urlencodedParser(req, res, next),
+                );
+                this.server.app.use((req: Request, res: Response, next: NextFunction): void =>
+                    this.instanceProxy.matches(req.url) ? next() : jsonParser(req, res, next),
+                );
+                // In front of the OAuth2 routes, which register the login check of admin
+                this.server.app.use(this.instanceProxy.hideAuthorization);
 
                 this.oauth2Model = createOAuth2Server(this.adapter, {
                     app: this.server.app,
@@ -929,6 +948,9 @@ export default class Web {
             } else {
                 this.server.app.get('/logout', (_req: Request, res: Response): void => res.redirect(this.publicPath));
             }
+
+            // Behind the login and in front of all other routes, so nothing of admin answers for a proxied path
+            this.server.app.use(this.instanceProxy.handleRequest);
 
             this.server.app.get('/iobroker_check.html', (_req: Request, res: Response): void => {
                 res.status(200).send('ioBroker');
@@ -1504,6 +1526,7 @@ export default class Web {
             }
 
             this.server.server.__server = this.server;
+            this.instanceProxy.attach(this.server.server);
         } else {
             this.adapter.log.error('port missing');
             this.adapter.terminate('port missing', EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);

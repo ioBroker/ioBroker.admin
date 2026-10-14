@@ -69,6 +69,7 @@ import {
     setPinnedConfigManagerInstances,
 } from '@/helpers/configManagerPins';
 import { isPermissionError, retryDelay } from '@/helpers/retryDelay';
+import { adminHref } from '@/helpers/utils';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -1324,13 +1325,9 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 ).then(result => {
                                     if (result.href) {
                                         console.log(result.href);
-                                        // Open in new tab
-                                        window
-                                            .open(
-                                                `${window.location.protocol}//${window.location.host}/${result.href}`,
-                                                tab.name,
-                                            )
-                                            ?.focus();
+                                        // Open in new tab. A relative link (`adapter/…`, `proxy/xterm.0/`) is below the
+                                        // public path of admin, an absolute one (the own port of an adapter) stays as it is
+                                        window.open(adminHref(result.href), tab.name)?.focus();
                                     } else {
                                         handleNavigation(tab.name);
                                     }
