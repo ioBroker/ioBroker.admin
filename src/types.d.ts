@@ -9,7 +9,6 @@ export interface AdminAdapterConfig extends ioBroker.AdapterConfig {
     auth: boolean;
     autoUpdate: number;
     bind: string;
-    cache: boolean;
     certChained: string;
     certPrivate: string;
     certPublic: string;
