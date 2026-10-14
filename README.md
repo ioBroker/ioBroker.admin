@@ -99,6 +99,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) The used resources added (Only js-controller 8)
 - (@GermanBluefox) Fixed: the language selected in the wizard is kept after the wizard is closed
+- (@GermanBluefox) The admin and the admin pages of the adapters load from the browser cache and still show a new version at once: the chunks with a content hash in their name (`assets/*-<hash>.js`) are kept for a year, everything else - `index.html`, `mf-manifest.json`, `lib/js/*`, ... - is asked for on every load and answered with 304 while unchanged. Before, every file was asked for again on each load, or, with the hidden `cache` option, kept for a year even when it changed with an update
 
 ### 8.2.0 (2026-10-12)
 - (@GermanBluefox) Fixed: iobroker.pro cloud can open the instance settings now

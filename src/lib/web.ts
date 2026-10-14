@@ -46,6 +46,27 @@ const CORS_ENABLED_PATHS = [
 ];
 // const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g; // with space
 
+/**
+ * Vite names every chunk `<name>-<hash>.<ext>` below `assets/`, and the hash changes with the content. A name like
+ * `material-icons-outlined.woff2` has the same shape, so the hash must also hold a digit or an upper-case letter: a
+ * real hash without one only loses the long caching, a wrong match would pin a file that changes with the next update.
+ */
+const HASHED_ASSET = /(^|[\\/])assets[\\/][^\\/]+-(?=[\w-]*[0-9A-Z])[\w-]{8}\.[a-z0-9]+$/;
+
+/**
+ * Cache-Control for a file of the admin GUI or of the admin pages of an adapter.
+ *
+ * A chunk with a content hash in its name never changes, so the browser keeps it for a year without asking again.
+ * Everything else - `index.html`, but also `mf-manifest.json`, `remoteEntry.js` or `lib/js/*`, which belong to the
+ * current version - is asked for on every load and answered with 304 while it is unchanged. So the admin loads from
+ * the cache, and a new version is visible at once.
+ *
+ * @param path URL or file system path of the file
+ */
+function getCacheControl(path: string): string {
+    return HASHED_ASSET.test(path) ? 'public, max-age=31536000, immutable' : 'no-cache';
+}
+
 // copied from here: https://github.com/component/escape-html/blob/master/index.js
 const matchHtmlRegExp = /["'&<>]/;
 function escapeHtml(string: string): string {
@@ -1064,11 +1085,6 @@ export default class Web {
                 }
             });
 
-            const appOptions: { maxAge?: number } = {};
-            if (this.settings.cache) {
-                appOptions.maxAge = 30_758_400_000;
-            }
-
             if (this.settings.tmpPathAllow && this.settings.tmpPath) {
                 this.server.app.use('/tmp/', express.static(this.settings.tmpPath, { maxAge: 0 }));
                 this.server.app.use(
@@ -1192,7 +1208,14 @@ export default class Web {
                     res.status(200).send(this.indexHTML);
                 });
 
-                this.server.app.use('/', express.static(this.wwwDir, appOptions));
+                this.server.app.use(
+                    '/',
+                    express.static(this.wwwDir, {
+                        setHeaders: (res, filePath): void => {
+                            res.setHeader('Cache-Control', getCacheControl(filePath));
+                        },
+                    }),
+                );
             }
 
             // reverse proxy with url rewrite for couchdb attachments in <adapter-name>.admin
@@ -1283,6 +1306,7 @@ export default class Web {
                                 res.contentType('text/javascript');
                             }
                         }
+                        res.set('Cache-Control', getCacheControl(url));
                         res.send(this.withInfoJs(url, buffer));
                     }
                 });
