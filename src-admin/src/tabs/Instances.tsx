@@ -174,8 +174,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     private states: Record<string, ioBroker.State>;
 
-    private adapters: ioBroker.AdapterObject[];
-
     /** Which adapters are really installed, per host - see `InstanceItem.adapterMissing` */
     private installedPerHost: InstalledAdaptersPerHost = {};
 
@@ -278,7 +276,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
         // };
 
         this.states = {};
-        this.adapters = [];
         this.statesUpdateTimer = null;
         this.wordCache = {};
 
@@ -301,14 +298,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     async componentDidMount(): Promise<void> {
         this.props.instancesWorker.registerHandler(this.getInstances);
-        // Load reverse proxy configuration first so link generation can map immediately
-        try {
-            const adminObj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
-            const reverseProxy = adminObj?.native?.reverseProxy || [];
-            await new Promise<void>(resolve => this.setState({ reverseProxy }, () => resolve()));
-        } catch (e) {
-            console.warn('Cannot read reverseProxy config for Instances page:', e);
-        }
         await this.updateData();
         void this.subscribeUsedResources();
         const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
@@ -317,10 +306,29 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
+    /** Reads the reverse proxy configuration of this admin: the links of the instances are mapped with it */
+    async readReverseProxy(): Promise<void> {
+        try {
+            const adminObj = await this.props.socket.getObject(`system.adapter.${this.props.adminInstance}`);
+            const reverseProxy = adminObj?.native?.reverseProxy || [];
+            await new Promise<void>(resolve => this.setState({ reverseProxy }, () => resolve()));
+        } catch (e) {
+            console.warn('Cannot read reverseProxy config for Instances page:', e);
+        }
+    }
+
+    /**
+     * Reads everything the list needs and shows it.
+     *
+     * Only the states and the reverse proxy configuration are waited for. The compact mode of the host
+     * and the host information come later on their own: each of them is a message to the host, and the
+     * list stood empty for seconds while they were read one after another.
+     */
     async updateData(): Promise<void> {
-        await this.getParamsLocalAndPanel();
-        await this.getData();
-        await this.getHostsData();
+        this.getParamsLocalAndPanel();
+        void this.readCompactMode();
+        void this.getHostsData();
+        await Promise.all([this.getData(), this.readReverseProxy()]);
         await this.getInstances();
     }
 
@@ -421,28 +429,8 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         instances = Object.values(instancesFromWorker);
 
-        let memRssId = `${this.state.currentHost}.memRss`;
-        this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
-
-        const host = this.states[memRssId];
-        let processes = 1;
-        let mem: number = host ? parseFloat(host.val as string) || 0 : 0;
         const hosts: Record<string, ioBroker.HostObject> = {};
         this.props.hosts.forEach(_host => (hosts[_host._id] = _host));
-
-        for (let i = 0; i < instances.length; i++) {
-            const inst = instances[i];
-            if (!inst || !inst.common || inst.common.host !== this.props.currentHostName) {
-                continue;
-            }
-            if (inst.common.enabled && inst.common.mode === 'daemon' && !InstanceGeneric.isCompact(inst)) {
-                memRssId = `${inst._id}.memRss`;
-                this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
-                const m = this.states[memRssId];
-                mem += m ? parseFloat(m.val as string) || 0 : 0;
-                processes++;
-            }
-        }
 
         const formatted: Record<string, InstanceEntry> = {};
 
@@ -616,31 +604,77 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
         console.log(`getInstances: ${Date.now() - start}`);
 
-        for (let c = 1; c <= maxCompactGroupNumber; c++) {
-            const compactGroupMemRssId = `${this.state.currentHost}.compactgroup${c}.memRss`;
-            this.states[compactGroupMemRssId] =
-                this.states[compactGroupMemRssId] || (await this.props.socket.getState(compactGroupMemRssId));
-            const m = this.states[compactGroupMemRssId];
-            if (m) {
-                mem += m ? parseFloat(m.val as string) || 0 : 0;
-                processes++;
-            }
-        }
-
         if (this.state.deleting && !formatted[`system.adapter.${this.state.deleting}`]) {
             newState.deleting = null;
         }
 
         newState.maxCompactGroupNumber = maxCompactGroupNumber;
-        newState.processes = processes;
-        newState.mem = Math.round(mem);
         newState.instances = formatted;
 
         this._cacheList = null;
         this.setState(newState as InstancesState);
+
+        // only for the header: the list does not wait for it
+        void this.readMemoryUsage(instances, maxCompactGroupNumber);
     };
 
-    getParamsLocalAndPanel = async (): Promise<void> => {
+    /**
+     * Sums up the memory of the host and of all processes of the instances on the current host.
+     *
+     * The states that the read at the start did not bring (the host and the compact groups are not
+     * `system.adapter.*`) are read in one go.
+     */
+    async readMemoryUsage(instances: ioBroker.InstanceObject[], maxCompactGroupNumber: number): Promise<void> {
+        const processIds = [
+            `${this.state.currentHost}.memRss`,
+            ...instances
+                .filter(
+                    inst =>
+                        inst?.common?.host === this.props.currentHostName &&
+                        inst.common.enabled &&
+                        inst.common.mode === 'daemon' &&
+                        !InstanceGeneric.isCompact(inst),
+                )
+                .map(inst => `${inst._id}.memRss`),
+        ];
+        const compactGroupIds: string[] = [];
+        for (let c = 1; c <= maxCompactGroupNumber; c++) {
+            compactGroupIds.push(`${this.state.currentHost}.compactgroup${c}.memRss`);
+        }
+
+        const missing = [...processIds, ...compactGroupIds].filter(id => !this.states[id]);
+        if (missing.length) {
+            try {
+                const states = await this.props.socket.getForeignStates(missing);
+                for (const id of missing) {
+                    if (states[id]) {
+                        this.states[id] = states[id];
+                    }
+                }
+            } catch (e) {
+                console.warn(`Cannot read the memory usage: ${e as Error}`);
+            }
+            if (this.unmounted) {
+                return;
+            }
+        }
+
+        const memOf = (id: string): number => parseFloat(this.states[id]?.val as string) || 0;
+        let mem = processIds.reduce((sum, id) => sum + memOf(id), 0);
+        let processes = processIds.length;
+        // a compact group counts only if it runs
+        compactGroupIds
+            .filter(id => this.states[id])
+            .forEach(id => {
+                mem += memOf(id);
+                processes++;
+            });
+
+        this.setState({ processes, mem: Math.round(mem) });
+    }
+
+    /** Reads from the host whether it runs the adapters in compact mode */
+    async readCompactMode(): Promise<void> {
         let compact = false;
         try {
             const baseSettings = await this.props.socket.readBaseSettings(this.state.currentHost);
@@ -648,7 +682,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
         } catch (error) {
             window.alert(`Cannot read compact mode by host "${this.state.currentHost}": ${error}`);
         }
+        if (!this.unmounted && compact !== this.state.compact) {
+            this._cacheList = null;
+            this.setState({ compact });
+        }
+    }
 
+    getParamsLocalAndPanel(): void {
         let playArrow: 0 | 1 | 2 = 0;
         let filterCompactGroup: string | number = 'All';
         try {
@@ -675,22 +715,16 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this._cacheList = null;
         this.setState({
             filterCompactGroup,
-            compact,
             onlyCurrentHost,
             playArrow,
             viewMode,
             viewCategory,
         });
-    };
+    }
 
     async getData(update?: boolean): Promise<void> {
         try {
-            const adapters = this.props.socket.getAdapters(update);
-            const statesProm = this.getStates();
-
-            const [states, _adapters] = await Promise.all([statesProm, adapters]);
-            this.adapters = _adapters || [];
-            this.states = states || {};
+            this.states = (await this.getStates()) || {};
         } catch (error) {
             console.log(error);
         }
@@ -807,11 +841,6 @@ class Instances extends Component<InstancesProps, InstancesState> {
         return status;
     };
 
-    isCompactGroupCheck(id: string): boolean {
-        const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
-        return obj?.common?.compact || false;
-    }
-
     getName(obj: ioBroker.InstanceObject): string {
         if (!obj?.common) {
             return '';
@@ -909,9 +938,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const instance = stateInstances[id];
             const running = InstanceGeneric.isRunning(instance.obj);
             const compactGroup = InstanceGeneric.isCompactGroup(instance.obj);
-            const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
             const compact = InstanceGeneric.isCompact(instance.obj);
+            // `common.compact` comes from the io-package of the adapter, the instance carries it like the adapter object
             const supportCompact = instance.compact || false;
+            const checkCompact = supportCompact && this.state.compact;
             const alive = this.isAlive(id);
             const connectedToHost = this.isConnectedToHost(id);
             const connected: string | boolean | null = this.getConnected(id);
@@ -963,6 +993,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 tier,
                 loglevelIcon,
                 inputOutput,
+                memRss: (this.states[`${id}.memRss`]?.val as number) || 0,
                 modeSchedule,
                 checkSentry,
                 memoryLimitMB,
@@ -1279,9 +1310,22 @@ class Instances extends Component<InstancesProps, InstancesState> {
             });
 
         let memState;
-        const memAvailable = await this.props.socket.getState(`${this.state.currentHost}.memAvailable`);
-        const freemem = await this.props.socket.getState(`${this.state.currentHost}.freemem`);
-        const object = await this.props.socket.getObject(`${this.state.currentHost}`);
+        let memAvailable: ioBroker.State | null | undefined;
+        let freemem: ioBroker.State | null | undefined;
+        let object: ioBroker.Object | null | undefined;
+        try {
+            [memAvailable, freemem, object] = await Promise.all([
+                this.props.socket.getState(`${this.state.currentHost}.memAvailable`),
+                this.props.socket.getState(`${this.state.currentHost}.freemem`),
+                this.props.socket.getObject(`${this.state.currentHost}`),
+            ]);
+        } catch (e) {
+            console.warn(`Cannot read the memory of "${this.state.currentHost}": ${e as Error}`);
+            return;
+        }
+        if (this.unmounted) {
+            return;
+        }
 
         if (memAvailable) {
             memState = memAvailable;

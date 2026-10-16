@@ -13,6 +13,7 @@ import { Check as IconCheck, ExpandMore as ExpandMoreIcon, ArrowForward as IconN
 
 import { type AdminConnection, I18n } from '@iobroker/gui-components';
 import type { Repository } from '@/types';
+import { readRepository } from '@/helpers/repository';
 
 import WizardStepFrame from './WizardStepFrame';
 
@@ -70,8 +71,10 @@ export default class WizardAdaptersTab extends React.Component<WizardAdaptersTab
      */
     async componentDidMount(): Promise<void> {
         try {
-            const repository = await this.props.socket.getRepository(this.props.host, {
+            const repository = await readRepository(this.props.socket, this.props.host, {
                 repo: this.props.socket.systemConfig?.common.activeRepo,
+                lang: this.props.socket.systemLang,
+                adapters: CATEGORIES.flatMap(category => category.adapters),
             });
 
             this.setState({ repository, loading: false });

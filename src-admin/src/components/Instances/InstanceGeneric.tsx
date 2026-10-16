@@ -76,6 +76,19 @@ import CustomModal from '../CustomModal';
 import LinksDialog, { type InstanceLink } from './LinksDialog';
 import AdminUtils from '../../helpers/AdminUtils';
 
+/** Whether both objects have the same attributes with identical values */
+function shallowEqual(a: object, b: object): boolean {
+    const keysA = Object.keys(a);
+    if (keysA.length !== Object.keys(b).length) {
+        return false;
+    }
+    return keysA.every(
+        key =>
+            Object.prototype.hasOwnProperty.call(b, key) &&
+            (a as Record<string, unknown>)[key] === (b as Record<string, unknown>)[key],
+    );
+}
+
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 export const arrayTier = [
     { value: 1, desc: '1: Logic adapters' },
@@ -397,6 +410,8 @@ export interface InstanceItem {
         stateInput: number;
         stateOutput: number;
     };
+    /** The memory used by the process of the instance in MB */
+    memRss: number;
     loglevelIcon: JSX.Element | null;
     logLevelObject: ioBroker.LogLevel;
     modeSchedule: boolean;
@@ -497,6 +512,53 @@ export default abstract class InstanceGeneric<
 
     componentWillUnmount(): void {
         this.props.context.onRegisterClose(this.props.id, null);
+    }
+
+    /**
+     * A row renders only when something it shows has changed.
+     *
+     * The list renders anew with every changed state of any instance (memRss, inputCount...), up to once
+     * a second, and rendering all rows took ~0.4 s with 120 instances. `item` and `context` are built anew
+     * for every rendering of the list, so they are compared by their content.
+     */
+    shouldComponentUpdate(nextProps: Readonly<TProps>, nextState: Readonly<TState>): boolean {
+        if (!shallowEqual(this.state, nextState)) {
+            return true;
+        }
+        const { item, context, ...rest } = this.props;
+        const { item: nextItem, context: nextContext, ...nextRest } = nextProps;
+        return (
+            !shallowEqual(rest, nextRest) ||
+            !shallowEqual(context, nextContext) ||
+            !InstanceGeneric.sameItem(item, nextItem)
+        );
+    }
+
+    /** Whether two list entries of an instance show the same */
+    static sameItem(a: InstanceItem, b: InstanceItem): boolean {
+        const keys = Object.keys(b) as (keyof InstanceItem)[];
+        if (keys.length !== Object.keys(a).length) {
+            return false;
+        }
+        return keys.every(key => {
+            if (a[key] === b[key] || key === 'loglevelIcon') {
+                // the icon is a new element every time and follows from `logLevel`
+                return true;
+            }
+            if (key === 'inputOutput') {
+                return (
+                    a.inputOutput.stateInput === b.inputOutput.stateInput &&
+                    a.inputOutput.stateOutput === b.inputOutput.stateOutput
+                );
+            }
+            if (key === 'usedResources') {
+                return (
+                    a.usedResources.length === b.usedResources.length &&
+                    a.usedResources.every((resource, i) => resource === b.usedResources[i])
+                );
+            }
+            return false;
+        });
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
@@ -652,8 +714,7 @@ export default abstract class InstanceGeneric<
     }
 
     getMemory(): number {
-        const state = this.props.context.states[`${this.props.id}.memRss`];
-        return (state?.val as number) || 0;
+        return this.props.item.memRss;
     }
 
     renderDeleteDialog(): JSX.Element {

@@ -25,6 +25,8 @@ export class AdaptersWorker extends GenericWorker<'adapter'> {
     protected postProcessing(_id: string, _obj: ioBroker.AdapterObject | null | undefined): void {
         this.socket.getAdaptersResetCache();
         this.socket.getInstalledResetCache('');
+        // the reduced repository carries the news only of the installed adapters
+        this.socket.getRepositoryResetCache('');
     }
 
     repoChangeHandler = (/* id, obj */): void => {

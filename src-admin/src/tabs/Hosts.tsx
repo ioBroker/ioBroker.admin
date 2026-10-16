@@ -25,6 +25,7 @@ import SlowConnectionWarningDialog, { SlowConnectionWarningDialogClass } from '@
 import type { HostsWorker, NotificationAnswer, HostAliveEvent, HostEvent } from '@/Workers/HostsWorker';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
+import { readRepository } from '@/helpers/repository';
 import HostCard from '../components/Hosts/HostCard';
 // import NewHosts from '../components/Hosts/NewHosts';
 import HostRow from '../components/Hosts/HostRow';
@@ -237,9 +238,11 @@ export default class Hosts extends Component<HostsProps, HostsState> {
     async readInfo(): Promise<void> {
         try {
             const hosts: ioBroker.HostObject[] = await this.props.socket.getHosts(true);
-            const repository: Record<string, RepoAdapterObject> = (await this.props.socket.getRepository(
+            // only the controller is shown here, the other entries of the repository are not needed
+            const repository: Record<string, RepoAdapterObject> = (await readRepository(
+                this.props.socket,
                 this.props.currentHost,
-                { update: false },
+                { update: false, lang: this.props.lang, adapters: ['js-controller'] },
                 false,
                 this.state.readTimeoutMs,
             )) as unknown as Record<string, RepoAdapterObject>;

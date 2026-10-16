@@ -66,6 +66,7 @@ import AdaptersList, { SUM } from '@/components/Adapters/AdaptersList';
 import type { AdminGuiConfig, CommandFile } from '@/types';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdminUpdater from '@/dialogs/AdminUpdater';
+import { addMissingNews, readRepository } from '@/helpers/repository';
 
 const ONE_DAY_MS = 3_600_000 * 24; // 1 day in milliseconds
 const ONE_DAY_BY_10 = ONE_DAY_MS / 10; // 1 day in milliseconds * 10
@@ -335,7 +336,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     async componentDidMount(): Promise<void> {
         if (this.props.ready) {
             this.hostAdapterWorker = new HostAdapterWorker(this.props.socket, this.props.currentHost);
-            this.hostAdapterWorker.registerHandler(this.onHostAdapterChanged);
+            // The worker would read all objects anew after subscribing, but the read below already
+            // follows the subscription: it would only fetch the same ~1 MB a second time
+            this.hostAdapterWorker.registerHandler(this.onHostAdapterChanged, true);
             // wait till data is loaded
             await this.hostAdapterWorker.getObjects();
             await this.updateAll();
@@ -348,8 +351,12 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     }
 
     async updateAll(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean): Promise<void> {
+        // None of the information depends on the repository: it is read while the repository is loading
+        const info = this.state.currentHost ? this.readAdaptersInfo(update) : null;
         await this.getAdapters(update, bigUpdate, indicateUpdate);
-        await this.getAdaptersInfo(update, indicateUpdate);
+        if (info) {
+            await this.getAdaptersInfo(info, indicateUpdate);
+        }
     }
 
     componentDidUpdate(): void {
@@ -541,36 +548,48 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
         const hosts = await this.props.socket.getHosts(update);
 
-        for (const host of hosts) {
-            try {
-                const alive = await this.props.socket.getState(`${host._id}.alive`);
-                if (alive?.val) {
-                    const res = await this.props.socket.getInstalled(host._id, update, this.state.readTimeoutMs);
+        // Every host reads its `node_modules` for the answer: ask them all at once instead of one after another
+        const answers = await Promise.all(
+            hosts.map(async (host): Promise<InstalledInfo | null> => {
+                try {
+                    const alive = await this.props.socket.getState(`${host._id}.alive`);
+                    if (!alive?.val) {
+                        return null;
+                    }
+                    return await this.props.socket.getInstalled(host._id, update, this.state.readTimeoutMs);
+                } catch (e) {
+                    window.alert(
+                        `Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e as Error}`,
+                    );
+                    if ((e as Error).toString().includes('timeout')) {
+                        this.setState({ showSlowConnectionWarning: true });
+                    }
+                    return null;
+                }
+            }),
+        );
 
-                    if (host._id === this.state.currentHost) {
-                        installedLocal = res;
-                    }
-                    // Remember the installed version of every adapter on every host, so we can tell
-                    // exactly which host does not fulfill a global dependency in a multihost setup.
-                    const hostName = host._id.replace(/^system\.host\./, '');
-                    for (const adapterName of Object.keys(res)) {
-                        if (adapterName === 'hosts' || !res[adapterName]?.version) {
-                            continue;
-                        }
-                        installedGlobalHosts[adapterName] ||= {};
-                        installedGlobalHosts[adapterName][hostName] = res[adapterName].version;
-                    }
-                    installedGlobal = { ...installedGlobal, ...res };
-                }
-            } catch (e) {
-                window.alert(
-                    `Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e as Error}`,
-                );
-                if ((e as Error).toString().includes('timeout')) {
-                    this.setState({ showSlowConnectionWarning: true });
-                }
+        // merged in the order of the hosts, as a later host overwrites the entries of an earlier one
+        hosts.forEach((host, i) => {
+            const res = answers[i];
+            if (!res) {
+                return;
             }
-        }
+            if (host._id === this.state.currentHost) {
+                installedLocal = res;
+            }
+            // Remember the installed version of every adapter on every host, so we can tell
+            // exactly which host does not fulfill a global dependency in a multihost setup.
+            const hostName = host._id.replace(/^system\.host\./, '');
+            for (const adapterName of Object.keys(res)) {
+                if (adapterName === 'hosts' || !res[adapterName]?.version) {
+                    continue;
+                }
+                installedGlobalHosts[adapterName] ||= {};
+                installedGlobalHosts[adapterName][hostName] = res[adapterName].version;
+            }
+            installedGlobal = { ...installedGlobal, ...res };
+        });
 
         return { installedLocal, installedGlobal, installedGlobalHosts };
     }
@@ -585,29 +604,49 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             this.setState({ update: true });
         }
 
-        let adapters: Record<string, ioBroker.AdapterObject> = {};
-
-        try {
-            adapters = (await this.props.adaptersWorker.getObjects(update)) || {};
-        } catch (e) {
-            window.alert(`Cannot getAdapters: ${e}`);
-        }
-
-        const { installedLocal, installedGlobal, installedGlobalHosts } = await this.getInstalled(update);
-
-        let repository: Record<string, RepoAdapterObject> = {};
-        try {
-            repository = (await this.props.socket.getRepository(
+        // The three reads do not depend on each other. The repository takes by far the longest, the
+        // others are done meanwhile instead of before it
+        const [adapters, { installedLocal, installedGlobal, installedGlobalHosts }, repository] = await Promise.all([
+            this.props.adaptersWorker
+                .getObjects(update)
+                .then(objects => objects || {})
+                .catch((e: unknown): Record<string, ioBroker.AdapterObject> => {
+                    window.alert(`Cannot getAdapters: ${e as Error}`);
+                    return {};
+                }),
+            this.getInstalled(update),
+            readRepository(
+                this.props.socket,
                 currentHost,
-                { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate || indicateUpdate },
+                {
+                    repo: this.props.systemConfig.common.activeRepo,
+                    update: bigUpdate || indicateUpdate,
+                    lang: this.props.lang,
+                },
                 update,
                 this.state.readTimeoutMs,
-            )) as unknown as Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;
+            )
+                .then(repo => repo as unknown as Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>)
+                .catch((e: unknown): Record<string, RepoAdapterObject> => {
+                    window.alert(`Cannot getRepository: ${e as Error}`);
+                    if ((e as Error).toString().includes('timeout')) {
+                        this.setState({ showSlowConnectionWarning: true });
+                    }
+                    return {};
+                }),
+        ]);
+
+        try {
+            await addMissingNews(
+                this.props.socket,
+                currentHost,
+                repository,
+                Object.keys(installedGlobal),
+                { repo: this.props.systemConfig.common.activeRepo, lang: this.props.lang },
+                this.state.readTimeoutMs,
+            );
         } catch (e) {
-            window.alert(`Cannot getRepository: ${e as Error}`);
-            if ((e as Error).toString().includes('timeout')) {
-                this.setState({ showSlowConnectionWarning: true });
-            }
+            console.warn(`Cannot read the news of the installed adapters: ${e as Error}`);
         }
 
         return this.analyseInstalled({
@@ -1001,7 +1040,62 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         });
     }
 
-    async getAdaptersInfo(update?: boolean, indicateUpdate?: boolean): Promise<void> {
+    /**
+     * Reads what the list needs besides the adapters, the installed versions and the repository.
+     *
+     * All reads run at once, and errors are reported here: the promise always resolves.
+     */
+    readAdaptersInfo(update?: boolean): Promise<{
+        hostData: HostInfo | undefined;
+        ratings: Ratings | null;
+        compactInstances: Record<string, CompactInstanceInfo>;
+        compactRepositories: CompactSystemRepository;
+    }> {
+        const currentHost = this.state.currentHost;
+        const ratingAllowed = this.props.adminGuiConfig.admin?.adapters?.allowAdapterRating !== false;
+
+        return Promise.all([
+            // Only `os` and `Node.js` of the host are used. The short info has them at once, while the full
+            // one collects disks, network and more first and took up to 2 s
+            this.props.socket
+                .getHostInfoShort(currentHost, update, this.state.readTimeoutMs)
+                .catch((e: unknown): undefined => {
+                    window.alert(`Cannot getHostInfo for "${currentHost}": ${e as Error}`);
+                    if ((e as Error).toString().includes('timeout')) {
+                        this.setState({ showSlowConnectionWarning: true });
+                    }
+                    return undefined;
+                }),
+            ratingAllowed
+                ? this.props.socket.getRatings(update).catch((e: unknown): null => {
+                      window.alert(`Cannot read ratings: ${e as Error}`);
+                      return null;
+                  })
+                : Promise.resolve(null),
+            this.props.socket.getCompactInstances(update).catch((e: unknown): Record<string, CompactInstanceInfo> => {
+                window.alert(`Cannot read countsOfInstances: ${e as Error}`);
+                return {};
+            }),
+            this.props.socket
+                .getCompactSystemRepositories(update)
+                .catch((e: unknown): Record<string, CompactSystemRepository> => {
+                    window.alert(`Cannot read getCompactSystemRepositories: ${e as Error}`);
+                    return {};
+                }),
+        ]).then(([hostData, ratings, compactInstances, compactRepositories]) => {
+            if (ratingAllowed) {
+                this.uuid = ratings?.uuid || '';
+            }
+            return {
+                hostData,
+                ratings: ratings as Ratings | null,
+                compactInstances: compactInstances || {},
+                compactRepositories: compactRepositories as CompactSystemRepository,
+            };
+        });
+    }
+
+    async getAdaptersInfo(info: ReturnType<Adapters['readAdaptersInfo']>, indicateUpdate?: boolean): Promise<void> {
         if (!this.state.currentHost) {
             return;
         }
@@ -1010,52 +1104,15 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         if (Date.now() - this.state.lastUpdate > 1_000) {
             console.log('[ADAPTERS] getAdaptersInfo');
 
-            const currentHost = this.state.currentHost;
-
-            let ratings: Ratings | null = null;
             try {
                 if (!this.state.update || indicateUpdate) {
                     await new Promise<void>(resolve => {
                         this.setState({ update: true }, () => resolve());
                     });
                 }
-                const hostData: HostInfo | undefined = await this.props.socket
-                    .getHostInfo(currentHost, update, this.state.readTimeoutMs)
-                    .catch((e: unknown): undefined => {
-                        window.alert(`Cannot getHostInfo for "${currentHost}": ${e as Error}`);
-                        if ((e as Error).toString().includes('timeout')) {
-                            this.setState({ showSlowConnectionWarning: true });
-                        }
-                        return undefined;
-                    });
+                const { hostData, ratings, compactInstances, compactRepositories } = await info;
 
-                if (this.props.adminGuiConfig.admin?.adapters?.allowAdapterRating !== false) {
-                    try {
-                        ratings = await this.props.socket.getRatings(update);
-                    } catch (e) {
-                        window.alert(`Cannot read ratings: ${e as Error}`);
-                    }
-                    this.uuid = ratings?.uuid || '';
-                } else {
-                    ratings = null;
-                }
-
-                const compactInstances = await this.props.socket
-                    .getCompactInstances(update)
-                    .catch((e: unknown): Record<string, CompactInstanceInfo> => {
-                        window.alert(`Cannot read countsOfInstances: ${e as Error}`);
-                        return {};
-                    });
-
-                const compactRepositoriesEx = await this.props.socket
-                    .getCompactSystemRepositories(update)
-                    .catch((e: unknown): Record<string, CompactSystemRepository> => {
-                        window.alert(`Cannot read getCompactSystemRepositories: ${e as Error}`);
-                        return {};
-                    });
-                const compactRepositories: CompactSystemRepository = compactRepositoriesEx as CompactSystemRepository;
-
-                await this.calculateInfo(compactInstances || {}, ratings, hostData, compactRepositories);
+                await this.calculateInfo(compactInstances, ratings, hostData, compactRepositories);
             } catch (error) {
                 window.alert(`Cannot get adapters info: ${error}`);
             }
@@ -2119,7 +2176,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                                     this.props.socket,
                                     this.props.currentHost,
                                 );
-                                this.hostAdapterWorker.registerHandler(this.onHostAdapterChanged);
+                                // the read below follows the subscription, see componentDidMount
+                                this.hostAdapterWorker.registerHandler(this.onHostAdapterChanged, true);
                                 await this.hostAdapterWorker.getObjects();
                             }
                             await this.updateAll(false, false, true);

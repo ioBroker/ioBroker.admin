@@ -1,8 +1,6 @@
 import 'ace-builds/src-noconflict/ace';
 import '@emotion/react';
 import '@emotion/styled';
-import 'date-fns';
-import 'date-fns/locale';
 import 'leaflet';
 import 'leaflet-geosearch';
 import 'react-ace';
@@ -20,6 +18,8 @@ import '@iobroker/dm-gui-components';
 
 import './index.css';
 
+import { registerLazyShared } from './helpers/lazyShared';
+
 import version from './version.json';
 import { ContextWrapperProvider } from './components/ContextWrapper';
 import App from './App';
@@ -31,6 +31,8 @@ declare global {
         USE_OAUTH2: boolean;
     }
 }
+
+registerLazyShared();
 
 window.adapterName = 'admin';
 window.USE_OAUTH2 = true;

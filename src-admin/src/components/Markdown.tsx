@@ -36,6 +36,7 @@ import MDUtils, {
     type MarkdownPart,
 } from './MDUtils';
 import type { Repository } from '@iobroker/socket-client';
+import { readRepository } from '@/helpers/repository';
 // import { Page404 } from '@iobroker/gui-components';
 
 const styles: Record<string, any> = {
@@ -590,11 +591,19 @@ class Markdown extends Component<MarkdownProps, MarkdownState> {
         if (this.state.text) {
             this.parseText(this.state.text);
         }
-        void this.props.socket?.getRepository(this.props.currentHost, {}).then((repo: Repository): void =>
-            this.setState({
-                adapterNews: repo[this.props.adapter]?.news as Record<string, ioBroker.StringOrTranslated>,
-            }),
-        );
+        if (this.props.socket && this.props.adapter) {
+            // only the entry of this adapter, which brings its news also if it is not installed
+            readRepository(this.props.socket, this.props.currentHost, {
+                lang: I18n.getLanguage(),
+                adapters: [this.props.adapter],
+            })
+                .then((repo: Repository): void =>
+                    this.setState({
+                        adapterNews: repo[this.props.adapter]?.news as Record<string, ioBroker.StringOrTranslated>,
+                    }),
+                )
+                .catch(e => console.warn(`Cannot read the news of "${this.props.adapter}": ${e}`));
+        }
     }
 
     UNSAFE_componentWillReceiveProps(nextProps: MarkdownProps /* , nextContext */): void {
