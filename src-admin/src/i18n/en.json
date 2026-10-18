@@ -309,6 +309,7 @@
     "Connected:": "Connected:",
     "Connection OK: %s models": "Connection OK: %s models",
     "Connection password": "Connection password",
+    "Connection to admin lost. Waiting for reconnection...": "Connection to admin lost. Waiting for reconnection...",
     "Continue": "Continue",
     "Cook Islands": "Cook Islands",
     "Copied": "Copied",

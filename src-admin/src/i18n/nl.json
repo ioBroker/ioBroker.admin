@@ -310,6 +310,7 @@
     "Connected:": "Verbonden:",
     "Connection OK: %s models": "Verbinding OK: %s modellen",
     "Connection password": "Verbindingswachtwoord",
+    "Connection to admin lost. Waiting for reconnection...": "Verbinding met admin verbroken. Wachten op herverbinding...",
     "Cook Islands": "Cook Eilanden",
     "Copied": "Gekopieerd",
     "Copy": "Kopieer naar klembord",

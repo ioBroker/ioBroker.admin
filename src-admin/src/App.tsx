@@ -406,6 +406,12 @@ const GUI_SETTINGS_TIMEOUT = 10_000;
 /** A write that got no answer while the connection is up is tried again after this time */
 const GUI_SETTINGS_RETRY = 5_000;
 
+/** The requests that a lost connection cuts off fail just after it: errors within this time are not shown */
+const CONNECTION_LOSS_GRACE = 5_000;
+
+/** An error is shown after this delay, so one that admin answers just before it shuts down can be recognized as such */
+const ERROR_ALERT_DELAY = 1_000;
+
 function guiSettingsTimeout<T>(promise: Promise<T>, what: string): Promise<T> {
     let timer: ReturnType<typeof setTimeout> | undefined;
     return Promise.race([
@@ -633,17 +639,31 @@ class App extends Router<AppProps, AppState> {
     /** The user has agreed to lose the assistant, so the next navigation must not ask again */
     private chatLeaveConfirmed = false;
 
+    /** When the connection to admin was lost the last time (e.g. by a restart of admin), 0 if never */
+    private connectionLostAt = 0;
+
     constructor(props: AppProps) {
         super(props);
 
         try {
             window.alert = message => {
-                if (message && message.toString().toLowerCase().includes('error')) {
-                    console.error(message);
-                    this.showAlert(message.toString(), 'error');
+                const text = message?.toString() ?? '';
+                const raisedAt = Date.now();
+                if (this.isCausedByConnectionLoss(text, raisedAt)) {
+                    // the overlay already tells that the connection is lost
+                    console.warn(`Not shown, as the connection to admin is lost: ${text}`);
+                } else if (text.toLowerCase().includes('error')) {
+                    console.error(text);
+                    setTimeout(() => {
+                        if (this.isCausedByConnectionLoss(text, raisedAt)) {
+                            console.warn(`Not shown, as the connection to admin is lost: ${text}`);
+                        } else {
+                            this.showAlert(text, 'error');
+                        }
+                    }, ERROR_ALERT_DELAY);
                 } else {
-                    console.log(message);
-                    this.showAlert(message.toString(), 'info');
+                    console.log(text);
+                    this.showAlert(text, 'info');
                 }
             };
         } catch {
@@ -1200,6 +1220,10 @@ class App extends Router<AppProps, AppState> {
                         return;
                     }
                     if (progress === PROGRESS.CONNECTING) {
+                        // set before the cut-off requests fail, so their errors are recognized
+                        if (this.state.connected) {
+                            this.connectionLostAt = Date.now();
+                        }
                         this.setState({
                             connected: false,
                         });
@@ -2792,6 +2816,28 @@ class App extends Router<AppProps, AppState> {
         this.setState({ alert: false });
     }
 
+    /**
+     * Whether a message is only the consequence of a lost connection to admin, like "Cannot read instances!"
+     * after a restart of admin. Such a message would hide the actual cause, which the overlay shows anyway.
+     *
+     * @param message the text to show
+     * @param raisedAt when the message was raised
+     */
+    isCausedByConnectionLoss(message: string, raisedAt: number): boolean {
+        if (message.includes('notConnectedError')) {
+            return true;
+        }
+        if (!this.connectionLostAt) {
+            return false;
+        }
+        return !this.socket?.isConnected() || this.connectionLostAt > raisedAt - CONNECTION_LOSS_GRACE;
+    }
+
+    /** The text of the overlay while the connection is lost. The first connect shows the spinner only */
+    getConnectionLostText(): string | undefined {
+        return this.connectionLostAt ? I18n.t('Connection to admin lost. Waiting for reconnection...') : undefined;
+    }
+
     showAlert(alertMessage: string | Error, alertType?: 'error' | 'warning' | 'info' | 'success'): void {
         if (alertType !== 'error' && alertType !== 'warning' && alertType !== 'info' && alertType !== 'success') {
             alertType = 'info';
@@ -3664,7 +3710,7 @@ class App extends Router<AppProps, AppState> {
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
                     <div style={{ height: '100%' }}>
-                        {!this.state.connected && <Connecting />}
+                        {!this.state.connected && <Connecting text={this.getConnectionLostText()} />}
                         <Suspense fallback={<Connecting />}>
                             <EasyMode
                                 navigate={Router.doNavigate}
@@ -3912,7 +3958,7 @@ class App extends Router<AppProps, AppState> {
                     {this.renderHostWarningDialog()}
                     {this.renderNotificationsDialog()}
                     {!this.state.connected && !this.state.redirectCountDown && !this.state.updating ? (
-                        <Connecting />
+                        <Connecting text={this.getConnectionLostText()} />
                     ) : null}
                     {this.renderShowGuiSettings()}
                     {this.state.connected && this.socket && this.state.disableMcp === false && onAdminTab ? (

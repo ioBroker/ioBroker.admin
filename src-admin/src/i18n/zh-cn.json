@@ -310,6 +310,7 @@
     "Connected:": "连接的：",
     "Connection OK: %s models": "连接正常：%s 个模型",
     "Connection password": "连接密码",
+    "Connection to admin lost. Waiting for reconnection...": "与 admin 的连接已断开。正在等待重新连接...",
     "Cook Islands": "库克群岛",
     "Copied": "已复制",
     "Copy": "复制到剪贴板",

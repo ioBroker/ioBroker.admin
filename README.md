@@ -103,6 +103,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Fixed: the language selected in the wizard is kept after the wizard is closed
 - (@GermanBluefox) The admin and the admin pages of the adapters load from the browser cache
 - (@GermanBluefox) The tabs "Instances" and "Adapters" load and update faster
+- (@GermanBluefox) Fixed: a restart of admin shows "Connection to admin lost" instead of errors like "Cannot read instances!"
 
 ### 8.2.0 (2026-10-12)
 - (@GermanBluefox) Fixed: iobroker.pro cloud can open the instance settings now

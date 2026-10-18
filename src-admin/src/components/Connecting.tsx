@@ -28,9 +28,29 @@ const styles: Record<string, React.CSSProperties> = {
         transformOrigin: 'center',
         animation: 'admin-connecting-dash 1.4s ease-in-out infinite, $colors 5.6s ease-in-out infinite',
     },
+    text: {
+        position: 'absolute',
+        top: 'calc(60% + 16px)',
+        left: 16,
+        right: 16,
+        textAlign: 'center',
+    },
+    textBox: {
+        display: 'inline-block',
+        padding: '8px 16px',
+        borderRadius: 4,
+        background: 'rgba(0, 0, 0, .7)',
+        color: '#fff',
+        fontSize: 16,
+    },
 };
 
-function Connecting(): JSX.Element {
+interface ConnectingProps {
+    /** Explains why the spinner is shown, e.g. a lost connection */
+    text?: string;
+}
+
+function Connecting(props: ConnectingProps): JSX.Element {
     return (
         <div style={styles.root}>
             <style>
@@ -94,6 +114,11 @@ function Connecting(): JSX.Element {
                     />
                 </svg>
             </div>
+            {props.text ? (
+                <div style={styles.text}>
+                    <span style={styles.textBox}>{props.text}</span>
+                </div>
+            ) : null}
         </div>
     );
 }

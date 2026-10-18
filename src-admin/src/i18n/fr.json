@@ -310,6 +310,7 @@
     "Connected:": "Lié:",
     "Connection OK: %s models": "Connexion OK : %s modèles",
     "Connection password": "Mot de passe de connexion",
+    "Connection to admin lost. Waiting for reconnection...": "Connexion à admin perdue. En attente de reconnexion...",
     "Cook Islands": "Les Îles Cook",
     "Copied": "Copié",
     "Copy": "Copier dans le presse-papier",

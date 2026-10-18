@@ -310,6 +310,7 @@
     "Connected:": "Соединение:",
     "Connection OK: %s models": "Соединение установлено: %s моделей",
     "Connection password": "Пароль подключения",
+    "Connection to admin lost. Waiting for reconnection...": "Соединение с admin потеряно. Ожидание переподключения...",
     "Cook Islands": "Острова Кука",
     "Copied": "Скопировано",
     "Copy": "Скопировать в буфер обмена",
