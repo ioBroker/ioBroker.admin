@@ -1,6 +1,6 @@
 import React, { Component, createRef, type JSX } from 'react';
 
-import { IconButton, LinearProgress, Tooltip, Paper, InputAdornment, TextField, Box } from '@mui/material';
+import { IconButton, LinearProgress, Tooltip, Paper, InputAdornment, TextField, Box, alpha } from '@mui/material';
 
 import {
     PlayArrow as PlayArrowIcon,
@@ -17,6 +17,8 @@ import {
     Folder as FolderIcon,
     FolderOpen as FolderOpenIcon,
     List as ListIcon,
+    Storage as StorageIcon,
+    Memory as MemoryIcon,
 } from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
@@ -93,6 +95,47 @@ const styles: Record<string, any> = {
     },
     grow: {
         flexGrow: 1,
+    },
+    hostInfo: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        whiteSpace: 'nowrap',
+    },
+    usage: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+    },
+    usageIcon: {
+        fontSize: 20,
+        opacity: 0.8,
+    },
+    usageBar: (theme: IobTheme) => ({
+        position: 'relative',
+        width: 80,
+        height: 18,
+        borderRadius: '4px',
+        overflow: 'hidden',
+        backgroundColor: theme.palette.action.hover,
+        border: `1px solid ${theme.palette.divider}`,
+    }),
+    usageBarFill: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        transition: 'width 0.5s',
+    },
+    usageBarText: {
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 12,
+        fontWeight: 'bold',
+        lineHeight: 1,
     },
 };
 
@@ -1344,6 +1387,38 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
+    /** Render a small bar with the used percent written on it and the exact numbers in the tooltip */
+    static renderUsageBar(icon: JSX.Element, usedPercent: number, tooltip: JSX.Element): JSX.Element {
+        const used = Math.min(100, Math.max(0, usedPercent));
+        const color = used >= 90 ? 'error' : used >= 75 ? 'warning' : 'success';
+
+        return (
+            <Tooltip
+                title={tooltip}
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                <Box sx={styles.usage}>
+                    {icon}
+                    <Box sx={styles.usageBar}>
+                        <Box
+                            sx={theme => ({
+                                ...styles.usageBarFill,
+                                width: `${used}%`,
+                                backgroundColor: alpha(theme.palette[color].main, 0.6),
+                            })}
+                        />
+                        <Box
+                            component="span"
+                            sx={styles.usageBarText}
+                        >
+                            {used}%
+                        </Box>
+                    </Box>
+                </Box>
+            </Tooltip>
+        );
+    }
+
     changeStartedStopped = (): void => {
         this._cacheList = null;
         this.setState(state => {
@@ -1493,15 +1568,58 @@ class Instances extends Component<InstancesProps, InstancesState> {
             }
         }
 
-        const hostInfo = this.state.hostInfo
-            ? `${
-                  this.state.hostInfo['Disk free']
-                      ? `${this.t('Disk free')}: ${Math.round(this.state.hostInfo['Disk free'] / (this.state.hostInfo['Disk size'] / 100))}%, `
-                      : ''
-              }${this.t('Total RAM usage')}: ${this.state.mem} Mb / ` +
-              `${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb ` +
-              `[${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.state.processes === 1 ? this.t('process') : this.t('processes')}]`
-            : null;
+        let hostInfo: JSX.Element | null = null;
+        if (this.state.hostInfo) {
+            const diskFree = this.state.hostInfo['Disk free'];
+            const diskSize = this.state.hostInfo['Disk size'];
+            const diskFreePercent = diskFree && diskSize ? Math.round(diskFree / (diskSize / 100)) : null;
+            const memTotal =
+                this.state.percent && this.state.memFree !== null
+                    ? Math.round((this.state.memFree * 100) / this.state.percent)
+                    : null;
+
+            hostInfo = (
+                <Box sx={styles.hostInfo}>
+                    {diskFreePercent !== null
+                        ? Instances.renderUsageBar(
+                              <StorageIcon sx={styles.usageIcon} />,
+                              100 - diskFreePercent,
+                              <>
+                                  <div>
+                                      {this.t('Disk free')}: {diskFreePercent}% = {AdminUtils.formatBytes(diskFree)}
+                                  </div>
+                                  <div>
+                                      {this.t('Disk size')}: {AdminUtils.formatBytes(diskSize)}
+                                  </div>
+                              </>,
+                          )
+                        : null}
+                    {this.state.percent !== null
+                        ? Instances.renderUsageBar(
+                              <MemoryIcon sx={styles.usageIcon} />,
+                              100 - this.state.percent,
+                              <>
+                                  <div>
+                                      {this.t('Total RAM usage')}: {this.state.mem} Mb
+                                  </div>
+                                  <div>
+                                      {this.t('Free')}: {this.state.percent}% = {this.state.memFree} Mb
+                                  </div>
+                                  {memTotal ? (
+                                      <div>
+                                          {this.t('RAM')}: {memTotal} Mb
+                                      </div>
+                                  ) : null}
+                              </>,
+                          )
+                        : null}
+                    <span>
+                        [{this.t('Host')}: {this.props.currentHostName} - {this.state.processes}{' '}
+                        {this.state.processes === 1 ? this.t('process') : this.t('processes')}]
+                    </span>
+                </Box>
+            );
+        }
 
         return (
             <TabContainer>

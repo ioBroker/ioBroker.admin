@@ -96,6 +96,10 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added: sort icon and tooltip on the sort button in the adapters tab (#3684)
+- (@GermanBluefox) Added: disk and RAM usage of the host are shown as bars with tooltip in the instances tab
+
 ### 8.3.0 (2026-10-19)
 - (@GermanBluefox) Added: adapter tabs with `adminTab.proxy` (e.g. xterm) run through the port of admin under `/proxy/<instance>/`, for administrators only
 - (@GermanBluefox) The used resources added (Only js-controller 8)
