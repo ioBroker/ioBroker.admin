@@ -25,6 +25,7 @@ import {
     Update as UpdateIcon,
     Star as StarIcon,
     Close as CloseIcon,
+    Sort as SortIcon,
 } from '@mui/icons-material';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
@@ -2064,7 +2065,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     />
                 )}
                 <CustomSelectButton
+                    title={this.t('Sort by')}
                     t={this.t}
+                    buttonIcon={<SortIcon style={{ marginRight: 4 }} />}
                     arrayItem={this.state.tableViewMode ? FILTERS.filter(item => !item.notByList) : FILTERS}
                     onClick={value => this.changeFilterTiles(value as string)}
                     value={this.state.filterTiles}
