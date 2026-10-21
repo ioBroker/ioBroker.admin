@@ -200,6 +200,9 @@ const styles: Record<string, any> = {
     rowGridLine: {
         marginTop: -2,
         overflow: 'hidden',
+        // Takes the whole width of the row. Sized by its content, a row without a port was narrower, as the
+        // empty resources column gave nothing to it: that column and the RAM shrank and stood out of line
+        flexGrow: 1,
     },
 };
 
