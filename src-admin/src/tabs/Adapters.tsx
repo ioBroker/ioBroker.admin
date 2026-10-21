@@ -70,6 +70,8 @@ import AdminUpdater from '@/dialogs/AdminUpdater';
 import { addMissingNews, readRepository } from '@/helpers/repository';
 
 const ONE_DAY_MS = 3_600_000 * 24; // 1 day in milliseconds
+/** How long the list waits for the installed adapters of the hosts, after the repository was read */
+const INSTALLED_WAIT_MS = 5_000;
 const ONE_DAY_BY_10 = ONE_DAY_MS / 10; // 1 day in milliseconds * 10
 
 export type CompactSystemRepository = {
@@ -250,6 +252,18 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
     private hostAdapterWorker: HostAdapterWorker | null = null;
 
+    /** Installed adapters of every host (host ID => answer of the host), as the hosts answered the last time */
+    private installedOfHosts: Record<string, InstalledInfo> = {};
+
+    /** Number of the last read of the installed adapters: the answers of an older read are dropped */
+    private installedReadId: number = 0;
+
+    /** Number of the read of the installed adapters, whose list is shown while hosts still have to answer */
+    private installedShownId: number = 0;
+
+    /** If hosts still have to answer which adapters they have installed */
+    private installedPending: boolean = false;
+
     constructor(props: AdaptersProps) {
         super(props);
 
@@ -354,9 +368,22 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     async updateAll(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean): Promise<void> {
         // None of the information depends on the repository: it is read while the repository is loading
         const info = this.state.currentHost ? this.readAdaptersInfo(update) : null;
-        await this.getAdapters(update, bigUpdate, indicateUpdate);
+        // Neither do the installed adapters, but the list does not wait for a slow host, see `readInstalled`
+        const readId = ++this.installedReadId;
+        const installedRead = this.readInstalled(update, readId);
+        const { repository, allInstalled } = await this.getAdapters(installedRead, update, bigUpdate, indicateUpdate);
         if (info) {
             await this.getAdaptersInfo(info, indicateUpdate);
+        }
+        if (!allInstalled && readId === this.installedReadId) {
+            // The list is shown: the hosts that did not answer yet follow, each one when it answers
+            this.installedShownId = readId;
+            void installedRead.then(async () => {
+                if (readId === this.installedReadId) {
+                    await this.readMissingNews(repository);
+                    this.showInstalled(repository);
+                }
+            });
         }
     }
 
@@ -395,6 +422,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             clearTimeout(this.onHostAdapterTimer);
             this.onHostAdapterTimer = null;
         }
+
+        // drop the answers of the hosts still to come
+        this.installedReadId++;
 
         this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
@@ -533,31 +563,42 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     }
 
     /**
-     * Get the installed adapters, for current host and other hosts
+     * Asks every host which adapters it has installed and keeps the answers in `installedOfHosts`.
+     *
+     * Every host reads its `node_modules` for the answer, and one slow or hanging host held the whole list
+     * back till the timeout. So the list does not wait for them: it shows the hosts that answered till the
+     * repository was read, and a host that answers after the list was shown is taken over at once.
+     *
+     * @param update force update
+     * @param readId number of this read, a newer read drops the answers of this one
      */
-    async getInstalled(update?: boolean): Promise<{
-        installedLocal: InstalledInfo;
-        installedGlobal: InstalledInfo;
-        installedGlobalHosts: InstalledHostsInfo;
-    }> {
-        /** Installed adapters on the same host */
-        let installedLocal: InstalledInfo = {};
-        /** Installed adapters on any hosts */
-        let installedGlobal: InstalledInfo = {};
-        /** Installed version of every adapter per host (adapter name => host name => version) */
-        const installedGlobalHosts: InstalledHostsInfo = {};
+    async readInstalled(update: boolean | undefined, readId: number): Promise<void> {
+        this.installedPending = true;
 
-        const hosts = await this.props.socket.getHosts(update);
+        let hosts: ioBroker.HostObject[] = [];
+        try {
+            hosts = await this.props.socket.getHosts(update);
+            // a deleted host has nothing installed anymore
+            Object.keys(this.installedOfHosts).forEach(hostId => {
+                if (!hosts.find(host => host._id === hostId)) {
+                    delete this.installedOfHosts[hostId];
+                }
+            });
+        } catch (e) {
+            window.alert(`Cannot read hosts: ${e as Error}`);
+        }
 
-        // Every host reads its `node_modules` for the answer: ask them all at once instead of one after another
-        const answers = await Promise.all(
-            hosts.map(async (host): Promise<InstalledInfo | null> => {
+        let pending = hosts.length;
+
+        // ask them all at once instead of one after another
+        await Promise.all(
+            hosts.map(async host => {
+                let installed: InstalledInfo | null = null;
                 try {
                     const alive = await this.props.socket.getState(`${host._id}.alive`);
-                    if (!alive?.val) {
-                        return null;
+                    if (alive?.val) {
+                        installed = await this.props.socket.getInstalled(host._id, update, this.state.readTimeoutMs);
                     }
-                    return await this.props.socket.getInstalled(host._id, update, this.state.readTimeoutMs);
                 } catch (e) {
                     window.alert(
                         `Cannot getInstalled from "${host._id}" (timeout ${this.state.readTimeoutMs}ms): ${e as Error}`,
@@ -565,37 +606,117 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     if ((e as Error).toString().includes('timeout')) {
                         this.setState({ showSlowConnectionWarning: true });
                     }
-                    return null;
+                }
+                if (readId !== this.installedReadId) {
+                    return;
+                }
+                if (installed) {
+                    this.installedOfHosts[host._id] = installed;
+                } else {
+                    delete this.installedOfHosts[host._id];
+                }
+                pending--;
+                // The last host is shown together with the news, when all hosts answered
+                if (pending && this.installedShownId === readId) {
+                    this.showInstalled();
                 }
             }),
         );
 
-        // merged in the order of the hosts, as a later host overwrites the entries of an earlier one
-        hosts.forEach((host, i) => {
-            const res = answers[i];
-            if (!res) {
-                return;
-            }
-            if (host._id === this.state.currentHost) {
-                installedLocal = res;
-            }
-            // Remember the installed version of every adapter on every host, so we can tell
-            // exactly which host does not fulfill a global dependency in a multihost setup.
-            const hostName = host._id.replace(/^system\.host\./, '');
-            for (const adapterName of Object.keys(res)) {
-                if (adapterName === 'hosts' || !res[adapterName]?.version) {
-                    continue;
+        if (readId === this.installedReadId) {
+            this.installedPending = false;
+        }
+    }
+
+    /**
+     * Merges the installed adapters of all hosts, as they answered till now
+     */
+    mergeInstalled(): {
+        installedLocal: InstalledInfo;
+        installedGlobal: InstalledInfo;
+        installedGlobalHosts: InstalledHostsInfo;
+    } {
+        /** Installed adapters on the same host */
+        let installedLocal: InstalledInfo = {};
+        /** Installed adapters on any hosts */
+        let installedGlobal: InstalledInfo = {};
+        /** Installed version of every adapter per host (adapter name => host name => version) */
+        const installedGlobalHosts: InstalledHostsInfo = {};
+
+        // merged in the order of the hosts (as they are read, sorted by ID), as a later host overwrites the entries of an earlier one
+        Object.keys(this.installedOfHosts)
+            .sort()
+            .forEach(hostId => {
+                const res = this.installedOfHosts[hostId];
+                if (hostId === this.state.currentHost) {
+                    installedLocal = res;
                 }
-                installedGlobalHosts[adapterName] ||= {};
-                installedGlobalHosts[adapterName][hostName] = res[adapterName].version;
-            }
-            installedGlobal = { ...installedGlobal, ...res };
-        });
+                // Remember the installed version of every adapter on every host, so we can tell
+                // exactly which host does not fulfill a global dependency in a multihost setup.
+                const hostName = hostId.replace(/^system\.host\./, '');
+                for (const adapterName of Object.keys(res)) {
+                    if (adapterName === 'hosts' || !res[adapterName]?.version) {
+                        continue;
+                    }
+                    installedGlobalHosts[adapterName] ||= {};
+                    installedGlobalHosts[adapterName][hostName] = res[adapterName].version;
+                }
+                installedGlobal = { ...installedGlobal, ...res };
+            });
 
         return { installedLocal, installedGlobal, installedGlobalHosts };
     }
 
-    async getAdapters(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean): Promise<void> {
+    /**
+     * Shows the installed adapters of the hosts that answered till now, in the list that is shown already
+     *
+     * @param repository the repository as read, if the news of the installed adapters were added to it
+     */
+    showInstalled(repository?: Record<string, RepoAdapterObject>): void {
+        this.analyseInstalled({
+            adapters: this.state.adapters,
+            repository,
+            ...this.mergeInstalled(),
+            cb: () => void this.calculateInfo(this.state.compactInstances || {}),
+        });
+    }
+
+    /**
+     * Adds the news of the installed adapters, that the reduced repository came without
+     *
+     * @param repository the repository as read, completed in place
+     */
+    async readMissingNews(repository: Record<string, RepoAdapterObject>): Promise<void> {
+        try {
+            await addMissingNews(
+                this.props.socket,
+                this.state.currentHost,
+                repository,
+                Object.keys(this.mergeInstalled().installedGlobal),
+                { repo: this.props.systemConfig.common.activeRepo, lang: this.props.lang },
+                this.state.readTimeoutMs,
+            );
+        } catch (e) {
+            console.warn(`Cannot read the news of the installed adapters: ${e as Error}`);
+        }
+    }
+
+    /**
+     * Reads the adapters and the repository and shows them with the installed adapters of the hosts that
+     * answered till then, see `readInstalled`
+     *
+     * @param installedRead resolves when all hosts answered which adapters they have installed
+     * @param update force update
+     * @param bigUpdate let the host read the repository anew
+     * @param indicateUpdate show the progress
+     * @returns the repository as read, and if all hosts answered which adapters they have installed
+     */
+    async getAdapters(
+        installedRead: Promise<void>,
+        update?: boolean,
+        bigUpdate?: boolean,
+        indicateUpdate?: boolean,
+    ): Promise<{ repository: Record<string, RepoAdapterObject>; allInstalled: boolean }> {
         console.log('[ADAPTERS] getAdapters');
 
         const currentHost = this.state.currentHost;
@@ -605,9 +726,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             this.setState({ update: true });
         }
 
-        // The three reads do not depend on each other. The repository takes by far the longest, the
-        // others are done meanwhile instead of before it
-        const [adapters, { installedLocal, installedGlobal, installedGlobalHosts }, repository] = await Promise.all([
+        // The reads do not depend on each other: the adapters are read while the repository is loading
+        const [adapters, repository] = await Promise.all([
             this.props.adaptersWorker
                 .getObjects(update)
                 .then(objects => objects || {})
@@ -615,7 +735,6 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     window.alert(`Cannot getAdapters: ${e as Error}`);
                     return {};
                 }),
-            this.getInstalled(update),
             readRepository(
                 this.props.socket,
                 currentHost,
@@ -637,26 +756,30 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 }),
         ]);
 
-        try {
-            await addMissingNews(
-                this.props.socket,
-                currentHost,
-                repository,
-                Object.keys(installedGlobal),
-                { repo: this.props.systemConfig.common.activeRepo, lang: this.props.lang },
-                this.state.readTimeoutMs,
-            );
-        } catch (e) {
-            console.warn(`Cannot read the news of the installed adapters: ${e as Error}`);
+        // The list is sorted by the installed adapters: it waits a bit for the hosts, as they mostly answer
+        // shortly after the repository was read, but not till the timeout of a slow or hanging host
+        if (this.installedPending) {
+            let timer: ReturnType<typeof setTimeout> | undefined;
+            await Promise.race([
+                installedRead,
+                new Promise<void>(resolve => (timer = setTimeout(resolve, INSTALLED_WAIT_MS))),
+            ]);
+            clearTimeout(timer);
         }
 
-        return this.analyseInstalled({
+        // The news follow with the hosts, that did not answer yet
+        const allInstalled = !this.installedPending;
+        if (allInstalled) {
+            await this.readMissingNews(repository);
+        }
+
+        this.analyseInstalled({
             adapters,
-            installedLocal,
             repository,
-            installedGlobal,
-            installedGlobalHosts,
+            ...this.mergeInstalled(),
         });
+
+        return { repository, allInstalled };
     }
 
     getWordVotes(votes: number): string {
@@ -1034,7 +1157,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                     categories: categoriesSorted,
                     categoriesExpanded,
                     init: true,
-                    update: false,
+                    // the progress stays, while hosts still have to answer which adapters they have installed
+                    update: this.installedPending,
                 },
                 () => resolve(),
             );
