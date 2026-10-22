@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.1 (2026-10-22)
 - (@GermanBluefox) Added: sort icon and tooltip on the sort button in the adapters tab (#3684)
 - (@GermanBluefox) Added: disk and RAM usage of the host are shown as bars with tooltip in the instances tab
 - (@GermanBluefox) Added: the repository version of an adapter can be installed with one click, if a newer or a self-installed version (e.g., from GitHub) is installed (#2973)
@@ -125,18 +125,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@krobipd) Fixed: with the GUI settings stored on the server, a window of the admin threw away what others had saved in the meantime
 - (@GermanBluefox) Fixed: compressed log files (`.gz`) are shown unpacked again
 - (@GermanBluefox) Fixed: the link of a web extension to its own service (e.g. `http://%native_friurl%` of frigate) was sent to the web instance
-
-### 8.1.0 (2026-10-07)
-- (@GermanBluefox) Fixed: "Save & Close" of the base settings was active while the settings were still loading
-- (@GermanBluefox) Changed: the news in the update dialogs are rendered as Markdown
-- (@GermanBluefox) Fixed: links with `localhost`, `127.0.0.1` or `0.0.0.0` (e.g. `http://%native_friurl%`) now use the address of the instance's host
-- (@GermanBluefox) Fixed: the log search and the MCP info dialog require the `execute` right
-- (@GermanBluefox) Fixed: the AI assistant no longer trusts endpoint, permissions and confirmations from the request; tools run with the rights of the user who asked. Reported by two external security researchers
-- (@GermanBluefox) Fixed: AI assistant answers and log searches longer than 30 seconds ended in an empty answer or "timeout"; the result is pushed to the browser now
-- (@GermanBluefox) Added: "Maximum answer length" in the settings of the AI assistant (Anthropic)
-- (@GermanBluefox) Fixed: the news of the notification dialog were always shown in English (#3534)
-- (@GermanBluefox) Fixed: the notification dialog showed "undefined" when a translation was missing
-- (@GermanBluefox) Fixed: Chrome offered to generate and store a password in the API key fields of the credentials
 
 ## License
 

@@ -1,4 +1,16 @@
 # Older changes
+## 8.1.0 (2026-10-07)
+- (@GermanBluefox) Fixed: "Save & Close" of the base settings was active while the settings were still loading
+- (@GermanBluefox) Changed: the news in the update dialogs are rendered as Markdown
+- (@GermanBluefox) Fixed: links with `localhost`, `127.0.0.1` or `0.0.0.0` (e.g. `http://%native_friurl%`) now use the address of the instance's host
+- (@GermanBluefox) Fixed: the log search and the MCP info dialog require the `execute` right
+- (@GermanBluefox) Fixed: the AI assistant no longer trusts endpoint, permissions and confirmations from the request; tools run with the rights of the user who asked. Reported by two external security researchers
+- (@GermanBluefox) Fixed: AI assistant answers and log searches longer than 30 seconds ended in an empty answer or "timeout"; the result is pushed to the browser now
+- (@GermanBluefox) Added: "Maximum answer length" in the settings of the AI assistant (Anthropic)
+- (@GermanBluefox) Fixed: the news of the notification dialog were always shown in English (#3534)
+- (@GermanBluefox) Fixed: the notification dialog showed "undefined" when a translation was missing
+- (@GermanBluefox) Fixed: Chrome offered to generate and store a password in the API key fields of the credentials
+
 ## 8.0.23 (2026-10-03)
 - (@GermanBluefox) Changed: the info dialog of a host on the quick access page shows what it knows instead of what the host sends. Every line has an icon in front of it - the penguin, the window, the apple or the daemon for the platform, a chip for the CPU, a clock for the time - the names start with a capital letter, and a `true` is now a "Yes". The disk is no longer two lines with two numbers but one bar that fills with the free space, `11.8 GB / 26.2 GB`, red as soon as less than a tenth is left. The time of the host was a bare timestamp like `1790980340380` because the entry was looked up under `Time` while the host calls it `time`; it is now the wall clock of the host, shifted by the time zone the host reports, so neither UTC nor the time zone of the browser is shown
 - (@GermanBluefox) Changed: "adapters count" is called "Adapters in repository" now. It counts the adapters that the active repository offers - 812 of them - and was read as the number of the installed ones
