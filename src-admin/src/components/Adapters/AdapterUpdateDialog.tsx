@@ -365,6 +365,8 @@ interface AdapterUpdateDialogProps {
     rightDependencies: boolean;
     installedVersion: string;
     t: Translate;
+    /** Dialog title instead of 'Update "adapter" to vX' */
+    textTitle?: string;
     textUpdate?: string;
     textInstruction?: string;
     instances?: Record<string, CompactInstanceInfo>;
@@ -738,7 +740,7 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                         sx={{ '&.MuiTypography-root': styles.typography }}
                     >
                         <div style={{ width: 'calc(100% - 60px)' }}>
-                            {this.t('Update "%s" to v%s', this.props.adapter, version)}
+                            {this.props.textTitle || this.t('Update "%s" to v%s', this.props.adapter, version)}
                         </div>
                         <IconButton
                             size="large"

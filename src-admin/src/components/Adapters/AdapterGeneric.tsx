@@ -37,6 +37,7 @@ import {
     DeleteForever as DeleteForeverIcon,
     AddToPhotos as AddToPhotosIcon,
     Build as BuildIcon,
+    SettingsBackupRestore as SettingsBackupRestoreIcon,
 } from '@mui/icons-material';
 
 import { type IobTheme, Utils } from '@iobroker/gui-components';
@@ -114,6 +115,9 @@ export const genericStyles: Record<string, any> = {
     updateAvailable: {
         color: green[700],
     },
+    repositoryVersionAvailable: {
+        color: amber[800],
+    },
     currentVersion: (theme: IobTheme) => ({
         cursor: 'pointer',
         mb: '6px',
@@ -188,6 +192,8 @@ export interface AdapterGenericProps extends AdapterInstallDialogProps {
 export interface AdapterGenericState extends AdapterInstallDialogState {
     autoUpgradeDialogOpen: boolean;
     showUpdateDialog: boolean;
+    /** The update dialog installs the repository version instead of a newer one (downgrade or reinstall) */
+    installRepositoryVersion: boolean;
     adapterDeletionDialog: boolean;
     adapterInstallSpecificVersion: string;
     showInstallVersion: boolean;
@@ -217,6 +223,7 @@ export default abstract class AdapterGeneric<
         Object.assign(this.state, {
             autoUpgradeDialogOpen: false,
             showUpdateDialog: false,
+            installRepositoryVersion: false,
             adapterDeletionDialog: false,
             adapterInstallSpecificVersion: '',
             showInstallVersion: false,
@@ -543,13 +550,44 @@ export default abstract class AdapterGeneric<
             return <span style={this.styles.wrongDependencies}>{this.props.context.t('not maintained')}</span>;
         }
 
+        if (!this.props.commandRunning && allowAdapterUpdate !== false && this.isRepositoryVersionInstallable()) {
+            return (
+                <Tooltip
+                    title={this.props.context.t('Install version %s from repository', adapterVersion)}
+                    slotProps={{ popper: { sx: this.styles.tooltip } }}
+                >
+                    <div
+                        onClick={() =>
+                            this.setState({ showUpdateDialog: true, showDialog: true, installRepositoryVersion: true })
+                        }
+                        style={{
+                            ...this.styles.buttonUpdate,
+                            ...(this.props.cached.rightDependencies
+                                ? this.styles.repositoryVersionAvailable
+                                : undefined),
+                        }}
+                    >
+                        <IconButton
+                            style={this.styles.buttonUpdateIcon}
+                            size="small"
+                        >
+                            <SettingsBackupRestoreIcon />
+                        </IconButton>
+                        {adapterVersion}
+                    </div>
+                </Tooltip>
+            );
+        }
+
         return !this.props.commandRunning && this.props.cached.updateAvailable && allowAdapterUpdate !== false ? (
             <Tooltip
                 title={this.props.context.t('Update')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div
-                    onClick={() => this.setState({ showUpdateDialog: true, showDialog: true })}
+                    onClick={() =>
+                        this.setState({ showUpdateDialog: true, showDialog: true, installRepositoryVersion: false })
+                    }
                     style={{
                         ...this.styles.buttonUpdate,
                         ...(this.props.cached.rightDependencies ? this.styles.updateAvailable : undefined),
@@ -574,6 +612,32 @@ export default abstract class AdapterGeneric<
                 </span>
             </Tooltip>
         );
+    }
+
+    /**
+     * Whether the installed version was not installed from the current repository and the repository version
+     * can be installed instead, e.g., after switching from the "latest" to the "stable" repository (downgrade)
+     * or after installing a version from GitHub, npm or a file.
+     */
+    isRepositoryVersionInstallable(): boolean {
+        const repositoryVersion = this.props.context.repository[this.props.adapterName]?.version;
+        const installedVersion = this.props.context.installed[this.props.adapterName]?.version;
+        // a newer version in the repository is offered as a normal update
+        if (!repositoryVersion || !installedVersion || this.props.cached.updateAvailable) {
+            return false;
+        }
+        if (repositoryVersion !== installedVersion) {
+            // only a downgrade: an older installed version without an update means the update was ignored
+            return AdminUtils.updateAvailable(
+                repositoryVersion,
+                installedVersion,
+                `adapter "${this.props.adapterName}"`,
+            );
+        }
+        // the same version, but installed not from npm (e.g., from GitHub)
+        const installedFrom =
+            this.props.context.adapters[`system.adapter.${this.props.adapterName}`]?.common?.installedFrom;
+        return !!installedFrom && !installedFrom.startsWith(`iobroker.${this.props.adapterName}@`);
     }
 
     /**
@@ -767,15 +831,40 @@ export default abstract class AdapterGeneric<
         );
     }
 
+    async ignoreVersion(ignoreVersion: string): Promise<void> {
+        const obj = await this.props.context.socket.getObject(`system.adapter.${this.props.adapterName}`);
+        if (obj?.common) {
+            (obj.common as ioBroker.AdapterCommon).ignoreVersion = ignoreVersion;
+            this.props.context.socket
+                .setObject(obj._id, obj)
+                .catch((error: unknown): void => window.alert(`Cannot write object: ${error as Error}`));
+        } else {
+            window.alert(`Adapter "${this.props.adapterName}" does not exist!`);
+        }
+        this.props.context.removeUpdateAvailable(this.props.adapterName);
+    }
+
     renderUpdateAdapterDialog(): JSX.Element | null {
         if (!this.state.showUpdateDialog) {
             return null;
         }
 
         this.installedVersion = this.props.context.installed[this.props.adapterName]?.version;
+        const repositoryVersion = this.props.context.repository[this.props.adapterName]?.version;
 
         return (
             <AdapterUpdateDialog
+                textTitle={
+                    this.state.installRepositoryVersion
+                        ? this.props.context.t(
+                              'Install "%s" v%s from repository instead of v%s',
+                              this.props.adapterName,
+                              repositoryVersion,
+                              this.installedVersion,
+                          )
+                        : undefined
+                }
+                textUpdate={this.state.installRepositoryVersion ? this.props.context.t('Install') : undefined}
                 adapter={this.props.adapterName}
                 adapterObject={this.props.context.repository[this.props.adapterName]}
                 t={this.props.context.t}
@@ -789,33 +878,14 @@ export default abstract class AdapterGeneric<
                     this.setState({ showUpdateDialog: false, showDialog: false }, () => this.update(version))
                 }
                 isStable={(this.props.context.repository._repoInfo as unknown as RepoInfo).stable}
-                onIgnore={ignoreVersion =>
-                    this.setState({ showUpdateDialog: false, showDialog: false }, () =>
-                        this.props.context.socket
-                            .getObject(`system.adapter.${this.props.adapterName}`)
-                            .then(
-                                (
-                                    obj:
-                                        | ioBroker.AdapterObject
-                                        | ioBroker.StateObject
-                                        | ioBroker.InstanceObject
-                                        | null
-                                        | undefined,
-                                ): void => {
-                                    if (obj?.common) {
-                                        (obj.common as ioBroker.AdapterCommon).ignoreVersion = ignoreVersion;
-                                        this.props.context.socket
-                                            .setObject(obj._id, obj)
-                                            .catch((error: unknown): void =>
-                                                window.alert(`Cannot write object: ${error as Error}`),
-                                            );
-                                    } else {
-                                        window.alert(`Adapter "${this.props.adapterName}" does not exist!`);
-                                    }
-                                },
-                            )
-                            .then(() => this.props.context.removeUpdateAvailable(this.props.adapterName)),
-                    )
+                onIgnore={
+                    this.state.installRepositoryVersion
+                        ? undefined
+                        : ignoreVersion =>
+                              this.setState(
+                                  { showUpdateDialog: false, showDialog: false },
+                                  () => void this.ignoreVersion(ignoreVersion),
+                              )
                 }
                 onClose={() => this.setState({ showUpdateDialog: false, showDialog: false })}
                 instances={this.props.context.compactInstances}
