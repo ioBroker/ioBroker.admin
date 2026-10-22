@@ -462,8 +462,11 @@ Each option in `options` can have:
 | `os`          | Show the option only on these operating systems of the host           |
 | `notOs`       | Do not show the option on these operating systems of the host         |
 | `docker`      | Show the option only if the ioBroker runs (`true`) or not (`false`) in docker |
+| `hiddenByAdapters` | Hide the option if at least one of these adapters is installed: `["zigbee"]` |
+| `showByAdapters` | Show the option only if at least one of these adapters is installed: `["zigbee"]` |
 | `description` | Description shown below the option label (can be translatable)        |
 | `icon`        | Icon URL or base64 string to display next to the option (from v8.3.3) |
+| `noTranslation` | Do not translate the label of this option                           |
 
 #### Example for `select options`
 
@@ -499,6 +502,8 @@ or
 |------------|----------------------------------------------------------------------------------------------------------------------------------|
 | `options`  | `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]` (keys and names (values) must be unique) |
 | `freeSolo` | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                                        |
+
+Each option in `options` can have `label`, `value`, `color`, `hidden`, `icon` and `noTranslation` (do not translate the label of this option). A value entered as free text is never translated.
 
 ### `image`
 
@@ -1134,6 +1139,7 @@ Shows the drop-down menu with the given from the instance values.
 | `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.  |
 
 The backend handler can return items with an optional `description` field: `[{"value": 1, "label": "one", "description": "Some hint"}, ...]`. The description is shown below the label in the dropdown.
+An item with `"noTranslation": true` is shown as it is, even if `noTranslation` of the control is not set: `[{"value": "abc", "label": "My device", "noTranslation": true}, ...]`.
 
 #### Example of code in back-end for `selectSendTo`
 
@@ -1199,13 +1205,16 @@ Shows autocomplete control with the given from the instance values.
 | `jsonData`      | string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to the backend                                                                                         |
 | `data`          | object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to the backend if jsonData is not defined.                                                 |
 | `freeSolo`      | Set `freeSolo` to `true`, so the textbox can contain any arbitrary value.                                                                                                                                       |
+| `options`       | Options, which are always shown, in addition to the result of the command: `["value1", {"value": "value2", "label": "Value2"}, ...]`                                                                            |
+| `noTranslation` | do not translate the labels of the options                                                                                                                                                                      |
 | `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                                                                       |
 | `maxLength`     | max length of the text in field                                                                                                                                                                                 |
 | `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text. |
 
 To use this option, your adapter must implement a message handler:
 
-The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys and names (values) must be unique)
+The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]` (keys and names (values) must be unique).
+An item with `"noTranslation": true` is shown as it is: `{"value": "abc", "label": "My device", "noTranslation": true}`. The options from `options` can have `noTranslation` too. A value entered as free text is never translated.
 See `selectSendTo` for handler example
 
 ### `textSendTo`
@@ -1512,6 +1521,8 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `os`                     | Show this element only on these operating systems of the host, on which the instance runs: `"win32"` or `["linux", "darwin"]`                                                         |
 | `notOs`                  | Do not show this element on these operating systems of the host, on which the instance runs: `"win32"` or `["linux", "darwin"]`                                                       |
 | `docker`                 | Show this element only if the ioBroker runs (`true`) or does not run (`false`) in a docker container                                                                                  |
+| `hiddenByAdapters`       | Hide this element if at least one of these adapters is installed: `["zigbee", "deconz"]`. See [Show elements depending on installed adapters](#show-elements-depending-on-installed-adapters) |
+| `showByAdapters`         | Show this element only if at least one of these adapters is installed: `["zigbee", "deconz"]`. See [Show elements depending on installed adapters](#show-elements-depending-on-installed-adapters) |
 | `disabled`               | JS function that could use `native.attribute` for calculation                                                                                                                         |
 | `dependsOnStates`        | ioBroker states, on which this element depends: `{"running": ".info.browsing"}`. See [Show or disable elements depending on ioBroker states](#show-or-disable-elements-depending-on-iobroker-states) |
 | `help`                   | help text (multi-language)                                                                                                                                                            |
@@ -1634,6 +1645,31 @@ can be used:
 Do not mix it up with the [`checkDocker`](#checkdocker) control: that one checks if a docker installation is
 available **on the host** to control containers, and not if the ioBroker itself runs in docker.
 
+### Show elements depending on installed adapters
+
+Every element (also `panel`, `tabs`, table columns and single `select` options or option groups) can be shown
+or hidden depending on whether other adapters are installed in the ioBroker system:
+
+```json5
+{
+    "zigbeeDevice": { "type": "text", "label": "Zigbee device", "showByAdapters": ["zigbee", "zigbee2mqtt"] },
+    "installHint":  { "type": "staticText", "text": "Install the zigbee adapter to use the devices", "hiddenByAdapters": ["zigbee"] }
+}
+```
+
+- `showByAdapters` - the element will be shown **only** if at least one of the given adapters is installed.
+- `hiddenByAdapters` - the element will be hidden if at least one of the given adapters is installed.
+- The names are adapter names without `system.adapter.` and without instance number: `zigbee`, not `zigbee.0`.
+  It is checked if the adapter is installed, not if an instance exists or runs.
+- The installed adapters are read once, when the configuration dialog is opened, and only if the configuration
+  uses one of these attributes. If they cannot be read, the element will be shown.
+- A not shown element is not deleted: the value stays unchanged in the configuration, exactly like by `hidden`.
+  But the `default` value of such an element will not be written into the configuration.
+
+For other conditions, e.g., an existing instance, `getObject` can be used in `hidden`:
+`"hidden": "!getObject('system.adapter.zigbee.0')"`. If a property of the object is required, use brackets,
+because `await` binds weaker than `?.`: `"hidden": "!(await getObject('system.adapter.zigbee.0'))?.common?.enabled"`.
+
 ### Options with detailed configuration
 
 #### `defaultSendTo`
@@ -1751,7 +1787,7 @@ const func = new Function(
   'globalData',    // filled only by table and represents the obj.native or obj.common.custom['adapter.X'] object
   '_changed',      // indicator if some data was changed and must be saved
   '_href',         // Current browser href
-  'getObject',     // You can call `await getObject(data.id)`in hidden, disabled, pattern functions
+  'getObject',     // You can call `await getObject(data.id)` in hidden, disabled, pattern functions. Use brackets to access properties: `(await getObject(data.id))?.common?.type`
   '_os',           // Operating system of the host, where the instance runs: 'win32', 'linux', 'darwin', ...
   '_arch',         // Architecture of the host, where the instance runs: 'x64', 'arm64', ...
   '_host',         // Information about the host: {id, os, osType, arch, release, nodeVersion, controllerVersion, docker, dockerVersion}
@@ -1958,6 +1994,17 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.7 (2026-10-22)
+- (@BenAhrdt) Fixed: the `autocomplete` does not translate the values entered as free text
+- (@GermanBluefox) Added: `noTranslation` for single options of `autocomplete`, `autocompleteSendTo`, `selectSendTo` and `state` and for the groups of `select`
+- (@GermanBluefox) Fixed: `selectSendTo` translates the items in the list even with `noTranslation`, and the chips of a multiple select show the translated label
+- (@GermanBluefox) Fixed: the options of `state` were shown with a leading `$`, and the selected option showed its value instead of its label
+
+### 10.1.6 (2026-10-22)
+- (@GermanBluefox) Added: the attributes `hiddenByAdapters` and `showByAdapters` to show elements and select options depending on the installed adapters
+- (@GermanBluefox) Fixed: the `getObject` example in the documentation
+- (@GermanBluefox) Fixed: `checkLicense` checks the version of the license again; a vis-1 license is no longer reported as valid for vis-2 unless it was converted
+
 ### 10.1.3 (2026-10-15)
 - (@GermanBluefox) Added: the `jsonEditor` dialog has a button "Format JSON" that re-indents the text, and settings stored as object are shown indented
 
@@ -2093,7 +2140,7 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 - (@GermanBluefox) Optimization of interfaces
 
 ### 8.4.1 (2026-05-19)
-- (@GermanBluefox) Allowed to use `await getObject(data.oid)?.common?.type === 'boolean'` in hidden, pattern or disabled
+- (@GermanBluefox) Allowed to use `(await getObject(data.oid))?.common?.type === 'boolean'` in hidden, pattern or disabled
 
 ### 8.3.13 (2026-05-16)
 - (@GermanBluefox) Added `_href` to `jsonData`
