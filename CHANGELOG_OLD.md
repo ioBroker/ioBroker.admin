@@ -1,4 +1,12 @@
 # Older changes
+## 8.1.2 (2026-10-11)
+- (@GermanBluefox) Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`
+- (@GermanBluefox) Fixed: loading the AI models and MCP info
+- (@GermanBluefox) Added: used host resources (ports, serial, USB...) on the hosts and instances tabs
+- (@GermanBluefox) Fixed: "Add instance" is hidden for single-instance adapters (#3677)
+- (@GermanBluefox) Fixed: "Error in GUI" after an admin update (#3678)
+- (@GermanBluefox) Fixed: unclear "Cannot compare" warnings and a request of `/.undefined` (#3679)
+
 ## 8.1.1 (2026-10-08)
 - (@krobipd) Fixed: with the GUI settings stored on the server, a window of the admin threw away what others had saved in the meantime
 - (@GermanBluefox) Fixed: compressed log files (`.gz`) are shown unpacked again
