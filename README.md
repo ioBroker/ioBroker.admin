@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.2 (2026-10-23)
 - (@GermanBluefox) Fixed: the adapter list was empty after an adapter update and switching between the tabs (#3695)
 - (@GermanBluefox) Fixed: an adapter updated while the adapter list was loading was still offered for update with the same version
 
@@ -124,11 +124,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Fixed: "Add instance" is hidden for single-instance adapters (#3677)
 - (@GermanBluefox) Fixed: "Error in GUI" after an admin update (#3678)
 - (@GermanBluefox) Fixed: unclear "Cannot compare" warnings and a request of `/.undefined` (#3679)
-
-### 8.1.1 (2026-10-08)
-- (@krobipd) Fixed: with the GUI settings stored on the server, a window of the admin threw away what others had saved in the meantime
-- (@GermanBluefox) Fixed: compressed log files (`.gz`) are shown unpacked again
-- (@GermanBluefox) Fixed: the link of a web extension to its own service (e.g. `http://%native_friurl%` of frigate) was sent to the web instance
 
 ## License
 
