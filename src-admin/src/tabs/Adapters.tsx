@@ -385,6 +385,11 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 }
             });
         }
+        // An adapter changed (e.g. was updated) while reading: the installed versions were read before and are old.
+        // The list kept offering the update that was just installed
+        if (readId === this.installedReadId && this.props.adaptersWorker.isForceUpdate()) {
+            await this.updateAll(true);
+        }
     }
 
     componentDidUpdate(): void {
@@ -773,11 +778,16 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             await this.readMissingNews(repository);
         }
 
-        this.analyseInstalled({
-            adapters,
-            repository,
-            ...this.mergeInstalled(),
-        });
+        // `calculateInfo` reads the adapters and the repository from the state: it must wait till they are there.
+        // Else it took the empty ones of a freshly opened tab and wrote them back (#3695)
+        await new Promise<void>(resolve =>
+            this.analyseInstalled({
+                adapters,
+                repository,
+                ...this.mergeInstalled(),
+                cb: resolve,
+            }),
+        );
 
         return { repository, allInstalled };
     }
