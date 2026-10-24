@@ -62,7 +62,7 @@
     "Activated. Click to stop.": "Activated. Click to stop.",
     "Active": "Active",
     "Active instances": "Active instances",
-    "Active repo is \"%s\"": "WARNING: Current repository is \"%s\". Use at own risk!",
+    "Active repo is \"%s\"": "Warning: Current repository is \"%s\". Use at your own risk!",
     "Active repository:": "Active repository",
     "Adapter cannot request the exactly device status and the status will be guessed on the last sent command": "Adapter cannot request the exactly device status and the status will be guessed on the last sent command",
     "Adapter configuration": "Adapter configuration",
