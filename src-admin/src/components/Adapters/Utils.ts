@@ -24,14 +24,21 @@ export interface RepoAdapterObject extends ioBroker.AdapterCommon {
     latestVersion?: string;
 }
 
+/** Link for the license icon: the page with the license information (prices, where to buy), else the license text */
 export function extractUrlLink(adapterRepo: RepoAdapterObject): string {
+    return adapterRepo?.licenseInformation?.link || extractLicenseTextUrl(adapterRepo);
+}
+
+/**
+ * URL of the license text that the license dialog loads.
+ *
+ * Not `licenseInformation.link`: that one names the page with the license information - prices, where to buy - which is
+ * often an HTML page that the browser may not read from another origin (CORS). The license text itself comes from the
+ * repository of the adapter, like for an adapter without `licenseInformation`.
+ */
+export function extractLicenseTextUrl(adapterRepo: RepoAdapterObject): string {
     if (!adapterRepo) {
         return '';
-    }
-
-    // If licenseInformation.link is provided, use it directly for commercial license links
-    if (adapterRepo.licenseInformation?.link) {
-        return adapterRepo.licenseInformation.link;
     }
 
     // Check for deprecated licenseUrl

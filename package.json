@@ -102,7 +102,7 @@
     "test": "npm run test:package && npm run test:unit && npm run test:utils",
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
-    "test:utils": "mocha test/testReplaceLink.js --exit",
+    "test:utils": "mocha test/testReplaceLink.js test/testLicenseUrl.js --exit",
     "test:integration": "mocha test/integration --exit && npm run test:gui && npm run test:rule && npm run test:unit",
     "test:rule": "mocha test/rule --exit",
     "test:gui": "mocha test/*.gui.js --exit",
