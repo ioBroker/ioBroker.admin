@@ -12,7 +12,7 @@ import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import type { HostAdapterWorker } from '@/Workers/HostAdapterWorker';
-import { extractUrlLink, type RepoAdapterObject } from './Utils';
+import { extractLicenseTextUrl, type RepoAdapterObject } from './Utils';
 import type { CommandFile } from '@/types';
 
 // TODO: Placed here from @iobroker/js-controller-common-db/build/esm/lib/common/tools
@@ -188,6 +188,7 @@ export default abstract class AdapterInstallDialog<
             <LicenseDialog
                 licenseType={this.state.showLicenseDialog.licenseType}
                 url={this.state.showLicenseDialog.url}
+                link={context.repository[this.state.showLicenseDialog.adapterName]?.licenseInformation?.link}
                 onClose={result => {
                     const showLicenseDialog = result ? this.state.showLicenseDialog : null;
                     this.setState({ showLicenseDialog: null, showDialog: false }, () => {
@@ -633,7 +634,7 @@ export default abstract class AdapterInstallDialog<
     // eslint-disable-next-line react/no-unused-class-component-methods
     onAddInstance(adapterName: string, context: AdaptersContext): void {
         const adapter = context.repository[adapterName];
-        const url = extractUrlLink(adapter);
+        const url = extractLicenseTextUrl(adapter);
         const licenseType = adapter.licenseInformation?.license || adapter.license;
 
         if (

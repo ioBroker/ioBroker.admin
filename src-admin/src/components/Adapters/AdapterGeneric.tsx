@@ -57,7 +57,7 @@ import AdapterInstallDialog, {
 import AutoUpgradeConfigDialog, { ICONS } from '@/dialogs/AutoUpgradeConfigDialog';
 
 import IsVisible from '../IsVisible';
-import { extractUrlLink, type RepoInfo } from './Utils';
+import { extractLicenseTextUrl, extractUrlLink, type RepoInfo } from './Utils';
 import sentryIcon from '../../assets/sentry.svg';
 
 export const genericStyles: Record<string, any> = {
@@ -1155,7 +1155,7 @@ export default abstract class AdapterGeneric<
 
     onUpload(): void {
         const adapter = this.props.context.repository[this.props.adapterName];
-        const url = extractUrlLink(adapter);
+        const url = extractLicenseTextUrl(adapter);
         const licenseType = adapter.licenseInformation?.license || adapter.license;
 
         if (
