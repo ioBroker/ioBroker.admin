@@ -338,7 +338,7 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                 fullWidth
                 onClick={() => {
                     window.location.href = adminHref(
-                        `sso?redirectUrl=${encodeURIComponent(`${window.origin}${adminHref('#tab-users')}`)}&method=register&user=${this.props.getText(this.props.user.common.name)}`,
+                        `sso?redirectUrl=${encodeURIComponent(`${window.origin}${adminHref('#tab-users')}`)}&method=register&user=${encodeURIComponent((this.state.originalId || this.props.user._id).replace(/^system\.user\./, ''))}`,
                     );
                 }}
                 startIcon={<PersonIcon />}
