@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.4 (2026-10-25)
 - (@typhosj) Fixed: the license dialog of a paid adapter stayed empty and could not be accepted, so the adapter could not be installed. The dialog loaded `licenseInformation.link` as the license text, but that link names the page with prices and where to buy, which the browser may not read. The license text comes from the repository of the adapter again, and the link is shown next to it. A license text that cannot be loaded no longer blocks the dialog, and a short Markdown text that needs no scrolling can be accepted (#3311, ioBroker/ioBroker.vis-2#707)
 - (@agross) Improved the English wording of the active repository warning.
 - (@GermanBluefox) Fixed: "Add Single-Sign On" in the user dialog sent the display name of the user instead of the user ID, so connecting failed for every user whose name differs from the ID
@@ -121,9 +121,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) The admin and the admin pages of the adapters load from the browser cache
 - (@GermanBluefox) The tabs "Instances" and "Adapters" load and update faster
 - (@GermanBluefox) Fixed: a restart of admin shows "Connection to admin lost" instead of errors like "Cannot read instances!"
-
-### 8.2.0 (2026-10-12)
-- (@GermanBluefox) Fixed: iobroker.pro cloud can open the instance settings now
 
 ## License
 

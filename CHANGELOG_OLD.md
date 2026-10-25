@@ -1,4 +1,7 @@
 # Older changes
+## 8.2.0 (2026-10-12)
+- (@GermanBluefox) Fixed: iobroker.pro cloud can open the instance settings now
+
 ## 8.1.2 (2026-10-11)
 - (@GermanBluefox) Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`
 - (@GermanBluefox) Fixed: loading the AI models and MCP info
