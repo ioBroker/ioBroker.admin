@@ -1,48 +1,28 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Alert,
-    Autocomplete,
     Button,
     Chip,
-    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    FormControl,
     FormControlLabel,
-    IconButton,
-    InputLabel,
-    MenuItem,
-    Select,
     Switch,
-    TextField,
-    Tooltip,
     Typography,
 } from '@mui/material';
-import { Add as AddIcon, Check as CheckIcon, Close as CloseIcon, Tune as TuneIcon } from '@mui/icons-material';
-import { I18n, type AdminConnection, Icon } from '@iobroker/gui-components';
-import { isChatModel } from '@iobroker/ai-core/build/shared/models';
-
-import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';
-import { sendPushRequest } from '../../helpers/pushRequest';
-import ChatCreateCredentialDialog from './ChatCreateCredentialDialog';
 import {
-    DEFAULT_CHAT_MAX_TOKENS,
-    MAX_CHAT_MAX_TOKENS,
-    MIN_CHAT_MAX_TOKENS,
-    type AiCredentialEntry,
-    type AiProvider,
-    type ChatProvidersResponse,
-    type ChatSettingsValue,
-    type ChatTestResponse,
-    type ReasoningEffort,
-} from './chatTypes';
+    Check as CheckIcon,
+    Close as CloseIcon,
+    Settings as SettingsIcon,
+    Tune as TuneIcon,
+} from '@mui/icons-material';
+import { I18n, Icon } from '@iobroker/gui-components';
+
+import { getAiProviderInfo, openAiSettings } from '../SystemSettings/aiProviders';
+import { chatSettingsReady, type ChatSettingsValue } from './chatTypes';
 
 interface ChatSettingsProps {
-    socket: AdminConnection;
-    /** Admin instance id, e.g. `admin.0`. */
-    instance: string;
     value: ChatSettingsValue;
     /** Tool names the user granted blanket approval for ("don't ask again"). */
     autoApprove: string[];
@@ -52,402 +32,123 @@ interface ChatSettingsProps {
     onClose: (value?: ChatSettingsValue) => void;
 }
 
-const PROVIDERS: { value: AiProvider; label: string; icon?: string }[] = [
-    { value: 'anthropic', label: 'Anthropic (Claude)', icon: CREDENTIAL_ICON_DATA.anthropic },
-    { value: 'openai', label: 'OpenAI', icon: CREDENTIAL_ICON_DATA.chatgpt },
-    { value: 'gemini', label: 'Google Gemini', icon: CREDENTIAL_ICON_DATA.gemini },
-    { value: 'deepseek', label: 'DeepSeek', icon: CREDENTIAL_ICON_DATA.deepseek },
-    // no brand logo for a generic OpenAI-compatible endpoint — use the "custom" (tune) glyph
-    { value: 'custom', label: 'Custom (OpenAI-compatible)' },
-];
-
 /**
- * How hard the model should think, for the providers that take the parameter.
- *
- * The default sends nothing: a hosted reasoning model - one reached through a proxy, for instance -
- * should decide for itself, and only a small local model profits from having it switched off.
+ * Settings dialog of the assistant. Provider, key and model are the ones of the system (`system.ai`)
+ * and are set up in the system settings - shown here only, with the way to get there.
  */
-const REASONING_EFFORTS: { value: ReasoningEffort; label: string }[] = [
-    { value: '', label: 'Endpoint default' },
-    { value: 'none', label: 'Off (local models)' },
-    { value: 'minimal', label: 'Minimal' },
-    { value: 'low', label: 'Low' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'high', label: 'High' },
-];
-
-/** One provider row: its brand logo (or the generic "custom" glyph) followed by the label. */
-function renderProviderItem(provider: { label: string; icon?: string }): React.JSX.Element {
-    return (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {provider.icon ? (
-                <Icon
-                    src={provider.icon}
-                    style={{ width: 20, height: 20 }}
-                />
-            ) : (
-                <TuneIcon style={{ width: 20, height: 20 }} />
-            )}
-            {provider.label}
-        </span>
-    );
-}
-
-function renderCredentialItem(option: AiCredentialEntry | undefined, anyIcon: boolean): React.JSX.Element {
-    return (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {option?.icon ? (
-                <Icon
-                    src={option.icon}
-                    style={{ width: 20, height: 20 }}
-                />
-            ) : anyIcon ? (
-                // if at least one option has an icon, keep the labels aligned
-                <span style={{ width: 20, height: 20, flexShrink: 0 }} />
-            ) : null}
-            {option?.name || option?.id.replace('system.credentials.', '')}
-        </span>
-    );
-}
-
-/** Settings dialog: pick the AI provider, the stored credential and the model for the chat helper. */
 export default function ChatSettings(props: ChatSettingsProps): React.JSX.Element {
     const [value, setValue] = useState<ChatSettingsValue>({ ...props.value });
-    // Settings as they were when the dialog opened, to offer "save" only after an actual edit
-    const [originalData] = useState(() => JSON.stringify(props.value));
-    const [credentials, setCredentials] = useState<AiCredentialEntry[]>([]);
-    const [anyIcons, setAnyIcons] = useState<boolean>(false);
-    const [models, setModels] = useState<string[]>([]);
-    const [testing, setTesting] = useState(false);
-    const [error, setError] = useState('');
-    const [info, setInfo] = useState('');
-    const [createOpen, setCreateOpen] = useState(false);
-
-    /** (Re)load the list of stored AI credentials; optionally select `selectId` once it's loaded. */
-    const loadProviders = useCallback(
-        (selectId?: string): Promise<void> =>
-            props.socket
-                .sendTo(props.instance, 'chat:getProviders', null)
-                .then((result: ChatProvidersResponse) => {
-                    setCredentials(result?.providers || []);
-                    setAnyIcons(result?.providers?.some(p => p.icon) ?? false);
-                    if (selectId) {
-                        setValue(prev => ({ ...prev, credentialId: selectId }));
-                    }
-                })
-                .catch(e => setError(e.toString())),
-        [props.socket, props.instance],
-    );
-
-    useEffect(() => {
-        void loadProviders();
-    }, [loadProviders]);
-
-    const update = (patch: Partial<ChatSettingsValue>): void => setValue(prev => ({ ...prev, ...patch }));
-
-    /** Whether enough is configured to query the provider for its models. */
-    const canTest = (v: ChatSettingsValue): boolean =>
-        v.provider === 'custom' ? !!v.baseUrl || !!v.credentialId : !!v.credentialId;
-
-    // Monotonic request id so a late response from a previous provider/key can't overwrite a newer one.
-    const reqRef = useRef(0);
-
-    const loadModels = (): void => {
-        const reqId = ++reqRef.current;
-        setTesting(true);
-        setError('');
-        setInfo('');
-        setModels([]);
-        // The backend only talks to an AI endpoint for a known GUI session, so this goes the same way
-        // as a chat turn: with the session secret, the answer pushed back
-        sendPushRequest<ChatTestResponse>(
-            props.socket,
-            props.instance,
-            'chat:testConnection',
-            {
-                provider: value.provider,
-                credentialId: value.credentialId,
-                baseUrl: value.baseUrl,
-                allowSelfSignedCerts: value.allowSelfSignedCerts,
-            },
-            60_000,
-        )
-            .then(result => {
-                if (reqId !== reqRef.current) {
-                    return; // a newer request superseded this one
-                }
-                if (result?.error) {
-                    setError(result.error);
-                    setModels([]);
-                } else {
-                    // only what can chat: embeddings, speech and image models would only fail as the assistant
-                    const chatModels = (result?.models || []).filter(isChatModel);
-                    setModels(chatModels);
-                    setInfo(I18n.t('Connection OK: %s models', String(chatModels.length)));
-                }
-            })
-            .catch(e => {
-                if (reqId === reqRef.current) {
-                    setError(e.toString());
-                }
-            })
-            .finally(() => {
-                if (reqId === reqRef.current) {
-                    setTesting(false);
-                }
-            });
-    };
-
-    // Load the models automatically when the dialog opens with a credential already selected, and
-    // whenever the provider / credential / base URL changes (debounced so typing a URL doesn't spam).
-    useEffect(() => {
-        if (!canTest(value)) {
-            return;
-        }
-        const timer = setTimeout(() => loadModels(), 500);
-        return () => clearTimeout(timer);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value.provider, value.credentialId, value.baseUrl, value.allowSelfSignedCerts]);
-
-    const isCustom = value.provider === 'custom';
+    const providerInfo = getAiProviderInfo(value.provider);
+    const ready = chatSettingsReady(value) && !!providerInfo;
 
     return (
-        <>
-            <Dialog
-                open
-                onClose={() => props.onClose()}
-                maxWidth="sm"
-                fullWidth
-            >
-                <DialogTitle>{I18n.t('AI assistant settings')}</DialogTitle>
-                <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 8 }}>
-                    <FormControl
-                        fullWidth
-                        variant="standard"
-                    >
-                        <InputLabel>{I18n.t('Provider')}</InputLabel>
-                        <Select
-                            value={value.provider}
-                            onChange={e => update({ provider: e.target.value })}
+        <Dialog
+            open
+            onClose={() => props.onClose()}
+            maxWidth="sm"
+            fullWidth
+        >
+            <DialogTitle>{I18n.t('AI assistant settings')}</DialogTitle>
+            <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 8 }}>
+                {ready && providerInfo ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '4px 16px' }}>
+                        <Typography color="textSecondary">{I18n.t('Provider')}</Typography>
+                        <Typography
+                            component="div"
+                            style={{ display: 'flex', alignItems: 'center', gap: 8 }}
                         >
-                            {PROVIDERS.map(p => (
-                                <MenuItem
-                                    key={p.value}
-                                    value={p.value}
-                                >
-                                    {renderProviderItem(p)}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4 }}>
-                        <FormControl
-                            style={{ flex: 1, minWidth: 0 }}
-                            variant="standard"
-                        >
-                            {/* `shrink` is required because `displayEmpty` shows the "none" item, so MUI
-                            cannot auto-detect a value and would otherwise overlap the label with it. */}
-                            <InputLabel shrink>{I18n.t('API key (credential)')}</InputLabel>
-                            <Select
-                                value={value.credentialId}
-                                onChange={e => update({ credentialId: e.target.value })}
-                                displayEmpty
-                            >
-                                <MenuItem value="">
-                                    <em>{I18n.t('none')}</em>
-                                </MenuItem>
-                                {credentials.map(c => (
-                                    <MenuItem
-                                        key={c.id}
-                                        value={c.id}
-                                    >
-                                        {renderCredentialItem(c, anyIcons)}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        {/* Create a new API key right here, without leaving for the System Settings → Credentials. */}
-                        <Tooltip title={I18n.t('Add credential')}>
-                            <IconButton onClick={() => setCreateOpen(true)}>
-                                <AddIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-
-                    {isCustom ? (
-                        <>
-                            <TextField
-                                variant="standard"
-                                label={I18n.t('Base URL')}
-                                placeholder="http://127.0.0.1:11434/v1"
-                                value={value.baseUrl}
-                                onChange={e => update({ baseUrl: e.target.value })}
-                                fullWidth
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={value.allowSelfSignedCerts}
-                                        onChange={e => update({ allowSelfSignedCerts: e.target.checked })}
-                                    />
-                                }
-                                label={I18n.t('Allow self-signed certificates')}
-                            />
-                        </>
-                    ) : null}
-
-                    {/* Only the OpenAI-compatible endpoints know the parameter */}
-                    {isCustom || value.provider === 'openai' ? (
-                        <FormControl
-                            variant="standard"
-                            fullWidth
-                        >
-                            <InputLabel>{I18n.t('Reasoning effort')}</InputLabel>
-                            <Select
-                                value={value.reasoningEffort}
-                                onChange={e => update({ reasoningEffort: e.target.value })}
-                            >
-                                {REASONING_EFFORTS.map(effort => (
-                                    <MenuItem
-                                        key={effort.value || 'default'}
-                                        value={effort.value}
-                                    >
-                                        {I18n.t(effort.label)}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    ) : null}
-
-                    {/* Only Anthropic insists on the parameter, so it is only offered for it */}
-                    {value.provider === 'anthropic' ? (
-                        <TextField
-                            variant="standard"
-                            type="number"
-                            label={I18n.t('Maximum answer length')}
-                            helperText={I18n.t('A longer answer is cut off when the limit is reached.')}
-                            value={value.maxTokens || ''}
-                            placeholder={String(DEFAULT_CHAT_MAX_TOKENS)}
-                            slotProps={{
-                                htmlInput: { min: MIN_CHAT_MAX_TOKENS, max: MAX_CHAT_MAX_TOKENS, step: 1024 },
-                            }}
-                            // An empty field means "use the default": the backend falls back to it
-                            onChange={e => update({ maxTokens: parseInt(e.target.value, 10) || 0 })}
-                            fullWidth
-                        />
-                    ) : null}
-
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-                        <Autocomplete
-                            style={{ flex: 1 }}
-                            freeSolo
-                            // derived instead of cleared in an effect: an incomplete config offers no models
-                            options={canTest(value) ? models : []}
-                            value={value.model}
-                            onInputChange={(_e, newValue) => update({ model: newValue || '' })}
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    variant="standard"
-                                    label={I18n.t('Model')}
-                                    placeholder="claude-..., gpt-..."
+                            {providerInfo.icon ? (
+                                <Icon
+                                    src={providerInfo.icon}
+                                    style={{ width: 20, height: 20 }}
                                 />
+                            ) : (
+                                <TuneIcon style={{ width: 20, height: 20 }} />
                             )}
-                        />
-                        <Button
-                            onClick={loadModels}
-                            disabled={testing}
-                            startIcon={testing ? <CircularProgress size={16} /> : null}
-                        >
-                            {I18n.t('Load models')}
-                        </Button>
+                            {providerInfo.label}
+                        </Typography>
+                        <Typography color="textSecondary">{I18n.t('Model')}</Typography>
+                        <Typography style={{ wordBreak: 'break-all' }}>{value.model}</Typography>
                     </div>
+                ) : (
+                    <Alert severity="info">
+                        {I18n.t('Please configure the AI provider, credential and model first.')}
+                    </Alert>
+                )}
+                <div>
+                    <Button
+                        variant="outlined"
+                        startIcon={<SettingsIcon />}
+                        onClick={() => {
+                            props.onClose();
+                            openAiSettings();
+                        }}
+                    >
+                        {I18n.t('Go to the AI settings')}
+                    </Button>
+                </div>
 
-                    {error ? <Alert severity="error">{error}</Alert> : null}
-                    {info ? <Alert severity="success">{info}</Alert> : null}
+                <div>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={value.hideFab}
+                                onChange={e => setValue({ ...value, hideFab: e.target.checked })}
+                            />
+                        }
+                        label={I18n.t('Hide assistant button')}
+                    />
+                    <Typography
+                        variant="caption"
+                        color="textSecondary"
+                        component="div"
+                        style={{ marginLeft: 14 }}
+                    >
+                        {I18n.t('When hidden, move the mouse to the bottom-right corner to reveal it.')}
+                    </Typography>
+                </div>
 
-                    {canTest(value) ? (
-                        <Alert severity="warning">
-                            {I18n.t('The objects, states and logs will be processed by your AI provider.')}
-                        </Alert>
-                    ) : null}
-
+                {props.autoApprove.length ? (
                     <div>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={value.hideFab}
-                                    onChange={e => update({ hideFab: e.target.checked })}
-                                />
-                            }
-                            label={I18n.t('Hide assistant button')}
-                        />
                         <Typography
                             variant="caption"
                             color="textSecondary"
-                            component="div"
-                            style={{ marginLeft: 14 }}
                         >
-                            {I18n.t('When hidden, move the mouse to the bottom-right corner to reveal it.')}
+                            {I18n.t('Operations approved without asking (click to revoke):')}
                         </Typography>
-                    </div>
-
-                    {props.autoApprove.length ? (
-                        <div>
-                            <Typography
-                                variant="caption"
-                                color="textSecondary"
-                            >
-                                {I18n.t('Operations approved without asking (click to revoke):')}
-                            </Typography>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
-                                {props.autoApprove.map(tool => (
-                                    <Chip
-                                        key={tool}
-                                        label={tool}
-                                        size="small"
-                                        onDelete={() =>
-                                            props.onChangeAutoApprove(props.autoApprove.filter(entry => entry !== tool))
-                                        }
-                                    />
-                                ))}
-                            </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+                            {props.autoApprove.map(tool => (
+                                <Chip
+                                    key={tool}
+                                    label={tool}
+                                    size="small"
+                                    onDelete={() =>
+                                        props.onChangeAutoApprove(props.autoApprove.filter(entry => entry !== tool))
+                                    }
+                                />
+                            ))}
                         </div>
-                    ) : null}
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<CheckIcon />}
-                        disabled={JSON.stringify(value) === originalData}
-                        onClick={() => props.onClose(value)}
-                    >
-                        {I18n.t('Save')}
-                    </Button>
-                    <Button
-                        color="grey"
-                        startIcon={<CloseIcon />}
-                        onClick={() => props.onClose()}
-                    >
-                        {I18n.t('Cancel')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            {createOpen ? (
-                <ChatCreateCredentialDialog
-                    socket={props.socket}
-                    provider={value.provider}
-                    existingIds={credentials.map(c => c.id)}
-                    onClose={createdId => {
-                        setCreateOpen(false);
-                        if (createdId) {
-                            void loadProviders(createdId);
-                        }
-                    }}
-                />
-            ) : null}
-        </>
+                    </div>
+                ) : null}
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<CheckIcon />}
+                    disabled={value.hideFab === props.value.hideFab}
+                    onClick={() => props.onClose(value)}
+                >
+                    {I18n.t('Save')}
+                </Button>
+                <Button
+                    color="grey"
+                    startIcon={<CloseIcon />}
+                    onClick={() => props.onClose()}
+                >
+                    {I18n.t('Cancel')}
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 }

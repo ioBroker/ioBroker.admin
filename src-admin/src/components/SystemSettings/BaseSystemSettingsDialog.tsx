@@ -26,6 +26,8 @@ export interface BaseSystemSettingsDialogProps {
     themeType?: ThemeType;
     host?: string;
     socket?: AdminConnection;
+    /** The admin instance that serves this page, e.g. `admin.0` */
+    instance?: string;
 }
 
 abstract class BaseSystemSettingsDialog<P = undefined, S extends object = object> extends React.Component<

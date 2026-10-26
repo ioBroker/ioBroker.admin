@@ -77,8 +77,9 @@ export const KNOWLEDGE_SECTIONS: KnowledgeSection[] = [
         body: [
             'The system-wide settings open at the URL hash `#tab-objects/system/<page>`, where `<page>`',
             'is one of: `tabConfig` (main config: language, location/coordinates for astro, units,',
-            'currency), `tabRepositories`, `tabLicenses`, `tabCertificates`, `tabCredentials`,',
-            '`tabDefaultACL`, `tabStatistics`. Example: `#tab-objects/system/tabConfig`.',
+            'currency), `tabRepositories`, `tabLicenses`, `tabCertificates`, `tabCredentials`, `tabAi`',
+            '(the AI provider, API key and model, also of this assistant), `tabDefaultACL`, `tabStatistics`.',
+            'Example: `#tab-objects/system/tabConfig`.',
         ].join(' '),
     },
     {

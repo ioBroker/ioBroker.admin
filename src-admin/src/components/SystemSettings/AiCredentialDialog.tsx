@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-    Alert,
     Button,
     Dialog,
     DialogActions,
@@ -16,91 +15,64 @@ import {
     Visibility as VisibilityIcon,
     VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
-import { I18n, Utils, Icon, type AdminConnection } from '@iobroker/gui-components';
+import { I18n, Utils, Icon } from '@iobroker/gui-components';
 
-import { CREDENTIALS_PREFIX, CREDENTIALS_VERSION, CREDENTIAL_FORMS } from '../SystemSettings/credentialTypes';
-import { CREDENTIAL_ICON_DATA } from '../SystemSettings/credentialIcons';
 import { SECRET_INPUT_STYLE } from '@/helpers/utils';
-import type { AiProvider } from './chatTypes';
+import { CREDENTIALS_PREFIX, CREDENTIALS_VERSION, CREDENTIAL_FORMS } from './credentialTypes';
+import { CREDENTIAL_ICON_DATA } from './credentialIcons';
+import type { AiProviderInfo } from './aiProviders';
 
-/** Suggested unique name and icon for a freshly created credential, by provider. */
-const PROVIDER_DEFAULTS: Record<AiProvider, { name: string; icon: string }> = {
-    anthropic: { name: 'anthropic', icon: CREDENTIAL_ICON_DATA.anthropic },
-    openai: { name: 'chatgpt', icon: CREDENTIAL_ICON_DATA.chatgpt },
-    gemini: { name: 'gemini', icon: CREDENTIAL_ICON_DATA.gemini },
-    deepseek: { name: 'deepseek', icon: CREDENTIAL_ICON_DATA.deepseek },
-    custom: { name: 'custom', icon: CREDENTIAL_ICON_DATA.key },
-};
-
-interface ChatCreateCredentialDialogProps {
-    socket: AdminConnection;
-    /** The AI provider currently selected in the settings — drives the proposed name and icon. */
-    provider: AiProvider;
-    /** Existing credential ids (e.g. `system.credentials.anthropic`), to reject a duplicate name. */
+interface AiCredentialDialogProps {
+    /** The provider the key is for - drives the proposed name and the icon */
+    provider: AiProviderInfo;
+    /** Existing credential ids (e.g. `system.credentials.anthropic`), to reject a duplicate name */
     existingIds: string[];
-    /** Closed without creating (`undefined`) or with the id of the newly created credential. */
-    onClose: (createdId?: string) => void;
+    /**
+     * Closed without creating (`undefined`) or with the new credential. Its key is still in plain
+     * text: the system settings encrypt it on the backend when they are saved, like every credential
+     */
+    onClose: (credential?: ioBroker.Object) => void;
 }
 
 /**
- * Create a new `ai` credential (a single encrypted API key) right from the assistant settings —
- * the same store the System Settings "Credentials" dialog writes to, so it does not have to be
- * left to add a key. The key is encrypted on the backend (the system secret never leaves it).
+ * Create a new `ai` credential (a single API key) right from the AI settings, without going to the
+ * "Credentials" tab - it lands in the same list as one created there.
  */
-export default function ChatCreateCredentialDialog(props: ChatCreateCredentialDialogProps): React.JSX.Element {
-    const defaults = PROVIDER_DEFAULTS[props.provider] || PROVIDER_DEFAULTS.custom;
-    const [name, setName] = useState<string>(defaults.name);
+export default function AiCredentialDialog(props: AiCredentialDialogProps): React.JSX.Element {
+    const icon = props.provider.icon || CREDENTIAL_ICON_DATA.key;
+    const [name, setName] = useState<string>(props.provider.credentialName);
     const [apiKey, setApiKey] = useState<string>('');
     const [keyVisible, setKeyVisible] = useState(false);
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState('');
 
     const safeName = name.trim().replace(Utils.FORBIDDEN_CHARS, '_');
     const id = `${CREDENTIALS_PREFIX}${safeName}`;
     const duplicate = !!safeName && props.existingIds.includes(id);
-    const canCreate = !!safeName && !duplicate && !!apiKey.trim() && !saving;
+    const canCreate = !!safeName && !duplicate && !!apiKey.trim();
 
-    const create = async (): Promise<void> => {
-        if (!safeName) {
-            setError(I18n.t('A unique name is required'));
+    const create = (): void => {
+        if (!canCreate) {
             return;
         }
-        if (duplicate) {
-            setError(I18n.t('A credential with this name already exists'));
-            return;
-        }
-        if (!apiKey.trim()) {
-            return;
-        }
-        setSaving(true);
-        setError('');
-        try {
-            // The `ai` credential uses the single-key form; only its `key` field is stored encrypted.
-            const fields = CREDENTIAL_FORMS.key;
-            const native: Record<string, unknown> = {
+        // The `ai` credential uses the single-key form; only its `key` field is stored encrypted
+        const fields = CREDENTIAL_FORMS.key;
+        props.onClose({
+            _id: id,
+            type: 'config',
+            common: { name: safeName, icon },
+            native: {
                 type: 'ai',
+                form: 'key',
                 version: CREDENTIALS_VERSION,
                 encryptedFields: fields.filter(field => field.encrypted).map(field => field.name),
-                key: await props.socket.encrypt(apiKey.trim()),
-            };
-            const obj = {
-                _id: id,
-                type: 'config',
-                common: { name: safeName, icon: defaults.icon },
-                native,
-                // Only the admin may read credentials.
-                acl: {
-                    object: 0x600,
-                    owner: 'system.user.admin',
-                    ownerGroup: 'system.group.administrator',
-                },
-            } as unknown as ioBroker.Object;
-            await props.socket.setObject(id, obj);
-            props.onClose(id);
-        } catch (e) {
-            setSaving(false);
-            setError(I18n.t('Cannot create credential: %s', e instanceof Error ? e.message : String(e)));
-        }
+                key: apiKey.trim(),
+            },
+            // Only the admin may read credentials
+            acl: {
+                object: 0x600,
+                owner: 'system.user.admin',
+                ownerGroup: 'system.group.administrator',
+            },
+        } as unknown as ioBroker.Object);
     };
 
     return (
@@ -126,17 +98,14 @@ export default function ChatCreateCredentialDialog(props: ChatCreateCredentialDi
                             startAdornment: (
                                 <InputAdornment position="start">
                                     <Icon
-                                        src={defaults.icon}
+                                        src={icon}
                                         style={{ width: 20, height: 20 }}
                                     />
                                 </InputAdornment>
                             ),
                         },
                     }}
-                    onChange={e => {
-                        setName(e.target.value);
-                        setError('');
-                    }}
+                    onChange={e => setName(e.target.value)}
                 />
                 <TextField
                     variant="standard"
@@ -174,18 +143,14 @@ export default function ChatCreateCredentialDialog(props: ChatCreateCredentialDi
                             ),
                         },
                     }}
-                    onChange={e => {
-                        setApiKey(e.target.value);
-                        setError('');
-                    }}
+                    onChange={e => setApiKey(e.target.value)}
                     onKeyDown={e => {
                         if (e.key === 'Enter' && canCreate) {
                             e.preventDefault();
-                            void create();
+                            create();
                         }
                     }}
                 />
-                {error ? <Alert severity="error">{error}</Alert> : null}
             </DialogContent>
             <DialogActions>
                 <Button
@@ -193,13 +158,12 @@ export default function ChatCreateCredentialDialog(props: ChatCreateCredentialDi
                     color="primary"
                     disabled={!canCreate}
                     startIcon={<CheckIcon />}
-                    onClick={() => void create()}
+                    onClick={create}
                 >
                     {I18n.t('Create')}
                 </Button>
                 <Button
                     color="grey"
-                    disabled={saving}
                     startIcon={<CloseIcon />}
                     onClick={() => props.onClose()}
                 >

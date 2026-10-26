@@ -93,6 +93,7 @@ Whole tabs of the dialog:
 | `tabRepositories`  | Repositories   |
 | `tabCertificates`  | Certificates   |
 | `tabCredentials`   | Credentials    |
+| `tabAi`            | AI             |
 | `tabLetsEncrypt`   | Let's Encrypt  |
 | `tabDefaultACL`    | Default ACL    |
 | `tabStatistics`    | Statistics     |

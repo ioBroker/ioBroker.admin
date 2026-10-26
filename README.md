@@ -102,6 +102,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Fixed: behind a reverse proxy with https the single sign-on sent `http://.../sso-callback` to the identity provider, which did not match the registered redirect URI. The protocol now comes from `X-Forwarded-Proto`, and the external address of admin can be set in the SSO settings
 - (@GermanBluefox) Important for everybody who had the single sign-on switched on with an admin before 8.3.4: an identity that somebody else connected with a user stays connected after the update. Check on the "Users" page that every user with single sign-on is connected with the right account, and disconnect the others
 - (@GermanBluefox) Fixed: the device manager crashed if a slider of a device got a value that is not a number (#3699)
+- (@GermanBluefox) Added: the system settings have an "AI" tab to set up the AI provider, its API key and the model once for the whole system; only one provider can be active
+- (@GermanBluefox) Changed: the tabs of the system settings stand on the left with icons, on a phone on top
+- (@GermanBluefox) Changed: the AI assistant takes provider, key and model from the "AI" tab of the system settings
 
 ### 8.3.4 (2026-10-25)
 - (@typhosj) Fixed: the license dialog of a paid adapter stayed empty and could not be accepted, so the adapter could not be installed. The dialog loaded `licenseInformation.link` as the license text, but that link names the page with prices and where to buy, which the browser may not read. The license text comes from the repository of the adapter again, and the link is shown next to it. A license text that cannot be loaded no longer blocks the dialog, and a short Markdown text that needs no scrolling can be accepted (#3311, ioBroker/ioBroker.vis-2#707)

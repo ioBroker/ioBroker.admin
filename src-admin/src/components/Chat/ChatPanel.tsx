@@ -43,6 +43,7 @@ import { I18n, type AdminConnection, type IobTheme, type ThemeType } from '@iobr
 import { MarkdownText } from '@iobroker/ai-gui';
 
 import ChatSettings from './ChatSettings';
+import { openAiSettings } from '../SystemSettings/aiProviders';
 import ChatMcpInfoDialog from './ChatMcpInfoDialog';
 import { sendPushRequest } from '../../helpers/pushRequest';
 import {
@@ -467,7 +468,7 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
             return;
         }
         if (!ready) {
-            setSettingsOpen(true);
+            openAiSettings();
             return;
         }
         addItem({ role: 'user', text });
@@ -525,10 +526,12 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
     const onCloseSettings = (value?: ChatSettingsValue): void => {
         setSettingsOpen(false);
         if (value) {
-            setSettings(value);
-            saveChatSettings(value); // local cache
+            // Provider, key and model belong to the system settings: only what this dialog sets is saved
+            const next = { ...settings, hideFab: value.hideFab };
+            setSettings(next);
+            saveChatSettings(next); // local cache
             // Persist system-wide so the configuration is the same on every browser.
-            void saveChatSettingsToObject(props.socket, value).catch(() => {
+            void saveChatSettingsToObject(props.socket, { hideFab: value.hideFab }).catch(() => {
                 /* ignore — the local cache still holds the value */
             });
         }
@@ -606,9 +609,9 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
                             <Button
                                 color="inherit"
                                 size="small"
-                                onClick={() => setSettingsOpen(true)}
+                                onClick={openAiSettings}
                             >
-                                {I18n.t('Settings')}
+                                {I18n.t('Go to the AI settings')}
                             </Button>
                         }
                     >
@@ -773,8 +776,6 @@ export default function ChatPanel(props: ChatPanelProps): React.JSX.Element {
 
             {settingsOpen ? (
                 <ChatSettings
-                    socket={props.socket}
-                    instance={props.instance}
                     value={settings}
                     autoApprove={autoApprove}
                     onChangeAutoApprove={setAutoApprove}

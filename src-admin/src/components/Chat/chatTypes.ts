@@ -203,8 +203,11 @@ export async function loadChatSettingsFromObject(socket: AdminConnection): Promi
     return null;
 }
 
-/** Persist the chat settings into the shared `system.ai` object (created on demand). */
-export async function saveChatSettingsToObject(socket: AdminConnection, value: ChatSettingsValue): Promise<void> {
+/** Persist (some of) the chat settings into the shared `system.ai` object (created on demand). */
+export async function saveChatSettingsToObject(
+    socket: AdminConnection,
+    value: Partial<ChatSettingsValue>,
+): Promise<void> {
     let obj: ioBroker.Object | null | undefined;
     try {
         obj = await socket.getObject(CHAT_SETTINGS_OBJECT_ID);

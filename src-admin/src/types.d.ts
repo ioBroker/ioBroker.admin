@@ -73,6 +73,7 @@ export interface AdminGuiConfig {
             tabRepositories?: false; // Repositories tab
             tabCertificates?: false; // Certificates tab
             tabCredentials?: false; // Credentials tab
+            tabAi?: false; // AI tab
             tabLetsEncrypt?: false; // Let's Encrypt tab
             tabDefaultACL?: false; // Default ACL tab
             tabStatistics?: false; // Statistics tab

@@ -15,7 +15,19 @@ import {
     CircularProgress,
 } from '@mui/material';
 
-import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
+import {
+    AutoAwesome as AiIcon,
+    BarChart as StatisticsIcon,
+    CardMembership as LicensesIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
+    Https as LetsEncryptIcon,
+    Inventory2 as RepositoriesIcon,
+    Key as CredentialsIcon,
+    LockPerson as AclIcon,
+    Settings as SystemIcon,
+    VerifiedUser as CertificatesIcon,
+} from '@mui/icons-material';
 
 import {
     DialogConfirm,
@@ -36,6 +48,9 @@ import LicensesDialog from './LicensesDialog';
 import CertificatesDialog from './CertificatesDialog';
 import CredentialsDialog from './CredentialsDialog';
 import { CREDENTIALS_PREFIX } from './credentialTypes';
+import AiSettingsDialog from './AiSettingsDialog';
+import { AI_SETTINGS_TAB } from './aiProviders';
+import { CHAT_SETTINGS_OBJECT_ID } from '../Chat/chatTypes';
 import SSLDialog from './SSLDialog';
 import ACLDialog from './ACLDialog';
 import StatisticsDialog from './StatisticsDialog';
@@ -51,20 +66,40 @@ const SOME_PASSWORD = '__SOME_PASSWORD__';
 const TAB_STORAGE_KEY = 'SystemSettings.tab';
 
 const styles: Record<string, any> = {
-    tabPanel: (theme: IobTheme) => ({
-        width: '100%',
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
+    tabPanel: {
+        flex: 1,
+        minWidth: 0,
+        height: '100%',
         overflow: 'hidden',
+    },
+    body: {
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+    },
+    verticalTabs: (theme: IobTheme) => ({
+        flexShrink: 0,
+        borderRight: `1px solid ${theme.palette.divider}`,
+        '& .MuiTab-root': {
+            justifyContent: 'flex-start',
+            textAlign: 'left',
+            minHeight: 44,
+        },
     }),
-    tab: {
-        // backgroundColor:'#FFF',
-        // color:lightBlue[500]
+    horizontalTabs: {
+        flex: 1,
+        minWidth: 0,
+        '& .MuiTab-root': {
+            minHeight: 48,
+        },
     },
     dialogTitle: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        gap: 8,
         padding: '0 0 0 20px',
+        minHeight: 56,
     },
     dialog: {
         width: '100%',
@@ -73,6 +108,8 @@ const styles: Record<string, any> = {
     },
     content: {
         padding: '0 !important',
+        display: 'flex',
+        flexDirection: 'column',
     },
     selected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#FFF !important' : '#222 !important',
@@ -104,9 +141,13 @@ interface SystemSettingsDialogState {
     systemCredentials: ioBroker.Object[] | null;
     systemRepositories: ioBroker.RepositoryObject | null;
     systemLicenses: ioBroker.Object | null;
+    /** `system.ai`: the AI provider, credential and model of the system */
+    systemAi: ioBroker.Object | null;
     multipleRepos: boolean;
     licenseManager: boolean;
     host: string;
+    /** The admin instance that serves this page, e.g. `admin.0` */
+    instance: string;
     repoInfo: Record<string, ioBroker.RepoInfo>;
     users?: ioBroker.UserObject[];
     groups?: ioBroker.GroupObject[];
@@ -120,6 +161,7 @@ interface SystemSettingsDialogState {
 interface SystemSettingsDialogTab {
     id: number;
     title: string;
+    icon: JSX.Element;
     component: React.FC<BaseSystemSettingsDialogProps>;
     data: string;
     name: string;
@@ -139,6 +181,8 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
 
     originalCredentials = '';
 
+    originalAi = '';
+
     /** The unchanged credential objects (with still encrypted values) by ID, as they were loaded */
     originalCredentialObjects: Record<string, ioBroker.Object> = {};
 
@@ -152,9 +196,11 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             systemCredentials: null,
             systemRepositories: null,
             systemLicenses: null,
+            systemAi: null,
             multipleRepos: false,
             licenseManager: false,
             host: '',
+            instance: '',
             repoInfo: {},
         };
         this.getSettings(/* this.state.currentHost */).catch(e => window.alert(`Cannot read settings: ${e}`));
@@ -167,7 +213,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
         const obj = (await this.props.socket.getObject(
             `system.adapter.${namespace}`,
         )) as any as ioBroker.InstanceObject;
-        this.setState({ host: obj.common.host, multipleRepos, licenseManager });
+        this.setState({ host: obj.common.host, instance: namespace, multipleRepos, licenseManager });
     }
 
     async getSettings(): Promise<void> {
@@ -265,6 +311,25 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 });
             this.originalCredentials = JSON.stringify(systemCredentials);
             newState.systemCredentials = systemCredentials;
+
+            // Only the reference to the credential is stored here, never a key
+            let systemAi: ioBroker.Object | null | undefined = null;
+            try {
+                systemAi = await this.props.socket.getObject(CHAT_SETTINGS_OBJECT_ID);
+            } catch {
+                // not created yet
+            }
+            systemAi = systemAi
+                ? AdminUtils.clone(systemAi)
+                : ({
+                      _id: CHAT_SETTINGS_OBJECT_ID,
+                      type: 'config',
+                      common: { name: 'AI settings', expert: true },
+                      native: {},
+                  } as unknown as ioBroker.Object);
+            systemAi.native = systemAi.native || {};
+            this.originalAi = JSON.stringify(systemAi);
+            newState.systemAi = systemAi;
             let systemLicenses: ioBroker.Object | null | undefined =
                 await this.props.socket.getObject('system.licenses');
             systemLicenses =
@@ -361,6 +426,22 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     }
                 }
 
+                // after the credentials: a key that was created in the AI tab exists now
+                const stateSystemAi = this.state.systemAi;
+                if (stateSystemAi && JSON.stringify(stateSystemAi) !== this.originalAi) {
+                    let storedAi: ioBroker.Object | null | undefined = null;
+                    try {
+                        storedAi = await this.props.socket.getObject(CHAT_SETTINGS_OBJECT_ID);
+                    } catch {
+                        // not created yet
+                    }
+                    // merged, so what the assistant keeps there besides (e.g. `hideFab`) is not lost
+                    await this.props.socket.setObject(CHAT_SETTINGS_OBJECT_ID, {
+                        ...(storedAi || stateSystemAi),
+                        native: { ...(storedAi?.native || {}), ...stateSystemAi.native },
+                    } as ioBroker.Object);
+                }
+
                 let systemRepositories = await this.props.socket.getObject('system.repositories');
                 systemRepositories = systemRepositories || ({} as ioBroker.RepositoryObject);
                 systemRepositories.native = systemRepositories.native || ({} as ioBroker.RepositoryObject['native']);
@@ -450,6 +531,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 0,
                 title: 'System settings',
+                icon: <SystemIcon />,
                 component: MainSettingsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
                 name: 'tabConfig',
@@ -459,6 +541,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 1,
                 title: 'Repositories',
+                icon: <RepositoriesIcon />,
                 component: RepositoriesDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemRepositories',
                 name: 'tabRepositories',
@@ -469,6 +552,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 2,
                 title: 'Licenses',
+                icon: <LicensesIcon />,
                 component: LicensesDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemLicenses',
                 name: 'tabLicenses',
@@ -479,6 +563,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 3,
                 title: 'Certificates',
+                icon: <CertificatesIcon />,
                 component: CertificatesDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemCertificates',
                 name: 'tabCertificates',
@@ -488,6 +573,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             {
                 id: 4,
                 title: 'Credentials',
+                icon: <CredentialsIcon />,
                 component: CredentialsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemCredentials',
                 name: 'tabCredentials',
@@ -497,7 +583,19 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
             },
             {
                 id: 5,
+                title: 'AI',
+                icon: <AiIcon />,
+                component: AiSettingsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
+                data: 'systemAi',
+                name: AI_SETTINGS_TAB,
+                // the API key comes from the credentials, and a new one is added to them
+                dataAux: 'systemCredentials',
+                handle: undefined,
+            },
+            {
+                id: 6,
                 title: "Let's encrypt SSL",
+                icon: <LetsEncryptIcon />,
                 component: SSLDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemCertificates',
                 name: 'tabLetsEncrypt',
@@ -505,8 +603,9 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 handle: undefined,
             },
             {
-                id: 6,
+                id: 7,
                 title: 'Default ACL',
+                icon: <AclIcon />,
                 component: ACLDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
                 name: 'tabDefaultACL',
@@ -514,8 +613,9 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 handle: undefined,
             },
             {
-                id: 7,
+                id: 8,
                 title: 'Statistics',
+                icon: <StatisticsIcon />,
                 component: StatisticsDialog as unknown as React.FC<BaseSystemSettingsDialogProps>,
                 data: 'systemConfig',
                 dataAux: 'diagData',
@@ -553,7 +653,11 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
 
     getDialogContent(tabsList: SystemSettingsDialogTab[], currentTabId: string): JSX.Element {
         if (this.state.loading) {
-            return <LinearProgress />;
+            return (
+                <Box sx={styles.tabPanel}>
+                    <LinearProgress />
+                </Box>
+            );
         }
 
         const tab = tabsList.find(t => t.name === currentTabId) || tabsList[0];
@@ -585,6 +689,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     host={this.state.host}
                     t={this.props.t}
                     socket={this.props.socket}
+                    instance={this.state.instance}
                     saving={!!this.state.saving}
                 />
             </Box>
@@ -628,6 +733,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 JSON.stringify(this.state.systemConfig) === this.originalConfig &&
                 JSON.stringify(this.state.systemCertificates) === this.originalCertificates &&
                 JSON.stringify(this.state.systemCredentials) === this.originalCredentials &&
+                JSON.stringify(this.state.systemAi) === this.originalAi &&
                 JSON.stringify({
                     login: this.state.systemLicenses?.native.login,
                     password: this.state.systemLicenses?.native.password,
@@ -649,26 +755,50 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                 !!this.state.systemRepositories && SystemSettingsDialog.ifRepoError(this.state.systemRepositories);
         }
 
-        console.log(`get state: ${tabError}`);
         const tabs = tabsList.map(tab => (
             <Tab
                 key={tab.title}
                 label={this.props.t(tab.title)}
+                icon={tab.icon}
+                iconPosition="start"
                 value={tab.name}
                 disabled={tabError && tab.name !== currentTabId}
                 sx={{ '&.Mui-selected': styles.selected }}
             />
         ));
 
+        // There are too many tabs for one row: they stand on the left, only a phone keeps them on top,
+        // where there is no width to spare for a column
+        const narrow = this.props.width === 'xs' || this.props.width === 'sm';
+        const fullScreen = this.props.width === 'xs';
+        const tabsElement = (
+            <Tabs
+                orientation={narrow ? 'horizontal' : 'vertical'}
+                indicatorColor="secondary"
+                value={currentTabId}
+                onChange={(_event, newTab: string) => SystemSettingsDialog.onTabChanged(newTab)}
+                variant="scrollable"
+                scrollButtons="auto"
+                allowScrollButtonsMobile
+                sx={narrow ? styles.horizontalTabs : styles.verticalTabs}
+            >
+                {tabs}
+            </Tabs>
+        );
+
         return (
             <Dialog
                 sx={{
                     '&.MuiDialog-root': styles.dialog,
-                    '& .MuiDialog-paper': {
-                        height: 'calc(100% - 64px)',
-                        width: 'calc(100% - 64px)',
-                        maxWidth: 'calc(100% - 64px)',
-                    },
+                    ...(fullScreen
+                        ? {}
+                        : {
+                              '& .MuiDialog-paper': {
+                                  height: 'calc(100% - 64px)',
+                                  width: 'calc(100% - 64px)',
+                                  maxWidth: 'calc(100% - 64px)',
+                              },
+                          }),
                 }}
                 open={!0}
                 onClose={(_e, reason) => {
@@ -681,7 +811,7 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     }
                 }}
                 fullWidth
-                fullScreen={false}
+                fullScreen={fullScreen}
                 aria-labelledby="system-settings-dialog-title"
             >
                 <DialogContent style={styles.content}>
@@ -690,19 +820,11 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                         color="default"
                     >
                         <div style={styles.dialogTitle}>
-                            {this.props.width !== 'xs' && this.props.width !== 'sm' && (
+                            {narrow ? (
+                                tabsElement
+                            ) : (
                                 <Typography className="dialogName">{this.props.t('Base settings')}</Typography>
                             )}
-                            <Tabs
-                                style={styles.tab}
-                                indicatorColor="secondary"
-                                value={currentTabId}
-                                onChange={(_event, newTab: string) => SystemSettingsDialog.onTabChanged(newTab)}
-                                variant="scrollable"
-                                scrollButtons="auto"
-                            >
-                                {tabs}
-                            </Tabs>
                             <IconButton
                                 size="large"
                                 disabled={this.state.saving}
@@ -715,7 +837,10 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                             </IconButton>
                         </div>
                     </AppBar>
-                    {this.getDialogContent(tabsList, currentTabId)}
+                    <Box style={styles.body}>
+                        {narrow ? null : tabsElement}
+                        {this.getDialogContent(tabsList, currentTabId)}
+                    </Box>
                     {this.renderDialogConfirm()}
                 </DialogContent>
                 <DialogActions>
