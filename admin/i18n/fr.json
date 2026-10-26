@@ -108,5 +108,7 @@
     "users permissions": "Autorisations des utilisateurs",
     "sec. Lifetime of the access token, renewed automatically while the admin is open": "s. Durée de validité du jeton d'accès, renouvelé automatiquement tant que l'admin est ouvert",
     "Stay logged in for": "Rester connecté pendant",
-    "days": "jours"
+    "days": "jours",
+    "External address of admin": "Adresse externe de l'admin",
+    "Only behind a reverse proxy, e.g. https://iobroker.example.com. Empty: taken from the request.": "Uniquement derrière un proxy inverse, p. ex. https://iobroker.example.com. Vide : déterminée à partir de la requête."
 }

@@ -108,5 +108,7 @@
     "users permissions": "Права доступа",
     "sec. Lifetime of the access token, renewed automatically while the admin is open": "сек. Время жизни токена доступа, продлевается автоматически, пока admin открыт",
     "Stay logged in for": "Оставаться в системе в течение",
-    "days": "дней"
+    "days": "дней",
+    "External address of admin": "Внешний адрес admin",
+    "Only behind a reverse proxy, e.g. https://iobroker.example.com. Empty: taken from the request.": "Только за обратным прокси, например https://iobroker.example.com. Пусто: берётся из запроса."
 }

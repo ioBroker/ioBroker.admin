@@ -330,6 +330,17 @@
                     md: 6,
                     lg: 4,
                 },
+                ssoExternalUrl: {
+                    type: 'text',
+                    label: 'External address of admin',
+                    help: 'Only behind a reverse proxy, e.g. https://iobroker.example.com. Empty: taken from the request.',
+                    hidden: '!data.ssoActive',
+                    newLine: true,
+                    xs: 12,
+                    sm: 12,
+                    md: 12,
+                    lg: 8,
+                },
                 _redirectUriInfo: {
                     type: 'staticText',
                     text: 'Register the redirect URI "<address of this admin>/sso-callback" at the identity provider.',

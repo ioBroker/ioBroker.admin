@@ -363,6 +363,31 @@ export default class Web {
         };
     }
 
+    /**
+     * External address of admin, from which the single sign-on builds the redirect URI for the identity provider.
+     *
+     * Behind a TLS-terminating reverse proxy the request arrives as `http`, so the redirect URI would not match
+     * the `https` one registered at the identity provider. Without a configured address, the protocol the proxy
+     * reports in `X-Forwarded-Proto` is used. A forged header only changes the redirect URI of the own login,
+     * which the identity provider then refuses.
+     *
+     * @param req the request that starts the login
+     */
+    getSsoBaseUrl(req: Request): string {
+        const configured = (this.adapter.config.ssoExternalUrl || '').trim();
+        if (configured) {
+            return configured;
+        }
+
+        const forwarded = String(req.headers['x-forwarded-proto'] || '')
+            .split(',')[0]
+            .trim()
+            .toLowerCase();
+        const protocol = forwarded === 'https' || forwarded === 'http' ? forwarded : req.protocol;
+
+        return `${protocol}://${req.get('host') || 'localhost'}`;
+    }
+
     async prepareIndex(index: string): Promise<string> {
         let template = readFileSync(join(this.wwwDir, index)).toString('utf8');
         const m = template.match(/(["']?@@\w+@@["']?)/g) || [];
@@ -815,6 +840,9 @@ export default class Web {
                 this.oauth2Model = createOAuth2Server(this.adapter, {
                     app: this.server.app,
                     oidc: this.getOidcConfig(),
+                    // Only a one-time code goes into the URL after a single sign-on, not the tokens
+                    ssoHandoff: 'code',
+                    baseUrl: (req: Request): string => this.getSsoBaseUrl(req),
                     secure: this.settings.secure,
                     accessLifetime: this.settings.ttl,
                     refreshLifetime: this.settings.refreshTokenTtlDays * 24 * 60 * 60,

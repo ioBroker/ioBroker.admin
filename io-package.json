@@ -261,6 +261,7 @@
     "oidcClientId": "",
     "oidcClientSecret": "",
     "oidcScope": "openid profile email",
+    "ssoExternalUrl": "",
     "acmeChallenge": true,
     "disableMcp": true
   },

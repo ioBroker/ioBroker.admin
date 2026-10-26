@@ -49,6 +49,8 @@ declare global {
             oidcClientSecret: string;
             /** Scopes to request, default `openid profile email` */
             oidcScope: string;
+            /** External address of admin behind a reverse proxy, e.g. `https://iobroker.example.com`. Empty: from the request. */
+            ssoExternalUrl: string;
             disableMcp?: boolean;
         }
     }

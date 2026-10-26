@@ -51,6 +51,7 @@ import {
     AdminConnection as Connection,
     type FilteredNotificationInformation,
     type HostInfo,
+    type OAuth2Response,
     PROGRESS,
 } from '@iobroker/socket-client';
 
@@ -107,6 +108,7 @@ import TipsDialog from './dialogs/TipsDialog';
 import IsVisible from './components/IsVisible';
 import ChatPanel from './components/Chat/ChatPanel';
 import type { CompactInstanceInfo } from './components/Adapters/AdapterUpdateDialog';
+import { adminHref } from './helpers/utils';
 
 import enLocal from './i18n/en.json';
 import deLocal from './i18n/de.json';
@@ -858,10 +860,33 @@ class App extends Router<AppProps, AppState> {
     /**
      * Check if SSO response parameters are present in the URL.
      */
-    static checkSsoResponse(): void {
+    static async checkSsoResponse(): Promise<void> {
         // Due to the fact that the SSO process can only provide its parameters via a callback uri, we need to extract from the search parameters
         const searchParams = new URLSearchParams(window.location.search);
 
+        // Only a one-time code is in the URL, the tokens are fetched with it, so they end up neither in the
+        // browser history nor in proxy logs
+        if (searchParams.has('ssoCode')) {
+            try {
+                const response = await fetch(adminHref('sso-token'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: searchParams.get('ssoCode') }),
+                });
+                const result: Partial<OAuth2Response> & { id_token?: string } = await response.json();
+                // After connecting an identity only the ID token comes back. Nothing uses it, so it is not kept.
+                if (response.ok && result.access_token) {
+                    Connection.saveTokensStatic(result as OAuth2Response, true);
+                }
+            } catch (e) {
+                console.error(`Cannot finish the single sign-on: ${e}`);
+            }
+            window.localStorage.removeItem('oidc_id_token');
+            window.location.search = '';
+            return;
+        }
+
+        // Older webservers put the tokens into the URL
         if (searchParams.has('id_token')) {
             window.localStorage.setItem('oidc_id_token', searchParams.get('id_token') as string);
             window.location.search = '';
@@ -1189,7 +1214,7 @@ class App extends Router<AppProps, AppState> {
 
     componentDidMount(): void {
         // check if we are mounted as SSO response
-        App.checkSsoResponse();
+        void App.checkSsoResponse();
         window.addEventListener('vite:preloadError', onPreloadError);
 
         if (!this.state.login) {

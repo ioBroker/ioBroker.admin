@@ -108,5 +108,7 @@
     "users permissions": "用户权限",
     "sec. Lifetime of the access token, renewed automatically while the admin is open": "秒。访问令牌的有效期，管理界面打开期间会自动续期",
     "Stay logged in for": "保持登录状态",
-    "days": "天"
+    "days": "天",
+    "External address of admin": "admin 的外部地址",
+    "Only behind a reverse proxy, e.g. https://iobroker.example.com. Empty: taken from the request.": "仅在反向代理之后使用，例如 https://iobroker.example.com。留空：从请求中获取。"
 }
