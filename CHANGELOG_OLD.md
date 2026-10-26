@@ -1,4 +1,13 @@
 # Older changes
+## 8.3.0 (2026-10-19)
+- (@GermanBluefox) Added: adapter tabs with `adminTab.proxy` (e.g. xterm) run through the port of admin under `/proxy/<instance>/`, for administrators only
+- (@GermanBluefox) The used resources added (Only js-controller 8)
+- (@GermanBluefox) Fixed: the instances list and the dialog "Update all adapters" fit into the page without a second scrollbar
+- (@GermanBluefox) Fixed: the language selected in the wizard is kept after the wizard is closed
+- (@GermanBluefox) The admin and the admin pages of the adapters load from the browser cache
+- (@GermanBluefox) The tabs "Instances" and "Adapters" load and update faster
+- (@GermanBluefox) Fixed: a restart of admin shows "Connection to admin lost" instead of errors like "Cannot read instances!"
+
 ## 8.2.0 (2026-10-12)
 - (@GermanBluefox) Fixed: iobroker.pro cloud can open the instance settings now
 

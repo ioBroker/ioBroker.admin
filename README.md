@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.5 (2026-10-26)
 - (@GermanBluefox) Fixed: after a single sign-on the access and refresh token were put into the address (`?ssoLoginResponse=`), so they ended up in the browser history and in the logs of a reverse proxy. Only a one-time code is there now, admin fetches the tokens with it. The ID token that came back after connecting an identity (`?id_token=`, with name and e-mail) is not kept any more, nothing used it
 - (@GermanBluefox) Fixed: the session cookie of a single sign-on was readable by scripts and sent along cross-site requests, unlike the one of a password login
 - (@GermanBluefox) Fixed: behind a reverse proxy with https the single sign-on sent `http://.../sso-callback` to the identity provider, which did not match the registered redirect URI. The protocol now comes from `X-Forwarded-Proto`, and the external address of admin can be set in the SSO settings
@@ -122,15 +122,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added: sort icon and tooltip on the sort button in the adapters tab (#3684)
 - (@GermanBluefox) Added: disk and RAM usage of the host are shown as bars with tooltip in the instances tab
 - (@GermanBluefox) Added: the repository version of an adapter can be installed with one click, if a newer or a self-installed version (e.g., from GitHub) is installed (#2973)
-
-### 8.3.0 (2026-10-19)
-- (@GermanBluefox) Added: adapter tabs with `adminTab.proxy` (e.g. xterm) run through the port of admin under `/proxy/<instance>/`, for administrators only
-- (@GermanBluefox) The used resources added (Only js-controller 8)
-- (@GermanBluefox) Fixed: the instances list and the dialog "Update all adapters" fit into the page without a second scrollbar
-- (@GermanBluefox) Fixed: the language selected in the wizard is kept after the wizard is closed
-- (@GermanBluefox) The admin and the admin pages of the adapters load from the browser cache
-- (@GermanBluefox) The tabs "Instances" and "Adapters" load and update faster
-- (@GermanBluefox) Fixed: a restart of admin shows "Connection to admin lost" instead of errors like "Cannot read instances!"
 
 ## License
 
