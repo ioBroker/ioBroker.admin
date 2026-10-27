@@ -31,6 +31,7 @@ import { getAdapterUpdateText } from './lib/translations';
 import Web from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 import { DockerManager } from '@iobroker/plugin-docker';
+import { checkDockerForInstance, type DockerInfo } from './lib/checkDocker';
 import {
     checkCommonObjects,
     updateDevicesObject,
@@ -77,6 +78,9 @@ const LOG_SEARCH_HOST_TIMEOUT_MS = 60_000;
 
 /** How long another host may take to tell whether it supports a feature */
 const FEATURE_CHECK_TIMEOUT_MS = 5_000;
+
+/** How long another host may take to check Docker. Its js-controller gives up after 20 seconds itself. */
+const DOCKER_CHECK_HOST_TIMEOUT_MS = 30_000;
 const ERROR_PERMISSION = 'permissionError';
 
 /** Instance-message type for pushed answers of a long request. Shared verbatim with the frontend. */
@@ -487,24 +491,7 @@ class Admin extends Adapter {
                 return;
             }
             if (obj.command === 'checkDocker') {
-                const dockerManager = new DockerManager({
-                    logger: {
-                        level: this.common?.loglevel || 'info',
-                        silly: this.log.silly.bind(this.log),
-                        debug: this.log.debug.bind(this.log),
-                        info: this.log.info.bind(this.log),
-                        warn: this.log.warn.bind(this.log),
-                        error: this.log.error.bind(this.log),
-                    },
-                    quiet: true,
-                    namespace: this.namespace,
-                });
-                void dockerManager.getDockerDaemonInfo().then(result => {
-                    if (obj.callback) {
-                        this.sendTo(obj.from, obj.command, result, obj.callback);
-                    }
-                    void dockerManager.destroy();
-                });
+                void this.processCheckDocker(obj);
                 return;
             }
             if (obj.command.startsWith('chat:')) {
@@ -578,6 +565,86 @@ class Admin extends Adapter {
         respond(response);
     }
 
+    /**
+     * Handle `checkDocker` of the jsonConfig control with the same name: can the instance use Docker on its host?
+     *
+     * See `checkDockerForInstance` - the own host is checked here, another one is asked.
+     *
+     * @param obj the message object
+     */
+    private async processCheckDocker(obj: ioBroker.Message): Promise<void> {
+        const answer = await checkDockerForInstance(obj.message, {
+            ownHost: this.host,
+            checkLocal: () => this.checkLocalDocker(),
+            getHost: async host => {
+                const id = `system.host.${host}`;
+                const hostObj = await this.getForeignObjectAsync(id);
+                if (hostObj?.type !== 'host') {
+                    return null;
+                }
+                const alive = await this.getForeignStateAsync(`${id}.alive`);
+                return {
+                    alive: !!alive?.val,
+                    supportsCheckDocker: () =>
+                        this.isHostFeatureSupported(hostObj, 'CONTROLLER_CHECK_DOCKER', (command, message, timeout) =>
+                            this.requestHost(host, command, message, timeout ?? FEATURE_CHECK_TIMEOUT_MS),
+                        ),
+                };
+            },
+            requestHost: (host, message) =>
+                this.requestHost(host, 'checkDocker', message, DOCKER_CHECK_HOST_TIMEOUT_MS),
+        });
+        if (answer.host !== this.host) {
+            this.log.debug(`Docker on host ${answer.host}: ${JSON.stringify(answer)}`);
+        }
+        if (obj.callback) {
+            this.sendTo(obj.from, obj.command, answer, obj.callback);
+        }
+    }
+
+    /** Check Docker on the host this instance runs on */
+    private async checkLocalDocker(): Promise<DockerInfo> {
+        const dockerManager = new DockerManager({
+            logger: {
+                level: this.common?.loglevel || 'info',
+                silly: this.log.silly.bind(this.log),
+                debug: this.log.debug.bind(this.log),
+                info: this.log.info.bind(this.log),
+                warn: this.log.warn.bind(this.log),
+                error: this.log.error.bind(this.log),
+            },
+            quiet: true,
+            namespace: this.namespace,
+        });
+        try {
+            return await dockerManager.getDockerDaemonInfo();
+        } finally {
+            void dockerManager.destroy();
+        }
+    }
+
+    /**
+     * Send a command to a host and wait for the answer.
+     *
+     * A host that does not know a command never answers, hence the timeout.
+     *
+     * @param host name of the host without `system.host.`
+     * @param command the host command
+     * @param message its message
+     * @param timeout how long to wait
+     */
+    private requestHost(host: string, command: string, message: unknown, timeout: number): Promise<unknown> {
+        return new Promise((resolve, reject) => {
+            const timer = this.setTimeout(() => reject(new Error(`Host ${host} did not answer "${command}"`)), timeout);
+            this.sendToHost(`system.host.${host}`, command, message, answer => {
+                if (timer) {
+                    this.clearTimeout(timer);
+                }
+                resolve(answer);
+            });
+        });
+    }
+
     /** The log files of the host this instance runs on, read from the disk */
     private getLocalLogFiles(): LogFiles {
         if (!this.logLocation) {
@@ -620,19 +687,7 @@ class Admin extends Adapter {
         }
 
         const request = (command: string, message: unknown, timeout = LOG_SEARCH_HOST_TIMEOUT_MS): Promise<unknown> =>
-            new Promise((resolve, reject) => {
-                // a host that does not know a command never answers
-                const timer = this.setTimeout(
-                    () => reject(new Error(`Host ${host} did not answer "${command}"`)),
-                    timeout,
-                );
-                this.sendToHost(id, command, message, answer => {
-                    if (timer) {
-                        this.clearTimeout(timer);
-                    }
-                    resolve(answer);
-                });
-            });
+            this.requestHost(host, command, message, timeout);
 
         if (await this.isHostFeatureSupported(obj, 'CONTROLLER_SEARCH_LOGS', request)) {
             const answer = (await request('searchLogs', filters)) as Partial<SearchLogFilesResult> & {
