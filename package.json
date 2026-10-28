@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@iobroker/adapter-core": "^3.4.3",
-    "@iobroker/ai-core": "^0.0.5",
+    "@iobroker/ai-core": "^0.0.6",
     "@iobroker/mcp-server": "^1.8.1",
     "@iobroker/plugin-docker": "^1.2.1",
     "@iobroker/socket-classes": "^2.10.0",
