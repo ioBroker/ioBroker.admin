@@ -48,6 +48,13 @@ export const AI_PROVIDER_INFO: AiProviderInfo[] = [
         credentialName: 'deepseek',
         keyUrl: 'https://platform.deepseek.com/api_keys',
     },
+    {
+        value: 'openrouter',
+        label: 'OpenRouter',
+        icon: CREDENTIAL_ICON_DATA.openrouter,
+        credentialName: 'openrouter',
+        keyUrl: 'https://openrouter.ai/settings/keys',
+    },
     { value: 'custom', label: 'Custom (OpenAI-compatible)', credentialName: 'custom' },
 ];
 

@@ -196,6 +196,13 @@ const CREDENTIAL_TEMPLATES: Record<string, CredentialTemplate> = {
         type: 'ai',
         name: 'deepseek',
     },
+    openrouter: {
+        label: 'OpenRouter',
+        icon: <CredentialIcon src={ICON_DATA.openrouter} />,
+        form: 'key',
+        type: 'ai',
+        name: 'openrouter',
+    },
     aws: {
         label: 'AWS',
         icon: <CredentialIcon src={ICON_DATA.aws} />,

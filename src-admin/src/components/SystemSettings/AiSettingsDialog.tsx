@@ -411,7 +411,11 @@ export default function AiSettingsDialog(props: AiSettingsDialogProps): React.JS
                                     {...params}
                                     variant="standard"
                                     label={props.t('Model')}
-                                    placeholder="claude-..., gpt-..."
+                                    placeholder={
+                                        active === 'openrouter'
+                                            ? 'anthropic/claude-..., openai/gpt-...'
+                                            : 'claude-..., gpt-...'
+                                    }
                                 />
                             )}
                         />
