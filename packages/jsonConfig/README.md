@@ -1537,7 +1537,7 @@ In the Settings of the Web developer tools, you can create your own devices with
 | `style`                  | CSS style in ReactJS notation: `radiusBorder` and not `radius-border`.                                                                                                                |
 | `darkStyle`              | CSS style for dark mode                                                                                                                                                               |
 | `validator`              | JS function: true no error, false - error                                                                                                                                             |
-| `validatorErrorText`     | Text to show if validator fails                                                                                                                                                       |
+| `validatorErrorText`     | Text to show if validator fails. It is shown instead of the help text below the element, also in the cells of a table                                                                 |
 | `validatorNoSaveOnError` | disable save button if error                                                                                                                                                          |
 | `tooltip`                | optional tooltip                                                                                                                                                                      |
 | `default`                | default value                                                                                                                                                                         |
@@ -2001,6 +2001,10 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.11 (2026-10-29)
+- (@GermanBluefox) Fixed: `validatorErrorText` was not shown, only the field was marked red. The text is shown now instead of the help text below the element, also in the cells of a table (ioBroker/ioBroker.admin#1911)
+- (@GermanBluefox) Fixed: a `text` with `minRows` showed an empty red line instead of the help text when the validator failed
+
 ### 10.1.10 (2026-10-29)
 - (@GermanBluefox) Added: `allowReorder` for `table`. With `noDelete: true` the rows can still be moved up and down, but not added or deleted (ioBroker/ioBroker.admin#3707)
 - (@GermanBluefox) Fixed: in the cards mode of `table`, `noDelete` did not hide the add button and, with `titleAttribute`, the delete and clone buttons
