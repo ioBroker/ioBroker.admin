@@ -10700,6 +10700,10 @@
                         "description": "If delete or add disabled, If noDelete is false, add, delete and move up/down should work",
                         "type": "boolean"
                       },
+                      "allowReorder": {
+                        "description": "Show the move up/down buttons even if noDelete is true, so the rows can be reordered but not added or deleted",
+                        "type": "boolean"
+                      },
                       "uniqueColumns": {
                         "description": "Specify the 'attr' name of columns which need to be unique",
                         "type": "array",

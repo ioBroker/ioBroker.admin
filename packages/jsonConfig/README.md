@@ -770,6 +770,7 @@ table with items that could be deleted, added, moved up, moved down
 |-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | `items`               | `[{"type": see above, "width": px or %, "title": {"en": "header"}, "attr": "name", "filter": false, "sort": true, "default": ""}]`              |
 | `noDelete`            | boolean if delete or add disabled, If `noDelete` is false, add, delete and move up/down should work                                             |
+| `allowReorder`        | [optional] - if `noDelete` is true, still show the move up/down buttons, so the rows can be reordered but not added or deleted                  |
 | `objKeyName`          | (legacy setting, don't use!) - name of the key in `{"192.168.1.1": {delay: 1000, enabled: true}, "192.168.1.2": {delay: 2000, enabled: false}}` |
 | `objValueName`        | (legacy setting, don't use!) - name of the value in `{"192.168.1.1": "value1", "192.168.1.2": "value2"}`                                        |
 | `allowAddByFilter`    | if add allowed even if filter is set                                                                                                            |
@@ -2000,6 +2001,11 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.10 (2026-10-29)
+- (@GermanBluefox) Added: `allowReorder` for `table`. With `noDelete: true` the rows can still be moved up and down, but not added or deleted (ioBroker/ioBroker.admin#3707)
+- (@GermanBluefox) Fixed: in the cards mode of `table`, `noDelete` did not hide the add button and, with `titleAttribute`, the delete and clone buttons
+- (@GermanBluefox) Fixed: the export/import buttons of the instance settings covered the last tabs and the right scroll button of the tab bar, so these tabs could not be reached (ioBroker/ioBroker.admin#3613, ioBroker/ioBroker.admin#3657)
+
 ### 10.1.9 (2026-10-27)
 - (@GermanBluefox) Fixed: `checkDocker` showed the Docker of the host admin runs on, also for an instance on another host. The control sends the host of the instance now, and admin asks that host. If Docker cannot be checked there, the checkbox stays usable and the reason is shown
 
