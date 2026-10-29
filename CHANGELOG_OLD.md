@@ -1,4 +1,9 @@
 # Older changes
+## 8.3.1 (2026-10-22)
+- (@GermanBluefox) Added: sort icon and tooltip on the sort button in the adapters tab (#3684)
+- (@GermanBluefox) Added: disk and RAM usage of the host are shown as bars with tooltip in the instances tab
+- (@GermanBluefox) Added: the repository version of an adapter can be installed with one click, if a newer or a self-installed version (e.g., from GitHub) is installed (#2973)
+
 ## 8.3.0 (2026-10-19)
 - (@GermanBluefox) Added: adapter tabs with `adminTab.proxy` (e.g. xterm) run through the port of admin under `/proxy/<instance>/`, for administrators only
 - (@GermanBluefox) The used resources added (Only js-controller 8)

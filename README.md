@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.6 (2026-10-29)
 - (@GermanBluefox) Fixed: the `checkDocker` control of a configuration dialog showed the Docker of the host admin runs on, also for an instance on another host. Admin asks the host of the instance now; that host needs a js-controller with `CONTROLLER_CHECK_DOCKER`. With an older js-controller there, the dialog says that Docker cannot be checked instead of showing the wrong host
 - (@GermanBluefox) Updated `@iobroker/json-config` to 10.1.9: the `checkDocker` control names the host of the instance
 - (@GermanBluefox) Updated `@iobroker/json-config` to 10.1.10: the new option `allowReorder` of `table` lets the rows be reordered with `noDelete: true` (#3707); the export/import buttons of the instance settings do not cover the last tabs any more (#3613, #3657)
@@ -124,11 +124,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 8.3.2 (2026-10-23)
 - (@GermanBluefox) Fixed: the adapter list was empty after an adapter update and switching between the tabs (#3695)
 - (@GermanBluefox) Fixed: an adapter updated while the adapter list was loading was still offered for update with the same version
-
-### 8.3.1 (2026-10-22)
-- (@GermanBluefox) Added: sort icon and tooltip on the sort button in the adapters tab (#3684)
-- (@GermanBluefox) Added: disk and RAM usage of the host are shown as bars with tooltip in the instances tab
-- (@GermanBluefox) Added: the repository version of an adapter can be installed with one click, if a newer or a self-installed version (e.g., from GitHub) is installed (#2973)
 
 ## License
 
