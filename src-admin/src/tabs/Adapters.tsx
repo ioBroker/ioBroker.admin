@@ -1979,13 +1979,15 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             const diffMinutes = Math.floor(diffMs / 60000);
             const diffHours = Math.floor(diffMinutes / 60);
             const diffDays = Math.floor(diffHours / 24);
+            // Intl handles singular/plural and words like "yesterday" for every language
+            const rtf = new Intl.RelativeTimeFormat(this.props.lang || 'en', { numeric: 'auto' });
 
             if (diffMinutes < 60) {
-                return this.t('%s minutes ago', diffMinutes.toString());
+                return rtf.format(-diffMinutes, 'minute');
             } else if (diffHours < 24) {
-                return this.t('%s hours ago', diffHours.toString());
+                return rtf.format(-diffHours, 'hour');
             } else if (diffDays < 30) {
-                return this.t('%s days ago', diffDays.toString());
+                return rtf.format(-diffDays, 'day');
             }
             return date.toLocaleDateString(this.props.lang || 'en');
         } catch {
