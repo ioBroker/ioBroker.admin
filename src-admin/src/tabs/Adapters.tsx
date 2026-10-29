@@ -1582,10 +1582,8 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         this.cache.listOfVisibleAdapter = [];
         this.cache.adapters = {};
         const now = Date.now();
-        const textDaysAgo0 = this.t('0 %d days ago');
-        const textDaysAgo1 = this.t('1 %d days ago');
-        const textDaysAgo2 = this.t('2 %d days ago');
-        const textDaysAgo = this.t('5 %d days ago');
+        // Intl handles singular/plural and words like "today"/"yesterday" for every language
+        const rtf = new Intl.RelativeTimeFormat(this.props.lang || 'en', { numeric: 'auto' });
 
         // get all visible adapters
         this.state.categories
@@ -1650,10 +1648,6 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                                 desc = '';
                             }
 
-                            const _daysAgo10 = daysAgo % 100 <= 10 || daysAgo % 100 >= 20 ? daysAgo % 10 : 5;
-                            const _createdDaysAgo10 =
-                                createdDaysAgo % 100 <= 10 || createdDaysAgo % 100 >= 20 ? createdDaysAgo % 10 : 5;
-
                             this.cache.adapters![adapterName] = {
                                 title,
                                 desc,
@@ -1670,28 +1664,10 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                                 daysAgo: daysAgo10,
                                 createdDaysAgo: createdDaysAgo10,
                                 stat: adapter.stat || 0,
-                                daysAgoText:
-                                    daysAgo || daysAgo === 0
-                                        ? daysAgo === 0
-                                            ? textDaysAgo0
-                                            : _daysAgo10 === 1
-                                              ? textDaysAgo1.replace('%d', daysAgo.toString())
-                                              : _daysAgo10 === 2 || _daysAgo10 === 3 || _daysAgo10 === 4
-                                                ? textDaysAgo2.replace('%d', daysAgo.toString())
-                                                : textDaysAgo.replace('%d', daysAgo.toString())
-                                        : '',
-                                createdDaysAgoText:
-                                    createdDaysAgo || createdDaysAgo === 0
-                                        ? createdDaysAgo === 0
-                                            ? textDaysAgo0
-                                            : _createdDaysAgo10 === 1
-                                              ? textDaysAgo1.replace('%d', createdDaysAgo.toString())
-                                              : _createdDaysAgo10 === 2 ||
-                                                  _createdDaysAgo10 === 3 ||
-                                                  _createdDaysAgo10 === 4
-                                                ? textDaysAgo2.replace('%d', createdDaysAgo.toString())
-                                                : textDaysAgo.replace('%d', createdDaysAgo.toString())
-                                        : '',
+                                daysAgoText: Number.isFinite(daysAgo) ? rtf.format(-daysAgo, 'day') : '',
+                                createdDaysAgoText: Number.isFinite(createdDaysAgo)
+                                    ? rtf.format(-createdDaysAgo, 'day')
+                                    : '',
                             };
                         }
                     }
