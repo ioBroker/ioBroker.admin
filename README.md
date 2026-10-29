@@ -100,6 +100,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Fixed: the `checkDocker` control of a configuration dialog showed the Docker of the host admin runs on, also for an instance on another host. Admin asks the host of the instance now; that host needs a js-controller with `CONTROLLER_CHECK_DOCKER`. With an older js-controller there, the dialog says that Docker cannot be checked instead of showing the wrong host
 - (@GermanBluefox) Updated `@iobroker/json-config` to 10.1.9: the `checkDocker` control names the host of the instance
 - (@GermanBluefox) Added: OpenRouter as provider in the AI settings of the system settings (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
+- (@GermanBluefox) Added: the "Resource usage" chart of the overview can show any recorded data points, not only CPU and RAM - with own name, color and history instance. Each data point is read from the history instance that records it, so values recorded by InfluxDB or SQL are shown too, also CPU and RAM if the default history instance does not record them (#3705)
 
 ### 8.3.5 (2026-10-26)
 - (@GermanBluefox) Fixed: after a single sign-on the access and refresh token were put into the address (`?ssoLoginResponse=`), so they ended up in the browser history and in the logs of a reverse proxy. Only a one-time code is there now, admin fetches the tokens with it. The ID token that came back after connecting an identity (`?id_token=`, with name and e-mail) is not kept any more, nothing used it

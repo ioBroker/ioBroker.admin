@@ -1324,6 +1324,12 @@ It shows the license information if not already accepted. One of attributes `tex
 Special component to check if Docker is installed and running.
 If docker is installed, a checkbox will be shown to allow the usage of docker.
 
+Docker is checked on the host the instance runs on, which is not necessarily the host of admin. Admin checks
+its own host itself and asks another host, which needs a js-controller with the feature `CONTROLLER_CHECK_DOCKER`
+there; the check is then done by the `@iobroker/plugin-docker` of the adapter. An older admin always checks its
+own host. If Docker cannot be checked - e.g. the host is not running or its js-controller is too old - the
+checkbox stays usable and the reason is shown, as Docker is unknown there and not necessarily missing.
+
 | Property      | Description                                                                                                                                                    |
 |---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `hideVersion` | If the information about docker version or error should be hidden (e.g. if used more than one such element on the page the error or version will be shown once |
@@ -1994,6 +2000,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.9 (2026-10-27)
+- (@GermanBluefox) Fixed: `checkDocker` showed the Docker of the host admin runs on, also for an instance on another host. The control sends the host of the instance now, and admin asks that host. If Docker cannot be checked there, the checkbox stays usable and the reason is shown
+
 ### 10.1.8 (2026-10-26)
 - (@GermanBluefox) Fixed: a slider (`slider` or `state`) crashed the page if the value was not a number, e.g. a string
 

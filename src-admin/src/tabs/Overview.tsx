@@ -4,6 +4,7 @@ import { alpha, Box, Card, Chip, IconButton, LinearProgress, Tooltip, Typography
 import {
     Extension as AdapterIcon,
     Memory as StatusIcon,
+    Settings as SettingsIcon,
     Storage as ObjectsIcon,
     StopCircle as StopIcon,
     UnfoldLess as UnfoldLessIcon,
@@ -29,7 +30,8 @@ import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { LogsWorker, LogLineSaved } from '@/Workers/LogsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
 
-import ResourcesChart from '@/components/Overview/ResourcesChart';
+import ResourcesChart, { loadSeries, saveSeries, type ChartSeriesConfig } from '@/components/Overview/ResourcesChart';
+import ResourcesChartSettings from '@/components/Overview/ResourcesChartSettings';
 
 /** How often the counters are refreshed */
 const REFRESH_MS = 30_000;
@@ -106,10 +108,14 @@ interface OverviewState {
     cpu: number | null;
     /** Current RAM usage of the host in percent */
     mem: number | null;
-    /** False when no history instance exists or it is not running - then the chart card is hidden */
+    /** False when no history instance is running - then the chart card is hidden */
     chartAvailable: boolean;
-    /** Whether the history instance records cpu and mem of this host at the moment */
+    /** Whether the default history instance records cpu and mem of this host at the moment */
     chartRecording: boolean;
+    /** Data points of the chart for this host - `null` for CPU and RAM */
+    chartSeries: ChartSeriesConfig[] | null;
+    /** The dialog choosing the data points of the chart is open */
+    chartSettingsOpen: boolean;
     /** Collapsed chart card: only its heading is left and the log card gets the room */
     chartMinimized: boolean;
 }
@@ -149,6 +155,8 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
             chartAvailable: true,
             chartRecording: true,
             chartMinimized: (window._localStorage || window.localStorage).getItem(CHART_MINIMIZED_KEY) === 'true',
+            chartSeries: loadSeries(props.currentHost),
+            chartSettingsOpen: false,
         };
     }
 
@@ -201,7 +209,14 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
     componentDidUpdate(prevProps: OverviewProps): void {
         if (prevProps.currentHost !== this.props.currentHost) {
             // the new host is unknown until it was read - do not keep showing the old numbers
-            this.setState({ loaded: false, cpu: null, mem: null, hostInfo: null });
+            this.setState({
+                loaded: false,
+                cpu: null,
+                mem: null,
+                hostInfo: null,
+                // every host has its own data points
+                chartSeries: loadSeries(this.props.currentHost),
+            });
             this.subscribeHost();
             void this.readAll();
         }
@@ -516,6 +531,46 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
         this.setState({ chartMinimized });
     };
 
+    /** Opens the dialog choosing the data points of the chart */
+    renderChartSettingsButton(): React.JSX.Element {
+        const { t } = this.props;
+
+        return (
+            <Tooltip title={t('Select data points')}>
+                <IconButton
+                    size="small"
+                    onClick={() => this.setState({ chartSettingsOpen: true })}
+                    aria-label={t('Select data points')}
+                >
+                    <SettingsIcon />
+                </IconButton>
+            </Tooltip>
+        );
+    }
+
+    renderChartSettings(): React.JSX.Element | null {
+        if (!this.state.chartSettingsOpen) {
+            return null;
+        }
+
+        return (
+            <ResourcesChartSettings
+                socket={this.props.socket}
+                currentHost={this.props.currentHost}
+                series={this.state.chartSeries}
+                theme={this.props.theme}
+                themeType={this.props.themeType}
+                lang={this.props.lang}
+                t={this.props.t}
+                onSave={chartSeries => {
+                    saveSeries(this.props.currentHost, chartSeries);
+                    this.setState({ chartSeries, chartSettingsOpen: false });
+                }}
+                onClose={() => this.setState({ chartSettingsOpen: false })}
+            />
+        );
+    }
+
     /** The single button in the heading of the chart card - see `onChartButton` for the order */
     renderChartButton(): React.JSX.Element {
         const { t } = this.props;
@@ -740,7 +795,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
                     {this.renderSystemInfo()}
                     {/*
-                     * The card is hidden instead of unmounted: the chart keeps checking whether the
+                     * The card is hidden instead of unmounted: the chart keeps checking whether a
                      * history instance came up, and an unmounted component could never bring it back.
                      */}
                     <Card
@@ -755,7 +810,12 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                     >
                         <CardTitle
                             title={t('Resource usage')}
-                            actions={this.renderChartButton()}
+                            actions={
+                                <>
+                                    {this.renderChartSettingsButton()}
+                                    {this.renderChartButton()}
+                                </>
+                            }
                         />
                         {/*
                          * Kept mounted while minimized, only hidden: it is what notices that the
@@ -767,10 +827,13 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                                 ref={this.chartRef}
                                 socket={this.props.socket}
                                 currentHost={this.props.currentHost}
+                                series={this.state.chartSeries}
                                 theme={this.props.theme}
                                 themeType={this.props.themeType}
+                                lang={this.props.lang}
                                 t={t}
                                 paused={this.state.chartMinimized}
+                                onOpenSettings={() => this.setState({ chartSettingsOpen: true })}
                                 onAvailabilityChange={available => {
                                     if (available !== this.state.chartAvailable) {
                                         this.setState({ chartAvailable: available });
@@ -790,6 +853,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                     {this.renderAdapters()}
                     {this.renderLog()}
                 </Box>
+                {this.renderChartSettings()}
             </Box>
         );
     }
