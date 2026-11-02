@@ -4,15 +4,20 @@ const { checkDockerForInstance } = require('../build/lib/checkDocker');
 
 const LOCAL = { version: 'Docker version 28.3.2', daemonRunning: true, removeSupported: true, driver: 'socket' };
 const REMOTE = { version: 'Docker version 27.5.1', daemonRunning: true, removeSupported: true, driver: 'socket' };
+/** What the js-controller of the own host answers: the Docker connection the instance uses, e.g. a NAS */
+const CONNECTION = { version: 'Docker version 29.0.1', daemonRunning: true, removeSupported: false, driver: 'http' };
 
 /**
  * An admin on host "vitanova", next to a host "frigate"
  *
  * @param {object} [frigate] how "frigate" behaves
- * @returns {{ env: object, calls: string[] }} the environment and what was called on it
+ * @param {object | null} [vitanova] how the js-controller of the own host behaves, null if it has no host object
+ * @returns {{ env: object, calls: string[], logs: string[] }} the environment, what was called on it and logged
  */
-function createEnvironment(frigate = {}) {
+function createEnvironment(frigate = {}, vitanova = {}) {
+    const hosts = { frigate, vitanova };
     const calls = [];
+    const logs = [];
     const env = {
         ownHost: 'vitanova',
         checkLocal: async () => {
@@ -24,23 +29,29 @@ function createEnvironment(frigate = {}) {
         },
         getHost: async host => {
             calls.push(`getHost ${host}`);
-            if (host !== 'frigate') {
+            const behaviour = hosts[host];
+            if (!behaviour) {
                 return null;
             }
             return {
-                alive: frigate.alive !== false,
-                supportsCheckDocker: async () => frigate.supported !== false,
+                alive: behaviour.alive !== false,
+                supportsCheckDocker: async () => behaviour.supported !== false,
             };
         },
         requestHost: async (host, message) => {
             calls.push(`request ${host} ${JSON.stringify(message)}`);
-            if (frigate.requestError) {
-                throw new Error(frigate.requestError);
+            const behaviour = hosts[host];
+            if (behaviour.requestError) {
+                throw new Error(behaviour.requestError);
             }
-            return 'answer' in frigate ? frigate.answer : REMOTE;
+            if ('answer' in behaviour) {
+                return behaviour.answer;
+            }
+            return host === 'frigate' ? REMOTE : CONNECTION;
         },
+        log: text => logs.push(text),
     };
-    return { env, calls };
+    return { env, calls, logs };
 }
 
 describe('checkDocker', () => {
@@ -50,11 +61,44 @@ describe('checkDocker', () => {
         assert.deepStrictEqual(calls, ['local']);
     });
 
-    it('checks the own host itself, if the instance runs there', async () => {
-        const { env, calls } = createEnvironment();
+    it('lets the js-controller of the own host check the instance, as it knows the Docker the instance uses', async () => {
+        const { env, calls, logs } = createEnvironment();
         const answer = await checkDockerForInstance({ host: 'system.host.vitanova', instance: 'ai-server.0' }, env);
-        assert.deepStrictEqual(answer, { ...LOCAL, host: 'vitanova' });
-        assert.deepStrictEqual(calls, ['local']);
+        assert.deepStrictEqual(answer, { ...CONNECTION, host: 'vitanova' });
+        assert.deepStrictEqual(calls, ['getHost vitanova', 'request vitanova {"instance":"ai-server.0"}']);
+        assert.deepStrictEqual(logs, []);
+    });
+
+    it('passes on that the Docker of the instance does not run, instead of checking the own one', async () => {
+        const { env, calls } = createEnvironment({}, { answer: { version: '', daemonRunning: false, driver: 'http' } });
+        const answer = await checkDockerForInstance({ host: 'vitanova', instance: 'ai-server.0' }, env);
+        assert.strictEqual(answer.daemonRunning, false);
+        assert.strictEqual(answer.error, undefined);
+        assert.ok(!calls.includes('local'));
+    });
+
+    it('checks the own host itself, as before, if its js-controller cannot', async () => {
+        const cases = [
+            [{ supported: false }, /the js-controller cannot check Docker/],
+            [{ alive: false }, /the js-controller cannot check Docker/],
+            [null, /the js-controller cannot check Docker/],
+            // e.g. an adapter with a Docker client of its own
+            [
+                { answer: { error: 'Adapter "kisshome-defender" does not use @iobroker/plugin-docker' } },
+                /does not use @iobroker\/plugin-docker/,
+            ],
+            [{ answer: null }, /sent no answer/],
+            [{ requestError: 'Host vitanova did not answer "checkDocker"' }, /did not answer/],
+        ];
+        for (const [vitanova, reason] of cases) {
+            const { env, calls, logs } = createEnvironment({}, vitanova);
+            const answer = await checkDockerForInstance({ host: 'vitanova', instance: 'ai-server.0' }, env);
+            assert.deepStrictEqual(answer, { ...LOCAL, host: 'vitanova' }, JSON.stringify(vitanova));
+            assert.strictEqual(calls.at(-1), 'local');
+            assert.strictEqual(logs.length, 1);
+            assert.match(logs[0], /ai-server\.0 is checked by admin itself on host vitanova/);
+            assert.match(logs[0], reason);
+        }
     });
 
     it('asks the host of the instance, if it is another one', async () => {
@@ -78,7 +122,11 @@ describe('checkDocker', () => {
             [{ host: 'frigate', instance: 'ai-server.0' }, { alive: false }, /not running/],
             [{ host: 'frigate', instance: 'ai-server.0' }, { supported: false }, /cannot check Docker, please update/],
             [{ host: 'frigate', instance: 'ai-server.0' }, { answer: null }, /sent no answer/],
-            [{ host: 'frigate', instance: 'ai-server.0' }, { answer: { error: 'no plugin-docker' } }, /no plugin-docker/],
+            [
+                { host: 'frigate', instance: 'ai-server.0' },
+                { answer: { error: 'no plugin-docker' } },
+                /no plugin-docker/,
+            ],
             [{ host: 'frigate', instance: 'ai-server.0' }, { requestError: 'did not answer' }, /did not answer/],
         ];
         for (const [message, frigate, expected] of cases) {
@@ -97,5 +145,14 @@ describe('checkDocker', () => {
             error: 'spawn docker ENOENT',
             host: 'vitanova',
         });
+        // also after its js-controller could not check it
+        const { env: withoutController } = createEnvironment(
+            { localError: 'spawn docker ENOENT' },
+            { supported: false },
+        );
+        assert.deepStrictEqual(
+            await checkDockerForInstance({ host: 'vitanova', instance: 'ai-server.0' }, withoutController),
+            { error: 'spawn docker ENOENT', host: 'vitanova' },
+        );
     });
 });
