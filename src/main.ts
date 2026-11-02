@@ -568,7 +568,8 @@ class Admin extends Adapter {
     /**
      * Handle `checkDocker` of the jsonConfig control with the same name: can the instance use Docker on its host?
      *
-     * See `checkDockerForInstance` - the own host is checked here, another one is asked.
+     * See `checkDockerForInstance` - the js-controller of the host is asked, also the one of the own host, which is
+     * checked here only if that one cannot.
      *
      * @param obj the message object
      */
@@ -593,6 +594,7 @@ class Admin extends Adapter {
             },
             requestHost: (host, message) =>
                 this.requestHost(host, 'checkDocker', message, DOCKER_CHECK_HOST_TIMEOUT_MS),
+            log: text => this.log.debug(text),
         });
         if (answer.host !== this.host) {
             this.log.debug(`Docker on host ${answer.host}: ${JSON.stringify(answer)}`);
