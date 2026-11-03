@@ -31,7 +31,12 @@ import {
 
 // icons
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
-import { Edit as IconEdit, Delete as IconDelete, Close as IconClose } from '@mui/icons-material';
+import {
+    Edit as IconEdit,
+    Delete as IconDelete,
+    Close as IconClose,
+    Refresh as IconRefresh,
+} from '@mui/icons-material';
 
 import { Utils, TableResize, type AdminConnection, type IobTheme, type Translate } from '@iobroker/gui-components';
 
@@ -82,6 +87,11 @@ const styles: Record<string, any> = {
     },
     rowInterpolated: {
         opacity: 0.5,
+    },
+    // a value received via subscription; whether the history instance stored it is not known yet
+    rowLive: {
+        opacity: 0.6,
+        fontStyle: 'italic',
     },
     selectHistoryControl: {
         width: 130,
@@ -216,6 +226,13 @@ const styles: Record<string, any> = {
 
 type SupportedFeatures = ('insert' | 'update' | 'delete')[];
 
+/**
+ * How often at most the values received live are replaced with what the history instance really stored.
+ * The live values are not filtered by debounce, block time, "only changes" and so on, so without
+ * this the table showed far more rows than the database has (ioBroker.sql#600).
+ */
+const LIVE_VALUES_REREAD_INTERVAL = 10_000;
+
 interface ObjectHistoryDataProps {
     t: Translate;
     lang: ioBroker.Languages;
@@ -237,6 +254,9 @@ interface HistoryItem {
     i?: boolean;
     from?: string;
     lc?: number;
+    q?: number;
+    /** received via subscription, not read from the history instance */
+    live?: boolean;
 }
 
 interface ObjectHistoryDataEdit {
@@ -290,6 +310,14 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
     private subscribes: string[];
 
     private readonly localStorage: Storage;
+
+    /** Timer of the next read of the values that arrived live */
+    private liveRereadTimer?: ReturnType<typeof setTimeout>;
+
+    private liveRereadRunning = false;
+
+    /** Incremented by every full read, so a read of the live values that started before is dropped */
+    private readGeneration = 0;
 
     constructor(props: ObjectHistoryDataProps) {
         super(props);
@@ -401,6 +429,12 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
             clearTimeout(this.timeTimer);
             this.timeTimer = undefined;
         }
+        if (this.liveRereadTimer) {
+            clearTimeout(this.liveRereadTimer);
+            this.liveRereadTimer = undefined;
+        }
+        // drop the answer of a read that is still running
+        this.readGeneration++;
 
         for (let i = 0; i < this.subscribes.length; i++) {
             this.props.socket.unsubscribeState(this.subscribes[i], this.onChange);
@@ -411,14 +445,10 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
     }
 
     onChange = (id: string, state: ioBroker.State | null | undefined): void => {
-        if (
-            id === this.props.obj._id &&
-            state &&
-            this.state.values &&
-            (!this.state.values.length || this.state.values[this.state.values.length - 1].ts < state.ts)
-        ) {
-            const values = [...this.state.values, state];
-            this.setState({ values });
+        if (id === this.props.obj._id) {
+            if (state) {
+                this.addLiveValue(state);
+            }
         } else if (id.startsWith('system.adapter.') && id.endsWith('.alive')) {
             const instance = id.substring('system.adapter.'.length, id.length - '.alive'.length);
             const list = this.state.historyInstances || [];
@@ -437,6 +467,172 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
             }
         }
     };
+
+    /** Shorten `from` the way the table shows it */
+    static normalizeEntry(entry: HistoryItem): void {
+        if (entry.from) {
+            if (entry.from.startsWith('system.adapter.')) {
+                entry.from = entry.from.substring(15);
+            } else if (entry.from.startsWith('system.host.')) {
+                entry.from = entry.from.substring(7);
+            }
+        }
+    }
+
+    /** Timestamp of the newest row that was read from the history instance in the selected range */
+    static getLastStoredTs(values: HistoryItem[]): number | null {
+        for (let i = values.length - 1; i >= 0; i--) {
+            const item = values[i];
+            // `i` is the oldest value ever (before the range), `e` its separator
+            if (!item.live && !item.e && !item.i && typeof item.ts === 'number') {
+                return item.ts;
+            }
+        }
+        return null;
+    }
+
+    isHistoryInstanceAlive(): boolean {
+        return (
+            !!this.state.historyInstance &&
+            !!this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)
+        );
+    }
+
+    /**
+     * Show a value that arrived via subscription at once, marked as live. It is not known yet, whether
+     * the history instance stores it (debounce, block time, only changes...), so it is replaced by what
+     * the instance really stored with the next read.
+     */
+    addLiveValue(state: ioBroker.State): void {
+        const values = this.state.values;
+        if (!values || !this.isHistoryInstanceAlive()) {
+            return;
+        }
+        // with an absolute range the table shows only that range
+        if (this.state.relativeRange === 'absolute' && (state.ts < this.state.start || state.ts > this.state.end)) {
+            return;
+        }
+        // the "no data" rows have no ts
+        for (let i = values.length - 1; i >= 0; i--) {
+            if (typeof values[i].ts === 'number') {
+                if (values[i].ts >= state.ts) {
+                    return;
+                }
+                break;
+            }
+        }
+        const entry: HistoryItem = {
+            ts: state.ts,
+            val: state.val,
+            ack: state.ack,
+            from: state.from,
+            lc: state.lc,
+            q: state.q,
+            live: true,
+        };
+        ObjectHistoryData.normalizeEntry(entry);
+        this.setState({ values: [...values, entry] });
+        this.scheduleLiveReread();
+    }
+
+    scheduleLiveReread(): void {
+        if (this.liveRereadTimer) {
+            return;
+        }
+        this.liveRereadTimer = setTimeout(() => {
+            this.liveRereadTimer = undefined;
+            if (this.liveRereadRunning) {
+                this.scheduleLiveReread();
+            } else if (!document.hidden) {
+                // While the browser tab is hidden, nobody looks at it: the next value schedules a new read
+                void this.rereadLiveValues();
+            }
+        }, LIVE_VALUES_REREAD_INTERVAL);
+    }
+
+    /**
+     * Read only what the history instance stored after the last row of the table and replace the live rows
+     * with it. That is a small range query instead of reading the whole range again.
+     */
+    async rereadLiveValues(): Promise<void> {
+        const values = this.state.values;
+        if (!values?.some(it => it.live) || !this.isHistoryInstanceAlive()) {
+            return;
+        }
+        const generation = this.readGeneration;
+        const lastTs = ObjectHistoryData.getLastStoredTs(values);
+        const start = lastTs === null ? this.state.start : lastTs + 1;
+        const end = Date.now();
+
+        let stored: ioBroker.GetHistoryResult;
+        this.liveRereadRunning = true;
+        try {
+            stored = await this.props.socket.getHistory(this.props.obj._id, {
+                instance: this.state.historyInstance,
+                start,
+                end,
+                from: true,
+                ack: true,
+                q: true,
+                addId: false,
+                aggregate: 'none',
+                returnNewestEntries: true,
+            });
+        } catch (error) {
+            console.warn(`Cannot read the newest history values: ${error}`);
+            return;
+        } finally {
+            this.liveRereadRunning = false;
+        }
+
+        // a full read replaced the table meanwhile
+        if (generation !== this.readGeneration || !this.state.values) {
+            return;
+        }
+
+        let { lcVisible, ackVisible, fromVisible } = this.state;
+        // some instances add a value before the start, it is in the table already
+        const newRows: HistoryItem[] = (stored || [])
+            .filter(it => it && it.ts >= start && it.ts <= end)
+            .map(it => {
+                const row: HistoryItem = { ...it };
+                ObjectHistoryData.normalizeEntry(row);
+                if (row.lc) {
+                    lcVisible = true;
+                }
+                if (row.ack !== undefined) {
+                    ackVisible = true;
+                }
+                if (row.from) {
+                    fromVisible = true;
+                }
+                return row;
+            });
+
+        // Live values up to `end` are either in `newRows` now, or the instance did not store them.
+        // Those that arrived during the read stay live until the next read.
+        let kept = this.state.values.filter(it => !it.live);
+        if (newRows.length) {
+            kept = kept.filter(it => !it.noData && !it.noDataForPeriod);
+        }
+        const stillLive = this.state.values.filter(it => it.live && it.ts > end);
+
+        this.setState({
+            values: [...kept, ...newRows, ...stillLive],
+            lcVisible,
+            ackVisible,
+            fromVisible,
+        });
+    }
+
+    /** Read the selected range again; a relative range is moved up to now */
+    reload(): void {
+        if (this.state.relativeRange !== 'absolute') {
+            this.setRelativeInterval(this.state.relativeRange, true);
+        } else {
+            void this.readHistory();
+        }
+    }
 
     async prepareData(): Promise<void> {
         const list: { id: string; alive: boolean }[] = await this.getHistoryInstances();
@@ -514,10 +710,14 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
         start = start || this.state.start;
         end = end || this.state.end;
 
-        if (
-            !this.state.historyInstance ||
-            !this.state.historyInstances?.find(it => it.id === this.state.historyInstance && it.alive)
-        ) {
+        // this read replaces the live values too
+        if (this.liveRereadTimer) {
+            clearTimeout(this.liveRereadTimer);
+            this.liveRereadTimer = undefined;
+        }
+        this.readGeneration++;
+
+        if (!this.isHistoryInstanceAlive()) {
             return Promise.resolve(null);
         }
 
@@ -569,13 +769,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                         // if range and details are not equal
                         if (values[t] && (!chart.length || chart[chart.length - 1].ts < values[t].ts)) {
                             chart.push(values[t]);
-                            if (values[t].from) {
-                                if (values[t].from.startsWith('system.adapter.')) {
-                                    values[t].from = values[t].from.substring(15);
-                                } else if (values[t].from.startsWith('system.host.')) {
-                                    values[t].from = values[t].from.substring(7);
-                                }
-                            }
+                            ObjectHistoryData.normalizeEntry(values[t]);
                             if (!lcVisible && values[t].lc) {
                                 lcVisible = true;
                             }
@@ -752,7 +946,10 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                 );
             } else {
                 const interpolated = state.i;
-                const selected = this.state.lastSelected === ts;
+                // a live row may not be in the database, so it cannot be edited or deleted
+                const live = !!state.live;
+                const selectable = !interpolated && !live;
+                const selected = selectable && this.state.lastSelected === ts;
                 let val = state.val;
                 if (this.props.isFloatComma && this.props.obj.common.type === 'number' && val) {
                     val = val.toString().replace('.', ',');
@@ -763,7 +960,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                 if (val === undefined) {
                     val = '_';
                 }
-                const selectedClass = this.state.selected.includes(ts);
+                const selectedClass = selectable && this.state.selected.includes(ts);
 
                 rows.push(
                     <TableRow
@@ -771,11 +968,13 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                             ...styles.row,
                             ...styles.updatedRow,
                             ...(interpolated ? styles.rowInterpolated : undefined),
+                            ...(live ? styles.rowLive : undefined),
                             ...(selectedClass ? styles.rowSelected : undefined),
                         }}
+                        title={live ? this.props.t('Live value, not yet read from the database') : undefined}
                         key={ts.toString() + (state.val || '').toString()}
                     >
-                        <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ts')}>
+                        <TableCell onClick={e => selectable && this.onToggleSelect(e, ts, 'ts')}>
                             {`${ObjectHistoryData.formatTimestamp(state.ts)}`}
                             {selected && this.state.lastSelectedColumn === 'ts' ? (
                                 <Box
@@ -786,7 +985,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                                 ''
                             )}
                         </TableCell>
-                        <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'val')}>
+                        <TableCell onClick={e => selectable && this.onToggleSelect(e, ts, 'val')}>
                             {val + this.unit}
                             {selected && this.state.lastSelectedColumn === 'val' ? (
                                 <Box
@@ -799,7 +998,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                         </TableCell>
                         {this.state.ackVisible ? (
                             <TableCell
-                                onClick={e => !interpolated && this.onToggleSelect(e, ts, 'ack')}
+                                onClick={e => selectable && this.onToggleSelect(e, ts, 'ack')}
                                 sx={state.ack ? styles.cellAckTrue : styles.cellAckFalse}
                             >
                                 {state.ack ? 'true' : 'false'}
@@ -814,7 +1013,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                             </TableCell>
                         ) : null}
                         {this.state.fromVisible ? (
-                            <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'from')}>
+                            <TableCell onClick={e => selectable && this.onToggleSelect(e, ts, 'from')}>
                                 {state.from || ''}
                                 {selected && this.state.lastSelectedColumn === 'from' ? (
                                     <Box
@@ -827,7 +1026,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                             </TableCell>
                         ) : null}
                         {this.state.lcVisible ? (
-                            <TableCell onClick={e => !interpolated && this.onToggleSelect(e, ts, 'lc')}>
+                            <TableCell onClick={e => selectable && this.onToggleSelect(e, ts, 'lc')}>
                                 {state.lc
                                     ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${(state.ts % 1000).toString().padStart(3, '0')}`
                                     : ''}
@@ -1535,6 +1734,17 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                     sx={styles.grow}
                 />
 
+                {this.isHistoryInstanceAlive() ? (
+                    <IconButton
+                        size="large"
+                        disabled={!!this.state.loading}
+                        onClick={() => this.reload()}
+                        title={this.props.t('Reload from database')}
+                    >
+                        <IconRefresh />
+                    </IconButton>
+                ) : null}
+
                 {this.state.values?.length ? (
                     <IconButton
                         size="large"
@@ -1629,6 +1839,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
             (state: HistoryItem) =>
                 !state.i &&
                 !state.e &&
+                !state.live &&
                 lines.push(
                     [
                         ObjectHistoryData.formatTimestamp(state.ts),
