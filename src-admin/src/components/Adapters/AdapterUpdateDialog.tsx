@@ -809,7 +809,8 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     </Grid>
                 </DialogContent>
                 <DialogActions sx={styles.wrapperButton}>
-                    {!!this.props.rightDependencies && this.props.onIgnore && version && (
+                    {/* also offered if the dependencies are not met: then ignoring is the only way to drop the update from the counter (#3713) */}
+                    {this.props.onIgnore && version && (
                         <Button
                             id="adapter-update-dialog-ignore"
                             variant="outlined"
