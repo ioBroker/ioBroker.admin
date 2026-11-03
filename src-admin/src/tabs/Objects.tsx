@@ -369,7 +369,8 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
 
                             objData.aclTooltip = undefined;
                         }}
-                        selected={context.state.selected[0]}
+                        // The clicked object, not the selected one: the dialog can also be opened from the context menu
+                        selected={objData.obj ? objData.id : ''}
                         // If an object is virtual, it has no obj attribute
                         modalEmptyId={objData.obj ? '' : objData.id}
                         objects={context.objects}

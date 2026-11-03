@@ -7507,6 +7507,10 @@
                       "description": "If the information about docker version or error should be hidden (e.g. if used more than one such element on the page the error or version will be shown once",
                       "type": "boolean"
                     },
+                    "noCheckbox": {
+                      "description": "Show only the state of Docker, without the checkbox, e.g. if Docker is chosen with another control",
+                      "type": "boolean"
+                    },
                     "attr": true,
                     "label": true,
                     "type": true,
@@ -12148,6 +12152,10 @@
                     "properties": {
                       "hideVersion": {
                         "description": "If the information about docker version or error should be hidden (e.g. if used more than one such element on the page the error or version will be shown once",
+                        "type": "boolean"
+                      },
+                      "noCheckbox": {
+                        "description": "Show only the state of Docker, without the checkbox, e.g. if Docker is chosen with another control",
                         "type": "boolean"
                       },
                       "label": true,

@@ -106,6 +106,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Changed: new expert mode symbol (mortarboard)
 - (@GermanBluefox) Added: animated folders in the object browser; the restart button of an instance turns until the instance is alive again
 - (@GermanBluefox) Changed: the pause button of the log shows the number of new lines as a badge
+- (@GermanBluefox) Fixed: the access control dialog crashed with "Error in GUI" and the owner or group could not be changed, if the children had different owners or groups (#3711)
 
 ### 8.3.6 (2026-10-29)
 - (@GermanBluefox) Fixed: the `checkDocker` control of a configuration dialog showed the Docker of the host admin runs on, also for an instance on another host. Admin asks the host of the instance now; that host needs a js-controller with `CONTROLLER_CHECK_DOCKER`. With an older js-controller there, the dialog says that Docker cannot be checked instead of showing the wrong host
