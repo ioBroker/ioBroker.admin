@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.7 (2026-11-03)
 - (@GermanBluefox) The `checkDocker` control showed the Docker of the admin host for an instance on that host, also if the instance uses another Docker - e.g. one on a NAS that the adapter names in `iobDockerApi` of its plugin config, or that is chosen in the instance settings. Now admin asks the js-controller of its host as well, if it can check Docker (`CONTROLLER_CHECK_DOCKER`): it checks the Docker connection of the instance, with the `@iobroker/plugin-docker` of the adapter. If it cannot - an older js-controller, an adapter without the plugin - admin checks the Docker of its host itself, as before
 - (@GermanBluefox) Updated `@iobroker/json-config` to 10.1.11: `validatorErrorText` is shown below the element instead of the help text, also in the cells of a table (#1911)
 - (@GermanBluefox) History data: live values are marked and replaced with the stored ones every 10 seconds; added a reload button (ioBroker.sql#600)
@@ -132,10 +132,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 8.3.3 (2026-10-23)
 - (@GermanBluefox) Fixed: the object browser showed an object twice and copied its row while scrolling, if a sibling ID began with the same text followed by a space (#3693)
-
-### 8.3.2 (2026-10-23)
-- (@GermanBluefox) Fixed: the adapter list was empty after an adapter update and switching between the tabs (#3695)
-- (@GermanBluefox) Fixed: an adapter updated while the adapter list was loading was still offered for update with the same version
 
 ## License
 

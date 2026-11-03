@@ -1,4 +1,8 @@
 # Older changes
+## 8.3.2 (2026-10-23)
+- (@GermanBluefox) Fixed: the adapter list was empty after an adapter update and switching between the tabs (#3695)
+- (@GermanBluefox) Fixed: an adapter updated while the adapter list was loading was still offered for update with the same version
+
 ## 8.3.1 (2026-10-22)
 - (@GermanBluefox) Added: sort icon and tooltip on the sort button in the adapters tab (#3684)
 - (@GermanBluefox) Added: disk and RAM usage of the host are shown as bars with tooltip in the instances tab
