@@ -4,15 +4,9 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 
 import { Typography, Card, CardContent, IconButton, Checkbox } from '@mui/material';
 
-import {
-    Person as PersonIcon,
-    Group as GroupIcon,
-    Clear as ClearIcon,
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Person as PersonIcon, Group as GroupIcon, Clear as ClearIcon, Edit as EditIcon } from '@mui/icons-material';
 
-import { Icon, Utils, type AdminConnection, type Translate, type ThemeType } from '@iobroker/gui-components';
+import { Icon, Utils, type AdminConnection, type Translate, type ThemeType, IconTrash } from '@iobroker/gui-components';
 
 interface UserBlockProps {
     t: Translate;
@@ -79,7 +73,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                         onClick={() => props.showUserDeleteDialog(props.user)}
                         disabled={props.user.common.dontDelete}
                     >
-                        <DeleteIcon style={props.user.common.dontDelete ? undefined : { color: textColor }} />
+                        <IconTrash style={props.user.common.dontDelete ? undefined : { color: textColor }} />
                     </IconButton>
                 </div>
                 <CardContent>

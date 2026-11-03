@@ -28,10 +28,7 @@ import {
 
 import {
     Close as CloseIcon,
-    Delete as DeleteIcon,
     DeleteForever as DeleteForeverIcon,
-    Pause as PauseIcon,
-    Refresh as RefreshIcon,
     SaveAlt as SaveAltIcon,
     ErrorOutlined as ErrorIcon,
     Warning as WarningIcon,
@@ -57,6 +54,9 @@ import {
     type AdminConnection,
     TabContainer,
     TabContent,
+    IconPlayPause,
+    IconRefresh,
+    IconTrash,
 } from '@iobroker/gui-components';
 
 import { parseLogFileLine, type LogLineSaved, type LogsWorker } from '@/Workers/LogsWorker';
@@ -358,6 +358,8 @@ interface LogsProps {
 }
 
 interface LogsState {
+    /** The reload button turns until the entries are there */
+    reloading?: boolean;
     source: string;
     severity: string;
     message: string;
@@ -1273,11 +1275,32 @@ class Logs extends Component<LogsProps, LogsState> {
         this.setState({ pid });
     }
 
+    /** Reads the log anew; the button turns until the entries are there */
+    reloadLogs(): void {
+        // without an answer (no host...) the icon must not turn forever
+        const timer = setTimeout(() => this.setState({ reloading: false }), 10_000);
+        const done = (): void => {
+            clearTimeout(timer);
+            this.setState({ reloading: false });
+        };
+        this.setState({ reloading: true });
+        if (this.state.searchHours) {
+            void this.searchLogFiles().finally(done);
+        } else {
+            this.readLogs(true, undefined, done);
+        }
+    }
+
     renderToolbar(): JSX.Element {
-        const pauseChild = !this.state.pause ? (
-            <PauseIcon />
-        ) : (
-            <Typography style={styles.pauseCount}>{(this.state.logs?.length ?? 0) - this.state.pause}</Typography>
+        // while paused, the play symbol shows how many lines came in meanwhile
+        const pauseChild = (
+            <Badge
+                badgeContent={this.state.pause ? (this.state.logs?.length ?? 0) - this.state.pause : 0}
+                color="warning"
+                max={9999}
+            >
+                <IconPlayPause running={!this.state.pause} />
+            </Badge>
         );
 
         const isMobile = this.props.width === 'xs' || this.props.width === 'sm';
@@ -1309,9 +1332,9 @@ class Logs extends Component<LogsProps, LogsState> {
                 >
                     <IconButton
                         size="large"
-                        onClick={() => (this.state.searchHours ? void this.searchLogFiles() : this.readLogs(true))}
+                        onClick={() => this.reloadLogs()}
                     >
-                        <RefreshIcon />
+                        <IconRefresh loading={!!this.state.reloading} />
                     </IconButton>
                 </Tooltip>
                 <Tooltip
@@ -1334,7 +1357,7 @@ class Logs extends Component<LogsProps, LogsState> {
                         size="large"
                         onClick={() => this.clearLog()}
                     >
-                        <DeleteIcon />
+                        <IconTrash />
                     </IconButton>
                 </Tooltip>
                 <Tooltip

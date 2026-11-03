@@ -21,7 +21,6 @@ import {
     Add as AddIcon,
     Check as CheckIcon,
     Close as CloseIcon,
-    Delete as DeleteIcon,
     List as ListIcon,
     RestartAlt as ResetIcon,
 } from '@mui/icons-material';
@@ -33,6 +32,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
+    IconTrash,
 } from '@iobroker/gui-components';
 
 import { getDefaultSeries, getHistoryInstances, SERIES_PALETTE, type ChartSeriesConfig } from './ResourcesChart';
@@ -205,7 +205,7 @@ export default function ResourcesChartSettings(props: ResourcesChartSettingsProp
                                 aria-label={t('Delete')}
                                 onClick={() => setSeries(list => list.filter((_s, j) => j !== i))}
                             >
-                                <DeleteIcon />
+                                <IconTrash />
                             </IconButton>
                         </Tooltip>
                     </Box>

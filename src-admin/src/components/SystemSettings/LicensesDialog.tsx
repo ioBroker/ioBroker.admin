@@ -2,9 +2,7 @@ import React, { type JSX } from 'react';
 
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 
-import { Refresh as IconRefresh } from '@mui/icons-material';
-
-import { Utils, type AdminConnection, type Translate } from '@iobroker/gui-components';
+import { Utils, type AdminConnection, type Translate, IconRefresh } from '@iobroker/gui-components';
 
 import { type ioBrokerObject } from '@/types';
 import BaseSystemSettingsDialog from './BaseSystemSettingsDialog';
@@ -296,7 +294,7 @@ export default class LicensesDialog extends BaseSystemSettingsDialog<LicensesDia
                 />
                 <Button
                     variant="contained"
-                    startIcon={<IconRefresh />}
+                    startIcon={<IconRefresh loading={!!this.state.requesting} />}
                     disabled={
                         this.state.requesting ||
                         this.props.saving ||

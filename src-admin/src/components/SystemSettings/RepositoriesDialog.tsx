@@ -23,13 +23,12 @@ import {
 
 import {
     Add as AddIcon,
-    Delete as DeleteIcon,
     Menu as DragHandleIcon,
     SettingsBackupRestore as RestoreIcon,
     Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { I18n, DialogConfirm, type Translate, type ThemeType, InfoBox } from '@iobroker/gui-components';
+import { I18n, DialogConfirm, type Translate, type ThemeType, InfoBox, IconTrash } from '@iobroker/gui-components';
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import IsVisible from '@/components/IsVisible';
@@ -660,7 +659,7 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                         aria-label="add"
                         onClick={() => this.onDelete(item.title)}
                     >
-                        <DeleteIcon />
+                        <IconTrash />
                     </Fab>
                 </TableCell>
             </DraggableRepoRow>

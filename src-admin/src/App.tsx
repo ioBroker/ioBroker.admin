@@ -36,14 +36,12 @@ import {
 
 // @mui/icons-material
 import {
-    Menu as MenuIcon,
     Update as UpdateIcon,
     Visibility as VisibilityIcon,
     PictureInPictureAlt as PictureInPictureAltIcon,
     CloudSync as SyncIcon,
     SyncDisabled as SyncIconDisabled,
     Close as CancelIcon,
-    Notifications as NotificationsIcon,
     Logout,
 } from '@mui/icons-material';
 
@@ -62,7 +60,7 @@ import {
     DialogConfirm,
     withWidth,
     Theme,
-    IconExpert,
+    IconExpertMode,
     ScrollbarStyles,
     ToggleThemeMenu,
     type IobTheme,
@@ -71,6 +69,8 @@ import {
     type ThemeType,
     Utils,
     dictionary,
+    IconBell,
+    IconMenuArrow,
 } from '@iobroker/gui-components';
 
 import NotificationsDialog from '@/dialogs/NotificationsDialog';
@@ -275,14 +275,6 @@ const styles: Record<string, any> = {
         }),
         ml: 0,
     }),
-    expertIcon: {
-        width: 22,
-        height: 22,
-        // color: theme.palette.text ? theme.palette.text.disabled : 'grey'
-    },
-    expertIconActive: {
-        // color: theme.palette.action.active
-    },
     baseSettingsButton: {
         color: 'red',
     },
@@ -3222,7 +3214,7 @@ class App extends Router<AppProps, AppState> {
             <Box sx={styles.floatingButtons}>
                 {showMenuButton ? (
                     <IconButton onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}>
-                        <MenuIcon />
+                        <IconMenuArrow open={false} />
                     </IconButton>
                 ) : null}
                 {showCmd ? (
@@ -3405,7 +3397,7 @@ class App extends Router<AppProps, AppState> {
                             color={this.state.noNotifications.warning > 0 ? 'error' : 'secondary'}
                             max={99}
                         >
-                            <NotificationsIcon />
+                            <IconBell count={this.state.noNotifications.other + this.state.noNotifications.warning} />
                         </Badge>
                     </IconButton>
                 </Tooltip>
@@ -3493,11 +3485,9 @@ class App extends Router<AppProps, AppState> {
                                 }}
                                 color="default"
                             >
-                                <IconExpert
-                                    style={{
-                                        ...styles.expertIcon,
-                                        ...(this.state.expertMode ? styles.expertIconActive : undefined),
-                                    }}
+                                <IconExpertMode
+                                    active={!!this.state.expertMode}
+                                    fontSize={22}
                                 />
                             </IconButton>
                         </Badge>
@@ -3540,7 +3530,7 @@ class App extends Router<AppProps, AppState> {
                     }}
                     onClick={() => this.handleDrawerState(DrawerStates.opened as 0)}
                 >
-                    <MenuIcon />
+                    <IconMenuArrow open={false} />
                 </IconButton>
                 <div style={styles.wrapperButtons}>
                     {/* notifications, discovery, theme, expert mode and the settings synchronisation

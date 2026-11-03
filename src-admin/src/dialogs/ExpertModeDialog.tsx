@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Build as BuildIcon, Check as CheckIcon } from '@mui/icons-material';
 
-import { I18n, IconExpert, type IobTheme } from '@iobroker/gui-components';
+import { I18n, IconExpertMode, type IobTheme } from '@iobroker/gui-components';
 
 const styles: Record<string, any> = {
     root: (theme: IobTheme) => ({
@@ -67,7 +67,10 @@ const ExpertModeDialog: React.FC<ExpertModeDialogProps> = ({
             sx={{ '& .MuiDialog-paper': styles.paper }}
         >
             <DialogTitle>
-                <IconExpert style={{ marginRight: 8 }} />
+                <IconExpertMode
+                    active
+                    style={{ marginRight: 8 }}
+                />
                 {I18n.t('Expert mode')}
             </DialogTitle>
             <DialogContent

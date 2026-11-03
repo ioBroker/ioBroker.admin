@@ -1,6 +1,6 @@
-import React, { type JSX } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 
-const offset = 187;
+import { IconConnectionState } from '@iobroker/gui-components';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -13,24 +13,27 @@ const styles: Record<string, React.CSSProperties> = {
         zIndex: 20000,
     },
     connecting: {
-        left: '40%',
+        left: '50%',
         top: '40%',
-        width: '20%',
-        height: '20%',
+        width: 120,
+        height: 120,
+        marginLeft: -60,
+        marginTop: -60,
         position: 'absolute',
+        borderRadius: '50%',
+        background: 'rgba(0, 0, 0, .7)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
     },
-    spinner: {
-        animation: 'admin-connecting-rotator 1.4s linear infinite',
-    },
-    path: {
-        strokeDasharray: 187,
-        strokeDashoffset: 0,
-        transformOrigin: 'center',
-        animation: 'admin-connecting-dash 1.4s ease-in-out infinite, $colors 5.6s ease-in-out infinite',
+    icon: {
+        width: 64,
+        height: 64,
     },
     text: {
         position: 'absolute',
-        top: 'calc(60% + 16px)',
+        top: 'calc(40% + 76px)',
         left: 16,
         right: 16,
         textAlign: 'center',
@@ -51,68 +54,21 @@ interface ConnectingProps {
 }
 
 function Connecting(props: ConnectingProps): JSX.Element {
+    // first crossed out (the connection is gone), then the waves run while admin connects again
+    const [state, setState] = useState<'disconnected' | 'connecting'>('disconnected');
+    useEffect(() => {
+        const timer = setTimeout(() => setState('connecting'), 900);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <div style={styles.root}>
-            <style>
-                {`
-'   @keyframes admin-connecting-colors {
-        0% {
-            stroke: #4285F4;
-        }
-        25% {
-            stroke: #DE3E35;
-        }
-        50% {
-            stroke: #F7C223;
-        }
-        75% {
-            stroke: #1B9A59;
-        }
-        100% {
-            stroke: #4285F4;
-        }
-    }
-    @keyframes admin-connecting-dash {
-        0% {
-            stroke-dashoffset: ${offset};
-        }
-        50% {
-            stroke-dashoffset: ${offset / 4};
-            transform: rotate(135deg);
-        }
-        100% {
-            stroke-dashoffset: ${offset};
-            transform: 'rotate(450deg);
-        }
-    }
-    @keyframes admin-connecting-rotator {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(270deg);
-        }
-    }
-`}
-            </style>
             <div style={styles.connecting}>
-                <svg
-                    style={styles.spinner}
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 66 66"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <circle
-                        style={styles.path}
-                        fill="none"
-                        strokeWidth="6"
-                        strokeLinecap="round"
-                        cx="33"
-                        cy="33"
-                        r="30"
-                    />
-                </svg>
+                <IconConnectionState
+                    state={state}
+                    style={styles.icon}
+                    ariaLabel={props.text}
+                />
             </div>
             {props.text ? (
                 <div style={styles.text}>

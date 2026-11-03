@@ -4,7 +4,6 @@ import { IconButton, LinearProgress, Tooltip, Paper, InputAdornment, TextField, 
 
 import {
     PlayArrow as PlayArrowIcon,
-    Refresh as RefreshIcon,
     BugReport as BugReportIcon,
     Info as InfoIcon,
     Warning as WarningIcon,
@@ -33,6 +32,7 @@ import {
     type ThemeType,
     TabHeader,
     type Translate,
+    IconRefresh,
 } from '@iobroker/gui-components';
 
 import type { HostInfo } from '@iobroker/socket-client';
@@ -175,6 +175,8 @@ type SortColumn = 'name' | 'status' | 'memory' | 'id' | 'host' | 'loglevel' | 'p
 type SortDirection = 'asc' | 'desc';
 
 interface InstancesState {
+    /** The reload button turns until the states are read */
+    reloading?: boolean;
     expertMode: boolean;
     dialog: string | null;
     instances: Record<string, InstanceEntry> | null;
@@ -814,7 +816,13 @@ class Instances extends Component<InstancesProps, InstancesState> {
     onStateChange = (id: string, state: ioBroker.State | null | undefined): void => {
         const oldState = this.states[id];
         this.states[id] = state as ioBroker.State;
-        if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
+        if (
+            (!oldState && state) ||
+            (oldState && !state) ||
+            (oldState && state && oldState.val !== state.val) ||
+            // every update of `alive` lets the status indicator pulse, also if the value stays `true`
+            (oldState && state && oldState.ts !== state.ts && id.endsWith('.alive'))
+        ) {
             if (this.state.dialog === 'config' && this.state.dialogProp) {
                 if (this.statesUpdateTimer) {
                     clearTimeout(this.statesUpdateTimer);
@@ -1026,6 +1034,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                 category: instance.obj.common.type || 'other',
                 status: this.getInstanceStatus(instance.obj),
                 alive,
+                aliveTs: this.states[`${id}.alive`]?.ts || 0,
                 compact,
                 supportCompact,
                 connectedToHost,
@@ -1709,9 +1718,12 @@ class Instances extends Component<InstancesProps, InstancesState> {
                     >
                         <IconButton
                             size="large"
-                            onClick={() => this.getData(true)}
+                            onClick={() => {
+                                this.setState({ reloading: true });
+                                void this.getData(true).finally(() => this.setState({ reloading: false }));
+                            }}
                         >
-                            <RefreshIcon />
+                            <IconRefresh loading={!!this.state.reloading} />
                         </IconButton>
                     </Tooltip>
                     {this.props.hosts.length > 1 ? (

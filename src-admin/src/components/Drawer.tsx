@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 
 import {
-    ChevronLeft as ChevronLeftIcon,
     Search as SearchIcon,
     Close as CloseIcon,
     GridView as QuickAccessIcon,
@@ -47,6 +46,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
+    IconMenuArrow,
 } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
@@ -1129,7 +1129,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 }
                             }}
                         >
-                            <ChevronLeftIcon />
+                            <IconMenuArrow open={this.props.state !== STATES.closed} />
                         </IconButton>
                     </>
                 )}

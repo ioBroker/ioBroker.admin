@@ -18,7 +18,6 @@ import {
 import {
     Folder as FolderIcon,
     FolderOpen as FolderOpenIcon,
-    Refresh as RefreshIcon,
     List as ListIcon,
     ViewList as ViewListIcon,
     ViewModule as ViewModuleIcon,
@@ -44,6 +43,7 @@ import {
     type Translate,
     TabContainer,
     Utils,
+    IconRefresh,
 } from '@iobroker/gui-components';
 
 import type { AdaptersWorker, AdapterEvent } from '@/Workers/AdaptersWorker';
@@ -161,6 +161,8 @@ interface AdaptersProps extends AdapterInstallDialogProps {
 }
 
 interface AdaptersState extends AdapterInstallDialogState {
+    /** The button "Check adapter for updates" turns until the repository is read */
+    reloading?: boolean;
     lastUpdate: number;
     repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }>;
     installed: InstalledInfo;
@@ -2007,9 +2009,12 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 >
                     <IconButton
                         size="large"
-                        onClick={() => this.updateAll(true, true)}
+                        onClick={() => {
+                            this.setState({ reloading: true });
+                            void this.updateAll(true, true).finally(() => this.setState({ reloading: false }));
+                        }}
                     >
-                        <RefreshIcon />
+                        <IconRefresh loading={!!this.state.reloading} />
                     </IconButton>
                 </Tooltip>
                 {this.renderRepositoryTimestamp()}

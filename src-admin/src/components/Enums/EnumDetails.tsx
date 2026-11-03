@@ -9,7 +9,6 @@ import {
     ArrowBack as IconBack,
     ArrowForward as IconMoveTo,
     Close as IconClose,
-    Delete as IconDelete,
     Edit as IconEdit,
     FileCopy as IconCopy,
     InfoOutlined as IconInfo,
@@ -28,6 +27,7 @@ import {
     type AdminConnection,
     type IobTheme,
     type Translate,
+    IconTrash,
 } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
@@ -721,7 +721,7 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
                                 disabled={!!enumItem.common?.dontDelete}
                                 onClick={props.onDelete}
                             >
-                                <IconDelete />
+                                <IconTrash />
                             </IconButton>
                         </span>
                     </Tooltip>

@@ -17,9 +17,9 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { Add as AddIcon, Delete as DeleteIcon, NetworkCheck as TestIcon, Tune as TuneIcon } from '@mui/icons-material';
+import { Add as AddIcon, NetworkCheck as TestIcon, Tune as TuneIcon } from '@mui/icons-material';
 
-import { Icon, type AdminConnection, type Translate } from '@iobroker/gui-components';
+import { Icon, type AdminConnection, type Translate, IconTrash } from '@iobroker/gui-components';
 import { isChatModel } from '@iobroker/ai-core/build/shared/models';
 
 import { sendPushRequest } from '@/helpers/pushRequest';
@@ -368,7 +368,7 @@ export default function AiSettingsDialog(props: AiSettingsDialogProps): React.JS
                                     disabled={disabled}
                                     onClick={removeProvider}
                                 >
-                                    <DeleteIcon />
+                                    <IconTrash />
                                 </IconButton>
                             </span>
                         </Tooltip>

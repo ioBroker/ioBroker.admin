@@ -1,9 +1,9 @@
 import React, { type JSX } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 
-import { Close as IconCancel, Delete as IconDelete } from '@mui/icons-material';
+import { Close as IconCancel } from '@mui/icons-material';
 
-import { type Translate } from '@iobroker/gui-components';
+import { type Translate, IconTrash } from '@iobroker/gui-components';
 
 interface GroupDeleteDialogProps {
     t: Translate;
@@ -31,7 +31,7 @@ export default function GroupDeleteDialog(props: GroupDeleteDialogProps): JSX.El
                     variant="contained"
                     color="primary"
                     onClick={() => props.deleteGroup(props.group._id)}
-                    startIcon={<IconDelete />}
+                    startIcon={<IconTrash />}
                 >
                     {props.t('Delete')}
                 </Button>

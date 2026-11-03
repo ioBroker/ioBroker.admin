@@ -2,15 +2,9 @@ import React, { type JSX } from 'react';
 import { useDrop, type DropTargetMonitor } from 'react-dnd';
 import { Typography, Card, CardContent, IconButton } from '@mui/material';
 
-import {
-    Person as PersonIcon,
-    Group as GroupIcon,
-    Clear as ClearIcon,
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Person as PersonIcon, Group as GroupIcon, Clear as ClearIcon, Edit as EditIcon } from '@mui/icons-material';
 
-import { Utils, Icon, type Translate, type ThemeType, type IobTheme } from '@iobroker/gui-components';
+import { Utils, Icon, type Translate, type ThemeType, type IobTheme, IconTrash } from '@iobroker/gui-components';
 
 interface GroupBlockProps {
     t: Translate;
@@ -82,7 +76,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
                     onClick={() => props.showGroupDeleteDialog(props.group)}
                     disabled={props.group.common.dontDelete}
                 >
-                    <DeleteIcon style={props.group.common.dontDelete ? undefined : { color: textColor }} />
+                    <IconTrash style={props.group.common.dontDelete ? undefined : { color: textColor }} />
                 </IconButton>
             </div>
             <CardContent>

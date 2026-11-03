@@ -27,15 +27,7 @@ import {
     Menu,
 } from '@mui/material';
 
-import {
-    Help as HelpIcon,
-    Pause as PauseIcon,
-    PlayArrow as PlayArrowIcon,
-    Refresh as RefreshIcon,
-    Edit as EditIcon,
-    ArrowBack,
-    MoreVert,
-} from '@mui/icons-material';
+import { Help as HelpIcon, Refresh as RefreshIcon, Edit as EditIcon, ArrowBack, MoreVert } from '@mui/icons-material';
 
 import {
     Icon,
@@ -45,6 +37,7 @@ import {
     type ThemeName,
     type ThemeType,
     type Translate,
+    IconPlayPause,
 } from '@iobroker/gui-components';
 
 import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config';
@@ -651,7 +644,7 @@ export default class Config extends Component<ConfigProps, ConfigState> {
                                 : styles.hide),
                         }}
                     >
-                        {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
+                        <IconPlayPause running={this.state.running} />
                     </IconButton>
                 </span>
             </Tooltip>,

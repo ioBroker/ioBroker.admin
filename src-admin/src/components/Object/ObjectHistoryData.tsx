@@ -31,14 +31,17 @@ import {
 
 // icons
 import { FaPlusSquare as InsertIcon, FaDownload as ExportIcon } from 'react-icons/fa';
-import {
-    Edit as IconEdit,
-    Delete as IconDelete,
-    Close as IconClose,
-    Refresh as IconRefresh,
-} from '@mui/icons-material';
+import { Edit as IconEdit, Close as IconClose } from '@mui/icons-material';
 
-import { Utils, TableResize, type AdminConnection, type IobTheme, type Translate } from '@iobroker/gui-components';
+import {
+    Utils,
+    TableResize,
+    type AdminConnection,
+    type IobTheme,
+    type Translate,
+    IconRefresh,
+    IconTrash,
+} from '@iobroker/gui-components';
 
 import { localeMap } from './utils';
 
@@ -1299,7 +1302,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                         }
                         color="primary"
                         autoFocus
-                        startIcon={<IconDelete />}
+                        startIcon={<IconTrash />}
                     >
                         {this.props.t('Delete')}
                     </Button>
@@ -1741,7 +1744,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                         onClick={() => this.reload()}
                         title={this.props.t('Reload from database')}
                     >
-                        <IconRefresh />
+                        <IconRefresh loading={!!this.state.loading} />
                     </IconButton>
                 ) : null}
 
@@ -1817,7 +1820,7 @@ export default class ObjectHistoryData extends Component<ObjectHistoryDataProps,
                             }
                         }}
                     >
-                        <IconDelete />
+                        <IconTrash />
                     </IconButton>
                 ) : null}
             </Toolbar>

@@ -24,13 +24,12 @@ import {
 import {
     ExpandMore as ExpandMoreIcon,
     Add as IconPlus,
-    Delete as IconDelete,
     Language as IconHttp,
     InsertDriveFile as IconFile,
     Computer as IconSyslog,
     Send as IconStream,
 } from '@mui/icons-material';
-import { type IobTheme, type Translate } from '@iobroker/gui-components';
+import { type IobTheme, type Translate, IconTrash } from '@iobroker/gui-components';
 import IconSeq from '../../assets/seq.png';
 
 const styles: Record<string, any> = {
@@ -321,7 +320,7 @@ export default class BaseSettingsLog extends Component<BaseSettingsLogProps, Bas
                         style={styles.delButton}
                         onClick={() => this.onDelete(name)}
                     >
-                        <IconDelete />
+                        <IconTrash />
                     </Fab>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -526,7 +525,7 @@ export default class BaseSettingsLog extends Component<BaseSettingsLogProps, Bas
                         style={styles.delButton}
                         onClick={() => this.onDelete(name)}
                     >
-                        <IconDelete />
+                        <IconTrash />
                     </Fab>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -636,7 +635,7 @@ export default class BaseSettingsLog extends Component<BaseSettingsLogProps, Bas
                         style={styles.delButton}
                         onClick={() => this.onDelete(name)}
                     >
-                        <IconDelete />
+                        <IconTrash />
                     </Fab>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -765,7 +764,7 @@ export default class BaseSettingsLog extends Component<BaseSettingsLogProps, Bas
                         style={styles.delButton}
                         onClick={() => this.onDelete(name)}
                     >
-                        <IconDelete />
+                        <IconTrash />
                     </Fab>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -864,7 +863,7 @@ export default class BaseSettingsLog extends Component<BaseSettingsLogProps, Bas
                         style={styles.delButton}
                         onClick={() => this.onDelete(name)}
                     >
-                        <IconDelete />
+                        <IconTrash />
                     </Fab>
                 </AccordionSummary>
                 <AccordionDetails>

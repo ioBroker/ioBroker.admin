@@ -101,6 +101,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Updated `@iobroker/json-config` to 10.1.11: `validatorErrorText` is shown below the element instead of the help text, also in the cells of a table (#1911)
 - (@GermanBluefox) History data: live values are marked and replaced with the stored ones every 10 seconds; added a reload button (ioBroker.sql#600)
 - (@GermanBluefox) An update can be ignored also if its dependencies are not met (#3713)
+- (@GermanBluefox) Added: animated icons for start/stop, status, notifications, menu, reload, delete, connection and the result of a command
+- (@GermanBluefox) Added: the start/stop button of an instance shows a ring until the instance really runs or stopped
+- (@GermanBluefox) Changed: new expert mode symbol (mortarboard)
+- (@GermanBluefox) Added: animated folders in the object browser; the restart button of an instance turns until the instance is alive again
+- (@GermanBluefox) Changed: the pause button of the log shows the number of new lines as a badge
 
 ### 8.3.6 (2026-10-29)
 - (@GermanBluefox) Fixed: the `checkDocker` control of a configuration dialog showed the Docker of the host admin runs on, also for an instance on another host. Admin asks the host of the instance now; that host needs a js-controller with `CONTROLLER_CHECK_DOCKER`. With an older js-controller there, the dialog says that Docker cannot be checked instead of showing the wrong host

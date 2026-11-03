@@ -1,9 +1,9 @@
 import React, { type JSX } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 
-import { Close as IconCancel, Delete as IconDelete } from '@mui/icons-material';
+import { Close as IconCancel } from '@mui/icons-material';
 
-import { type Translate } from '@iobroker/gui-components';
+import { type Translate, IconTrash } from '@iobroker/gui-components';
 
 interface UserDeleteDialogProps {
     t: Translate;
@@ -30,7 +30,7 @@ export default function UserDeleteDialog(props: UserDeleteDialogProps): JSX.Elem
                     variant="contained"
                     color="primary"
                     onClick={() => props.deleteUser(props.user._id)}
-                    startIcon={<IconDelete />}
+                    startIcon={<IconTrash />}
                 >
                     {props.t('Delete')}
                 </Button>

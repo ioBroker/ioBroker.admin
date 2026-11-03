@@ -20,12 +20,11 @@ import {
     Lens as SettingsIcon,
     Check as IconCheck,
     Close as IconClose,
-    Delete,
 } from '@mui/icons-material';
 
 import { green, grey, orange, red } from '@mui/material/colors';
 
-import { I18n } from '@iobroker/gui-components';
+import { I18n, IconTrash } from '@iobroker/gui-components';
 
 import filterIcon from '../../assets/filter.svg';
 
@@ -441,7 +440,7 @@ const InstanceFilterDialog = ({
                             sortDirection: 'asc',
                         });
                     }}
-                    startIcon={<Delete />}
+                    startIcon={<IconTrash />}
                 >
                     {I18n.t('Reset')}
                 </Button>

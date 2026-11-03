@@ -20,13 +20,12 @@ import {
     Check as CheckIcon,
     Create as EditIcon,
     Close as CloseIcon,
-    Delete as DeleteIcon,
     Warning as WarningIcon,
     OpenInNew as OpenInNewIcon,
     InfoOutlined as InfoIcon,
 } from '@mui/icons-material';
 
-import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate } from '@iobroker/gui-components';
+import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate, IconTrash } from '@iobroker/gui-components';
 
 import AdminUtils from '../../helpers/AdminUtils';
 
@@ -380,7 +379,7 @@ class IntroCard<TProps extends IntroCardProps, TState extends IntroCardState> ex
                             color="error"
                             onClick={e => IntroCard.swallow(e, this.props.onRemove)}
                         >
-                            <DeleteIcon fontSize="small" />
+                            <IconTrash fontSize="small" />
                         </IconButton>
                     </Tooltip>
                 ) : null}

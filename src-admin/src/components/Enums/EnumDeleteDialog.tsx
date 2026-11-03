@@ -2,7 +2,9 @@ import React, { type JSX } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 
-import { Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
+
+import { IconTrash } from '@iobroker/gui-components';
 
 import type { Translate } from '@iobroker/gui-components';
 
@@ -32,7 +34,7 @@ function EnumDeleteDialog(props: EnumDeleteDialogProps): JSX.Element {
                     autoFocus
                     color="primary"
                     onClick={() => props.deleteEnum(props.enum._id)}
-                    startIcon={<DeleteIcon />}
+                    startIcon={<IconTrash />}
                 >
                     {props.t('Delete')}
                 </Button>

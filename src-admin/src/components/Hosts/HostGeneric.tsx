@@ -16,7 +16,6 @@ import {
 
 import {
     Refresh as RefreshIcon,
-    Delete as DeleteIcon,
     Cached as CachedIcon,
     Build as BuildIcon,
     Edit as EditIcon,
@@ -38,6 +37,7 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
+    IconTrash,
 } from '@iobroker/gui-components';
 
 import type { HostsWorker, NotificationAnswer } from '@/Workers/HostsWorker';
@@ -772,7 +772,7 @@ export default abstract class HostGeneric<
                         this.props.executeCommandRemove();
                     }}
                 >
-                    <DeleteIcon />
+                    <IconTrash />
                 </IconButton>
             </Tooltip>
         ) : (

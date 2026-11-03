@@ -26,12 +26,11 @@ import {
     Sms as SmsIcon,
     Close as CloseIcon,
     Check as CheckIcon,
-    Delete,
     Publish as PublishIcon,
     UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
-import { I18n, Icon, type IobTheme, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
+import { I18n, Icon, type IobTheme, type AdminConnection, type ThemeType, IconTrash } from '@iobroker/gui-components';
 
 import { extractAdapterName, type RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
@@ -663,7 +662,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         this.setState({ customHistory });
                                     }}
                                 >
-                                    <Delete />
+                                    <IconTrash />
                                 </IconButton>
                             </Box>
                         )}

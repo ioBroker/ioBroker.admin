@@ -33,17 +33,13 @@ import {
 } from '@mui/material';
 
 import {
-    Delete as DeleteIcon,
     Close as CloseIcon,
     Warning as WarningIcon,
     Error as ErrorIcon,
     Settings as SettingsIcon,
     Schedule as ScheduleIcon,
     Memory as MemoryIcon,
-    Pause as PauseIcon,
-    PlayArrow as PlayArrowIcon,
     Build as BuildIcon,
-    Refresh as RefreshIcon,
     Input as InputIcon,
     Edit as EditIcon,
     ImportExport as ImportExportIcon,
@@ -63,6 +59,10 @@ import {
     type IobTheme,
     type ThemeType,
     type Translate,
+    IconPlayPause,
+    IconStatusLed,
+    IconTrash,
+    IconRefresh,
 } from '@iobroker/gui-components';
 import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
@@ -406,6 +406,8 @@ export interface InstanceItem {
     connected: boolean | string | null;
     connectedToHost: boolean;
     alive: boolean;
+    /** When the alive state was written last: every update lets the status indicator pulse */
+    aliveTs: number;
     inputOutput: {
         stateInput: number;
         stateOutput: number;
@@ -498,7 +500,17 @@ export interface InstanceGenericState {
     visibleEdit: boolean;
 
     expanded: boolean;
+
+    /** The user started (true) or stopped (false) the instance: a ring turns until it really runs or stopped */
+    startTarget?: boolean | null;
+    /** Restart of a daemon: it has to stop first ('down') and to be alive again ('up') */
+    restarting?: 'down' | 'up' | null;
+    /** The restart was seen to finish: the restart button shows a check mark */
+    restartOk?: boolean;
 }
+
+/** The ring of the start/stop button gives up after this time, e.g. if the instance crashes right away */
+const START_TIMEOUT = 30_000;
 
 export default abstract class InstanceGeneric<
     TProps extends InstanceGenericProps,
@@ -512,6 +524,81 @@ export default abstract class InstanceGeneric<
 
     componentWillUnmount(): void {
         this.props.context.onRegisterClose(this.props.id, null);
+        if (this.startTimer) {
+            clearTimeout(this.startTimer);
+            this.startTimer = null;
+        }
+        if (this.restartTimer) {
+            clearTimeout(this.restartTimer);
+            this.restartTimer = null;
+        }
+    }
+
+    componentDidUpdate(): void {
+        if (
+            this.state.startTarget !== undefined &&
+            this.state.startTarget !== null &&
+            this.isStartReached(this.state.startTarget)
+        ) {
+            this.setState({ startTarget: null });
+        }
+        if (this.state.restarting === 'down' && !this.props.item.alive) {
+            this.setState({ restarting: 'up' });
+        } else if (this.state.restarting === 'up' && this.props.instance.mode === 'daemon' && this.props.item.alive) {
+            if (this.restartTimer) {
+                clearTimeout(this.restartTimer);
+                this.restartTimer = null;
+            }
+            this.setState({ restarting: null, restartOk: true });
+        }
+    }
+
+    private startTimer: ReturnType<typeof setTimeout> | null = null;
+
+    private restartTimer: ReturnType<typeof setTimeout> | null = null;
+
+    /**
+     * Restarts the instance. The button turns until a daemon stopped and is alive again (at most
+     * `START_TIMEOUT`), for any other instance only for a moment
+     */
+    restart(): void {
+        const daemon = this.props.instance.mode === 'daemon';
+        if (this.restartTimer) {
+            clearTimeout(this.restartTimer);
+        }
+        this.restartTimer = setTimeout(
+            () => {
+                this.restartTimer = null;
+                // a daemon that is not alive again in time gets no check mark
+                this.setState({ restarting: null, restartOk: !daemon });
+            },
+            daemon ? START_TIMEOUT : 1_200,
+        );
+        this.setState({ restarting: daemon ? 'down' : 'up', restartOk: undefined });
+        void this.props.context.socket.extendObject(`system.adapter.${this.props.instance.id}`, {});
+    }
+
+    /** A daemon has started when it is alive, any other instance as soon as it is enabled */
+    isStartReached(running: boolean): boolean {
+        if (this.props.item.running !== running) {
+            return false;
+        }
+        if (this.props.instance.mode !== 'daemon') {
+            return true;
+        }
+        return running ? this.props.item.alive : !this.props.item.alive;
+    }
+
+    startStop(running: boolean): void {
+        if (this.startTimer) {
+            clearTimeout(this.startTimer);
+        }
+        this.startTimer = setTimeout(() => {
+            this.startTimer = null;
+            this.setState({ startTarget: null });
+        }, START_TIMEOUT);
+        this.setState({ startTarget: running });
+        void this.setCommonValue(`system.adapter.${this.props.instance.id}`, { enabled: running });
     }
 
     /**
@@ -753,7 +840,7 @@ export default abstract class InstanceGeneric<
                 <DialogActions>
                     {this.state.openDialogDelete === 1 ? (
                         <Button
-                            startIcon={<DeleteIcon />}
+                            startIcon={<IconTrash />}
                             onClick={() => {
                                 this.props.context.onDeleteInstance(this.props.instance, this.state.deleteCustom, true);
                                 this.setState({ deleteCustom: false, openDialogDelete: false, openDialog: false });
@@ -765,7 +852,7 @@ export default abstract class InstanceGeneric<
                         </Button>
                     ) : null}
                     <Button
-                        startIcon={<DeleteIcon />}
+                        startIcon={<IconTrash />}
                         onClick={() => {
                             this.props.context.onDeleteInstance(this.props.instance, this.state.deleteCustom);
                             this.setState({ deleteCustom: false, openDialogDelete: false, openDialog: false });
@@ -1147,26 +1234,35 @@ export default abstract class InstanceGeneric<
             );
         }
 
+        const hasStatus = this.props.instance.mode === 'daemon' || this.props.instance.mode === 'schedule';
+
         return (
             <div
                 style={{
                     ...this.styles.smallAvatar,
                     ...this.styles.statusIndicator,
-                    ...(this.props.instance.mode === 'daemon' || this.props.instance.mode === 'schedule'
-                        ? this.styles[status]
-                        : this.styles.transparent),
+                    ...(hasStatus ? this.styles[status] : this.styles.transparent),
                     // Do not check this.props.item.connected === '' as it is a server mode and it is OK
                     ...(this.props.item.connectedToHost && this.props.item.alive && this.props.item.connected === false
                         ? this.styles.orangeDevice
                         : undefined),
                 }}
             >
-                {this.getModeIcon(
-                    this.props.instance.mode,
-                    status,
-                    this.styles[`statusIcon_${status}`],
-                    this.props.item.stoppedWhenWebExtension,
-                )}
+                {/* pulses with every update of the alive state, pops when the status changes, shakes when it turns red */}
+                <IconStatusLed
+                    color={hasStatus ? (status === 'orangeDevice' ? 'orange' : status) : 'transparent'}
+                    beat={hasStatus ? this.props.item.aliveTs : null}
+                    blink={this.state.startTarget !== undefined && this.state.startTarget !== null}
+                    fontSize={24}
+                    style={{ display: 'block' }}
+                >
+                    {this.getModeIcon(
+                        this.props.instance.mode,
+                        status,
+                        this.styles[`statusIcon_${status}`],
+                        this.props.item.stoppedWhenWebExtension,
+                    )}
+                </IconStatusLed>
             </div>
         );
     }
@@ -1447,9 +1543,7 @@ export default abstract class InstanceGeneric<
                                     openDialog: true,
                                 });
                             } else {
-                                void this.setCommonValue(`system.adapter.${this.props.instance.id}`, {
-                                    enabled: !this.props.item.running,
-                                });
+                                this.startStop(!this.props.item.running);
                             }
                         }}
                         onFocus={event => event.stopPropagation()}
@@ -1462,7 +1556,10 @@ export default abstract class InstanceGeneric<
                                 : this.styles.hide),
                         }}
                     >
-                        {this.props.item.running ? <PauseIcon /> : <PlayArrowIcon />}
+                        <IconPlayPause
+                            running={this.props.item.running}
+                            pending={this.state.startTarget !== undefined && this.state.startTarget !== null}
+                        />
                     </IconButton>
                 </div>
             </Tooltip>
@@ -1511,16 +1608,19 @@ export default abstract class InstanceGeneric<
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
-                            void this.props.context.socket.extendObject(`system.adapter.${this.props.instance.id}`, {});
+                            this.restart();
                         }}
                         onFocus={event => event.stopPropagation()}
                         style={{
                             ...this.styles.button,
                             ...(!this.props.instance.canStart ? this.styles.hide : undefined),
                         }}
-                        disabled={!this.props.item.running}
+                        disabled={!this.props.item.running || !!this.state.restarting}
                     >
-                        <RefreshIcon />
+                        <IconRefresh
+                            loading={!!this.state.restarting}
+                            showDone={this.state.restartOk !== false}
+                        />
                     </IconButton>
                 </div>
             </Tooltip>
@@ -2032,7 +2132,7 @@ export default abstract class InstanceGeneric<
                         this.setState({ openDialogDelete: instances.length || true, openDialog: true });
                     }}
                 >
-                    <DeleteIcon />
+                    <IconTrash />
                 </IconButton>
             </Tooltip>
         );

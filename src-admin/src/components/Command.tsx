@@ -3,7 +3,7 @@ import React, { Component, type JSX } from 'react';
 import { Box, Grid, LinearProgress, Paper, Switch, Typography } from '@mui/material';
 import type { Theme } from '@mui/material/styles';
 
-import { Router, type AdminConnection, type Translate } from '@iobroker/gui-components';
+import { Router, type AdminConnection, type Translate, IconResult } from '@iobroker/gui-components';
 
 import type { CommandFile } from '@/types';
 import AdminUtils from '../helpers/AdminUtils';
@@ -61,6 +61,8 @@ interface CommandState {
     // progressText: string;
     moreChecked: boolean;
     stopped: boolean;
+    /** How the command ended: shown as a check mark or a cross that draw themselves */
+    result?: 'success' | 'error';
     activeCmdId?: number;
     // closeOnReady: boolean;
 }
@@ -222,11 +224,13 @@ export default class Command extends Component<CommandProps, CommandState> {
             }
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
 
-            this.setState({ log, stopped: true }, () => {
+            const failed = exitCode !== 0 || log[log.length - 1].toLowerCase().includes('error');
+
+            this.setState({ log, stopped: true, result: failed ? 'error' : 'success' }, () => {
                 if (this.props.onSetCommandRunning) {
                     this.props.onSetCommandRunning(false);
                 }
-                if (exitCode !== 0 || this.state.log[this.state.log.length - 1].toLowerCase().includes('error')) {
+                if (failed) {
                     if (this.props.errorFunc) {
                         this.props.errorFunc(exitCode, this.state.log);
                     }
@@ -411,6 +415,13 @@ export default class Command extends Component<CommandProps, CommandState> {
                         justifyContent: this.props.inBackground ? 'space-between' : 'flex-end',
                     }}
                 >
+                    {this.state.result && !this.props.inBackground ? (
+                        <IconResult
+                            type={this.state.result}
+                            ariaLabel={this.state.log[this.state.log.length - 1]}
+                            style={{ marginRight: 'auto', flexShrink: 0 }}
+                        />
+                    ) : null}
                     <Typography
                         style={
                             this.props.inBackground

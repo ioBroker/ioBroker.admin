@@ -3,9 +3,9 @@ import { useDrop } from 'react-dnd';
 
 import { Tooltip, IconButton, Box } from '@mui/material';
 
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Edit as EditIcon } from '@mui/icons-material';
 
-import { Icon, type ThemeType, type Translate, Utils } from '@iobroker/gui-components';
+import { Icon, type ThemeType, type Translate, Utils, IconTrash } from '@iobroker/gui-components';
 import AdminUtils from '@/helpers/AdminUtils';
 
 interface CategoryLabelProps {
@@ -83,7 +83,7 @@ export default function CategoryLabel(props: CategoryLabelProps): JSX.Element {
                         placement="top"
                         slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                     >
-                        <DeleteIcon />
+                        <IconTrash />
                     </Tooltip>
                 </IconButton>
             )}

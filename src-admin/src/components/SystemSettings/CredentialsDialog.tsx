@@ -28,7 +28,6 @@ import {
     Check as CheckIcon,
     Close as CloseIcon,
     Cloud as CloudIcon,
-    Delete as DeleteIcon,
     Edit as EditIcon,
     Email as EmailIcon,
     Key as KeyIcon,
@@ -39,7 +38,7 @@ import {
     VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 
-import { DialogConfirm, type AdminConnection, type Translate, Utils } from '@iobroker/gui-components';
+import { DialogConfirm, type AdminConnection, type Translate, Utils, IconTrash } from '@iobroker/gui-components';
 
 import { SECRET_INPUT_STYLE } from '@/helpers/utils';
 import IoBrokerLogo from '@/assets/logo.svg';
@@ -916,7 +915,7 @@ export default class CredentialsDialog extends BaseSystemSettingsDialog<
                             disabled={this.props.saving}
                             onClick={() => this.setState({ deleteIndex: index })}
                         >
-                            <DeleteIcon />
+                            <IconTrash />
                         </IconButton>
                     </TableCell>
                 </TableRow>

@@ -25,6 +25,7 @@ import {
     type ObjectBrowserClass,
     type ObjectBrowserFilter,
     type TreeItemData,
+    IconTrash,
 } from '@iobroker/gui-components';
 
 import type { ObjectsWorker } from '@/Workers/ObjectsWorker';
@@ -233,7 +234,7 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                             sx={{ '& .MuiButton-text': styles.buttonText }}
                             onClick={() => this.onDelete(false)}
                             color="primary"
-                            startIcon={<IconDeleteOne />}
+                            startIcon={<IconTrash />}
                             autoFocus
                         >
                             {this.t('Delete one item')}

@@ -15,9 +15,9 @@ import {
     TextField,
 } from '@mui/material';
 
-import { Add as AddIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Add as AddIcon, Close as CloseIcon } from '@mui/icons-material';
 
-import { I18n, type Translate } from '@iobroker/gui-components';
+import { I18n, type Translate, IconTrash } from '@iobroker/gui-components';
 
 import { type ioBrokerObject } from '@/types';
 import AdminUtils from '../../helpers/AdminUtils';
@@ -236,7 +236,7 @@ export default class CertificatesDialog extends BaseSystemSettingsDialog<
                             aria-label="add"
                             onClick={() => this.onDelete(e.title)}
                         >
-                            <DeleteIcon />
+                            <IconTrash />
                         </Fab>
                     </TableCell>
                 </TableRow>
