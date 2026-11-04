@@ -1,4 +1,7 @@
 # Older changes
+## 8.3.3 (2026-10-23)
+- (@GermanBluefox) Fixed: the object browser showed an object twice and copied its row while scrolling, if a sibling ID began with the same text followed by a space (#3693)
+
 ## 8.3.2 (2026-10-23)
 - (@GermanBluefox) Fixed: the adapter list was empty after an adapter update and switching between the tabs (#3695)
 - (@GermanBluefox) Fixed: an adapter updated while the adapter list was loading was still offered for update with the same version
