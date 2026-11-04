@@ -1,4 +1,5 @@
-import { statSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
+import { statSync, existsSync, writeFileSync, readFileSync, mkdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import less from 'less';
@@ -24,8 +25,24 @@ function syncVersion(): void {
     }
 }
 
+/**
+ * React 19 and 18 as one ES module each, served as `/lib/esm/react-<major>.js`: a web component written with React
+ * imports it from there instead of bringing its own (see @iobroker/web-components)
+ */
+function copyReactModules(): void {
+    const require = createRequire(import.meta.url);
+    mkdirSync(`${dirName}/${srcRx}public/lib/esm`, { recursive: true });
+    for (const file of ['react-19.js', 'react-18.js']) {
+        writeFileSync(
+            `${dirName}/${srcRx}public/lib/esm/${file}`,
+            readFileSync(require.resolve(`@iobroker/web-components/esm/${file}`)),
+        );
+    }
+}
+
 async function build(): Promise<void> {
     syncVersion();
+    copyReactModules();
     const socketNew = readFileSync(`${dirName}/node_modules/@iobroker/ws/build/esm/socket.io.min.js`).toString();
     const socketOld = readFileSync(`${dirName}/src-admin/public/lib/js/socket.io.js`).toString();
     if (socketNew !== socketOld) {
@@ -192,6 +209,8 @@ if (process.argv.includes('--backend-i18n')) {
     });
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-version')) {
     syncVersion();
+} else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-esm')) {
+    copyReactModules();
 } else if (process.argv.find(e => e.replace(/^-*/, '') === 'react-0-configCSS')) {
     syncUtils()
         .then(() => configCSS())
