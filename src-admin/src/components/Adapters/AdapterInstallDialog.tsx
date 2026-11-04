@@ -131,6 +131,8 @@ export type AdaptersContext = {
     sortRecentlyUpdated: boolean;
     sortRecentlyCreated: boolean;
     isTileView: boolean;
+    /** Adapter that the running command installs, updates, uploads or rebuilds - its icon shows a turning ring */
+    updatingAdapter: string | null;
     updateRating: (adapter: string, rating: RatingDialogRepository) => void;
     setAdminUpgradeTo: (version: string) => void;
     hostAdapterWorker: HostAdapterWorker;

@@ -34,7 +34,10 @@ const InstanceInfo = (props: InstanceInfoProps): JSX.Element => (
         sx={{ alignItems: 'center' }}
     >
         {props.icon && (
-            <Grid style={{ minWidth: 24 }}>
+            <Grid
+                // flex: as an inline element, the icon would sit on the base line of the text, not in the middle
+                style={{ minWidth: 24, display: 'flex' }}
+            >
                 <Tooltip
                     title={props.tooltip || ''}
                     slotProps={{ popper: { sx: styles.tooltip } }}

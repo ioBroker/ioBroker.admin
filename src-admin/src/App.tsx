@@ -2488,6 +2488,7 @@ class App extends Router<AppProps, AppState> {
                                 files?: CommandFile[],
                             ) => this.executeCommand(cmd, host, callback, files)}
                             commandRunning={this.state.commandRunning}
+                            runningCommand={this.state.commandRunning ? this.state.cmd : null}
                             onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
                             menuOpened={opened}
                             menuClosed={closed}

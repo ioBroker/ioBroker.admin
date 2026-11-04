@@ -19,6 +19,8 @@ const styles: Record<string, any> = {
         pl: 1,
         pr: 2,
         p: 0,
+        // the colour of the status (grey, red, orange, green) fades into the new one
+        transition: 'min-height 150ms, background-color 0.6s ease',
     },
     expanded: {
         minHeight: 64,
@@ -185,7 +187,6 @@ const styles: Record<string, any> = {
     desktopIcon: {
         height: 32,
         width: 32,
-        mt: 1,
     },
     desktopRowContent: {
         mt: '2px',
@@ -198,7 +199,8 @@ const styles: Record<string, any> = {
         // paddingLeft: 4,
     },
     rowGridLine: {
-        marginTop: -2,
+        // the height of the row; all elements are centered in it
+        minHeight: 38,
         overflow: 'hidden',
         // Takes the whole width of the row. Sized by its content, a row without a port was narrower, as the
         // empty resources column gave nothing to it: that column and the RAM shrank and stood out of line
@@ -605,14 +607,14 @@ class InstanceRow extends InstanceGeneric<InstanceGenericProps, InstanceGenericS
                             component="div"
                             // reserve the place, even if the adapter does not support sentry,
                             // so the compact icon stays aligned too
-                            sx={{ ...styles.hidden570, minWidth: 34 }}
+                            sx={{ ...styles.hidden570, minWidth: 34, alignItems: 'center' }}
                         >
                             {item.checkSentry ? this.renderSentry() : null}
                         </Box>
                     )}
                     <Box
                         component="div"
-                        sx={styles.hidden570}
+                        sx={{ ...styles.hidden570, alignItems: 'center' }}
                     >
                         {this.renderCompactGroupEnabled()}
                     </Box>

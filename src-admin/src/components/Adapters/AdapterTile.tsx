@@ -14,6 +14,7 @@ import AdapterGeneric, {
     type ImageProps,
     genericStyles,
 } from './AdapterGeneric';
+import UpdatingRing from './UpdatingRing';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -246,6 +247,13 @@ class AdapterTile extends AdapterGeneric<AdapterGenericProps, AdapterTileState> 
                     src={this.props.cached.image || 'img/no-image.svg'}
                     image={this.props.cached.image || 'img/no-image.svg'}
                 />
+                {this.props.context.updatingAdapter === this.props.adapterName ? (
+                    <UpdatingRing
+                        size={45}
+                        // the image is 45px wide, starts after the padding of 10px and is centered vertically
+                        style={{ left: 10 + 22.5, top: '50%' }}
+                    />
+                ) : null}
                 <Box
                     component="div"
                     sx={Utils.getStyle(

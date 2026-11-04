@@ -162,6 +162,8 @@ interface AdaptersListState {
     renderCounter: number;
     expertMode: boolean;
     commandRunning: boolean;
+    /** The adapter that the running command installs or updates: its icon gets a turning ring */
+    updatingAdapter: string | null;
     noTranslation: boolean;
 }
 
@@ -188,6 +190,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             listOfVisibleAdapter: JSON.stringify(props.listOfVisibleAdapter),
             expertMode: props.context.expertMode,
             commandRunning: props.commandRunning,
+            updatingAdapter: props.context.updatingAdapter,
             noTranslation: props.noTranslation,
         };
     }
@@ -562,6 +565,9 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             console.log('Render because of commandRunning');
             changed = true;
         }
+        if (props.context.updatingAdapter !== state.updatingAdapter) {
+            changed = true;
+        }
         if (props.noTranslation !== state.noTranslation) {
             console.log('Render because of commandRunning');
             changed = true;
@@ -584,6 +590,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
                 renderCounter: state.renderCounter + 1,
                 expertMode: props.context.expertMode,
                 commandRunning: props.commandRunning,
+                updatingAdapter: props.context.updatingAdapter,
                 noTranslation: props.noTranslation,
             };
         }

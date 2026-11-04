@@ -1,4 +1,4 @@
-import React, { type JSX } from 'react';
+import React, { useEffect, useRef, type JSX } from 'react';
 
 import { Badge, Box, ListItemButton, ListItemIcon, ListItemText, Tooltip, Typography, Checkbox } from '@mui/material';
 import { DragHandle } from '@mui/icons-material';
@@ -112,6 +112,35 @@ interface DrawerItemProps {
     theme: IobTheme;
 }
 
+const BOUNCE_ID = 'iob-badge-bounce';
+
+/**
+ * The badge below the returned ref jumps, when its number grows - e.g. new updates or new errors in the log.
+ * `scale` is animated instead of `transform`, which MUI uses to place the badge.
+ */
+function useBadgeBounce(count: number): React.RefObject<HTMLSpanElement | null> {
+    const ref = useRef<HTMLSpanElement>(null);
+    const last = useRef(count);
+    useEffect(() => {
+        const previous = last.current;
+        last.current = count;
+        if (count <= previous || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            return;
+        }
+        const badge = ref.current?.querySelector<HTMLElement>('.MuiBadge-badge');
+        // a log with many new lines must not let the badge jump all the time
+        if (!badge?.animate || badge.getAnimations?.().some(anim => anim.id === BOUNCE_ID)) {
+            return;
+        }
+        const anim = badge.animate([{ scale: 1 }, { scale: 1.5 }, { scale: 0.85 }, { scale: 1.12 }, { scale: 1 }], {
+            duration: 650,
+            easing: 'ease-out',
+        });
+        anim.id = BOUNCE_ID;
+    }, [count]);
+    return ref;
+}
+
 const DrawerItem = (props: DrawerItemProps): JSX.Element => {
     const {
         badgeColor,
@@ -129,6 +158,9 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
         badgeAdditionalColor,
         style,
     } = props;
+
+    const badgeRef = useBadgeBounce(badgeContent || 0);
+    const badgeAdditionalRef = useBadgeBounce(badgeAdditionalContent || 0);
 
     let content = text ? text.replace('&gt;', '>') : '';
 
@@ -172,6 +204,7 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                             sx={Utils.getStyle(props.theme, styles.icon, selected && styles.selectedIcon)}
                         >
                             <Badge
+                                ref={badgeRef}
                                 badgeContent={badgeContent || 0}
                                 color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
                                 // In the compact drawer there is no room to the right of the icon - a
@@ -192,6 +225,7 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                                 sx={styles.text}
                             >
                                 <Badge
+                                    ref={badgeAdditionalRef}
                                     badgeContent={badgeAdditionalContent || 0}
                                     color={
                                         (badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) ||

@@ -7,6 +7,7 @@ import AdapterGeneric, {
     type AdapterGenericState,
     genericStyles,
 } from '@/components/Adapters/AdapterGeneric';
+import UpdatingRing from '@/components/Adapters/UpdatingRing';
 
 const styles: Record<string, any> = {
     ...genericStyles,
@@ -59,13 +60,20 @@ export default class AdapterRow extends AdapterGeneric<AdapterGenericProps, Adap
                             title={this.props.adapterName}
                             slotProps={{ popper: { sx: this.styles.tooltip } }}
                         >
-                            <Grid style={this.styles.paddingNone}>
+                            <Grid style={{ ...this.styles.paddingNone, position: 'relative' }}>
                                 <Avatar
                                     variant="square"
                                     alt={this.props.cached.title}
                                     src={this.props.cached.image}
                                     style={this.styles.smallAvatar}
                                 />
+                                {this.props.context.updatingAdapter === this.props.adapterName ? (
+                                    <UpdatingRing
+                                        size={32}
+                                        // the avatar has a left margin of 4px
+                                        style={{ left: 4 + 16, top: '50%' }}
+                                    />
+                                ) : null}
                             </Grid>
                         </Tooltip>
                         {allowAdapterRating !== false ? (

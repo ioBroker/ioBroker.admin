@@ -153,6 +153,8 @@ interface AdaptersProps extends AdapterInstallDialogProps {
     expertMode: boolean;
     executeCommand: (cmd: string, host?: string, callback?: (exitCode?: number) => void, files?: CommandFile[]) => void;
     commandRunning: boolean;
+    /** The command that runs at the moment, e.g. `upgrade hm-rpc@2.0.0` */
+    runningCommand?: string | null;
     onSetCommandRunning: (commandRunning: boolean) => void;
     toggleTranslation: () => void;
     menuOpened: boolean;
@@ -1566,6 +1568,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             sortRecentlyUpdated: !this.state.tableViewMode && this.state.filterTiles === FILTER_UPDATED,
             sortRecentlyCreated: !this.state.tableViewMode && this.state.filterTiles === FILTER_CREATED,
             isTileView: !this.state.tableViewMode,
+            updatingAdapter: Adapters.getCommandAdapter(this.props.runningCommand),
             updateRating: (adapter: string, rating: RatingDialogRepository) => {
                 const repository: Record<string, RepoAdapterObject & { rating?: AdapterRatingInfo }> = JSON.parse(
                     JSON.stringify(this.state.repository),
@@ -1579,6 +1582,12 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     }
 
     setAdminUpgradeTo = (version: string): void => this.setState({ adminUpgradeTo: version });
+
+    /** Name of the adapter a command installs, updates, uploads or rebuilds, e.g. `upgrade hm-rpc@2.0.0` → `hm-rpc` */
+    static getCommandAdapter(cmd: string | null | undefined): string | null {
+        const match = cmd?.match(/^(?:upgrade|add|upload|rebuild)\s+(?:iobroker\.)?([-\w]+)/i);
+        return match ? match[1].toLowerCase() : null;
+    }
 
     buildCache(context: AdaptersContext): void {
         this.cache.listOfVisibleAdapter = [];
