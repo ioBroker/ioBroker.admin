@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Changed: the dialog "Update all adapters" shows the overall progress and the result of each adapter
+
 ### 8.3.8 (2026-11-04)
 - (@GermanBluefox) Added: menu badges jump when their number grows; a ring turns around the adapter icon while it is installed or updated
 - (@GermanBluefox) Changed: instance rows fade into the color of the new status; all elements of a row are centered vertically

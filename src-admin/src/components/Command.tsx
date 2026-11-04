@@ -1,12 +1,31 @@
 import React, { Component, type JSX } from 'react';
 
 import { Box, Grid, LinearProgress, Paper, Switch, Typography } from '@mui/material';
-import type { Theme } from '@mui/material/styles';
+import { keyframes, type Theme } from '@mui/material/styles';
 
 import { Router, type AdminConnection, type Translate, IconResult } from '@iobroker/gui-components';
 
 import type { CommandFile } from '@/types';
 import AdminUtils from '../helpers/AdminUtils';
+
+/** A new line of the output fades in from below. The lines are keyed by index, so only new lines play it. */
+const lineIn = keyframes`
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+`;
+
+const lineAnimation = {
+    animation: `${lineIn} 0.25s ease-out`,
+    '@media (prefers-reduced-motion: reduce)': {
+        animation: 'none',
+    },
+};
 
 const styles: Record<string, React.CSSProperties> = {
     log: {
@@ -362,6 +381,7 @@ export default class Command extends Component<CommandProps, CommandState> {
                     sx={
                         isCommand
                             ? (theme: Theme) => ({
+                                  ...lineAnimation,
                                   fontWeight: 'bold',
                                   backgroundColor:
                                       theme.palette.mode === 'dark'
@@ -373,7 +393,7 @@ export default class Command extends Component<CommandProps, CommandState> {
                                   mx: '-6px',
                                   mb: '6px',
                               })
-                            : undefined
+                            : lineAnimation
                     }
                 >
                     {this.colorize(value)}

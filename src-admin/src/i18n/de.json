@@ -2005,5 +2005,7 @@
     "No instance has registered a resource": "Keine Instanz hat eine Ressource registriert",
     "Adapter \"%s\" allows only one instance, and %s exists already": "Adapter \"%s\" erlaubt nur eine Instanz, und %s existiert bereits",
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "Adapter \"%s\" erlaubt nur eine Instanz pro Host, und %s existiert bereits auf Host \"%s\"",
-    "The admin was updated. Please load the page anew.": "Der Admin wurde aktualisiert. Bitte laden Sie die Seite neu."
+    "The admin was updated. Please load the page anew.": "Der Admin wurde aktualisiert. Bitte laden Sie die Seite neu.",
+    "%s adapter(s) updated": "%s Adapter aktualisiert",
+    "%s of %s adapter(s) updated": "%s von %s Adaptern aktualisiert"
 }

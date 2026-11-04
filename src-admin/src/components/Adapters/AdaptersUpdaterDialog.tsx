@@ -12,7 +12,10 @@ import {
     IconButton,
     Tooltip,
     DialogContent,
+    LinearProgress,
+    Box,
 } from '@mui/material';
+import { keyframes } from '@mui/material/styles';
 
 import {
     Check as CheckIcon,
@@ -21,12 +24,24 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, Utils, type IobTheme, type Translate } from '@iobroker/gui-components';
+import { type AdminConnection, I18n, IconResult, Utils, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import type { AdapterRatingInfo, InstalledInfo } from './AdapterInstallDialog';
 import type { RepoAdapterObject } from './Utils';
 import AdaptersUpdater from './AdaptersUpdater';
 import Command from '../Command';
+
+/** The log slides in from the right, when the first update starts */
+const logIn = keyframes`
+    from {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+`;
 
 const styles: Record<string, any> = {
     dialogRoot: {
@@ -81,6 +96,31 @@ const styles: Record<string, any> = {
     languageButtonActive: (theme: IobTheme) => ({
         color: theme.palette.primary.main,
     }),
+    title: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+    },
+    step: {
+        fontSize: '0.8em',
+        opacity: 0.7,
+        fontWeight: 'normal',
+        ml: 1,
+    },
+    progress: {
+        mt: 1.5,
+        height: 6,
+        borderRadius: 3,
+        '& .MuiLinearProgress-bar': {
+            borderRadius: 3,
+        },
+    },
+    log: {
+        animation: `${logIn} 0.35s ease-out`,
+        '@media (prefers-reduced-motion: reduce)': {
+            animation: 'none',
+        },
+    },
 };
 
 interface AdaptersUpdaterDialogProps {
@@ -104,6 +144,8 @@ interface AdaptersUpdaterDialogState {
     finished: boolean;
     current: string;
     updated: string[];
+    /** Adapters whose update failed */
+    failed: string[];
     stopped: boolean;
     debug: boolean;
     stopOnError: boolean;
@@ -127,6 +169,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             finished: false,
             current: '',
             updated: [],
+            failed: [],
             /** If an upgrade process has been stopped, e.g., due to an error */
             stopped: false,
             debug:
@@ -189,6 +232,72 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
         }
     }
 
+    /** Number of the adapters with a result (updated or failed) */
+    getProcessedCount(): number {
+        return new Set([...this.state.updated, ...this.state.failed]).size;
+    }
+
+    isAllUpdated(): boolean {
+        return this.state.finished && !this.state.stopped && !this.state.failed.length;
+    }
+
+    renderTitle(): JSX.Element {
+        const total = this.state.selected.length;
+        if (this.state.finished) {
+            const updated = this.state.updated.filter(adapter => !this.state.failed.includes(adapter)).length;
+            const all = this.isAllUpdated();
+            return (
+                <Box sx={styles.title}>
+                    <IconResult type={all ? 'success' : this.state.failed.length ? 'error' : 'warning'} />
+                    {all
+                        ? this.props.t('%s adapter(s) updated', updated)
+                        : this.props.t('%s of %s adapter(s) updated', updated, total)}
+                </Box>
+            );
+        }
+        return (
+            <Box sx={styles.title}>
+                {this.props.t('Update %s adapter(s)', total)}
+                {this.state.inProcess ? (
+                    <Box
+                        component="span"
+                        sx={styles.step}
+                    >
+                        {this.props.t('Step %s of %s', Math.min(this.getProcessedCount() + 1, total), total)}
+                    </Box>
+                ) : null}
+            </Box>
+        );
+    }
+
+    /** The whole run: the done part solid, the running adapter light, the rest dashed */
+    renderProgress(): JSX.Element | null {
+        const total = this.state.selected.length;
+        if ((!this.state.inProcess && !this.state.finished) || !total) {
+            return null;
+        }
+        const processed = this.getProcessedCount();
+        const running = this.state.inProcess && !this.state.finished;
+        return (
+            <LinearProgress
+                variant={running ? 'buffer' : 'determinate'}
+                value={(processed / total) * 100}
+                valueBuffer={running ? (Math.min(processed + 1, total) / total) * 100 : undefined}
+                color={
+                    this.state.failed.length || this.state.stopped
+                        ? // a failure while the others still run is a warning: the run goes on
+                          running
+                            ? 'warning'
+                            : 'error'
+                        : this.state.finished
+                          ? 'success'
+                          : 'primary'
+                }
+                sx={styles.progress}
+            />
+        );
+    }
+
     render(): JSX.Element {
         const languageButtonActive = this.props.noTranslation
             ? Utils.getStyle(this.props.theme, styles.languageButtonActive)
@@ -207,7 +316,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
             >
                 <DialogTitle id="update-dialog-title">
                     <div style={styles.wrapperHead}>
-                        {this.props.t('Update %s adapter(s)', this.state.selected.length)}
+                        {this.renderTitle()}
                         {!this.state.finished && !this.state.inProcess && (
                             <Tooltip
                                 title={this.props.t('Select/Unselect all')}
@@ -243,6 +352,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                             </IconButton>
                         ) : null}
                     </div>
+                    {this.renderProgress()}
                 </DialogTitle>
                 <DialogContent sx={{ '&.MuiDialogContent-root': styles.content }}>
                     <Grid
@@ -259,6 +369,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                     current={this.state.current}
                                     stopped={this.state.stopped}
                                     updated={this.state.updated}
+                                    failed={this.state.failed}
                                     lang={this.props.lang}
                                     installed={this.props.installed}
                                     repository={this.props.repository}
@@ -283,6 +394,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                     width: 'calc(100% - 260px)',
                                     minWidth: 240,
                                 }}
+                                sx={styles.log}
                             >
                                 <Command
                                     noSpacing
@@ -294,12 +406,13 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                                     cmd={`upgrade ${this.state.current}@${this.state.currentVersion}${this.state.debug ? ' --debug' : ''}`}
                                     onFinished={() => this.onAdapterFinished?.()}
                                     errorFunc={() => {
+                                        const failed = [...this.state.failed, this.state.current];
                                         if (this.state.stopOnError) {
-                                            this.setState({ stopped: true, finished: true });
+                                            this.setState({ failed, stopped: true, finished: true });
                                             this.onAdapterFinished = null;
                                             this.props.onSetCommandRunning(false);
                                         } else {
-                                            this.onAdapterFinished?.();
+                                            this.setState({ failed }, () => this.onAdapterFinished?.());
                                         }
                                     }}
                                 />
@@ -396,7 +509,7 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                         variant="contained"
                         onClick={() => this.props.onClose(!!this.state.updated.length)}
                         disabled={this.state.inProcess && !this.state.stopped}
-                        color={this.state.stopped ? 'error' : 'grey'}
+                        color={this.state.stopped ? 'error' : this.isAllUpdated() ? 'primary' : 'grey'}
                         startIcon={<CloseIcon />}
                     >
                         {this.props.t('Close')}

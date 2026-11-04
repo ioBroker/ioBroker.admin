@@ -2005,5 +2005,7 @@
     "No instance has registered a resource": "Ninguna instancia ha registrado un recurso",
     "Adapter \"%s\" allows only one instance, and %s exists already": "El adaptador \"%s\" solo permite una instancia, y %s ya existe",
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "El adaptador \"%s\" solo permite una instancia por host, y %s ya existe en el host \"%s\"",
-    "The admin was updated. Please load the page anew.": "El admin se ha actualizado. Vuelva a cargar la página."
+    "The admin was updated. Please load the page anew.": "El admin se ha actualizado. Vuelva a cargar la página.",
+    "%s adapter(s) updated": "%s adaptador(es) actualizado(s)",
+    "%s of %s adapter(s) updated": "%s de %s adaptador(es) actualizado(s)"
 }

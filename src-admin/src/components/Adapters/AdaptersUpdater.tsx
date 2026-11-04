@@ -9,7 +9,6 @@ import {
     Checkbox,
     Avatar,
     Button,
-    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -22,12 +21,18 @@ import {
 
 import { Close as CloseIcon, Language as LanguageIcon, Info as InfoIcon } from '@mui/icons-material';
 
-import { I18n, type IobTheme, Utils } from '@iobroker/gui-components';
+import { alpha } from '@mui/material/styles';
+
+import { I18n, IconResult, type IobTheme, Utils } from '@iobroker/gui-components';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
 import { checkCondition } from '@/components/Adapters/AdapterUpdateDialog';
 import type { RepoAdapterObject, RepoInfo } from '@/components/Adapters/Utils';
 import NewsLine, { stripNewsMarker } from '@/components/Adapters/NewsLine';
+import UpdatingRing from '@/components/Adapters/UpdatingRing';
+
+/** Where an adapter is in the update run: `select` before the start, then pending → running → done or error */
+type UpdateStatus = 'select' | 'pending' | 'running' | 'done' | 'error';
 
 interface GetNewsResultEntry {
     version: string;
@@ -41,19 +46,65 @@ const styles: Record<string, any> = {
     },
     listItem: (theme: IobTheme) => ({
         mb: '2px',
-        background: theme.palette.background,
+        borderRadius: `${theme.shape.borderRadius}px`,
+        // the status shows as a tinted row with a bar on the left; both fade into the next status
+        borderLeft: '3px solid transparent',
+        transition: 'background-color 0.5s ease, border-color 0.5s ease, opacity 0.4s ease',
         '@media screen and (max-width: 400px)': {
             pl: '2px',
         },
+        '@media (prefers-reduced-motion: reduce)': {
+            transition: 'none',
+        },
     }),
+    pending: {
+        opacity: 0.55,
+    },
+    running: (theme: IobTheme) => ({
+        backgroundColor: alpha(theme.palette.primary.main, 0.14),
+        borderLeftColor: theme.palette.primary.main,
+    }),
+    done: (theme: IobTheme) => ({
+        backgroundColor: alpha(theme.palette.success.main, 0.1),
+        borderLeftColor: theme.palette.success.main,
+    }),
+    error: (theme: IobTheme) => ({
+        backgroundColor: alpha(theme.palette.error.main, 0.14),
+        borderLeftColor: theme.palette.error.main,
+    }),
+    iconWrapper: {
+        position: 'relative',
+        display: 'flex',
+    },
+    /** A line is drawn through the old version, when the update is done */
+    fromVersion: {
+        position: 'relative',
+        transition: 'opacity 0.4s ease-out 0.2s',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            left: 0,
+            top: '55%',
+            height: '1px',
+            width: 0,
+            background: 'currentColor',
+            transition: 'width 0.4s ease-out 0.2s',
+        },
+    },
+    fromVersionDone: {
+        opacity: 0.6,
+        '&::after': {
+            width: '100%',
+        },
+    },
     toVersion: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? '#00dc00' : '#008100',
         fontWeight: 'bold',
         ml: '4px',
     }),
-    updateDone: {
-        background: '#5ef05e80',
-        opacity: 0.7,
+    /** The new version was not installed: not green anymore */
+    toVersionFailed: {
+        color: 'text.secondary',
     },
     minWidthCss: {
         '@media screen and (max-width: 400px)': {
@@ -112,6 +163,8 @@ interface AdaptersUpdaterProps {
     selected: string[];
     current: string;
     updated: string[];
+    /** Adapters whose update failed */
+    failed: string[];
     finished: boolean;
     noTranslation: boolean;
     toggleTranslation: () => void;
@@ -252,6 +305,22 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         return news;
     }
 
+    getStatus(adapter: string): UpdateStatus {
+        if (this.props.failed.includes(adapter)) {
+            return 'error';
+        }
+        if (this.props.updated.includes(adapter)) {
+            return 'done';
+        }
+        if (!this.props.inProcess && !this.props.finished) {
+            return 'select';
+        }
+        if (this.props.current === adapter && !this.props.stopped && !this.props.finished) {
+            return 'running';
+        }
+        return 'pending';
+    }
+
     renderOneAdapter(adapter: string): JSX.Element | null {
         const checked = this.props.selected.includes(adapter);
         if ((this.props.finished || this.props.inProcess) && !checked) {
@@ -263,6 +332,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         }
         const localIcon = this.props.installed[adapter].localIcon;
         const image = localIcon ? `.${localIcon}` : this.props.repository[adapter]?.extIcon || 'img/no-image.svg';
+        const status = this.getStatus(adapter);
 
         return (
             <ListItem
@@ -272,12 +342,12 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     '&.MuiListItem-root': Utils.getStyle(
                         this.props.theme,
                         styles.listItem,
-                        this.props.updated.includes(adapter) && styles.updateDone,
+                        status !== 'select' && styles[status],
                     ),
                 }}
                 ref={this.props.current === adapter ? this.currentRef : null}
                 secondaryAction={
-                    !this.props.finished && !this.props.inProcess ? (
+                    status === 'select' ? (
                         <Checkbox
                             edge="end"
                             checked={checked}
@@ -296,20 +366,29 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                 this.props.onUpdateSelected(selected);
                             }}
                         />
-                    ) : (
-                        this.props.current === adapter &&
-                        !this.props.stopped &&
-                        !this.props.finished && <CircularProgress />
-                    )
+                    ) : status === 'done' || status === 'error' ? (
+                        <IconResult
+                            type={status === 'done' ? 'success' : 'error'}
+                            ariaLabel={status === 'done' ? I18n.t('updated') : I18n.t('Error')}
+                        />
+                    ) : null
                 }
             >
                 <ListItemIcon sx={styles.minWidthCss}>
-                    <Avatar
-                        variant="square"
-                        alt={adapter}
-                        src={image}
-                        style={styles.smallAvatar}
-                    />
+                    <Box sx={styles.iconWrapper}>
+                        <Avatar
+                            variant="square"
+                            alt={adapter}
+                            src={image}
+                            style={styles.smallAvatar}
+                        />
+                        {status === 'running' ? (
+                            <UpdatingRing
+                                size={24}
+                                style={{ left: 12, top: 12 }}
+                            />
+                        ) : null}
+                    </Box>
                 </ListItemIcon>
                 <ListItemText
                     primary={adapter}
@@ -319,10 +398,16 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                     secondary={
                         <span>
                             <div style={styles.versions}>
-                                {this.initialVersions[adapter]} →
                                 <Box
                                     component="span"
-                                    sx={styles.toVersion}
+                                    sx={[styles.fromVersion, status === 'done' && styles.fromVersionDone]}
+                                >
+                                    {this.initialVersions[adapter]}
+                                </Box>{' '}
+                                →
+                                <Box
+                                    component="span"
+                                    sx={[styles.toVersion, status === 'error' && styles.toVersionFailed]}
                                 >
                                     {this.props.repository[adapter].version}
                                 </Box>
@@ -515,7 +600,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
     render(): JSX.Element {
         if (this.current !== this.props.current) {
             this.current = this.props.current;
-            setTimeout(() => this.currentRef.current?.scrollIntoView(), 200);
+            setTimeout(() => this.currentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
         }
 
         return (

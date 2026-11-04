@@ -2005,5 +2005,7 @@
     "No instance has registered a resource": "No instance has registered a resource",
     "Adapter \"%s\" allows only one instance, and %s exists already": "Adapter \"%s\" allows only one instance, and %s exists already",
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"",
-    "The admin was updated. Please load the page anew.": "The admin was updated. Please load the page anew."
+    "The admin was updated. Please load the page anew.": "The admin was updated. Please load the page anew.",
+    "%s adapter(s) updated": "%s adapter(s) updated",
+    "%s of %s adapter(s) updated": "%s of %s adapter(s) updated"
 }
