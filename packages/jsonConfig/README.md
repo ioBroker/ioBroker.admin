@@ -1311,6 +1311,26 @@ Determines current location and used `system.config` coordinates if not possible
 | `longitudeName` | if defined, the longitude will be stored in this attribute, divider will be ignored                                                                                    |
 | `latitudeName`  | if defined, the latitude will be stored in this attribute, divider will be ignored                                                                                     |
 | `useSystemName` | if defined, the checkbox with "Use system settings" will be shown and latitude, longitude will be read from `system.config`, a boolean will be saved to the given name |
+| `map`           | show the position on an OpenStreetMap under the fields. A click on the map or dragging the marker sets the position (From 10.1.16)                                      |
+| `mapHeight`     | height of the map in pixels. Default 300 (From 10.1.16)                                                                                                                 |
+| `mapZoom`       | zoom level the map starts with: 1 - the whole world, 18 - a house. Default 13 (From 10.1.16)                                                                            |
+| `readOnly`      | only show the position: the fields cannot be edited, the buttons are hidden and the map does not change the position. Shows the data as they are now (From 10.1.16)    |
+
+The map does not belong to this library: the host hands it in with the property `OsmMap` of `JsonConfig` /
+`JsonConfigComponent`, best as `React.lazy(() => import('./OsmMap'))`, so that `leaflet` is only loaded when a
+map is really shown. It gets the props `OsmMapProps` (`position`, `center`, `zoom`, `onChange`, `themeType`,
+`style`); without `onChange` it is read-only. `test-gui/src/OsmMap.tsx` is an implementation with `leaflet`.
+Without a map from the host, only a link to the position on openstreetmap.org is shown.
+
+```json
+"position": {
+    "type": "coordinates",
+    "label": "Position",
+    "longitudeName": "longitude",
+    "latitudeName": "latitude",
+    "map": true
+}
+```
 
 ### `interface`
 
@@ -2088,6 +2108,14 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.16 (2026-11-05)
+- (@GermanBluefox) Added: `coordinates` shows the position on an OpenStreetMap with `map: true` (`mapHeight`, `mapZoom`). A click on the map or dragging the marker sets the position. The host hands the map in with the new property `OsmMap` of `JsonConfig` / `JsonConfigComponent`, lazy loaded, so that `leaflet` does not land in every bundle that uses this library. Without it a link to openstreetmap.org is shown
+- (@GermanBluefox) Added: `readOnly` for `coordinates`, to only show a position: no editing, no buttons, the map does not change the position, and the shown values follow the data
+- (@GermanBluefox) Fixed: the buttons of `coordinates` "Take position from browser" / "from system settings" were active also if the item was disabled
+
+### 10.1.15 (2026-11-05)
+- (@GermanBluefox) Added: `_instance` (the number of the instance) in the text patterns too, not only in the JS functions - e.g. `"settings": {"instance": "my-adapter.${_instance}"}` tells a web component which instance it belongs to
+
 ### 10.1.14 (2026-11-05)
 - (@GermanBluefox) Added: `custom` shows web components of `@iobroker/web-components` with the new attribute `webComponent` (the manifest file). The element gets the connection, the theme and the dialogs of admin, the values of `settings` (also from the configuration with `${data.xxx}`) and the value of its attribute as `value`, which it changes with the event `iob-change`
 

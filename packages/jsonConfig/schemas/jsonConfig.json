@@ -2479,6 +2479,25 @@
           "description": "if defined, the checkbox with \"Use system settings\" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name",
           "type": "string"
         },
+        "map": {
+          "description": "Show the position on an OpenStreetMap under the fields. A click on the map or dragging the marker sets the position. The host must provide the map, else only a link to openstreetmap.org is shown",
+          "type": "boolean"
+        },
+        "mapHeight": {
+          "description": "Height of the map in pixels. Default 300",
+          "type": "number",
+          "minimum": 50
+        },
+        "mapZoom": {
+          "description": "Zoom level the map starts with: 1 - the whole world, 18 - a house. Default 13",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 19
+        },
+        "readOnly": {
+          "description": "Only show the position: the fields cannot be edited, the buttons are hidden and the map does not change the position",
+          "type": "boolean"
+        },
         "attr": true,
         "label": true,
         "type": true,
@@ -7944,6 +7963,25 @@
                 "useSystemName": {
                   "description": "if defined, the checkbox with \"Use system settings\" will be shown and latitude, longitude will be read from system.config, a boolean will be saved to the given name",
                   "type": "string"
+                },
+                "map": {
+                  "description": "Show the position on an OpenStreetMap under the fields. A click on the map or dragging the marker sets the position. The host must provide the map, else only a link to openstreetmap.org is shown",
+                  "type": "boolean"
+                },
+                "mapHeight": {
+                  "description": "Height of the map in pixels. Default 300",
+                  "type": "number",
+                  "minimum": 50
+                },
+                "mapZoom": {
+                  "description": "Zoom level the map starts with: 1 - the whole world, 18 - a house. Default 13",
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 19
+                },
+                "readOnly": {
+                  "description": "Only show the position: the fields cannot be edited, the buttons are hidden and the map does not change the position",
+                  "type": "boolean"
                 },
                 "attr": true,
                 "label": true,

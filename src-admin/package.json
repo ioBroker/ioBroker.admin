@@ -27,7 +27,7 @@
         "@iobroker/ai-gui": "^0.0.5",
         "@iobroker/dm-gui-components": "^10.1.0",
         "@iobroker/gui-components": "^10.4.3",
-        "@iobroker/json-config": "^10.1.14",
+        "@iobroker/json-config": "^10.1.16",
         "ace-builds": "^1.45.2",
         "remark-gfm": "^4.0.1"
     },
@@ -39,7 +39,7 @@
         "@iobroker/socket-client": "^5.6.0",
         "@iobroker/type-detector": "^6.2.0",
         "@module-federation/runtime": "^2.9.3",
-        "@module-federation/vite": "^1.23.9",
+        "@module-federation/vite": "^1.23.10",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@react-leaflet/core": "^3.0.0",
         "@types/ace": "^0.0.52",
