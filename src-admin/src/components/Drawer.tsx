@@ -1270,7 +1270,10 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             const locked =
                 lockedText(
                     this.props.socket,
-                    missingTabPermissions(this.props.socket, tab.configManagerInstance ? 'tab-devicemanager' : tab.name),
+                    missingTabPermissions(
+                        this.props.socket,
+                        tab.configManagerInstance ? 'tab-devicemanager' : tab.name,
+                    ),
                     this.props.t,
                 ) ?? undefined;
 

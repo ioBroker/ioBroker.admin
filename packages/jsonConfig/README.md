@@ -146,7 +146,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`coordinates`:**](#coordinates) Determines current location and used `system.config` coordinates if not possible in form `latitude,longitude`
 - [**`credential`:**](#credential) Selects a credential from the central credential storage (managed in admin settings)
 - [**`cron`:**](#cron) Configures cron expressions for scheduling tasks
-- [**`custom`:**](#custom) Integrates custom components for specific functionalities (Admin 6 only)
+- [**`custom`:**](#custom) Integrates custom components for specific functionalities (Admin 6 only), or web components of `@iobroker/web-components`
 - [**`datePicker`:**](#datepicker) Allows users to select a date
 - [**`deviceManager`:**](#devicemanager) show device manager
 - [**`divider`:**](#divider) Creates a horizontal line separator
@@ -924,6 +924,15 @@ only Admin6
 | `url`         | Location of the component                                                                                                      |
 | `i18n`        | true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}` |
 | `bundlerType` | If module written with TypeScript, set it to `module`. From Admin 7.5.x                                                        |
+
+Or a web component of [`@iobroker/web-components`](https://github.com/ioBroker/web-components) - then `name`, `url`,
+`i18n` and `guiApi` are not used, see [Web component](#web-component):
+
+| Property       | Description                                                                                                            |
+|----------------|------------------------------------------------------------------------------------------------------------------------|
+| `webComponent` | The manifest file of the component, like `webcomponents/my-editor.json`. Resolved like `url`                           |
+| `settings`     | optional: the values of the settings of its manifest, like `{ "oid": "${data.stateId}", "decimals": 1 }`               |
+| `height`       | optional: height of the element, a number in px or a CSS length. `size.height` of the manifest if not set, else 200 px |
 
 #### Example for url
 
@@ -1932,6 +1941,64 @@ You can limit the application of the custom settings only to specific states by 
 
 You can find examples in [`telegram`](https://github.com/iobroker-community-adapters/ioBroker.telegram/tree/master/src-admin) or in [`pushbullet`](https://github.com/Jens1809/ioBroker.pushbullet/tree/master/src-admin) adapter.
 
+## Web component
+
+A `custom` item with `webComponent` shows a custom element of
+[`@iobroker/web-components`](https://github.com/ioBroker/web-components) - the same component that vis-2, devices
+and aura show. It is not built against the React and MUI of admin, so it needs no `guiApi` and keeps working when
+admin moves to the next generation.
+
+```json
+"schedule": {
+    "type": "custom",
+    "webComponent": "webcomponents/my-schedule.json",
+    "label": "Schedule",
+    "height": 240,
+    "settings": {
+        "oid": "${data.stateId}",
+        "decimals": 1
+    }
+}
+```
+
+JSON-Config reads the manifest, imports its module once for all items that show it and gives the element what
+every host gives:
+
+| Property   | In JSON-Config                                                                                                                                                                                    |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `socket`   | the connection of admin                                                                                                                                                                           |
+| `settings` | the defaults of the manifest, then `settings` of the item, typed as the manifest declares them; a string with `${data.xxx}` takes the value from the configuration. A new object only on a change |
+| `theme`    | the colors and the font of admin (`getWebComponentTheme()`)                                                                                                                                       |
+| `dialogs`  | MUI dialogs of admin: a form is rendered by JSON-Config itself, an element is framed                                                                                                              |
+| `value`    | the value of the item's attribute, see below                                                                                                                                                      |
+
+`editMode` is not set. `label`, `help`, `hidden`, `disabled`, `validator` and the sizes work as for every item; a
+disabled element is `inert` and greyed out. JSON-Config has no views, so it ignores `iob-navigate`.
+
+The element edits the value of the item's attribute, as the
+[values](https://github.com/ioBroker/web-components#values) of the contract describe: it gets it as the property
+`value` and changes it with the event `iob-change` (`CHANGE_EVENT`), whose `detail` is the new value - JSON, so it
+can be saved. JSON-Config stores it like the value of any other item - with `confirm`, `onChange` and the validator -
+and calls `preventDefault()`, so `changeValue()` of the base class returns `true`. While the item is disabled it
+ignores the event. `value` is set again when the stored value differs from the element's: changed by another item,
+or not stored because the user declined the confirmation.
+
+```js
+class MySchedule extends IobWebComponent {
+    render() {
+        const bars = Array.isArray(this.value) ? this.value : [];
+        // ... draw the bars
+    }
+
+    #onDragEnd(bars) {
+        this.changeValue(bars);
+    }
+}
+```
+
+The element fills a box of `height` (or `size.height` of the manifest) and the width of the item; with
+`size.noResize` it gets `size.width` as well. The same element stays while the item is hidden and shown again.
+
 ## JSON Tab in admin
 From admin version 7.6.x you can define the tab (like `backitup` or `matter`) via JSON config.
 
@@ -2021,6 +2088,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.14 (2026-11-05)
+- (@GermanBluefox) Added: `custom` shows web components of `@iobroker/web-components` with the new attribute `webComponent` (the manifest file). The element gets the connection, the theme and the dialogs of admin, the values of `settings` (also from the configuration with `${data.xxx}`) and the value of its attribute as `value`, which it changes with the event `iob-change`
+
 ### 10.1.13 (2026-11-05)
 - (@GermanBluefox) Changed: the animated icons of `@iobroker/gui-components` are used everywhere: the trash can for the delete buttons (`table`, `accordion`, `fileSelector`, named icon `delete`), the upload symbol for upload, import and export, the refresh symbol, the funnel with the red cross for the filters of `table`, play/pause and the connection symbol for `state` and `textSendTo`, the menu symbol of the tabs on small displays
 - (@GermanBluefox) Changed: the copy buttons of `text`, `uuid`, `pattern`, `textSendTo`, `staticInfo` and of the copy dialog of `sendTo` confirm the copy with a check mark instead of the alert "Copied"

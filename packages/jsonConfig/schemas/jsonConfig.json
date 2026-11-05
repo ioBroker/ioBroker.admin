@@ -824,6 +824,38 @@
           "minimum": 1,
           "description": "Generation of the GUI API this component was built against. `2` means it uses `@iobroker/gui-components` (React 19 / MUI 9). Omitted or `1` means it was built against the legacy `@iobroker/adapter-react-v5` (React 18 / MUI 6). A component that declares an older generation than the admin provides is not loaded at all. From Admin 8.0.x"
         },
+        "webComponent": {
+          "type": "string",
+          "description": "Manifest file of a web component (`@iobroker/web-components`), like `webcomponents/my-editor.json`. Resolved like `url`: relative to the admin folder of the adapter, from the root of the server with `./`, or an absolute URL. If set, `url`, `name`, `i18n` and `guiApi` are not used. The element gets the value of the attribute as `value` and changes it with the event `iob-change`"
+        },
+        "settings": {
+          "type": "object",
+          "description": "`webComponent` only: the values of the settings of its manifest. The defaults of the manifest fill the rest. A string with `${data.xxx}` takes the value from the configuration",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          }
+        },
+        "height": {
+          "description": "`webComponent` only: height of the element - a number in px or a CSS length. `size.height` of the manifest if not set",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
         "custom": {
           "type": "object",
           "description": "Custom properties for the component as an object"
@@ -4734,6 +4766,38 @@
                       "type": "number",
                       "minimum": 1,
                       "description": "Generation of the GUI API this component was built against. `2` means it uses `@iobroker/gui-components` (React 19 / MUI 9). Omitted or `1` means it was built against the legacy `@iobroker/adapter-react-v5` (React 18 / MUI 6). A component that declares an older generation than the admin provides is not loaded at all. From Admin 8.0.x"
+                    },
+                    "webComponent": {
+                      "type": "string",
+                      "description": "Manifest file of a web component (`@iobroker/web-components`), like `webcomponents/my-editor.json`. Resolved like `url`: relative to the admin folder of the adapter, from the root of the server with `./`, or an absolute URL. If set, `url`, `name`, `i18n` and `guiApi` are not used. The element gets the value of the attribute as `value` and changes it with the event `iob-change`"
+                    },
+                    "settings": {
+                      "type": "object",
+                      "description": "`webComponent` only: the values of the settings of its manifest. The defaults of the manifest fill the rest. A string with `${data.xxx}` takes the value from the configuration",
+                      "additionalProperties": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "height": {
+                      "description": "`webComponent` only: height of the element - a number in px or a CSS length. `size.height` of the manifest if not set",
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
                     },
                     "custom": {
                       "type": "object",
