@@ -22,6 +22,10 @@ interface UserBlockProps {
     styles: Record<string, any>;
     socket: AdminConnection;
     isDragging?: boolean;
+    /** Why the user may not change users and groups - `null` if he may */
+    lockedEdit?: string | null;
+    /** Why the user may not delete users - `null` if he may */
+    lockedDelete?: string | null;
 }
 
 const UserBlock: React.FC<UserBlockProps> = props => {
@@ -30,7 +34,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
     const textColor = Utils.getInvertedColor(props.user.common.color, props.themeType, true);
 
     const style: React.CSSProperties = {
-        cursor: 'grab',
+        cursor: props.lockedEdit ? 'default' : 'grab',
         opacity,
         overflow: 'hidden',
         color: textColor,
@@ -51,7 +55,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                     <Checkbox
                         checked={props.user.common.enabled}
                         style={{ color: textColor }}
-                        disabled={props.user.common.dontDelete}
+                        disabled={props.user.common.dontDelete || !!props.lockedEdit}
                         onChange={() => {
                             void props.socket
                                 .extendObject(props.user._id, {
@@ -62,19 +66,23 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                                 .then(() => props.updateData());
                         }}
                     />
-                    <IconButton
-                        size="small"
-                        onClick={() => props.showUserEditDialog(props.user, false)}
-                    >
-                        <EditIcon style={{ color: textColor }} />
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        onClick={() => props.showUserDeleteDialog(props.user)}
-                        disabled={props.user.common.dontDelete}
-                    >
-                        <IconTrash style={props.user.common.dontDelete ? undefined : { color: textColor }} />
-                    </IconButton>
+                    {props.lockedEdit ? null : (
+                        <IconButton
+                            size="small"
+                            onClick={() => props.showUserEditDialog(props.user, false)}
+                        >
+                            <EditIcon style={{ color: textColor }} />
+                        </IconButton>
+                    )}
+                    {props.lockedDelete ? null : (
+                        <IconButton
+                            size="small"
+                            onClick={() => props.showUserDeleteDialog(props.user)}
+                            disabled={props.user.common.dontDelete}
+                        >
+                            <IconTrash style={props.user.common.dontDelete ? undefined : { color: textColor }} />
+                        </IconButton>
+                    )}
                 </div>
                 <CardContent>
                     <Typography
@@ -139,12 +147,14 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                                         <GroupIcon style={props.styles.icon} />
                                     )}
                                     {props.getText(group.common.name)}
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
-                                    >
-                                        <ClearIcon style={{ color: _textColor }} />
-                                    </IconButton>
+                                    {props.lockedEdit ? null : (
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
+                                        >
+                                            <ClearIcon style={{ color: _textColor }} />
+                                        </IconButton>
+                                    )}
                                 </Card>
                             );
                         })}
@@ -160,6 +170,7 @@ const UserBlockDrag: React.FC<UserBlockProps> = props => {
     const widthRef = useRef<HTMLDivElement>(null);
     const [{ isDragging }, dragRef, preview] = useDrag({
         type: 'user',
+        canDrag: () => !props.lockedEdit,
         item: () => ({
             userId: props.user._id,
             preview: (

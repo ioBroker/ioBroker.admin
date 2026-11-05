@@ -9,6 +9,7 @@ import 'ace-builds/src-noconflict/ext-modelist';
 import { FileViewerClass, type FileViewerProps } from '@iobroker/gui-components';
 
 import Editor from './Editor';
+import { FILE_WRITE, hasPermission } from '../helpers/permissions';
 
 // @ts-expect-error try this too
 const modelist = ace.require ? ace.require('ace/ext/modelist') : ace.acequire('ace/ext/modelist');
@@ -18,8 +19,9 @@ export default class FileEditor extends FileViewerClass {
         super(props);
 
         Object.assign(this.state, {
-            // File viewer in adapter-react does not support write
-            editing: !!this.props.formatEditFile || false,
+            // File viewer in adapter-react does not support write.
+            // Without the right to write files, the file is only shown: saving would fail.
+            editing: !!this.props.formatEditFile && hasPermission(this.props.socket, FILE_WRITE),
         });
     }
 

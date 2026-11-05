@@ -42,6 +42,8 @@ import {
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
+import { lockedText, OBJECT_WRITE } from '@/helpers/permissions';
+import { ReadOnlyChip } from '@/components/NoPermission';
 import MainSettingsDialog from './MainSettingsDialog';
 import RepositoriesDialog, { type Repository } from './RepositoriesDialog';
 import LicensesDialog from './LicensesDialog';
@@ -725,8 +727,12 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
     }
 
     render(): JSX.Element {
-        // nothing can be changed before everything is loaded - the originals are still empty until then
+        // every setting is an object: without the right to write objects, they are only shown
+        const locked = lockedText(this.props.socket, [OBJECT_WRITE], this.props.t);
+        // nothing can be changed before everything is loaded - the originals are still empty until then.
+        // Changes of a user who may not save them are not worth a question when closing.
         const changed =
+            !locked &&
             !this.state.loading &&
             !(
                 JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
@@ -844,15 +850,24 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
                     {this.renderDialogConfirm()}
                 </DialogContent>
                 <DialogActions>
-                    <Button
-                        variant="contained"
-                        disabled={!changed || this.state.saving || tabError}
-                        onClick={() => this.onSave()}
-                        color="primary"
-                        startIcon={this.state.saving ? <CircularProgress size={20} /> : <CheckIcon />}
-                    >
-                        {this.props.t('Save & Close')}
-                    </Button>
+                    {locked ? (
+                        <Box sx={{ mr: 'auto', ml: 1 }}>
+                            <ReadOnlyChip
+                                t={this.props.t}
+                                reason={locked}
+                            />
+                        </Box>
+                    ) : (
+                        <Button
+                            variant="contained"
+                            disabled={!changed || this.state.saving || tabError}
+                            onClick={() => this.onSave()}
+                            color="primary"
+                            startIcon={this.state.saving ? <CircularProgress size={20} /> : <CheckIcon />}
+                        >
+                            {this.props.t('Save & Close')}
+                        </Button>
+                    )}
                     <Button
                         variant="contained"
                         disabled={this.state.saving}

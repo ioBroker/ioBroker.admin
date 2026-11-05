@@ -17,9 +17,16 @@ interface GroupBlockProps {
     themeType: ThemeType;
     styles: Record<string, any>;
     theme: IobTheme;
+    /** Why the user may not change users and groups - `null` if he may */
+    lockedEdit?: string | null;
+    /** Why the user may not delete groups - `null` if he may */
+    lockedDelete?: string | null;
 }
 
 function canMeDrop(monitor: DropTargetMonitor<{ userId: ioBroker.ObjectIDs.User }>, props: GroupBlockProps): boolean {
+    if (props.lockedEdit) {
+        return false;
+    }
     return props.group.common.members ? !props.group.common.members.includes(monitor.getItem().userId) : true;
 }
 
@@ -34,7 +41,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
                 CanDrop: monitor.canDrop(),
             }),
         }),
-        [props.group.common.members],
+        [props.group.common.members, props.lockedEdit],
     );
 
     let opacity = 0.7;
@@ -65,19 +72,23 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
             sx={Utils.getStyle(props.theme, props.styles.userGroupCard2, backgroundColor)}
         >
             <div style={props.styles.right}>
-                <IconButton
-                    size="small"
-                    onClick={() => props.showGroupEditDialog(props.group, false)}
-                >
-                    <EditIcon style={{ color: textColor }} />
-                </IconButton>
-                <IconButton
-                    size="small"
-                    onClick={() => props.showGroupDeleteDialog(props.group)}
-                    disabled={props.group.common.dontDelete}
-                >
-                    <IconTrash style={props.group.common.dontDelete ? undefined : { color: textColor }} />
-                </IconButton>
+                {props.lockedEdit ? null : (
+                    <IconButton
+                        size="small"
+                        onClick={() => props.showGroupEditDialog(props.group, false)}
+                    >
+                        <EditIcon style={{ color: textColor }} />
+                    </IconButton>
+                )}
+                {props.lockedDelete ? null : (
+                    <IconButton
+                        size="small"
+                        onClick={() => props.showGroupDeleteDialog(props.group)}
+                        disabled={props.group.common.dontDelete}
+                    >
+                        <IconTrash style={props.group.common.dontDelete ? undefined : { color: textColor }} />
+                    </IconButton>
+                )}
             </div>
             <CardContent>
                 <Typography
@@ -131,12 +142,14 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
                                     <PersonIcon style={props.styles.icon} />
                                 )}
                                 {props.getText(user.common.name)}
-                                <IconButton
-                                    size="small"
-                                    onClick={() => props.removeUserFromGroup(member, props.group._id)}
-                                >
-                                    <ClearIcon style={{ color: _textColor }} />
-                                </IconButton>
+                                {props.lockedEdit ? null : (
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => props.removeUserFromGroup(member, props.group._id)}
+                                    >
+                                        <ClearIcon style={{ color: _textColor }} />
+                                    </IconButton>
+                                )}
                             </Card>
                         ) : null;
                     })}

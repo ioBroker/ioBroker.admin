@@ -5,13 +5,22 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 
-import { LinearProgress, Grid, Typography, Fab, Box } from '@mui/material';
+import { LinearProgress, Grid, Typography, Fab, Box, Tooltip } from '@mui/material';
 
 import { PersonAdd as PersonAddIcon, GroupAdd as GroupAddIcon } from '@mui/icons-material';
 
 import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeType } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
+import {
+    lockedText,
+    OBJECT_DELETE,
+    OBJECT_WRITE,
+    USERS_CREATE,
+    USERS_DELETE,
+    USERS_WRITE,
+} from '@/helpers/permissions';
+import { ReadOnlyChip } from '@/components/NoPermission';
 import UserBlock from './UserBlock';
 import GroupBlock from './GroupBlock';
 import UserEditDialog from './UserEditDialog';
@@ -507,6 +516,11 @@ class UsersList extends Component<UsersListProps, UsersListState> {
             return <LinearProgress />;
         }
 
+        // js-controller checks the users rights first, then the object rights
+        const lockedCreate = lockedText(this.props.socket, [USERS_CREATE, USERS_WRITE, OBJECT_WRITE], this.props.t);
+        const lockedEdit = lockedText(this.props.socket, [USERS_WRITE, OBJECT_WRITE], this.props.t);
+        const lockedDelete = lockedText(this.props.socket, [USERS_DELETE, OBJECT_DELETE], this.props.t);
+
         return (
             <DndProvider backend={AdminUtils.isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <DndPreview />
@@ -514,7 +528,14 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                     component="div"
                     sx={styles.descriptionPanel}
                 >
-                    {this.props.t('You can drag users to groups.')}
+                    {lockedEdit ? (
+                        <ReadOnlyChip
+                            t={this.props.t}
+                            reason={lockedEdit}
+                        />
+                    ) : (
+                        this.props.t('You can drag users to groups.')
+                    )}
                 </Box>
                 <Grid
                     container
@@ -529,25 +550,29 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                         }}
                     >
                         <div style={styles.headContainer}>
-                            <Fab
-                                size="small"
-                                style={styles.right}
-                                onClick={() => {
-                                    const { _id, name } = UsersList.findNewUniqueName(
-                                        true,
-                                        this.state.groups || [],
-                                        this.props.t('Group'),
-                                    );
-                                    const template: ioBroker.GroupObject = Utils.clone(
-                                        GROUP_TEMPLATE,
-                                    ) as ioBroker.GroupObject;
-                                    template._id = _id as ioBroker.ObjectIDs.Group;
-                                    template.common.name = name;
-                                    this.showGroupEditDialog(template, true);
-                                }}
-                            >
-                                <GroupAddIcon />
-                            </Fab>
+                            <Tooltip title={lockedCreate || ''}>
+                                <span style={styles.right}>
+                                    <Fab
+                                        size="small"
+                                        disabled={!!lockedCreate}
+                                        onClick={() => {
+                                            const { _id, name } = UsersList.findNewUniqueName(
+                                                true,
+                                                this.state.groups || [],
+                                                this.props.t('Group'),
+                                            );
+                                            const template: ioBroker.GroupObject = Utils.clone(
+                                                GROUP_TEMPLATE,
+                                            ) as ioBroker.GroupObject;
+                                            template._id = _id as ioBroker.ObjectIDs.Group;
+                                            template.common.name = name;
+                                            this.showGroupEditDialog(template, true);
+                                        }}
+                                    >
+                                        <GroupAddIcon />
+                                    </Fab>
+                                </span>
+                            </Tooltip>
                             <Typography
                                 gutterBottom
                                 variant="h4"
@@ -580,6 +605,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                         getText={this.getText}
                                         styles={styles}
                                         {...this.props}
+                                        lockedEdit={lockedEdit}
+                                        lockedDelete={lockedDelete}
                                     />
                                 ))}
                         </div>
@@ -592,25 +619,29 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                         }}
                     >
                         <div style={styles.headContainer}>
-                            <Fab
-                                size="small"
-                                style={styles.right}
-                                onClick={() => {
-                                    const { _id, name } = UsersList.findNewUniqueName(
-                                        false,
-                                        this.state.users || [],
-                                        this.props.t('User'),
-                                    );
-                                    const template: ioBroker.UserObject = Utils.clone(
-                                        USER_TEMPLATE,
-                                    ) as ioBroker.UserObject;
-                                    template._id = _id as ioBroker.ObjectIDs.User;
-                                    template.common.name = name;
-                                    this.showUserEditDialog(template, true);
-                                }}
-                            >
-                                <PersonAddIcon />
-                            </Fab>
+                            <Tooltip title={lockedCreate || ''}>
+                                <span style={styles.right}>
+                                    <Fab
+                                        size="small"
+                                        disabled={!!lockedCreate}
+                                        onClick={() => {
+                                            const { _id, name } = UsersList.findNewUniqueName(
+                                                false,
+                                                this.state.users || [],
+                                                this.props.t('User'),
+                                            );
+                                            const template: ioBroker.UserObject = Utils.clone(
+                                                USER_TEMPLATE,
+                                            ) as ioBroker.UserObject;
+                                            template._id = _id as ioBroker.ObjectIDs.User;
+                                            template.common.name = name;
+                                            this.showUserEditDialog(template, true);
+                                        }}
+                                    >
+                                        <PersonAddIcon />
+                                    </Fab>
+                                </span>
+                            </Tooltip>
                             <Typography
                                 gutterBottom
                                 variant="h4"
@@ -645,6 +676,8 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                         getText={this.getText}
                                         styles={styles}
                                         {...this.props}
+                                        lockedEdit={lockedEdit}
+                                        lockedDelete={lockedDelete}
                                     />
                                 ))}
                         </div>

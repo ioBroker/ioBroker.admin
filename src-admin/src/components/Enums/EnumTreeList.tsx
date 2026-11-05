@@ -99,6 +99,8 @@ interface EnumTreeListProps {
     updating: string[];
     getName: (name: ioBroker.StringOrTranslated | undefined) => string;
     moveEnum: (fromId: string, toId: string) => void;
+    /** The user may not change enums: nothing can be dragged or dropped */
+    locked?: boolean;
     t: Translate;
     theme: IobTheme;
 }
@@ -139,10 +141,10 @@ function EnumTreeRow(props: { item: EnumTreeItem; level: number; list: EnumTreeL
         () => ({
             accept: ['object', 'enum', 'enum-member'],
             drop: (_dragged, monitor) => (monitor.didDrop() ? undefined : { enumId: item.id }),
-            canDrop: dragged => canDropOnEnum(dragged, enumObj, item.id),
+            canDrop: dragged => !list.locked && canDropOnEnum(dragged, enumObj, item.id),
             collect: monitor => ({ isOver: monitor.isOver(), canDrop: monitor.canDrop() }),
         }),
-        [enumObj, item.id],
+        [enumObj, item.id, list.locked],
     );
 
     const [{ isDragging }, dragRef, preview] = useDrag<DragEnumItem, EnumDropResult, { isDragging: boolean }>(
@@ -152,7 +154,7 @@ function EnumTreeRow(props: { item: EnumTreeItem; level: number; list: EnumTreeL
                 enumId: item.id,
                 preview: <Box sx={styles.preview}>{name}</Box>,
             }),
-            canDrag: !!enumObj && !enumObj.common?.dontDelete,
+            canDrag: !!enumObj && !enumObj.common?.dontDelete && !list.locked,
             end: (dragged, monitor) => {
                 // an enum is only moved if it was dropped on an entry or on a category
                 const result = monitor.getDropResult();
@@ -162,7 +164,7 @@ function EnumTreeRow(props: { item: EnumTreeItem; level: number; list: EnumTreeL
             },
             collect: monitor => ({ isDragging: monitor.isDragging() }),
         }),
-        [item.id, enumObj, name, list.moveEnum],
+        [item.id, enumObj, name, list.moveEnum, list.locked],
     );
 
     useEffect(() => {

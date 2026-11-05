@@ -1,4 +1,6 @@
 import { type AdminConnection } from '@iobroker/gui-components';
+
+import { hasPermission, SEND_TO_HOST } from '@/helpers/permissions';
 import AdminUtils, { type Style } from '../helpers/AdminUtils';
 
 interface LogLine {
@@ -458,7 +460,8 @@ export class LogsWorker {
      * `CONTROLLER_GET_LOGS_LOG_LEVEL`; without it everything is read as before and the caller filters.
      */
     getLogs(update?: boolean, logLevel?: ioBroker.LogLevel): Promise<{ logs: LogLineSaved[]; logSize: number }> {
-        if (!this.currentHost) {
+        // the log history comes from the host: without `sendTo` the answer is a permission error anyway
+        if (!this.currentHost || !hasPermission(this.socket, SEND_TO_HOST)) {
             return Promise.resolve({ logs: [], logSize: 0 });
         }
 

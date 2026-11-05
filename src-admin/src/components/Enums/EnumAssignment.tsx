@@ -50,6 +50,8 @@ import {
     type Translate,
 } from '@iobroker/gui-components';
 
+import { ReadOnlyChip } from '@/components/NoPermission';
+
 import type { MemberChanges } from './types';
 
 /**
@@ -396,6 +398,8 @@ interface AssignmentCellProps {
     onAccept: (enumId: string) => void;
     onOpenEnum?: (enumId: string) => void;
     onOpenMenu: (anchor: HTMLElement) => void;
+    /** The user may not change enums: the assignments are only shown */
+    locked: boolean;
 }
 
 function AssignmentCell(props: AssignmentCellProps): JSX.Element {
@@ -417,7 +421,7 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     label={props.getLabel(enumId)}
                     icon={chipIcon(enumId)}
                     onClick={props.onOpenEnum ? () => props.onOpenEnum?.(enumId) : undefined}
-                    onDelete={() => props.onRemove(enumId)}
+                    onDelete={props.locked ? undefined : () => props.onRemove(enumId)}
                 />
             ))}
             {assignment.inherited.map(enumId => (
@@ -453,7 +457,7 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     />
                 </Tooltip>
             ))}
-            {props.suggestion ? (
+            {props.suggestion && !props.locked ? (
                 <Tooltip
                     title={t('Suggestion from the detected device type')}
                     slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
@@ -469,12 +473,14 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     />
                 </Tooltip>
             ) : null}
-            <IconButton
-                size="small"
-                onClick={e => props.onOpenMenu(e.currentTarget)}
-            >
-                <IconAdd fontSize="small" />
-            </IconButton>
+            {props.locked ? null : (
+                <IconButton
+                    size="small"
+                    onClick={e => props.onOpenMenu(e.currentTarget)}
+                >
+                    <IconAdd fontSize="small" />
+                </IconButton>
+            )}
         </Box>
     );
 }
@@ -490,6 +496,8 @@ interface EnumAssignmentProps {
     onOpenEnum?: (enumId: string) => void;
     /** Filter shown first */
     initialFilter?: Filter;
+    /** Why the user may not change enums - the assignments are only shown then. `null` if he may */
+    locked?: string | null;
 }
 
 export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element {
@@ -732,6 +740,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                 <TableCell padding="checkbox">
                     <Checkbox
                         size="small"
+                        disabled={!!props.locked}
                         checked={isSelected}
                         onChange={() =>
                             setSelected(isSelected ? selected.filter(id => id !== row.id) : [...selected, row.id])
@@ -793,6 +802,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                         onRemove={enumId => toggleMember(row.id, enumId)}
                         onAccept={enumId => toggleMember(row.id, enumId)}
                         onOpenEnum={props.onOpenEnum}
+                        locked={!!props.locked}
                         onOpenMenu={anchor => setMenu({ anchor, prefix: ROOMS, mode: 'toggle', rowId: row.id })}
                     />
                 </TableCell>
@@ -806,6 +816,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                         onRemove={enumId => toggleMember(row.id, enumId)}
                         onAccept={enumId => toggleMember(row.id, enumId)}
                         onOpenEnum={props.onOpenEnum}
+                        locked={!!props.locked}
                         onOpenMenu={anchor => setMenu({ anchor, prefix: FUNCTIONS, mode: 'toggle', rowId: row.id })}
                     />
                 </TableCell>
@@ -905,6 +916,12 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                     />
                 </Tooltip>
                 <Box sx={{ flexGrow: 1 }} />
+                {props.locked ? (
+                    <ReadOnlyChip
+                        t={t}
+                        reason={props.locked}
+                    />
+                ) : null}
                 <Tooltip
                     title={t('Reload')}
                     slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
@@ -975,6 +992,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                             >
                                 <Checkbox
                                     size="small"
+                                    disabled={!!props.locked}
                                     checked={allShownSelected}
                                     indeterminate={!allShownSelected && !!selected.length}
                                     onChange={() => setSelected(allShownSelected ? [] : shownRows.map(row => row.id))}

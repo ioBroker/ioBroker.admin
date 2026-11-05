@@ -17,9 +17,3 @@ export const RETRY_DELAYS_MS = [2_000, 5_000, 10_000];
 export function retryDelay(failures: number): number {
     return RETRY_DELAYS_MS[Math.min(Math.max(failures, 0), RETRY_DELAYS_MS.length - 1)];
 }
-
-/** Is the error a missing permission? Such an error does not go away by asking again */
-export function isPermissionError(error: unknown): boolean {
-    const text = error instanceof Error ? error.message : String(error);
-    return text.includes('permissionError');
-}

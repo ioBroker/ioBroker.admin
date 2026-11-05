@@ -17,6 +17,7 @@ import {
 
 import FileEditor from '../components/FileEditor';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
+import { FILE_DELETE, FILE_WRITE, hasPermission } from '../helpers/permissions';
 
 /** Modes of the file browser in the URL (`#tab-files/<mode>/<id>`). Other names there, e.g. "system", are dialogs of the App */
 const FILE_BROWSER_MODES = ['select', 'view'];
@@ -170,6 +171,9 @@ export default class Files extends Component<FilesProps> {
                     : null;
         }
         const navigateTo = this.navigateTo;
+        // without the rights, the buttons are not there at all: the server would refuse anyway
+        const mayWrite = hasPermission(this.props.socket, FILE_WRITE);
+        const mayDelete = hasPermission(this.props.socket, FILE_DELETE);
 
         return (
             <TabContainer>
@@ -194,13 +198,15 @@ export default class Files extends Component<FilesProps> {
                         lang={this.props.lang}
                         t={this.props.t}
                         showToolbar
-                        allowUpload
+                        allowUpload={mayWrite}
                         allowView
                         allowDownload
-                        allowCreateFolder
-                        allowDelete
+                        allowCreateFolder={mayWrite}
+                        allowDelete={mayDelete}
                         expertMode={this.props.expertMode}
-                        modalEditOfAccessControl={(context: FileBrowserClass) => this.renderAclDialog(context)}
+                        modalEditOfAccessControl={
+                            mayWrite ? (context: FileBrowserClass) => this.renderAclDialog(context) : undefined
+                        }
                         FileViewer={FileEditor}
                     />
                 </TabContent>

@@ -40,6 +40,7 @@ import ObjectViewFileDialog from '../components/Object/ObjectViewFileDialog';
 import ObjectAliasEditor from '../components/Object/ObjectAliasEditor';
 import ObjectMoveRenameDialog from '../components/Object/ObjectMoveRenameDialog';
 import { ObjectImportFromTextDialog } from '@/components/Object/ObjectImportFromText';
+import { hasPermission, OBJECT_DELETE, OBJECT_WRITE, STATE_WRITE } from '@/helpers/permissions';
 
 const IconDeleteAll = IconDeleteOne;
 const styles: Record<string, React.CSSProperties> = {
@@ -272,6 +273,10 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                     : null;
         }
         const navigateTo = this.navigateTo;
+        // what the user may not do is not offered: the server would refuse it anyway
+        const mayWriteObjects = hasPermission(this.props.socket, OBJECT_WRITE);
+        const mayWriteStates = hasPermission(this.props.socket, STATE_WRITE);
+        const mayDeleteObjects = hasPermission(this.props.socket, OBJECT_DELETE);
 
         return [
             this.renderToast(),
@@ -305,21 +310,26 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                 objectCustomDialog={ObjectCustomDialog as unknown as React.ComponentType<any>}
                 objectBrowserValue={ObjectBrowserValue as unknown as React.ComponentType<any>}
                 objectBrowserEditObject={ObjectBrowserEditObject as unknown as React.ComponentType<any>}
-                objectBrowserEditRole={ObjectBrowserEditRole as unknown as React.ComponentType<any>}
+                objectBrowserEditRole={
+                    mayWriteObjects ? (ObjectBrowserEditRole as unknown as React.ComponentType<any>) : undefined
+                }
                 objectBrowserViewFile={ObjectViewFileDialog as unknown as React.ComponentType<any>}
                 objectBrowserAliasEditor={ObjectAliasEditor as unknown as React.ComponentType<any>}
                 objectMoveRenameDialog={ObjectMoveRenameDialog}
                 objectBrowserInsertJsonObjects={ObjectImportFromTextDialog}
                 router={Router}
-                onObjectDelete={(id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) =>
-                    this.setState({
-                        deleteObjectShow: {
-                            id,
-                            hasChildren,
-                            exists: objectExists,
-                            childrenCount,
-                        },
-                    })
+                onObjectDelete={
+                    mayDeleteObjects
+                        ? (id: string, hasChildren: boolean, objectExists: boolean, childrenCount: number) =>
+                              this.setState({
+                                  deleteObjectShow: {
+                                      id,
+                                      hasChildren,
+                                      exists: objectExists,
+                                      childrenCount,
+                                  },
+                              })
+                        : undefined
                 }
                 onFilterChanged={(filterConfig: ObjectBrowserFilter) => {
                     this.filters = filterConfig;
@@ -341,11 +351,13 @@ export default class Objects extends Component<ObjectsProps, ObjectsState> {
                         );
                     }
                 }}
-                objectEditBoolean
-                objectAddBoolean
+                objectEditBoolean={mayWriteObjects}
+                objectAddBoolean={mayWriteObjects}
                 objectStatesView
                 objectImportExport
-                objectEditOfAccessControl
+                objectEditOfAccessControl={mayWriteObjects}
+                notEditable={!mayWriteObjects && !mayWriteStates}
+                objectsNotEditable={!mayWriteObjects}
                 modalNewObject={(context: ObjectBrowserClass) => (
                     <ObjectAddNewObject
                         objects={context.objects}

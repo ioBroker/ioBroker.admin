@@ -16,6 +16,8 @@ interface CategoryLabelProps {
     lang: ioBroker.Languages;
     styles: Record<string, React.CSSProperties>;
     themeType: ThemeType;
+    /** The user may not change enums: no edit and delete buttons */
+    locked?: boolean;
 }
 
 export default function CategoryLabel(props: CategoryLabelProps): JSX.Element {
@@ -55,23 +57,25 @@ export default function CategoryLabel(props: CategoryLabelProps): JSX.Element {
             {typeof props.categoryData.common.name === 'string'
                 ? props.categoryData.common.name
                 : props.categoryData.common.name[props.lang] || props.categoryData.common.name.en}
-            <IconButton
-                className="enum-button"
-                size="small"
-                style={{ color: textColor }}
-                onClick={() => {
-                    props.showEnumEditDialog(props.categoryData, false);
-                }}
-            >
-                <Tooltip
-                    title={props.t('Edit')}
-                    placement="top"
-                    slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+            {props.locked ? null : (
+                <IconButton
+                    className="enum-button"
+                    size="small"
+                    style={{ color: textColor }}
+                    onClick={() => {
+                        props.showEnumEditDialog(props.categoryData, false);
+                    }}
                 >
-                    <EditIcon />
-                </Tooltip>
-            </IconButton>
-            {props.categoryData.common.dontDelete ? null : (
+                    <Tooltip
+                        title={props.t('Edit')}
+                        placement="top"
+                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                    >
+                        <EditIcon />
+                    </Tooltip>
+                </IconButton>
+            )}
+            {props.categoryData.common.dontDelete || props.locked ? null : (
                 <IconButton
                     className="enum-button"
                     size="small"

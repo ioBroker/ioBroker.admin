@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, type JSX } from 'react';
 
 import { Badge, Box, ListItemButton, ListItemIcon, ListItemText, Tooltip, Typography, Checkbox } from '@mui/material';
-import { DragHandle } from '@mui/icons-material';
+import { DragHandle, LockOutlined as LockIcon } from '@mui/icons-material';
 
 import { Utils, ColorPicker, type IobTheme } from '@iobroker/gui-components';
 import AdminUtils from '../helpers/AdminUtils';
@@ -90,6 +90,15 @@ const styles: Record<string, any> = {
     warn: {
         backgroundColor: '#ffc107',
     },
+    locked: {
+        // still clickable: the tab explains what is missing
+        opacity: 0.6,
+    },
+    lockIcon: {
+        fontSize: 16,
+        ml: 'auto',
+        flexShrink: 0,
+    },
 };
 
 interface DrawerItemProps {
@@ -109,6 +118,8 @@ interface DrawerItemProps {
     style?: Record<string, any>;
     /** Second, quieter line below the label - used for the group of the logged-in user */
     secondaryText?: string;
+    /** The user may not use this entry: shows a lock, the text says which right is missing */
+    locked?: string;
     theme: IobTheme;
 }
 
@@ -157,6 +168,7 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
         badgeAdditionalContent,
         badgeAdditionalColor,
         style,
+        locked,
     } = props;
 
     const badgeRef = useBadgeBounce(badgeContent || 0);
@@ -188,11 +200,17 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
             )}
             <ListItemButton
                 selected={selected}
-                sx={Utils.getStyle(props.theme, styles.button, selected && styles.selected, compact && styles.compact)}
+                sx={Utils.getStyle(
+                    props.theme,
+                    styles.button,
+                    selected && styles.selected,
+                    compact && styles.compact,
+                    !!locked && !selected && styles.locked,
+                )}
                 onClick={onClick}
             >
                 <Tooltip
-                    title={compact ? content : ''}
+                    title={compact ? (locked ? `${content}: ${locked}` : content) : locked || ''}
                     slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                 >
                     <Box sx={Utils.getStyle(props.theme, styles.row, compact && styles.rowCompact)}>
@@ -251,6 +269,7 @@ const DrawerItem = (props: DrawerItemProps): JSX.Element => {
                                 ) : null}
                             </ListItemText>
                         )}
+                        {locked && !compact ? <LockIcon sx={styles.lockIcon} /> : null}
                     </Box>
                 </Tooltip>
             </ListItemButton>

@@ -68,7 +68,8 @@ import {
     getPinnedConfigManagerInstances,
     setPinnedConfigManagerInstances,
 } from '@/helpers/configManagerPins';
-import { isPermissionError, retryDelay } from '@/helpers/retryDelay';
+import { retryDelay } from '@/helpers/retryDelay';
+import { isPermissionError, lockedText, missingTabPermissions } from '@/helpers/permissions';
 import { adminHref } from '@/helpers/utils';
 
 export const DRAWER_FULL_WIDTH = 180;
@@ -1265,6 +1266,14 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                 return null;
             }
 
+            // a pinned entry of the config manager opens the config manager and needs its rights
+            const locked =
+                lockedText(
+                    this.props.socket,
+                    missingTabPermissions(this.props.socket, tab.configManagerInstance ? 'tab-devicemanager' : tab.name),
+                    this.props.t,
+                ) ?? undefined;
+
             const selected = tab.configManagerInstance
                 ? currentTab === 'tab-devicemanager' && this.props.currentTabId === tab.configManagerInstance
                 : currentTab === tab.name &&
@@ -1343,6 +1352,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         badgeColor={this.badge(tab).color}
                         badgeAdditionalContent={this.badge(tab)?.additionalContent}
                         badgeAdditionalColor={this.badge(tab)?.additionalColor}
+                        locked={locked}
                         theme={this.props.theme}
                     />
                 </DragWrapper>

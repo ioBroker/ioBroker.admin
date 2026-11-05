@@ -461,6 +461,10 @@ export interface InstanceContext {
      * host, so the resources column is displayed
      */
     hasAnyResource: boolean;
+    /** Why the user may not change instances (start, stop, settings, edits) - `null` if he may */
+    lockedChange: string | null;
+    /** Why the user may not delete instances - `null` if he may */
+    lockedDelete: string | null;
 }
 
 export interface InstanceGenericProps {
@@ -508,6 +512,12 @@ export interface InstanceGenericState {
     /** The restart was seen to finish: the restart button shows a check mark */
     restartOk?: boolean;
 }
+
+/**
+ * A button the user may not use. Not `disabled`: a disabled button gets no mouse events, and its
+ * tooltip could not tell which right is missing.
+ */
+const LOCKED_STYLE: React.CSSProperties = { opacity: 0.4, cursor: 'not-allowed' };
 
 /** The ring of the start/stop button gives up after this time, e.g. if the instance crashes right away */
 const START_TIMEOUT = 30_000;
@@ -1521,16 +1531,28 @@ export default abstract class InstanceGeneric<
         );
     }
 
+    /**
+     * Style of a pencil next to a value. A user who may not change the instance gets none: the value
+     * stays visible, the pencil would only end in a permission error. Set inline, so that the hover
+     * rule of `styles.editButton` cannot show it again.
+     *
+     * @param style the style of the button
+     */
+    editButtonStyle(style: React.CSSProperties): React.CSSProperties {
+        return this.props.context.lockedChange ? { ...style, display: 'none' } : style;
+    }
+
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderPlayPause(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.context.t('Start/stop')}
+                title={this.props.context.lockedChange || this.props.context.t('Start/stop')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div>
                     <IconButton
                         size="small"
+                        disabled={!!this.props.context.lockedChange}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -1570,12 +1592,16 @@ export default abstract class InstanceGeneric<
     renderSettingsButton(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.instance.config ? this.props.context.t('Settings') : ''}
+                title={
+                    this.props.instance.config
+                        ? this.props.context.lockedChange || this.props.context.t('Settings')
+                        : ''
+                }
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div>
                     <IconButton
-                        disabled={!this.props.instance.config}
+                        disabled={!this.props.instance.config || !!this.props.context.lockedChange}
                         size="small"
                         style={{
                             ...this.styles.button,
@@ -1599,7 +1625,7 @@ export default abstract class InstanceGeneric<
     renderRestartButton(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.context.t('Restart')}
+                title={this.props.context.lockedChange || this.props.context.t('Restart')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div>
@@ -1615,7 +1641,9 @@ export default abstract class InstanceGeneric<
                             ...this.styles.button,
                             ...(!this.props.instance.canStart ? this.styles.hide : undefined),
                         }}
-                        disabled={!this.props.item.running || !!this.state.restarting}
+                        disabled={
+                            !this.props.item.running || !!this.state.restarting || !!this.props.context.lockedChange
+                        }
                     >
                         <IconRefresh
                             loading={!!this.state.restarting}
@@ -1686,10 +1714,10 @@ export default abstract class InstanceGeneric<
                 <IconButton
                     size="small"
                     className="admin-edit-button"
-                    style={{
+                    style={this.editButtonStyle({
                         ...this.styles.button,
                         ...(!this.state.visibleEdit ? this.styles.hiddenOpacity : undefined),
-                    }}
+                    })}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -1750,7 +1778,7 @@ export default abstract class InstanceGeneric<
             >
                 <IconButton
                     size="small"
-                    style={this.styles.button}
+                    style={this.editButtonStyle(this.styles.button)}
                     className="admin-edit-button"
                     onClick={event => {
                         event.stopPropagation();
@@ -1771,16 +1799,19 @@ export default abstract class InstanceGeneric<
         }
         return (
             <Tooltip
-                title="sentry"
+                title={this.props.context.lockedChange || 'sentry'}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
                     size="small"
-                    style={this.styles.button}
+                    style={{ ...this.styles.button, ...(this.props.context.lockedChange ? LOCKED_STYLE : undefined) }}
+                    aria-disabled={!!this.props.context.lockedChange}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        this.toggleSentry();
+                        if (!this.props.context.lockedChange) {
+                            this.toggleSentry();
+                        }
                     }}
                 >
                     <CardMedia
@@ -1800,7 +1831,7 @@ export default abstract class InstanceGeneric<
     renderCompactGroupEnabled(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.context.t('compact groups')}
+                title={this.props.context.lockedChange || this.props.context.t('compact groups')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
@@ -1813,11 +1844,15 @@ export default abstract class InstanceGeneric<
                         ...(this.props.context.expertMode && this.props.item.checkCompact && !this.props.item.isPython
                             ? undefined
                             : this.styles.hide),
+                        ...(this.props.context.lockedChange ? LOCKED_STYLE : undefined),
                     }}
+                    aria-disabled={!!this.props.context.lockedChange}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        this.toggleCompactMode();
+                        if (!this.props.context.lockedChange) {
+                            this.toggleCompactMode();
+                        }
                     }}
                 >
                     <ViewCompactIcon color={this.props.item.compact ? 'primary' : 'inherit'} />
@@ -1895,7 +1930,7 @@ export default abstract class InstanceGeneric<
                     <IconButton
                         size="small"
                         className="admin-edit-button"
-                        style={this.styles.button}
+                        style={this.editButtonStyle(this.styles.button)}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -1926,7 +1961,7 @@ export default abstract class InstanceGeneric<
                     <IconButton
                         size="small"
                         className="admin-edit-button"
-                        style={this.styles.button}
+                        style={this.editButtonStyle(this.styles.button)}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -1957,7 +1992,7 @@ export default abstract class InstanceGeneric<
                     <IconButton
                         size="small"
                         className="admin-edit-button"
-                        style={this.styles.button}
+                        style={this.editButtonStyle(this.styles.button)}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -1994,7 +2029,7 @@ export default abstract class InstanceGeneric<
                     <IconButton
                         size="small"
                         className="admin-edit-button"
-                        style={this.styles.button}
+                        style={this.editButtonStyle(this.styles.button)}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -2041,7 +2076,7 @@ export default abstract class InstanceGeneric<
                     <IconButton
                         size="small"
                         className="admin-edit-button"
-                        style={this.styles.button}
+                        style={this.editButtonStyle(this.styles.button)}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -2082,7 +2117,7 @@ export default abstract class InstanceGeneric<
                         <IconButton
                             size="small"
                             className="admin-edit-button"
-                            style={this.styles.button}
+                            style={this.editButtonStyle(this.styles.button)}
                             onClick={event => {
                                 event.stopPropagation();
                                 event.preventDefault();
@@ -2116,15 +2151,19 @@ export default abstract class InstanceGeneric<
     renderDeleteButton(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.context.t('Delete')}
+                title={this.props.context.lockedDelete || this.props.context.t('Delete')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
                     size="small"
-                    style={this.styles.button}
+                    style={{ ...this.styles.button, ...(this.props.context.lockedDelete ? LOCKED_STYLE : undefined) }}
+                    aria-disabled={!!this.props.context.lockedDelete}
                     onClick={async event => {
                         event.stopPropagation();
                         event.preventDefault();
+                        if (this.props.context.lockedDelete) {
+                            return;
+                        }
                         // Count the number of instances
                         const instances = await this.props.context.socket.getAdapterInstances(
                             this.props.instance.id.split('.')[0],

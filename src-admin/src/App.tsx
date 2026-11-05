@@ -109,6 +109,8 @@ import IsVisible from './components/IsVisible';
 import ChatPanel from './components/Chat/ChatPanel';
 import type { CompactInstanceInfo } from './components/Adapters/AdapterUpdateDialog';
 import { adminHref } from './helpers/utils';
+import { hasPermission, isPermissionError, missingTabPermissions, SEND_TO_HOST } from './helpers/permissions';
+import NoPermission from './components/NoPermission';
 
 import enLocal from './i18n/en.json';
 import deLocal from './i18n/de.json';
@@ -636,6 +638,9 @@ class App extends Router<AppProps, AppState> {
     /** When the connection to admin was lost the last time (e.g. by a restart of admin), 0 if never */
     private connectionLostAt = 0;
 
+    /** Missing rights already told to the user - a missing right does not go away, once is enough */
+    private readonly reportedPermissionErrors = new Set<string>();
+
     constructor(props: AppProps) {
         super(props);
 
@@ -646,6 +651,8 @@ class App extends Router<AppProps, AppState> {
                 if (this.isCausedByConnectionLoss(text, raisedAt)) {
                     // the overlay already tells that the connection is lost
                     console.warn(`Not shown, as the connection to admin is lost: ${text}`);
+                } else if (isPermissionError(text)) {
+                    this.reportPermissionError(text);
                 } else if (text.toLowerCase().includes('error')) {
                     console.error(text);
                     setTimeout(() => {
@@ -1231,6 +1238,8 @@ class App extends Router<AppProps, AppState> {
                 cmdTimeout: this.state.readTimeoutMs,
                 autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' either. Every tab must subscribe itself to everything that it needs
                 autoSubscribeLog: true,
+                // the rights of the user: tabs and actions he may not use are locked in advance
+                doNotLoadACL: false,
                 tokenTimeoutHandler: this.onSessionExpiration,
                 onProgress: async (progress: number): Promise<void> => {
                     if (!this.socket) {
@@ -2154,6 +2163,10 @@ class App extends Router<AppProps, AppState> {
             }
         };
 
+        // Repository and installed versions come from the host: a user without `sendTo` would only
+        // collect a permission error for each - the adapters tab tells him so itself
+        const mayAskHost = hasPermission(this.socket, SEND_TO_HOST);
+
         // The three reads do not depend on each other, so they run at the same time. One after the
         // other they added up their waiting time: a host that cannot reach the repository server
         // answers neither of the first two, and both ran into their own read timeout - fifteen
@@ -2163,24 +2176,28 @@ class App extends Router<AppProps, AppState> {
             CompactInstalledInfo,
             Record<string, CompactAdapterInfo>,
         ] = await Promise.all([
-            this.socket
-                .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
-                .catch((e: unknown): CompactRepository => {
-                    window.alert(`Cannot getRepositoryCompact: ${e as Error}`);
-                    if ((e as Error).toString().includes('timeout')) {
-                        onTimeout();
-                    }
-                    return {};
-                }),
-            this.socket
-                .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
-                .catch((e: unknown): CompactInstalledInfo => {
-                    window.alert(`Cannot getInstalled: ${e as Error}`);
-                    if ((e as Error).toString().includes('timeout')) {
-                        onTimeout();
-                    }
-                    return {};
-                }),
+            mayAskHost
+                ? this.socket
+                      .getCompactRepository(currentHost, update, this.state.readTimeoutMs)
+                      .catch((e: unknown): CompactRepository => {
+                          window.alert(`Cannot getRepositoryCompact: ${e as Error}`);
+                          if ((e as Error).toString().includes('timeout')) {
+                              onTimeout();
+                          }
+                          return {};
+                      })
+                : Promise.resolve({} as CompactRepository),
+            mayAskHost
+                ? this.socket
+                      .getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
+                      .catch((e: unknown): CompactInstalledInfo => {
+                          window.alert(`Cannot getInstalled: ${e as Error}`);
+                          if ((e as Error).toString().includes('timeout')) {
+                              onTimeout();
+                          }
+                          return {};
+                      })
+                : Promise.resolve({} as CompactInstalledInfo),
             // The adapters come fast, also from a host that cannot reach the repository server: they are
             // shown at once instead of waiting for the two slow reads
             this.socket
@@ -2457,6 +2474,18 @@ class App extends Router<AppProps, AppState> {
         }
 
         if (this.state?.currentTab?.tab) {
+            // A tab the user may not use says so, instead of a loader that never ends
+            const missing = missingTabPermissions(this.socket, this.state.currentTab.tab);
+            if (missing.length) {
+                return (
+                    <NoPermission
+                        key={`locked-${this.state.currentTab.tab}`}
+                        t={I18n.t}
+                        missing={missing}
+                    />
+                );
+            }
+
             if (this.state.currentTab.tab === 'tab-adapters') {
                 const small = this.props.width === 'xs' || this.props.width === 'sm';
                 const opened = !small && this.state.drawerState === DrawerStates.opened;
@@ -2849,6 +2878,27 @@ class App extends Router<AppProps, AppState> {
             return false;
         }
         return !this.socket?.isConnected() || this.connectionLostAt > raisedAt - CONNECTION_LOSS_GRACE;
+    }
+
+    /**
+     * Tells the user about a missing right in words instead of "Cannot getRepository: permissionError".
+     * The same right is told only once: asking again does not change the answer, and a list of
+     * identical messages helps nobody.
+     *
+     * @param text the message of the failed request, e.g. `Cannot getRepository: permissionError`
+     */
+    reportPermissionError(text: string): void {
+        // what was refused, without the technical error code, e.g. `Cannot getRepository`
+        const what = text.replace(/:?\s*permissionError/g, '').trim();
+        console.warn(`No permission: ${text}`);
+        if (this.reportedPermissionErrors.has(what)) {
+            return;
+        }
+        this.reportedPermissionErrors.add(what);
+        this.showAlert(
+            what ? `${I18n.t('No permission for this action')} (${what})` : I18n.t('No permission for this action'),
+            'warning',
+        );
     }
 
     /** The text of the overlay while the connection is lost. The first connect shows the spinner only */

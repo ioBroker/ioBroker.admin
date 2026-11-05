@@ -2007,5 +2007,9 @@
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "适配器 \"%s\" 每个主机只允许一个实例，而 %s 已存在于主机 \"%s\" 上",
     "The admin was updated. Please load the page anew.": "管理界面已更新，请重新加载页面。",
     "%s adapter(s) updated": "已更新 %s 个适配器",
-    "%s of %s adapter(s) updated": "已更新 %s 个适配器（共 %s 个）"
+    "%s of %s adapter(s) updated": "已更新 %s 个适配器（共 %s 个）",
+    "No permission": "无权限",
+    "Your user group lacks this permission:": "您的用户组缺少此权限：",
+    "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "管理员可以在“用户”选项卡中授予：编辑该组，然后选择“权限”。",
+    "No permission for this action": "无权执行此操作"
 }

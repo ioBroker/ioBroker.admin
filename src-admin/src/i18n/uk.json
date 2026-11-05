@@ -2007,5 +2007,9 @@
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "Адаптер \"%s\" дозволяє лише один екземпляр на хост, і %s вже існує на хості \"%s\"",
     "The admin was updated. Please load the page anew.": "Адмін оновлено. Будь ласка, перезавантажте сторінку.",
     "%s adapter(s) updated": "Оновлено адаптерів: %s",
-    "%s of %s adapter(s) updated": "Оновлено адаптерів: %s з %s"
+    "%s of %s adapter(s) updated": "Оновлено адаптерів: %s з %s",
+    "No permission": "Немає прав",
+    "Your user group lacks this permission:": "Вашій групі користувачів бракує цього дозволу:",
+    "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "Адміністратор може надати його на вкладці «Користувачі»: змінити групу, потім «Дозволи».",
+    "No permission for this action": "Немає прав на цю дію"
 }

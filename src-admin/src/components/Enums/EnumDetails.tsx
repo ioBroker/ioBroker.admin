@@ -31,6 +31,7 @@ import {
 } from '@iobroker/gui-components';
 
 import AdminUtils from '@/helpers/AdminUtils';
+import { ReadOnlyChip } from '@/components/NoPermission';
 import { canDropOnEnum, sortTreeItems, type DragMemberItem, type EnumDropResult, type EnumTreeItem } from './types';
 import { endMemberDrag, startMemberDrag, useCopyOnDrop } from './dragCopy';
 
@@ -365,13 +366,15 @@ interface MemberRowProps {
     onSelect: (enumId: string) => void;
     onRemove: (memberId: string) => void;
     onMove: (memberId: string, toEnumId: string, copy: boolean) => void;
+    /** The user may not change enums: no dragging, no removing */
+    locked: boolean;
 }
 
 function MemberRow(props: MemberRowProps): JSX.Element {
     const { obj, t } = props;
     const missing = props.isMember && !obj;
     const name = props.getName(obj?.common?.name) || props.memberId.split('.').pop() || props.memberId;
-    const draggable = props.isMember && !!obj;
+    const draggable = props.isMember && !!obj && !props.locked;
     const isTouch = AdminUtils.isTouchDevice();
 
     const [{ isDragging }, dragRef, preview] = useDrag<DragMemberItem, EnumDropResult, { isDragging: boolean }>(
@@ -509,7 +512,7 @@ function MemberRow(props: MemberRowProps): JSX.Element {
                     />
                 ))}
             </Box>
-            {props.isMember ? (
+            {props.isMember && !props.locked ? (
                 <Tooltip
                     title={t('Remove')}
                     slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
@@ -551,6 +554,8 @@ interface EnumDetailsProps {
     onAddObjects: () => void;
     onRemoveMember: (memberId: string) => void;
     onMoveMember: (memberId: string, toEnumId: string, copy: boolean) => void;
+    /** Why the user may not change enums - the entry is only shown then. `null` if he may */
+    locked: string | null;
 }
 
 export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
@@ -602,10 +607,10 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
         () => ({
             accept: ['object', 'enum-member'],
             drop: (_item, monitor) => (monitor.didDrop() ? undefined : { enumId: enumItem._id }),
-            canDrop: item => canDropOnEnum(item, enumItem, enumItem._id),
+            canDrop: item => !props.locked && canDropOnEnum(item, enumItem, enumItem._id),
             collect: monitor => ({ isOver: monitor.isOver(), canDrop: monitor.canDrop() }),
         }),
-        [enumItem],
+        [enumItem, props.locked],
     );
 
     const name = props.getName(enumItem.common?.name) || enumItem._id.split('.').pop();
@@ -621,6 +626,7 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
         onSelect: props.onSelect,
         onRemove: props.onRemoveMember,
         onMove: props.onMoveMember,
+        locked: !!props.locked,
     };
 
     return (
@@ -680,51 +686,61 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
                     ) : null}
                 </Box>
                 <Box sx={styles.headerActions}>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<IconAddObjects />}
-                        onClick={props.onAddObjects}
-                    >
-                        {t('Add objects')}
-                    </Button>
-                    <Tooltip
-                        title={t('Add child')}
-                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-                    >
-                        <IconButton onClick={props.onAddChild}>
-                            <IconAdd />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={t('Edit')}
-                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-                    >
-                        <IconButton onClick={props.onEdit}>
-                            <IconEdit />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={t('Clone')}
-                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-                    >
-                        <IconButton onClick={props.onClone}>
-                            <IconCopy />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={t('Delete')}
-                        slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-                    >
-                        <span>
-                            <IconButton
-                                disabled={!!enumItem.common?.dontDelete}
-                                onClick={props.onDelete}
+                    {props.locked ? (
+                        <ReadOnlyChip
+                            t={t}
+                            reason={props.locked}
+                        />
+                    ) : null}
+                    {props.locked ? null : (
+                        <>
+                            <Button
+                                variant="contained"
+                                size="small"
+                                startIcon={<IconAddObjects />}
+                                onClick={props.onAddObjects}
                             >
-                                <IconTrash />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
+                                {t('Add objects')}
+                            </Button>
+                            <Tooltip
+                                title={t('Add child')}
+                                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                            >
+                                <IconButton onClick={props.onAddChild}>
+                                    <IconAdd />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                                title={t('Edit')}
+                                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                            >
+                                <IconButton onClick={props.onEdit}>
+                                    <IconEdit />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                                title={t('Clone')}
+                                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                            >
+                                <IconButton onClick={props.onClone}>
+                                    <IconCopy />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                                title={t('Delete')}
+                                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
+                            >
+                                <span>
+                                    <IconButton
+                                        disabled={!!enumItem.common?.dontDelete}
+                                        onClick={props.onDelete}
+                                    >
+                                        <IconTrash />
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
+                        </>
+                    )}
                 </Box>
             </Box>
             <Box sx={styles.content}>
@@ -795,7 +811,7 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
                         ))}
                     </Box>
                 ) : null}
-                {memberIds.length > 0 && !props.onBack && !AdminUtils.isTouchDevice() ? (
+                {memberIds.length > 0 && !props.onBack && !AdminUtils.isTouchDevice() && !props.locked ? (
                     // the members can only be dragged onto other entries if the list is shown next to the details
                     <Typography
                         variant="caption"
@@ -808,7 +824,7 @@ export default function EnumDetails(props: EnumDetailsProps): JSX.Element {
                         )}
                     </Typography>
                 ) : null}
-                {!memberIds.length ? (
+                {!memberIds.length && !props.locked ? (
                     <Box sx={styles.emptyMembers}>
                         {t('Drag states, channels or devices from the object list here or use "Add objects"')}
                     </Box>

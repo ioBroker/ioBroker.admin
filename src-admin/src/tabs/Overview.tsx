@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { alpha, Box, Card, Chip, IconButton, LinearProgress, Tooltip, Typography } from '@mui/material';
 import {
     Extension as AdapterIcon,
+    LockOutlined as LockIcon,
     Memory as StatusIcon,
     Settings as SettingsIcon,
     Storage as ObjectsIcon,
@@ -29,6 +30,7 @@ import type { ObjectsWorker } from '@/Workers/ObjectsWorker';
 import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { LogsWorker, LogLineSaved } from '@/Workers/LogsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
+import { hasPermission, permissionLabel, SEND_TO_HOST } from '@/helpers/permissions';
 
 import ResourcesChart, { loadSeries, saveSeries, type ChartSeriesConfig } from '@/components/Overview/ResourcesChart';
 import ResourcesChartSettings from '@/components/Overview/ResourcesChartSettings';
@@ -322,10 +324,13 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
 
         // `getHostInfo` talks to the host and may take a while, so it must not block the counters
         let hostInfo: Record<string, any> | null = this.state.hostInfo;
-        try {
-            hostInfo = await this.props.socket.getHostInfo(currentHost);
-        } catch {
-            // host may be offline - keep the previous information
+        // the host is asked via `sendTo` - without that right the card says so instead of loading forever
+        if (hasPermission(this.props.socket, SEND_TO_HOST)) {
+            try {
+                hostInfo = await this.props.socket.getHostInfo(currentHost);
+            } catch {
+                // host may be offline - keep the previous information
+            }
         }
 
         if (!this.mounted) {
@@ -427,8 +432,20 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                             this.state.cpu !== null ? `${Math.round(this.state.cpu)}%` : '-',
                         )}
                     </>
-                ) : (
+                ) : hasPermission(this.props.socket, SEND_TO_HOST) ? (
                     <LinearProgress />
+                ) : (
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                    >
+                        <LockIcon
+                            fontSize="small"
+                            color="warning"
+                        />
+                        {`${t('No permission')} (${permissionLabel(SEND_TO_HOST, t)})`}
+                    </Typography>
                 )}
             </Card>
         );

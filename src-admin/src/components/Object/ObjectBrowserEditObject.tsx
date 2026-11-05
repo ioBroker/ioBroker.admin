@@ -64,6 +64,8 @@ import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '
 import Editor from '../Editor';
 import AceEditor from '../AceEditor';
 import { onCtrlEnter } from '@/helpers/ctrlEnter';
+import { lockedText, OBJECT_WRITE } from '@/helpers/permissions';
+import { ReadOnlyChip } from '@/components/NoPermission';
 
 const styles: Record<string, any> = {
     divWithoutTitle: {
@@ -898,7 +900,16 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     };
 
+    /** Why the user may not write objects - `null` if he may. Then the object is only shown */
+    getLocked(): string | null {
+        return lockedText(this.props.socket, [OBJECT_WRITE], this.props.t);
+    }
+
     onUpdate(): void {
+        // Ctrl+Enter must not write either
+        if (this.getLocked()) {
+            return;
+        }
         try {
             const obj = JSON.parse(this.state.text);
             obj._id = this.props.obj._id; // do not allow change of id
@@ -2416,6 +2427,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
 
     render(): JSX.Element {
         const obj = this.props.obj;
+        const locked = this.getLocked();
 
         const withAlias = obj._id.startsWith('alias.0') && obj.type === 'state';
 
@@ -2495,8 +2507,8 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     <Button
                         color="grey"
                         onClick={() => this.setState({ showCopyDialog: this.props.obj._id, newId: this.props.obj._id })}
-                        disabled={this.state.error || this.state.changed}
-                        title={this.props.t('Create a copy of this object')}
+                        disabled={this.state.error || this.state.changed || !!locked}
+                        title={locked || this.props.t('Create a copy of this object')}
                     >
                         <IconCopy fontSize={this.props.width === 'xs' ? 'large' : undefined} />
                     </Button>
@@ -2516,22 +2528,29 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                             )}
                         </Button>
                     )}
-                    <Tooltip
-                        title={this.props.t('Press CTRL+ENTER to confirm')}
-                        slotProps={{ popper: { sx: styles.tooltip } }}
-                    >
-                        <span>
-                            <Button
-                                variant="contained"
-                                disabled={this.state.error || !this.state.changed || this.state.customError}
-                                onClick={() => this.onUpdate()}
-                                startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
-                                color="primary"
-                            >
-                                {this.props.width === 'xs' ? <IconCheck fontSize="large" /> : this.props.t('Write')}
-                            </Button>
-                        </span>
-                    </Tooltip>
+                    {locked ? (
+                        <ReadOnlyChip
+                            t={this.props.t}
+                            reason={locked}
+                        />
+                    ) : (
+                        <Tooltip
+                            title={this.props.t('Press CTRL+ENTER to confirm')}
+                            slotProps={{ popper: { sx: styles.tooltip } }}
+                        >
+                            <span>
+                                <Button
+                                    variant="contained"
+                                    disabled={this.state.error || !this.state.changed || this.state.customError}
+                                    onClick={() => this.onUpdate()}
+                                    startIcon={this.props.width === 'xs' ? undefined : <IconCheck />}
+                                    color="primary"
+                                >
+                                    {this.props.width === 'xs' ? <IconCheck fontSize="large" /> : this.props.t('Write')}
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    )}
                     <Button
                         color="grey"
                         variant="contained"

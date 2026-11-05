@@ -53,6 +53,7 @@ import EnumAssignment from './EnumAssignment';
 import EnumWizard from './EnumWizard';
 import { sortTreeItems, type EnumTreeItem, type MemberChanges } from './types';
 import AdminUtils from '../../helpers/AdminUtils';
+import { lockedText, OBJECT_WRITE } from '../../helpers/permissions';
 
 /** Below this width the list and the details are shown one after another */
 const NARROW_WIDTH = 800;
@@ -554,6 +555,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
             this.setState({ enumsTree }, () => {
                 // offer the wizard once, as long as there are no rooms at all
                 if (
+                    !this.getLocked() &&
                     !Object.keys(enums).some(id => id.startsWith('enum.rooms.')) &&
                     !getStorage().getItem('enumsWizardOffered')
                 ) {
@@ -562,6 +564,14 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 }
             }),
         );
+    }
+
+    /**
+     * Why the user may not change enums - `null` if he may. Then everything is only shown: no
+     * buttons, no dragging, no object list to drag from.
+     */
+    getLocked(): string | null {
+        return lockedText(this.props.socket, [OBJECT_WRITE], this.props.t);
     }
 
     setCurrentCategory = (currentCategory: string, cb?: () => void): void => {
@@ -1084,40 +1094,48 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
 
     renderTopBar(categories: Record<string, EnumTreeItem>): JSX.Element {
         const { t } = this.props;
+        const locked = this.getLocked();
         return (
             <Box sx={styles.topBar}>
                 {this.renderViewToggle()}
                 <Tooltip
-                    title={t('Set up rooms and functions')}
+                    title={locked || t('Set up rooms and functions')}
                     slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                 >
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        sx={styles.wizardButton}
-                        startIcon={<WizardIcon />}
-                        onClick={() => this.setState({ wizardOpen: true })}
-                    >
-                        {this.state.narrow ? null : t('Assistant')}
-                    </Button>
+                    {/* a disabled button gets no mouse events: the span keeps the tooltip */}
+                    <span>
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            sx={styles.wizardButton}
+                            startIcon={<WizardIcon />}
+                            disabled={!!locked}
+                            onClick={() => this.setState({ wizardOpen: true })}
+                        >
+                            {this.state.narrow ? null : t('Assistant')}
+                        </Button>
+                    </span>
                 </Tooltip>
                 {this.state.view === 'categories' ? (
                     <>
                         <Tooltip
-                            title={t('Add enum')}
+                            title={locked || t('Add enum')}
                             slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                         >
-                            <IconButton
-                                id="categoryPopoverButton"
-                                size="small"
-                                onClick={() =>
-                                    categories.favorites
-                                        ? this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
-                                        : this.setState({ categoryPopoverOpen: true })
-                                }
-                            >
-                                <AddIcon />
-                            </IconButton>
+                            <span>
+                                <IconButton
+                                    id="categoryPopoverButton"
+                                    size="small"
+                                    disabled={!!locked}
+                                    onClick={() =>
+                                        categories.favorites
+                                            ? this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
+                                            : this.setState({ categoryPopoverOpen: true })
+                                    }
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </span>
                         </Tooltip>
                         <Popover
                             open={this.state.categoryPopoverOpen}
@@ -1188,6 +1206,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                                     }
                                                     styles={styles}
                                                     {...this.props}
+                                                    locked={!!locked}
                                                 />
                                             }
                                             value={category}
@@ -1200,7 +1219,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 ) : null}
                 <Box sx={{ flexGrow: 1 }} />
                 {/* a hidden object list is opened with the bar on the right side, so the button only hides it */}
-                {this.state.narrow || this.state.view !== 'categories' || !this.state.showObjects ? null : (
+                {this.state.narrow || this.state.view !== 'categories' || !this.state.showObjects || locked ? null : (
                     <Tooltip
                         title={t('Hide object list')}
                         slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
@@ -1225,6 +1244,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 enumObj._id.startsWith(`enum.${this.state.currentCategory}.`) && enumObj._id.split('.').length > 3,
         );
         const anyClosed = Object.values(this.state.enumsClosed).some(closed => closed);
+        const locked = this.getLocked();
 
         return (
             <Box sx={Utils.getStyle(this.props.theme, styles.listPane, this.state.narrow && styles.listPaneNarrow)}>
@@ -1263,13 +1283,13 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                         </Tooltip>
                     ) : null}
                     <Tooltip
-                        title={t('Add group')}
+                        title={locked || t('Add group')}
                         slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                     >
                         <span>
                             <IconButton
                                 size="small"
-                                disabled={!this.state.currentCategory}
+                                disabled={!this.state.currentCategory || !!locked}
                                 onClick={() => this.addEnum(`enum.${this.state.currentCategory}`)}
                             >
                                 <AddIcon />
@@ -1290,6 +1310,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                         moveEnum={this.moveEnum}
                         t={t}
                         theme={this.props.theme}
+                        locked={!!locked}
                     />
                 </Box>
             </Box>
@@ -1324,6 +1345,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 onAddObjects={() => this.setState({ addObjectsDialog: selectedId })}
                 onRemoveMember={memberId => this.removeMemberFromEnum(memberId, selectedId)}
                 onMoveMember={(memberId, toEnumId, copy) => void this.moveMember(memberId, selectedId, toEnumId, copy)}
+                locked={this.getLocked()}
             />
         );
     }
@@ -1348,6 +1370,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
         }
         const categories = enumsTree.children.enum?.children || {};
         const selectedId = this.getSelectedId();
+        const locked = this.getLocked();
 
         let main: JSX.Element;
         if (this.state.narrow) {
@@ -1380,7 +1403,11 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                     getName={this.getName}
                                     onChangeMembers={this.changeMembers}
                                     onOpenEnum={this.openEnum}
+                                    locked={locked}
                                 />
+                            ) : locked ? (
+                                // nothing to drag the objects to: no object list
+                                main
                             ) : !this.state.narrow && this.state.showObjects ? (
                                 <Box sx={styles.split}>
                                     <ReactSplit

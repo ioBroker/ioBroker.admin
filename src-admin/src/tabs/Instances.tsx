@@ -38,6 +38,7 @@ import {
 import type { HostInfo } from '@iobroker/socket-client';
 
 import AdminUtils from '@/helpers/AdminUtils';
+import { EXECUTE, hasPermission, lockedText, OBJECT_WRITE, SEND_TO_HOST } from '@/helpers/permissions';
 import {
     replaceLink,
     applyReverseProxyToLink,
@@ -720,6 +721,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
 
     /** Reads from the host whether it runs the adapters in compact mode */
     async readCompactMode(): Promise<void> {
+        // the base settings come from the host: without `sendTo` the instances are shown without compact groups
+        if (!hasPermission(this.props.socket, SEND_TO_HOST)) {
+            return;
+        }
         let compact = false;
         try {
             const baseSettings = await this.props.socket.readBaseSettings(this.state.currentHost);
@@ -1233,6 +1238,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
             theme: this.props.theme,
             onRegisterClose: this.onRegisterClose,
             hasAnyResource,
+            // start, stop, settings and every edit write the instance object; deleting runs `iobroker del` on the host
+            lockedChange: lockedText(this.props.socket, [OBJECT_WRITE], this.t),
+            lockedDelete: lockedText(this.props.socket, [EXECUTE], this.t),
         };
 
         const list = (this._cacheList || []).map((item, idx) => {

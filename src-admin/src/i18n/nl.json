@@ -2007,5 +2007,9 @@
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "Adapter \"%s\" staat slechts één instantie per host toe, en %s bestaat al op host \"%s\"",
     "The admin was updated. Please load the page anew.": "De admin is bijgewerkt. Laad de pagina opnieuw.",
     "%s adapter(s) updated": "%s adapter(s) bijgewerkt",
-    "%s of %s adapter(s) updated": "%s van %s adapter(s) bijgewerkt"
+    "%s of %s adapter(s) updated": "%s van %s adapter(s) bijgewerkt",
+    "No permission": "Geen toestemming",
+    "Your user group lacks this permission:": "Uw gebruikersgroep mist dit recht:",
+    "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "Een beheerder kan het toekennen in het tabblad \"Gebruikers\": groep bewerken, dan \"Rechten\".",
+    "No permission for this action": "Geen toestemming voor deze actie"
 }

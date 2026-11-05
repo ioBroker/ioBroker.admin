@@ -5,7 +5,8 @@ import { Box, Button, Menu, MenuItem, Tooltip } from '@mui/material';
 import { type AdminConnection, I18n, Icon, Utils } from '@iobroker/gui-components';
 import type { CompactHost } from '@/types';
 import type { HostsWorker, HostEvent, HostAliveEvent } from '@/Workers/HostsWorker';
-import { isPermissionError, retryDelay } from '@/helpers/retryDelay';
+import { retryDelay } from '@/helpers/retryDelay';
+import { isPermissionError } from '@/helpers/permissions';
 
 const styles: Record<string, any> = {
     imgDiv: {

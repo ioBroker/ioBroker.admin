@@ -2007,5 +2007,9 @@
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "Adapter \"%s\" erlaubt nur eine Instanz pro Host, und %s existiert bereits auf Host \"%s\"",
     "The admin was updated. Please load the page anew.": "Der Admin wurde aktualisiert. Bitte laden Sie die Seite neu.",
     "%s adapter(s) updated": "%s Adapter aktualisiert",
-    "%s of %s adapter(s) updated": "%s von %s Adaptern aktualisiert"
+    "%s of %s adapter(s) updated": "%s von %s Adaptern aktualisiert",
+    "No permission": "Keine Berechtigung",
+    "Your user group lacks this permission:": "Ihrer Benutzergruppe fehlt diese Berechtigung:",
+    "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "Ein Administrator kann sie im Tab „Benutzer“ vergeben: Gruppe bearbeiten, dann „Berechtigungen“.",
+    "No permission for this action": "Keine Berechtigung für diese Aktion"
 }
