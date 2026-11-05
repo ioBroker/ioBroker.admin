@@ -96,6 +96,10 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixed: the "connection lost" overlay appears only after 2 seconds; loading a tab shows a spinner instead of it
+- (@GermanBluefox) Updated `@iobroker/gui-components` to 10.4.3: the loader uses the background of the theme
+
 ### 8.3.9 (2026-11-05)
 - (@GermanBluefox) Changed: the dialog "Update all adapters" shows the overall progress and the result of each adapter
 - (@GermanBluefox) Added: tabs without permission show a lock instead of errors

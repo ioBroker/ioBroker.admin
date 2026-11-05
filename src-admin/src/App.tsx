@@ -2492,7 +2492,7 @@ class App extends Router<AppProps, AppState> {
                 const closed = small || this.state.drawerState === DrawerStates.closed;
 
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Adapters
                             theme={this.state.theme}
                             triggerUpdate={this.state.triggerAdapterUpdate}
@@ -2535,7 +2535,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-instances') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Instances
                             key="instances"
                             menuPadding={
@@ -2587,7 +2587,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-overview') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Overview
                             key="overview"
                             t={I18n.t}
@@ -2613,7 +2613,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-intro') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Intro
                             key="intro"
                             hostname={this.state.hostname}
@@ -2633,7 +2633,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-logs') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Logs
                             key="logs"
                             t={I18n.t}
@@ -2656,7 +2656,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-files') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Files
                             key="files"
                             ready={this.state.ready}
@@ -2672,7 +2672,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-users') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Users
                             key="users"
                             ready={this.state.ready}
@@ -2688,7 +2688,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-enums') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Enums
                             key="enums"
                             t={I18n.t}
@@ -2703,7 +2703,7 @@ class App extends Router<AppProps, AppState> {
             if (this.state.currentTab.tab === 'tab-objects') {
                 return (
                     <Suspense
-                        fallback={<Connecting />}
+                        fallback={<Connecting loading />}
                         key="objects"
                     >
                         <Objects
@@ -2723,7 +2723,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-hosts') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <Hosts
                             socket={this.socket}
                             lang={I18n.getLanguage()}
@@ -2751,7 +2751,7 @@ class App extends Router<AppProps, AppState> {
             }
             if (this.state.currentTab.tab === 'tab-devicemanager') {
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <DeviceManagerTab
                             key={this.state.currentTab.tab}
                             themeName={this.state.themeName}
@@ -2769,7 +2769,7 @@ class App extends Router<AppProps, AppState> {
                 const tab = this.tabsInfo?.find(it => it.name === m[0] || it.name === `tab-${m[1]}`);
                 // /adapter/javascript/tab.html
                 return (
-                    <Suspense fallback={<Connecting />}>
+                    <Suspense fallback={<Connecting loading />}>
                         <CustomTab
                             key={this.state.currentTab.tab}
                             hostname={this.state.hostname}
@@ -3777,7 +3777,7 @@ class App extends Router<AppProps, AppState> {
                 <ThemeProvider theme={this.state.theme}>
                     <div style={{ height: '100%' }}>
                         {!this.state.connected && <Connecting text={this.getConnectionLostText()} />}
-                        <Suspense fallback={<Connecting />}>
+                        <Suspense fallback={<Connecting loading />}>
                             <EasyMode
                                 navigate={Router.doNavigate}
                                 getLocation={Router.getLocation}
