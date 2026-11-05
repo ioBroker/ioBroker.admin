@@ -21,6 +21,7 @@ import { ConfigGeneric, JsonConfigComponent, type ConfigItemPanel } from '@iobro
 import AdminUtils from '@/helpers/AdminUtils';
 import type { BasicComponentProps } from '@/types';
 import AceEditor from '@/components/AceEditor';
+import OsmMap from '@/components/LazyOsmMap';
 
 const styles: Record<string, React.CSSProperties> = {
     paper: {
@@ -791,6 +792,7 @@ export default class ObjectCustomEditor extends Component<ObjectCustomEditorProp
                                     });
                                 }}
                                 AceEditor={AceEditor}
+                                OsmMap={OsmMap}
                             />
                         ) : null}
 

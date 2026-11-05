@@ -2494,6 +2494,16 @@
           "minimum": 1,
           "maximum": 19
         },
+        "mapStyle": {
+          "description": "Colors of the map: standard - as on openstreetmap.org (default), dark - darkened, grey - grey tones, auto - darkened only in a dark theme",
+          "type": "string",
+          "enum": [
+            "standard",
+            "dark",
+            "grey",
+            "auto"
+          ]
+        },
         "readOnly": {
           "description": "Only show the position: the fields cannot be edited, the buttons are hidden and the map does not change the position",
           "type": "boolean"
@@ -7978,6 +7988,16 @@
                   "type": "number",
                   "minimum": 1,
                   "maximum": 19
+                },
+                "mapStyle": {
+                  "description": "Colors of the map: standard - as on openstreetmap.org (default), dark - darkened, grey - grey tones, auto - darkened only in a dark theme",
+                  "type": "string",
+                  "enum": [
+                    "standard",
+                    "dark",
+                    "grey",
+                    "auto"
+                  ]
                 },
                 "readOnly": {
                   "description": "Only show the position: the fields cannot be edited, the buttons are hidden and the map does not change the position",

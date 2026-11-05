@@ -16,6 +16,7 @@ import AdminUtils from '@/helpers/AdminUtils';
 import { adminHref } from '@/helpers/utils';
 import type { CompactHost } from '@/types';
 import AceEditor from '@/components/AceEditor';
+import OsmMap from '@/components/LazyOsmMap';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -255,6 +256,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     expertMode={this.props.expertMode}
                     DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
                     AceEditor={AceEditor}
+                    OsmMap={OsmMap}
                 />
             );
         }

@@ -1314,12 +1314,13 @@ Determines current location and used `system.config` coordinates if not possible
 | `map`           | show the position on an OpenStreetMap under the fields. A click on the map or dragging the marker sets the position (From 10.1.16)                                      |
 | `mapHeight`     | height of the map in pixels. Default 300 (From 10.1.16)                                                                                                                 |
 | `mapZoom`       | zoom level the map starts with: 1 - the whole world, 18 - a house. Default 13 (From 10.1.16)                                                                            |
+| `mapStyle`      | colors of the map: `standard` - as on openstreetmap.org (default), `dark` - darkened, `grey` - grey tones, `auto` - darkened only in a dark theme (From 10.1.17)        |
 | `readOnly`      | only show the position: the fields cannot be edited, the buttons are hidden and the map does not change the position. Shows the data as they are now (From 10.1.16)    |
 
 The map does not belong to this library: the host hands it in with the property `OsmMap` of `JsonConfig` /
 `JsonConfigComponent`, best as `React.lazy(() => import('./OsmMap'))`, so that `leaflet` is only loaded when a
-map is really shown. It gets the props `OsmMapProps` (`position`, `center`, `zoom`, `onChange`, `themeType`,
-`style`); without `onChange` it is read-only. `test-gui/src/OsmMap.tsx` is an implementation with `leaflet`.
+map is really shown. It gets the props `OsmMapProps` (`position`, `center`, `zoom`, `onChange`, `mapStyle`,
+`themeType`, `style`); without `onChange` it is read-only. `test-gui/src/OsmMap.tsx` is an implementation with `leaflet`.
 Without a map from the host, only a link to the position on openstreetmap.org is shown.
 
 ```json
@@ -2108,6 +2109,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.17 (2026-11-05)
+- (@GermanBluefox) Added: `mapStyle` for the map of `coordinates`: `standard` (as on openstreetmap.org), `dark`, `grey` or `auto` (darkened only in a dark theme). Until now the map was always darkened in a dark theme, which changed the colors of the map; now it shows the standard colors unless configured otherwise. The host gets the style as `mapStyle`
+
 ### 10.1.16 (2026-11-05)
 - (@GermanBluefox) Added: `coordinates` shows the position on an OpenStreetMap with `map: true` (`mapHeight`, `mapZoom`). A click on the map or dragging the marker sets the position. The host hands the map in with the new property `OsmMap` of `JsonConfig` / `JsonConfigComponent`, lazy loaded, so that `leaflet` does not land in every bundle that uses this library. Without it a link to openstreetmap.org is shown
 - (@GermanBluefox) Added: `readOnly` for `coordinates`, to only show a position: no editing, no buttons, the map does not change the position, and the shown values follow the data

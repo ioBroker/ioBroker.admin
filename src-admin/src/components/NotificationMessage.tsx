@@ -19,6 +19,7 @@ import {
 } from '@iobroker/json-config';
 
 import AceEditor from './AceEditor';
+import OsmMap from './LazyOsmMap';
 
 const styles: Record<string, any> = {
     message: {
@@ -295,6 +296,7 @@ class NotificationMessage extends Component<NotificationMessageProps, Notificati
                     isFloatComma={this.props.isFloatComma}
                     dateFormat={this.props.dateFormat}
                     AceEditor={AceEditor}
+                    OsmMap={OsmMap}
                 />
             </>
         );

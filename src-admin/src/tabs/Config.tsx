@@ -46,6 +46,7 @@ import DeviceManager from '@iobroker/dm-gui-components';
 import AdminUtils from '../helpers/AdminUtils';
 import { adminHref } from '../helpers/utils';
 import AceEditor from '../components/AceEditor';
+import OsmMap from '../components/LazyOsmMap';
 
 const arrayLogLevel: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 
@@ -465,6 +466,7 @@ export default class Config extends Component<ConfigProps, ConfigState> {
                     t={this.props.t}
                     DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
                     AceEditor={AceEditor}
+                    OsmMap={OsmMap}
                 />
             );
         }

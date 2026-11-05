@@ -9,6 +9,7 @@ import { I18n, type AdminConnection, type ThemeName, type ThemeType, type IobThe
 import { type ConfigItemPanel, ConfigPanel } from '@iobroker/json-config';
 
 import AceEditor from '../components/AceEditor';
+import OsmMap from '../components/LazyOsmMap';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -305,8 +306,9 @@ const GenerateInputsModal: React.FC<GenerateInputsModalProps> = ({
                                     adapterName: 'dummy',
                                     _themeName: themeName,
                                     systemConfig,
-                                    // the library does not bring the code editor, the host provides it
+                                    // the library brings neither the code editor nor the map, the host provides them
                                     AceEditor,
+                                    OsmMap,
                                 }}
                                 data={schemaData}
                                 themeName={themeName}

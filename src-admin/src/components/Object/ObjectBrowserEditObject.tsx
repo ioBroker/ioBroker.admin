@@ -63,6 +63,7 @@ import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '
 
 import Editor from '../Editor';
 import AceEditor from '../AceEditor';
+import OsmMap from '../LazyOsmMap';
 import { onCtrlEnter } from '@/helpers/ctrlEnter';
 import { objectLockedText, OBJECT_WRITE } from '@/helpers/permissions';
 import { ReadOnlyChip } from '@/components/NoPermission';
@@ -1015,6 +1016,7 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
                     }
                 }}
                 AceEditor={AceEditor}
+                OsmMap={OsmMap}
             />
         );
     }
