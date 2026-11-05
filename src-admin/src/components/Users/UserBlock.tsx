@@ -22,19 +22,28 @@ interface UserBlockProps {
     styles: Record<string, any>;
     socket: AdminConnection;
     isDragging?: boolean;
-    /** Why the user may not change users and groups - `null` if he may */
-    lockedEdit?: string | null;
-    /** Why the user may not delete users - `null` if he may */
-    lockedDelete?: string | null;
+    /**
+     * Why the user may not change (`write`) or delete this user or group - `null` if he may. By the
+     * rights of his group, and of the object itself if one is given. Without the function, he may
+     */
+    getLocked?: (
+        obj: ioBroker.UserObject | ioBroker.GroupObject | null,
+        operation?: 'write' | 'delete',
+    ) => string | null;
 }
 
 const UserBlock: React.FC<UserBlockProps> = props => {
+    // the user object itself: enabled, edit, delete
+    const lockedEdit = props.getLocked?.(props.user) || null;
+    const lockedDelete = props.getLocked?.(props.user, 'delete') || null;
+    // dragging changes the group it is dropped on, the group checks its own rights
+    const lockedDrag = props.getLocked?.(null) || null;
     const opacity = props.isDragging ? 0 : 1;
 
     const textColor = Utils.getInvertedColor(props.user.common.color, props.themeType, true);
 
     const style: React.CSSProperties = {
-        cursor: props.lockedEdit ? 'default' : 'grab',
+        cursor: lockedDrag ? 'default' : 'grab',
         opacity,
         overflow: 'hidden',
         color: textColor,
@@ -55,7 +64,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                     <Checkbox
                         checked={props.user.common.enabled}
                         style={{ color: textColor }}
-                        disabled={props.user.common.dontDelete || !!props.lockedEdit}
+                        disabled={props.user.common.dontDelete || !!lockedEdit}
                         onChange={() => {
                             void props.socket
                                 .extendObject(props.user._id, {
@@ -66,7 +75,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                                 .then(() => props.updateData());
                         }}
                     />
-                    {props.lockedEdit ? null : (
+                    {lockedEdit ? null : (
                         <IconButton
                             size="small"
                             onClick={() => props.showUserEditDialog(props.user, false)}
@@ -74,7 +83,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                             <EditIcon style={{ color: textColor }} />
                         </IconButton>
                     )}
-                    {props.lockedDelete ? null : (
+                    {lockedDelete ? null : (
                         <IconButton
                             size="small"
                             onClick={() => props.showUserDeleteDialog(props.user)}
@@ -147,7 +156,7 @@ const UserBlock: React.FC<UserBlockProps> = props => {
                                         <GroupIcon style={props.styles.icon} />
                                     )}
                                     {props.getText(group.common.name)}
-                                    {props.lockedEdit ? null : (
+                                    {props.getLocked?.(group) ? null : (
                                         <IconButton
                                             size="small"
                                             onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
@@ -170,7 +179,7 @@ const UserBlockDrag: React.FC<UserBlockProps> = props => {
     const widthRef = useRef<HTMLDivElement>(null);
     const [{ isDragging }, dragRef, preview] = useDrag({
         type: 'user',
-        canDrag: () => !props.lockedEdit,
+        canDrag: () => !props.getLocked?.(null),
         item: () => ({
             userId: props.user._id,
             preview: (

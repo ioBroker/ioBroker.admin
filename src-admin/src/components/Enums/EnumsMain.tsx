@@ -53,7 +53,7 @@ import EnumAssignment from './EnumAssignment';
 import EnumWizard from './EnumWizard';
 import { sortTreeItems, type EnumTreeItem, type MemberChanges } from './types';
 import AdminUtils from '../../helpers/AdminUtils';
-import { lockedText, OBJECT_WRITE } from '../../helpers/permissions';
+import { lockedText, objectLockedText, OBJECT_DELETE, OBJECT_WRITE } from '../../helpers/permissions';
 
 /** Below this width the list and the details are shown one after another */
 const NARROW_WIDTH = 800;
@@ -573,6 +573,32 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
     getLocked(): string | null {
         return lockedText(this.props.socket, [OBJECT_WRITE], this.props.t);
     }
+
+    /**
+     * Why the user may not change this enum - `null` if he may: the rights of his group, then the
+     * rights of the enum itself
+     *
+     * @param enumObj the enum
+     * @param operation `delete` to delete or to move it
+     */
+    getEnumLocked(
+        enumObj: ioBroker.EnumObject | null | undefined,
+        operation: 'write' | 'delete' = 'write',
+    ): string | null {
+        return objectLockedText(
+            this.props.socket,
+            enumObj,
+            [operation === 'delete' ? OBJECT_DELETE : OBJECT_WRITE],
+            this.props.t,
+            operation,
+        );
+    }
+
+    /** For the tree and the table: the same function on every render, so that drag & drop is not set up again */
+    mayChangeEnum = (enumObj: ioBroker.EnumObject, operation: 'write' | 'delete'): boolean =>
+        !this.getEnumLocked(enumObj, operation);
+
+    mayChangeEnumId = (enumId: string): boolean => !this.getEnumLocked(this.state.enums?.[enumId]);
 
     setCurrentCategory = (currentCategory: string, cb?: () => void): void => {
         if (currentCategory !== this.state.currentCategory) {
@@ -1206,7 +1232,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                                     }
                                                     styles={styles}
                                                     {...this.props}
-                                                    locked={!!locked}
+                                                    locked={!!this.getEnumLocked(child.data)}
                                                 />
                                             }
                                             value={category}
@@ -1310,7 +1336,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                         moveEnum={this.moveEnum}
                         t={t}
                         theme={this.props.theme}
-                        locked={!!locked}
+                        mayChange={this.mayChangeEnum}
                     />
                 </Box>
             </Box>
@@ -1345,7 +1371,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                 onAddObjects={() => this.setState({ addObjectsDialog: selectedId })}
                 onRemoveMember={memberId => this.removeMemberFromEnum(memberId, selectedId)}
                 onMoveMember={(memberId, toEnumId, copy) => void this.moveMember(memberId, selectedId, toEnumId, copy)}
-                locked={this.getLocked()}
+                locked={this.getEnumLocked(enumItem)}
             />
         );
     }
@@ -1404,6 +1430,7 @@ export default class EnumsList extends Component<EnumsListProps, EnumsListState>
                                     onChangeMembers={this.changeMembers}
                                     onOpenEnum={this.openEnum}
                                     locked={locked}
+                                    mayChangeEnum={this.mayChangeEnumId}
                                 />
                             ) : locked ? (
                                 // nothing to drag the objects to: no object list

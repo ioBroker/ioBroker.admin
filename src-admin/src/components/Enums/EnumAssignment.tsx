@@ -400,6 +400,10 @@ interface AssignmentCellProps {
     onOpenMenu: (anchor: HTMLElement) => void;
     /** The user may not change enums: the assignments are only shown */
     locked: boolean;
+    /** May the user change this enum - by the rights of the enum itself? */
+    mayChange: (enumId: string) => boolean;
+    /** Is there an enum of this column the user may add the row to? Otherwise no "+" */
+    canAdd: boolean;
 }
 
 function AssignmentCell(props: AssignmentCellProps): JSX.Element {
@@ -421,7 +425,7 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     label={props.getLabel(enumId)}
                     icon={chipIcon(enumId)}
                     onClick={props.onOpenEnum ? () => props.onOpenEnum?.(enumId) : undefined}
-                    onDelete={props.locked ? undefined : () => props.onRemove(enumId)}
+                    onDelete={props.locked || !props.mayChange(enumId) ? undefined : () => props.onRemove(enumId)}
                 />
             ))}
             {assignment.inherited.map(enumId => (
@@ -457,7 +461,7 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     />
                 </Tooltip>
             ))}
-            {props.suggestion && !props.locked ? (
+            {props.suggestion && !props.locked && props.mayChange(props.suggestion._id) ? (
                 <Tooltip
                     title={t('Suggestion from the detected device type')}
                     slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
@@ -473,7 +477,7 @@ function AssignmentCell(props: AssignmentCellProps): JSX.Element {
                     />
                 </Tooltip>
             ) : null}
-            {props.locked ? null : (
+            {props.locked || !props.canAdd ? null : (
                 <IconButton
                     size="small"
                     onClick={e => props.onOpenMenu(e.currentTarget)}
@@ -498,6 +502,8 @@ interface EnumAssignmentProps {
     initialFilter?: Filter;
     /** Why the user may not change enums - the assignments are only shown then. `null` if he may */
     locked?: string | null;
+    /** May the user change this enum - by the rights of the enum itself? Without the function, he may */
+    mayChangeEnum?: (enumId: string) => boolean;
 }
 
 export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element {
@@ -670,6 +676,11 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
         void applyChanges(changes);
     };
 
+    const mayChangeEnum = (enumId: string): boolean => !props.mayChangeEnum || props.mayChangeEnum(enumId);
+    // the "+" of a cell only if there is a room (function) the user may change - by default only admin may
+    const canAddRoom = !props.locked && sortedEnums(ROOMS).some(enumObj => mayChangeEnum(enumObj._id));
+    const canAddFunction = !props.locked && sortedEnums(FUNCTIONS).some(enumObj => mayChangeEnum(enumObj._id));
+
     const renderMenu = (): JSX.Element | null => {
         if (!menu) {
             return null;
@@ -700,6 +711,7 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                 {sortedEnums(menu.prefix).map(enumObj => (
                     <MenuItem
                         key={enumObj._id}
+                        disabled={!mayChangeEnum(enumObj._id)}
                         onClick={() => {
                             close();
                             if (menu.mode === 'set') {
@@ -803,6 +815,8 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                         onAccept={enumId => toggleMember(row.id, enumId)}
                         onOpenEnum={props.onOpenEnum}
                         locked={!!props.locked}
+                        mayChange={mayChangeEnum}
+                        canAdd={canAddRoom}
                         onOpenMenu={anchor => setMenu({ anchor, prefix: ROOMS, mode: 'toggle', rowId: row.id })}
                     />
                 </TableCell>
@@ -817,6 +831,8 @@ export default function EnumAssignment(props: EnumAssignmentProps): JSX.Element 
                         onAccept={enumId => toggleMember(row.id, enumId)}
                         onOpenEnum={props.onOpenEnum}
                         locked={!!props.locked}
+                        mayChange={mayChangeEnum}
+                        canAdd={canAddFunction}
                         onOpenMenu={anchor => setMenu({ anchor, prefix: FUNCTIONS, mode: 'toggle', rowId: row.id })}
                     />
                 </TableCell>

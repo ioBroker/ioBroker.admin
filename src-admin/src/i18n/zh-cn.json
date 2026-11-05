@@ -2011,5 +2011,6 @@
     "No permission": "无权限",
     "Your user group lacks this permission:": "您的用户组缺少此权限：",
     "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "管理员可以在“用户”选项卡中授予：编辑该组，然后选择“权限”。",
-    "No permission for this action": "无权执行此操作"
+    "No permission for this action": "无权执行此操作",
+    "Rights of this object - owner: %s, group: %s": "此对象的权限 - 所有者：%s，组：%s"
 }

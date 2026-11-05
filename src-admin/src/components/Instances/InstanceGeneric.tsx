@@ -75,6 +75,7 @@ import noSentry from '@/assets/sentryNo.svg';
 import CustomModal from '../CustomModal';
 import LinksDialog, { type InstanceLink } from './LinksDialog';
 import AdminUtils from '../../helpers/AdminUtils';
+import { objectLockedText } from '../../helpers/permissions';
 
 /** Whether both objects have the same attributes with identical values */
 function shallowEqual(a: object, b: object): boolean {
@@ -1532,6 +1533,17 @@ export default abstract class InstanceGeneric<
     }
 
     /**
+     * Why the user may not change this instance (start, stop, settings, edits) - `null` if he may.
+     * The rights of the group, then the rights of the instance object itself.
+     */
+    get lockedChange(): string | null {
+        return (
+            this.props.context.lockedChange ||
+            objectLockedText(this.props.context.socket, this.props.instance.obj, [], this.props.context.t)
+        );
+    }
+
+    /**
      * Style of a pencil next to a value. A user who may not change the instance gets none: the value
      * stays visible, the pencil would only end in a permission error. Set inline, so that the hover
      * rule of `styles.editButton` cannot show it again.
@@ -1539,20 +1551,20 @@ export default abstract class InstanceGeneric<
      * @param style the style of the button
      */
     editButtonStyle(style: React.CSSProperties): React.CSSProperties {
-        return this.props.context.lockedChange ? { ...style, display: 'none' } : style;
+        return this.lockedChange ? { ...style, display: 'none' } : style;
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderPlayPause(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.context.lockedChange || this.props.context.t('Start/stop')}
+                title={this.lockedChange || this.props.context.t('Start/stop')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div>
                     <IconButton
                         size="small"
-                        disabled={!!this.props.context.lockedChange}
+                        disabled={!!this.lockedChange}
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
@@ -1592,16 +1604,12 @@ export default abstract class InstanceGeneric<
     renderSettingsButton(): JSX.Element {
         return (
             <Tooltip
-                title={
-                    this.props.instance.config
-                        ? this.props.context.lockedChange || this.props.context.t('Settings')
-                        : ''
-                }
+                title={this.props.instance.config ? this.lockedChange || this.props.context.t('Settings') : ''}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div>
                     <IconButton
-                        disabled={!this.props.instance.config || !!this.props.context.lockedChange}
+                        disabled={!this.props.instance.config || !!this.lockedChange}
                         size="small"
                         style={{
                             ...this.styles.button,
@@ -1625,7 +1633,7 @@ export default abstract class InstanceGeneric<
     renderRestartButton(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.context.lockedChange || this.props.context.t('Restart')}
+                title={this.lockedChange || this.props.context.t('Restart')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <div>
@@ -1641,9 +1649,7 @@ export default abstract class InstanceGeneric<
                             ...this.styles.button,
                             ...(!this.props.instance.canStart ? this.styles.hide : undefined),
                         }}
-                        disabled={
-                            !this.props.item.running || !!this.state.restarting || !!this.props.context.lockedChange
-                        }
+                        disabled={!this.props.item.running || !!this.state.restarting || !!this.lockedChange}
                     >
                         <IconRefresh
                             loading={!!this.state.restarting}
@@ -1799,17 +1805,17 @@ export default abstract class InstanceGeneric<
         }
         return (
             <Tooltip
-                title={this.props.context.lockedChange || 'sentry'}
+                title={this.lockedChange || 'sentry'}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
                     size="small"
-                    style={{ ...this.styles.button, ...(this.props.context.lockedChange ? LOCKED_STYLE : undefined) }}
-                    aria-disabled={!!this.props.context.lockedChange}
+                    style={{ ...this.styles.button, ...(this.lockedChange ? LOCKED_STYLE : undefined) }}
+                    aria-disabled={!!this.lockedChange}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        if (!this.props.context.lockedChange) {
+                        if (!this.lockedChange) {
                             this.toggleSentry();
                         }
                     }}
@@ -1831,7 +1837,7 @@ export default abstract class InstanceGeneric<
     renderCompactGroupEnabled(): JSX.Element {
         return (
             <Tooltip
-                title={this.props.context.lockedChange || this.props.context.t('compact groups')}
+                title={this.lockedChange || this.props.context.t('compact groups')}
                 slotProps={{ popper: { sx: this.styles.tooltip } }}
             >
                 <IconButton
@@ -1844,13 +1850,13 @@ export default abstract class InstanceGeneric<
                         ...(this.props.context.expertMode && this.props.item.checkCompact && !this.props.item.isPython
                             ? undefined
                             : this.styles.hide),
-                        ...(this.props.context.lockedChange ? LOCKED_STYLE : undefined),
+                        ...(this.lockedChange ? LOCKED_STYLE : undefined),
                     }}
-                    aria-disabled={!!this.props.context.lockedChange}
+                    aria-disabled={!!this.lockedChange}
                     onClick={event => {
                         event.stopPropagation();
                         event.preventDefault();
-                        if (!this.props.context.lockedChange) {
+                        if (!this.lockedChange) {
                             this.toggleCompactMode();
                         }
                     }}

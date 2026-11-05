@@ -11,6 +11,9 @@ export { isPermissionError } from '@iobroker/socket-client';
  * this is only for the display.
  */
 
+/** Translation function, `%s` in the text is replaced with the arguments */
+type Translate = (word: string, ...args: string[]) => string;
+
 /** One right, e.g. `{ type: 'other', operation: 'sendto' }` */
 export type Permission = {
     [T in SocketPermissionType]: { type: T; operation: SocketPermissionOperation<T> };
@@ -90,7 +93,7 @@ export function missingTabPermissions(socket: Connection | null | undefined, tab
  * @param permission the right
  * @param t translation function
  */
-export function permissionLabel(permission: Permission, t: (word: string) => string): string {
+export function permissionLabel(permission: Permission, t: Translate): string {
     return `${t(`group_acl_${permission.type}`)}: ${t(`group_acl_${permission.operation}`)}`;
 }
 
@@ -102,11 +105,7 @@ export function permissionLabel(permission: Permission, t: (word: string) => str
  * @param required the rights the control needs
  * @param t translation function
  */
-export function lockedText(
-    socket: Connection | null | undefined,
-    required: Permission[],
-    t: (word: string) => string,
-): string | null {
+export function lockedText(socket: Connection | null | undefined, required: Permission[], t: Translate): string | null {
     if (!socket || socket.isAdministrator()) {
         return null;
     }
@@ -114,4 +113,34 @@ export function lockedText(
     return missing.length
         ? `${t('No permission')} (${missing.map(permission => permissionLabel(permission, t)).join(', ')})`
         : null;
+}
+
+/**
+ * Why the user may not change this object, for a tooltip - `null` if he may. First the rights of
+ * the group (`required`), then the rights of the object itself (`obj.acl`): objects belong to
+ * `admin` and the group `administrator` by default, everybody else may only read them.
+ * E.g. "No permission (Rights of this object - owner: admin, group: administrator)"
+ *
+ * @param socket connection to admin
+ * @param obj the object to change
+ * @param required the rights of the group the change needs, e.g. `[OBJECT_WRITE]`
+ * @param t translation function
+ * @param operation `delete` to delete the object
+ * @param part `state` to set the value of a state
+ */
+export function objectLockedText(
+    socket: Connection | null | undefined,
+    obj: ioBroker.Object | null | undefined,
+    required: Permission[],
+    t: Translate,
+    operation: 'write' | 'delete' = 'write',
+    part: 'object' | 'state' = 'object',
+): string | null {
+    const locked = lockedText(socket, required, t);
+    if (locked || !socket || !obj?.acl || socket.hasObjectPermission(obj, operation, part)) {
+        return locked;
+    }
+    const owner = (obj.acl.owner || '').replace(/^system\.user\./, '');
+    const ownerGroup = (obj.acl.ownerGroup || '').replace(/^system\.group\./, '');
+    return `${t('No permission')} (${t('Rights of this object - owner: %s, group: %s', owner, ownerGroup)})`;
 }

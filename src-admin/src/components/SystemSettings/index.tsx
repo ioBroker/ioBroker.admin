@@ -42,7 +42,7 @@ import {
 
 import type { AdminGuiConfig, ioBrokerObject } from '@/types';
 import AdminUtils from '@/helpers/AdminUtils';
-import { lockedText, OBJECT_WRITE } from '@/helpers/permissions';
+import { objectLockedText, OBJECT_WRITE } from '@/helpers/permissions';
 import { ReadOnlyChip } from '@/components/NoPermission';
 import MainSettingsDialog from './MainSettingsDialog';
 import RepositoriesDialog, { type Repository } from './RepositoriesDialog';
@@ -727,8 +727,9 @@ class SystemSettingsDialog extends Component<SystemSettingsDialogProps, SystemSe
     }
 
     render(): JSX.Element {
-        // every setting is an object: without the right to write objects, they are only shown
-        const locked = lockedText(this.props.socket, [OBJECT_WRITE], this.props.t);
+        // every setting is an object: without the right to write objects - and `system.config` as the main
+        // one of them - they are only shown
+        const locked = objectLockedText(this.props.socket, this.state.systemConfig, [OBJECT_WRITE], this.props.t);
         // nothing can be changed before everything is loaded - the originals are still empty until then.
         // Changes of a user who may not save them are not worth a question when closing.
         const changed =

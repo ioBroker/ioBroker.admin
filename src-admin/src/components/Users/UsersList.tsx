@@ -14,6 +14,7 @@ import { Utils, type AdminConnection, type Translate, type IobTheme, type ThemeT
 import AdminUtils from '@/helpers/AdminUtils';
 import {
     lockedText,
+    objectLockedText,
     OBJECT_DELETE,
     OBJECT_WRITE,
     USERS_CREATE,
@@ -332,6 +333,22 @@ class UsersList extends Component<UsersListProps, UsersListState> {
         }
     }
 
+    /**
+     * Why the user may not change (`write`) or delete a user or group - `null` if he may.
+     * js-controller checks the users rights first, then the object rights, then the rights of the
+     * object itself. Without an object, only the rights of the group are checked.
+     *
+     * @param obj the user or group
+     * @param operation `delete` to delete it
+     */
+    getLocked = (
+        obj: ioBroker.UserObject | ioBroker.GroupObject | null,
+        operation: 'write' | 'delete' = 'write',
+    ): string | null =>
+        operation === 'delete'
+            ? objectLockedText(this.props.socket, obj, [USERS_DELETE, OBJECT_DELETE], this.props.t, 'delete')
+            : objectLockedText(this.props.socket, obj, [USERS_WRITE, OBJECT_WRITE], this.props.t);
+
     getText = (name: ioBroker.StringOrTranslated | undefined): string =>
         (name && (typeof name === 'object' ? name[this.props.lang] || name.en || '' : name || '')) || '';
 
@@ -518,8 +535,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
 
         // js-controller checks the users rights first, then the object rights
         const lockedCreate = lockedText(this.props.socket, [USERS_CREATE, USERS_WRITE, OBJECT_WRITE], this.props.t);
-        const lockedEdit = lockedText(this.props.socket, [USERS_WRITE, OBJECT_WRITE], this.props.t);
-        const lockedDelete = lockedText(this.props.socket, [USERS_DELETE, OBJECT_DELETE], this.props.t);
+        const lockedEdit = this.getLocked(null);
 
         return (
             <DndProvider backend={AdminUtils.isTouchDevice() ? TouchBackend : HTML5Backend}>
@@ -605,8 +621,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                         getText={this.getText}
                                         styles={styles}
                                         {...this.props}
-                                        lockedEdit={lockedEdit}
-                                        lockedDelete={lockedDelete}
+                                        getLocked={this.getLocked}
                                     />
                                 ))}
                         </div>
@@ -676,8 +691,7 @@ class UsersList extends Component<UsersListProps, UsersListState> {
                                         getText={this.getText}
                                         styles={styles}
                                         {...this.props}
-                                        lockedEdit={lockedEdit}
-                                        lockedDelete={lockedDelete}
+                                        getLocked={this.getLocked}
                                     />
                                 ))}
                         </div>

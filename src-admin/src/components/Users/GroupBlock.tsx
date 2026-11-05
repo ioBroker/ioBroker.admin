@@ -17,20 +17,28 @@ interface GroupBlockProps {
     themeType: ThemeType;
     styles: Record<string, any>;
     theme: IobTheme;
-    /** Why the user may not change users and groups - `null` if he may */
-    lockedEdit?: string | null;
-    /** Why the user may not delete groups - `null` if he may */
-    lockedDelete?: string | null;
+    /**
+     * Why the user may not change (`write`) or delete this user or group - `null` if he may. By the
+     * rights of his group, and of the object itself if one is given. Without the function, he may
+     */
+    getLocked?: (
+        obj: ioBroker.UserObject | ioBroker.GroupObject | null,
+        operation?: 'write' | 'delete',
+    ) => string | null;
 }
 
 function canMeDrop(monitor: DropTargetMonitor<{ userId: ioBroker.ObjectIDs.User }>, props: GroupBlockProps): boolean {
-    if (props.lockedEdit) {
+    if (props.getLocked?.(props.group)) {
         return false;
     }
     return props.group.common.members ? !props.group.common.members.includes(monitor.getItem().userId) : true;
 }
 
 const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Element => {
+    // members, name, rights: all in the group object
+    const lockedEdit = props.getLocked?.(props.group) || null;
+    const lockedDelete = props.getLocked?.(props.group, 'delete') || null;
+
     const [{ CanDrop, isOver /* , isCanDrop */ }, drop] = useDrop(
         () => ({
             accept: 'user',
@@ -41,7 +49,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
                 CanDrop: monitor.canDrop(),
             }),
         }),
-        [props.group.common.members, props.lockedEdit],
+        [props.group, props.getLocked],
     );
 
     let opacity = 0.7;
@@ -72,7 +80,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
             sx={Utils.getStyle(props.theme, props.styles.userGroupCard2, backgroundColor)}
         >
             <div style={props.styles.right}>
-                {props.lockedEdit ? null : (
+                {lockedEdit ? null : (
                     <IconButton
                         size="small"
                         onClick={() => props.showGroupEditDialog(props.group, false)}
@@ -80,7 +88,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
                         <EditIcon style={{ color: textColor }} />
                     </IconButton>
                 )}
-                {props.lockedDelete ? null : (
+                {lockedDelete ? null : (
                     <IconButton
                         size="small"
                         onClick={() => props.showGroupDeleteDialog(props.group)}
@@ -142,7 +150,7 @@ const GroupBlock: React.FC<GroupBlockProps> = (props: GroupBlockProps): JSX.Elem
                                     <PersonIcon style={props.styles.icon} />
                                 )}
                                 {props.getText(user.common.name)}
-                                {props.lockedEdit ? null : (
+                                {lockedEdit ? null : (
                                     <IconButton
                                         size="small"
                                         onClick={() => props.removeUserFromGroup(member, props.group._id)}

@@ -2011,5 +2011,6 @@
     "No permission": "No permission",
     "Your user group lacks this permission:": "Your user group lacks this permission:",
     "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".",
-    "No permission for this action": "No permission for this action"
+    "No permission for this action": "No permission for this action",
+    "Rights of this object - owner: %s, group: %s": "Rights of this object - owner: %s, group: %s"
 }

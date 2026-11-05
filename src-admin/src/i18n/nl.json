@@ -2011,5 +2011,6 @@
     "No permission": "Geen toestemming",
     "Your user group lacks this permission:": "Uw gebruikersgroep mist dit recht:",
     "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "Een beheerder kan het toekennen in het tabblad \"Gebruikers\": groep bewerken, dan \"Rechten\".",
-    "No permission for this action": "Geen toestemming voor deze actie"
+    "No permission for this action": "Geen toestemming voor deze actie",
+    "Rights of this object - owner: %s, group: %s": "Rechten van dit object - eigenaar: %s, groep: %s"
 }

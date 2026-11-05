@@ -2011,5 +2011,6 @@
     "No permission": "Немає прав",
     "Your user group lacks this permission:": "Вашій групі користувачів бракує цього дозволу:",
     "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "Адміністратор може надати його на вкладці «Користувачі»: змінити групу, потім «Дозволи».",
-    "No permission for this action": "Немає прав на цю дію"
+    "No permission for this action": "Немає прав на цю дію",
+    "Rights of this object - owner: %s, group: %s": "Права цього об'єкта - власник: %s, група: %s"
 }

@@ -2011,5 +2011,6 @@
     "No permission": "Нет прав",
     "Your user group lacks this permission:": "Вашей группе пользователей не хватает этого права:",
     "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "Администратор может выдать его на вкладке «Пользователи»: изменить группу, затем «Разрешения».",
-    "No permission for this action": "Нет прав на это действие"
+    "No permission for this action": "Нет прав на это действие",
+    "Rights of this object - owner: %s, group: %s": "Права этого объекта - владелец: %s, группа: %s"
 }

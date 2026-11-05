@@ -64,7 +64,7 @@ import { JsonConfigComponent, type ConfigItemPanel, type ConfigItemTabs } from '
 import Editor from '../Editor';
 import AceEditor from '../AceEditor';
 import { onCtrlEnter } from '@/helpers/ctrlEnter';
-import { lockedText, OBJECT_WRITE } from '@/helpers/permissions';
+import { objectLockedText, OBJECT_WRITE } from '@/helpers/permissions';
 import { ReadOnlyChip } from '@/components/NoPermission';
 
 const styles: Record<string, any> = {
@@ -900,9 +900,12 @@ class ObjectBrowserEditObject extends Component<ObjectBrowserEditObjectProps, Ob
         }
     };
 
-    /** Why the user may not write objects - `null` if he may. Then the object is only shown */
+    /**
+     * Why the user may not write this object - `null` if he may: the rights of his group, then the
+     * rights of the object itself. Then the object is only shown
+     */
     getLocked(): string | null {
-        return lockedText(this.props.socket, [OBJECT_WRITE], this.props.t);
+        return objectLockedText(this.props.socket, this.props.obj as ioBroker.Object, [OBJECT_WRITE], this.props.t);
     }
 
     onUpdate(): void {

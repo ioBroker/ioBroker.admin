@@ -2011,5 +2011,6 @@
     "No permission": "Sem permissão",
     "Your user group lacks this permission:": "O seu grupo de utilizadores não tem esta permissão:",
     "An administrator can grant it in the tab \"Users\": edit the group, then \"Permissions\".": "Um administrador pode concedê-la na aba \"Usuários\": editar o grupo e depois \"Permissões\".",
-    "No permission for this action": "Sem permissão para esta ação"
+    "No permission for this action": "Sem permissão para esta ação",
+    "Rights of this object - owner: %s, group: %s": "Direitos deste objeto - proprietário: %s, grupo: %s"
 }
