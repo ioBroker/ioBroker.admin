@@ -664,7 +664,7 @@ User can enter the word, and it will be added (see cloud => services => Whitelis
 
 just indication if the instance is alive, and it could be used in "hidden" and "disabled" (will not be saved in config)
 
-Just text: Instance is running, Instance is not running
+Just text with a status LED in front of it: Instance is running, Instance is not running. The LED pops when the instance starts and shakes when it stops.
 
 | Property       | Description                                                                                                                         |
 |----------------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -705,6 +705,9 @@ Button that sends a request to the current instance (<https://github.com/iobroke
 | `controlStyle`  | Styles for the button.                                                                                                                                                                                                                       |
 | `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.                              |
 
+The button confirms the answer of the instance for a moment: a check mark draws itself on success, a cross on an error. A success without `result`, `openUrl` or `copyDialog` is not confirmed with an "Ok" alert anymore.
+The named icons `delete`, `refresh`, `upload` and `play` are animated: `refresh` turns, the upload arrow moves up and a ring turns around `play` while the request runs; the lid of `delete` opens on hover and stays open while the confirmation dialog is shown.
+
 ### `setState`
 
 button that sets instance's state
@@ -716,6 +719,8 @@ button that sets instance's state
 | `val`     | `${data.myText}\_test` or number. Type will be detected automatically from the state type and converting done too                 |
 | `okText`  | Alert which will be shown by pressing the button                                                                                  |
 | `variant` | `contained`, `outlined`, ''                                                                                                       |
+
+The button shows a check mark for a moment after the state was written (also without `okText`), and a cross on an error.
 
 ### `staticText`
 
@@ -2016,6 +2021,21 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.13 (2026-11-05)
+- (@GermanBluefox) Changed: the animated icons of `@iobroker/gui-components` are used everywhere: the trash can for the delete buttons (`table`, `accordion`, `fileSelector`, named icon `delete`), the upload symbol for upload, import and export, the refresh symbol, the funnel with the red cross for the filters of `table`, play/pause and the connection symbol for `state` and `textSendTo`, the menu symbol of the tabs on small displays
+- (@GermanBluefox) Changed: the copy buttons of `text`, `uuid`, `pattern`, `textSendTo`, `staticInfo` and of the copy dialog of `sendTo` confirm the copy with a check mark instead of the alert "Copied"
+- (@GermanBluefox) Changed: `fileSelector` shows the upload: the arrow moves up while the file is uploaded, then a check mark (or a cross) draws itself; the drop area pulses while a file is dragged over it; the refresh button turns while the files are read
+- (@GermanBluefox) Changed: `image` shows the upload of the image in its corner and then a check mark or a cross; its drop area pulses while a file is dragged over it (also over an existing image) and a new image fades in (`UploadImage` of `@iobroker/gui-components` 10.4.1); the drop area of the CSV import of `table` pulses
+- (@GermanBluefox) Changed: `table`: a new, cloned or moved row lights up for a moment, a deleted row slides out
+- (@GermanBluefox) Changed: `sendTo` and `setState` confirm the result in the button with a check mark or a cross; `sendTo` does not show the alert "Ok" anymore. Named icons are animated while the request runs (`refresh` turns, `upload` moves up) or while the confirmation is shown (`delete`)
+- (@GermanBluefox) Changed: the play button of `file` and `fileSelector` turns into pause while the sound plays, a click stops it
+- (@GermanBluefox) Changed: `alive` shows a status LED, `checkDocker` with `noCheckbox` and the license dialog of `checkLicense` draw a check mark or a cross, the OAuth2 success text a check mark; tabs and accordion sections with errors get a red cross that draws itself; the import button of the instance settings confirms the import with a check mark
+- (@GermanBluefox) Fixed: `fileSelector` subscribed to the folder again on unmount instead of unsubscribing, so every remount added one more handler
+- (@GermanBluefox) Fixed: `image` with `base64: true` also wrote the image into a (broken) file of the instance
+- (@GermanBluefox) Fixed: a `state` shown as boolean text used `falseImage` also for `true`
+- (@GermanBluefox) Fixed: `sendTo` to an instance that is not alive kept the button in the running state
+- (@GermanBluefox) Fixed: the CSV import into an empty `table` showed the rows, but did not take them into the settings
+
 ### 10.1.12 (2026-11-03)
 - (@GermanBluefox) Docs: `checkDocker` checks the Docker connection the instance uses (`iobDockerApi`), also on the host of admin (ioBroker/ioBroker.admin#3715)
 - (@GermanBluefox) Added: `noCheckbox` for `checkDocker`: shows only the state of Docker, for adapters that choose Docker with another control
