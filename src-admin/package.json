@@ -36,7 +36,7 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@iobroker/dm-utils": "^3.2.1",
-        "@iobroker/socket-client": "^5.6.0",
+        "@iobroker/socket-client": "^5.6.1",
         "@iobroker/type-detector": "^6.2.0",
         "@module-federation/runtime": "^2.9.3",
         "@module-federation/vite": "^1.23.10",
