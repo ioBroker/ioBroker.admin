@@ -47,50 +47,15 @@ const newValueAccessControl = (value: number, newValue: number, mask: number): n
 
 interface ObjectRightsProps {
     value: number;
-    setValue: (value: number) => void;
-    t: Translate;
-    differentValues: number[];
-    applyToChildren: boolean;
+    /** Bits that are different for the items and stay as they are, if not touched */
     mask: number;
-    setMask: (mask: number) => void;
+    /** Called with the new value and the bit the user clicked */
+    onChange: (value: number, bit: number) => void;
+    t: Translate;
     disabled: boolean;
 }
 
-const ObjectRights: React.FC<ObjectRightsProps> = ({
-    value,
-    setValue,
-    t,
-    differentValues,
-    applyToChildren,
-    mask,
-    setMask,
-    disabled,
-}) => {
-    useEffect(() => {
-        if (applyToChildren) {
-            let _checkDifferent = 0;
-            for (let e = 0; e < differentValues.length; e++) {
-                _checkDifferent |= value ^ differentValues[e];
-            }
-            setMask(_checkDifferent);
-        } else {
-            setMask(0);
-        }
-    }, [differentValues, applyToChildren, setMask, value]);
-
-    // Decompose `value` into its individual permission bits up front. Doing this inline while
-    // rendering would mutate a variable captured from the enclosing scope, which React forbids.
-    const checkedValues = new Set<number>();
-    let newSelected = value;
-    for (const el of readWriteArray) {
-        for (const obj of el[Object.keys(el)[0]]) {
-            if (newSelected - obj.valueNum >= 0) {
-                newSelected -= obj.valueNum;
-                checkedValues.add(obj.valueNum);
-            }
-        }
-    }
-
+const ObjectRights: React.FC<ObjectRightsProps> = ({ value, mask, onChange, t, disabled }) => {
     return (
         <div
             style={{
@@ -136,9 +101,7 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                             }}
                         >
                             {el[name].map((obj, idx) => {
-                                const bool = checkedValues.has(obj.valueNum);
-
-                                const masked = mask & obj.valueNum;
+                                const masked = !!(mask & obj.valueNum);
 
                                 return (
                                     <div
@@ -167,22 +130,17 @@ const ObjectRights: React.FC<ObjectRightsProps> = ({
                                         <div style={{ height: 50, display: 'flex' }}>
                                             <Checkbox
                                                 disabled={disabled}
-                                                checked={bool}
+                                                checked={!!(value & obj.valueNum)}
                                                 color={masked ? 'primary' : 'secondary'}
-                                                indeterminate={!!masked}
+                                                indeterminate={masked}
                                                 style={masked ? { opacity: 0.5 } : undefined}
                                                 onChange={e => {
-                                                    if (masked) {
-                                                        mask &= ~obj.valueNum & 0xffff;
-                                                        setMask(mask);
-                                                    }
-                                                    let newValue = value;
-                                                    if (!e.target.checked) {
-                                                        newValue &= ~obj.valueNum & 0xffff;
-                                                    } else {
-                                                        newValue |= obj.valueNum;
-                                                    }
-                                                    setValue(newValue);
+                                                    // A "different" bit becomes set for all items on the first click
+                                                    const set = masked || e.target.checked;
+                                                    onChange(
+                                                        set ? value | obj.valueNum : value & ~obj.valueNum & 0xffff,
+                                                        obj.valueNum,
+                                                    );
                                                 }}
                                             />
                                         </div>
@@ -348,8 +306,10 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
     const [valueFileAccessControl, setValueFileAccessControl] = useState<number | null>(null);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
-    const [differentObject, setDifferentObject] = useState<number[]>([]);
-    const [maskObject, setMaskObject] = useState(0);
+    /** Permission bits that are not the same for all items */
+    const [differentBits, setDifferentBits] = useState(0);
+    /** Permission bits the user clicked: they are applied to all items */
+    const [touchedBits, setTouchedBits] = useState(0);
     const [ids, setIds] = useState<(MetaObject | FolderOrFileItem)[]>([]);
     const [disabledButton, setDisabledButton] = useState(true);
     const [progress, setProgress] = useState(false);
@@ -475,8 +435,17 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
 
             _stateOwnerUser = _stateOwnerUser || defaultAcl.owner;
             _stateOwnerGroup = _stateOwnerGroup || defaultAcl.ownerGroup;
-            _valueFileAccessControl = _valueFileAccessControl || defaultAcl.file;
-            setValueFileAccessControl(_valueFileAccessControl);
+            const shownValue: number = _valueFileAccessControl ?? defaultAcl.file;
+            setValueFileAccessControl(shownValue);
+
+            // Compare with the shown value once. Comparing with the current value after every click
+            // would mark a bit as "different" again as soon as it matches the first item.
+            let _differentBits = 0;
+            for (const value of _differentObject) {
+                _differentBits |= shownValue ^ value;
+            }
+            setDifferentBits(_differentBits & 0xffff);
+            setTouchedBits(0);
 
             setStateOwnerUser(_stateOwnerUser);
             setStateOwnerGroup(_stateOwnerGroup);
@@ -491,8 +460,6 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                 setApplyToChildren(true);
             }
             setChildrenCount(count);
-
-            setDifferentObject(_differentObject);
 
             setIds(_ids);
         });
@@ -519,13 +486,15 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                 setStateOwnerGroup(objects[selected]?.acl?.ownerGroup || null);
             }
         }
-        console.log(`stateOwnerUser ${stateOwnerUser}`);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
 
     if (!ids.length) {
         return <LinearProgress />;
     }
+
+    // Bits that are different and not touched keep the value of each item
+    const maskObject = applyToChildren ? differentBits & ~touchedBits & 0xffff : 0;
     return (
         <CustomModal
             theme={theme}
@@ -741,12 +710,10 @@ const FileEditOfAccessControl: React.FC<FileEditOfAccessControlProps> = ({
                         <ObjectRights
                             disabled={progress}
                             mask={maskObject}
-                            setMask={setMaskObject}
-                            applyToChildren={applyToChildren}
-                            differentValues={differentObject}
                             t={t}
-                            setValue={e => {
-                                setValueFileAccessControl(e);
+                            onChange={(value, bit) => {
+                                setValueFileAccessControl(value);
+                                setTouchedBits(bits => bits | bit);
                                 setDisabledButton(false);
                             }}
                             value={valueFileAccessControl ?? 0}
