@@ -408,6 +408,7 @@
         "custom",
         "datePicker",
         "deviceManager",
+        "diskSelector",
         "divider",
         "file",
         "fileSelector",
@@ -2230,6 +2231,88 @@
         "noSize": {
           "type": "boolean",
           "description": "Do not show size of files"
+        },
+        "label": true,
+        "type": true,
+        "defaultSendTo": true,
+        "allowSaveWithError": true,
+        "xs": true,
+        "sm": true,
+        "md": true,
+        "lg": true,
+        "xl": true,
+        "newLine": true,
+        "hidden": true,
+        "dependsOnStates": true,
+        "debug": true,
+        "os": true,
+        "notOs": true,
+        "docker": true,
+        "hiddenByAdapters": true,
+        "showByAdapters": true,
+        "hideOnlyControl": true,
+        "disabled": true,
+        "helpLink": true,
+        "help": true,
+        "style": true,
+        "darkStyle": true,
+        "validator": true,
+        "validatorNoSaveOnError": true,
+        "validatorErrorText": true,
+        "noMultiEdit": true,
+        "tooltip": true,
+        "expertMode": true,
+        "default": true,
+        "defaultFunc": true,
+        "onChange": true,
+        "noTranslation": true,
+        "confirm": true,
+        "doNotSave": true,
+        "button": true,
+        "buttonTooltip": true,
+        "buttonTooltipNoTranslation": true,
+        "data": true,
+        "jsonData": true
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "diskSelectorProps": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "enum": [
+            "file",
+            "folder"
+          ],
+          "description": "What to select: a file (default) or a folder"
+        },
+        "root": {
+          "type": "string",
+          "description": "Folder on the host above which nothing can be selected. Absolute path, may start with '%DATA_DIR%' (iobroker-data), '%INSTANCE_DATA_DIR%' (iobroker-data/<adapter>.<instance>), '%IOBROKER_DIR%' (e.g. /opt/iobroker) or '%HOME%'. '%INSTANCE%' is replaced with the instance number. Default: the whole disk"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Patterns of the files to show, e.g. '*.pem' or '*.pem;*.crt' (case-insensitive). Only in the 'file' mode"
+        },
+        "showHidden": {
+          "type": "boolean",
+          "description": "Show the files and folders whose names start with a dot"
+        },
+        "disableEdit": {
+          "type": "boolean",
+          "description": "The path can only be selected in the dialog, not typed. Default: true if 'root' is set, else false"
+        },
+        "placeholder": {
+          "description": "Placeholder of the text field",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/multilingual"
+            }
+          ]
         },
         "label": true,
         "type": true,
@@ -8601,6 +8684,110 @@
                 }
               ]
             }
+          },
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "diskSelector"
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/tableItemBaseProps"
+                }
+              ],
+              "properties": {
+                "attr": true,
+                "width": true,
+                "title": true,
+                "filter": true,
+                "sort": true,
+                "mode": {
+                  "enum": [
+                    "file",
+                    "folder"
+                  ],
+                  "description": "What to select: a file (default) or a folder"
+                },
+                "root": {
+                  "type": "string",
+                  "description": "Folder on the host above which nothing can be selected. Absolute path, may start with '%DATA_DIR%' (iobroker-data), '%INSTANCE_DATA_DIR%' (iobroker-data/<adapter>.<instance>), '%IOBROKER_DIR%' (e.g. /opt/iobroker) or '%HOME%'. '%INSTANCE%' is replaced with the instance number. Default: the whole disk"
+                },
+                "pattern": {
+                  "type": "string",
+                  "description": "Patterns of the files to show, e.g. '*.pem' or '*.pem;*.crt' (case-insensitive). Only in the 'file' mode"
+                },
+                "showHidden": {
+                  "type": "boolean",
+                  "description": "Show the files and folders whose names start with a dot"
+                },
+                "disableEdit": {
+                  "type": "boolean",
+                  "description": "The path can only be selected in the dialog, not typed. Default: true if 'root' is set, else false"
+                },
+                "placeholder": {
+                  "description": "Placeholder of the text field",
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/definitions/multilingual"
+                    }
+                  ]
+                },
+                "label": true,
+                "type": true,
+                "defaultSendTo": true,
+                "allowSaveWithError": true,
+                "xs": true,
+                "sm": true,
+                "md": true,
+                "lg": true,
+                "xl": true,
+                "newLine": true,
+                "hidden": true,
+                "dependsOnStates": true,
+                "debug": true,
+                "os": true,
+                "notOs": true,
+                "docker": true,
+                "hiddenByAdapters": true,
+                "showByAdapters": true,
+                "hideOnlyControl": true,
+                "disabled": true,
+                "helpLink": true,
+                "help": true,
+                "style": true,
+                "darkStyle": true,
+                "validator": true,
+                "validatorNoSaveOnError": true,
+                "validatorErrorText": true,
+                "noMultiEdit": true,
+                "tooltip": true,
+                "expertMode": true,
+                "default": true,
+                "defaultFunc": true,
+                "onChange": true,
+                "noTranslation": true,
+                "confirm": true,
+                "doNotSave": true,
+                "button": true,
+                "buttonTooltip": true,
+                "buttonTooltipNoTranslation": true,
+                "data": true,
+                "jsonData": true
+              },
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ]
+            }
           }
         ],
         "properties": {
@@ -12814,6 +13001,19 @@
                     "required": [
                       "type"
                     ]
+                  }
+                },
+                {
+                  "if": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "diskSelector"
+                      }
+                    }
+                  },
+                  "then": {
+                    "$ref": "#/definitions/diskSelectorProps"
                   }
                 }
               ],

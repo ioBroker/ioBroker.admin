@@ -149,6 +149,7 @@ You can install it via GitHub icon in admin by entering `iobroker.jsonconfig-dem
 - [**`custom`:**](#custom) Integrates custom components for specific functionalities (Admin 6 only), or web components of `@iobroker/web-components`
 - [**`datePicker`:**](#datepicker) Allows users to select a date
 - [**`deviceManager`:**](#devicemanager) show device manager
+- [**`diskSelector`:**](#diskselector) Selects a file or a folder on the disk of the host where the instance runs (Admin only)
 - [**`divider`:**](#divider) Creates a horizontal line separator
 - [**`file`:**](#file) Input field with file selection and optional upload/download capabilities (Admin 6 only)
 - [**`fileSelector`:**](#fileselector) Allows users to select files from the system (only Admin6)
@@ -1017,6 +1018,44 @@ only Admin6.
 | `showToolbar`       | show toolbar (default true)                                                              |
 | `selectOnlyFolders` | user can select only folders (e.g. for upload path)                                      |
 | `trim`              | trim the file name                                                                       |
+
+### `diskSelector`
+Selects a file or a folder on the disk of the host where the instance runs, and stores its absolute path, e.g. `/opt/iobroker/iobroker-data/myAdapter.0/certs/key.pem`.
+It is shown as a text field with a button aside that opens a dialog to browse the folders.
+
+`fileSelector` and `file` select files of the ioBroker file storage; `diskSelector` selects real files on the disk, e.g. certificates, a serial device configuration or a folder for backups.
+
+- The host lists the folders with the rights of the user ioBroker runs as (normally `iobroker`): what this user may not read is not shown, and folders it may not enter neither.
+- It is always the disk of the host of the instance, also if admin runs on another host.
+- Requires a js-controller with the feature `CONTROLLER_READ_DISK_DIR` on that host, and a user with the permission for `cmdExec` (administrators). Otherwise the dialog says why, and the path can still be typed (unless `disableEdit`).
+- With `root` nothing above that folder can be selected, also not through `..` or a symbolic link. The adapter must still check the path it gets, as the configuration can be changed in other ways too.
+
+| Property      | Description                                                                                                                                                                                                                                                        |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `mode`        | `file` (default) or `folder`                                                                                                                                                                                                                                       |
+| `root`        | Folder above which nothing can be selected: an absolute path on the host. It may start with `%DATA_DIR%` (`iobroker-data`), `%INSTANCE_DATA_DIR%` (`iobroker-data/<adapter>.<instance>`), `%IOBROKER_DIR%` (e.g. `/opt/iobroker`) or `%HOME%` (home of the user ioBroker runs as). `%INSTANCE%` is replaced with the number of the instance. Default: the whole disk (on Windows starting with the drives) |
+| `pattern`     | Patterns of the files to show, e.g. `*.pem` or `*.pem;*.crt` (case-insensitive). Only in the `file` mode                                                                                                                                                           |
+| `showHidden`  | Show the files and folders whose names start with a dot                                                                                                                                                                                                            |
+| `disableEdit` | The path can only be selected in the dialog, not typed. Default: `true` if `root` is set, else `false`                                                                                                                                                             |
+| `placeholder` | Placeholder of the text field                                                                                                                                                                                                                                      |
+
+```json
+{
+    "certFile": {
+        "type": "diskSelector",
+        "label": "Certificate",
+        "root": "%INSTANCE_DATA_DIR%",
+        "pattern": "*.pem;*.crt"
+    },
+    "backupFolder": {
+        "type": "diskSelector",
+        "mode": "folder",
+        "label": "Folder for the backups"
+    }
+}
+```
+
+In the dialog a click selects an entry and a double click opens a folder or takes a file; the arrow at a folder opens it with one click.
 
 ### `imageSendTo`
 
@@ -2109,6 +2148,12 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.19 (2026-11-07)
+- (@krobipd) Fixed: saving the configuration writes only the top-level settings that were changed in the dialog; every other setting keeps the value the instance object holds when saving, so a setting the adapter wrote into its native while the dialog was open (e.g. its device list) is no longer set back to the state of the opening, unless the same setting was changed in the dialog
+
+### 10.1.18 (2026-11-07)
+- (@GermanBluefox) Added the control `diskSelector`: selects a file or a folder on the disk of the host where the instance runs, with only the entries the user ioBroker may read, optionally fixed to a root folder (`mode`, `root`, `pattern`, `showHidden`, `disableEdit`). Needs js-controller with `CONTROLLER_READ_DISK_DIR`
+
 ### 10.1.17 (2026-11-05)
 - (@GermanBluefox) Added: `mapStyle` for the map of `coordinates`: `standard` (as on openstreetmap.org), `dark`, `grey` or `auto` (darkened only in a dark theme). Until now the map was always darkened in a dark theme, which changed the colors of the map; now it shows the standard colors unless configured otherwise. The host gets the style as `mapStyle`
 
