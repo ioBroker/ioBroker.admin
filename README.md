@@ -96,7 +96,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.3.11 (2026-11-07)
 - (@GermanBluefox) Fixed: in the file rights dialog, a "different" permission could not be set for all files
 - (@GermanBluefox) Updated @iobroker/json-config to 10.1.19: added the control `diskSelector` to select a file or a folder on the disk of the host where the instance runs (needs js-controller with `CONTROLLER_READ_DISK_DIR`)
 - (@krobipd) Fixed: saving the instance settings writes only the settings changed in the dialog, so a setting the adapter wrote into its native while the dialog was open (e.g. its device list) is no longer set back (json-config 10.1.19)
@@ -134,13 +134,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added: animated folders in the object browser; the restart button of an instance turns until the instance is alive again
 - (@GermanBluefox) Changed: the pause button of the log shows the number of new lines as a badge
 - (@GermanBluefox) Fixed: the access control dialog crashed with "Error in GUI" and the owner or group could not be changed, if the children had different owners or groups (#3711)
-
-### 8.3.6 (2026-10-29)
-- (@GermanBluefox) Fixed: the `checkDocker` control of a configuration dialog showed the Docker of the host admin runs on, also for an instance on another host. Admin asks the host of the instance now; that host needs a js-controller with `CONTROLLER_CHECK_DOCKER`. With an older js-controller there, the dialog says that Docker cannot be checked instead of showing the wrong host
-- (@GermanBluefox) Updated `@iobroker/json-config` to 10.1.9: the `checkDocker` control names the host of the instance
-- (@GermanBluefox) Updated `@iobroker/json-config` to 10.1.10: the new option `allowReorder` of `table` lets the rows be reordered with `noDelete: true` (#3707); the export/import buttons of the instance settings do not cover the last tabs any more (#3613, #3657)
-- (@GermanBluefox) Added: OpenRouter as provider in the AI settings of the system settings (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
-- (@GermanBluefox) Added: the "Resource usage" chart of the overview can show any recorded data points, not only CPU and RAM - with own name, color and history instance. Each data point is read from the history instance that records it, so values recorded by InfluxDB or SQL are shown too, also CPU and RAM if the default history instance does not record them (#3705)
 
 ## License
 
