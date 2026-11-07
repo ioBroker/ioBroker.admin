@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixed: in the file rights dialog, a "different" permission could not be set for all files
+
 ### 8.3.10 (2026-11-06)
 - (@GermanBluefox) Fixed: "REAUTHENTICATE!" log flood (#3110)
 - (@GermanBluefox) Fixed: the "connection lost" overlay appears only after 2 seconds; loading a tab shows a spinner instead of it
