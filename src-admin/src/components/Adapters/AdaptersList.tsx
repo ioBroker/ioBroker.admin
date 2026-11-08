@@ -170,6 +170,9 @@ interface AdaptersListState {
 class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
     private lastRenderCounter: number = -1;
 
+    /** The list was shown at least once, so only the very first load shows the progress bar instead of it */
+    private listShown: boolean = false;
+
     constructor(props: AdaptersListProps) {
         super(props);
 
@@ -598,7 +601,12 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return null;
     }
 
-    shouldComponentUpdate(_nextProps: Readonly<AdaptersListProps>, nextState: Readonly<AdaptersListState>): boolean {
+    shouldComponentUpdate(nextProps: Readonly<AdaptersListProps>, nextState: Readonly<AdaptersListState>): boolean {
+        // No list means it is being rebuilt, what takes one tick (e.g. an adapter was installed). The rows stay till
+        // then: with only the progress bar the table got so short that the browser scrolled it to the top
+        if (!nextProps.listOfVisibleAdapter && this.listShown) {
+            return false;
+        }
         if (this.lastRenderCounter !== nextState.renderCounter) {
             this.lastRenderCounter = nextState.renderCounter;
             return true;
@@ -611,6 +619,8 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         if (!this.props.systemConfig?.common?.activeRepo) {
             return <LinearProgress />;
         }
+
+        this.listShown ||= !!this.props.listOfVisibleAdapter;
 
         if (this.props.tableViewMode) {
             return this.renderTableView(this.props.stableRepo, this.props.repoName, this.props.context);

@@ -97,6 +97,7 @@ The icons may not be reused in other projects without the proper flaticon licens
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Fixed: the adapter list does not scroll to the top when an adapter is installed
 - (@GermanBluefox) Overview shows a hint when a js-controller update is available (#3722, #1914)
 - (@GermanBluefox) Fixed: the repository time stamp is updated on the first click of "Check adapters for updates" (#3724)
 - (@GermanBluefox) Updated @iobroker/gui-components to 10.4.5: in the JSON config, `customFilter` of `objectId` with `common.role` as a string shows the matching objects and not all others
