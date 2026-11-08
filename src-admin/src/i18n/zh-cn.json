@@ -1763,6 +1763,7 @@
     "iot-system_group": "物联网系统",
     "iot-systems_group": "物联网系统",
     "javascript wizard description": "使用 ioBroker JavaScript 适配器，您不仅可以创建简单的逻辑，还可以创建非常复杂的自动化。无论您是想编写 JavaScript 代码，还是更喜欢图形化工作，规则引擎都能让非编程人员轻松组装逻辑。您甚至可以使用可视化编程语言 Blockly 来实现您的想法。对于专家来说，除了支持 JavaScript 之外，还可以选择用 TypeScript 创建脚本。",
+    "js-controller %s available": "js-controller %s 可用",
     "js-controller upgrade instructions": "js-controller升级说明",
     "keywords": "关键字",
     "last 10 minutes": "最近10分钟",

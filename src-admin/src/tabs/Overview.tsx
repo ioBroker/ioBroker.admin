@@ -104,6 +104,8 @@ interface OverviewState {
     objectsCount: number;
     statesCount: number;
     hostInfo: Record<string, any> | null;
+    /** Installed js-controller version of the host - compared with the repository for the update hint */
+    controllerVersion: string;
     adapters: AdapterEntry[];
     logs: LogLineSaved[];
     /** Current CPU load of the host in percent */
@@ -149,6 +151,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
             objectsCount: 0,
             statesCount: 0,
             hostInfo: null,
+            controllerVersion: '',
             adapters: [],
             logs: [],
             cpu: null,
@@ -216,6 +219,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                 cpu: null,
                 mem: null,
                 hostInfo: null,
+                controllerVersion: '',
                 // every host has its own data points
                 chartSeries: loadSeries(this.props.currentHost),
             });
@@ -278,13 +282,14 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
     async readAll(): Promise<void> {
         const { socket, currentHost } = this.props;
 
-        const [instances, aliveStates, hostAliveState, logs] = await Promise.all([
+        const [instances, aliveStates, hostAliveState, logs, hostObj] = await Promise.all([
             this.props.instancesWorker.getObjects(),
             socket.getForeignStates('system.adapter.*.alive').catch((): Record<string, ioBroker.State> => ({})),
             socket.getState(`${currentHost}.alive`).catch((): null => null),
             this.props.logsWorker
                 .getLogs()
                 .catch((): { logs: LogLineSaved[]; logSize: number } => ({ logs: [], logSize: 0 })),
+            socket.getObject(currentHost).catch((): null => null),
         ]);
 
         if (!this.mounted) {
@@ -345,6 +350,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
             instancesTotal: hostInstances.length,
             instancesAlive,
             hostInfo,
+            controllerVersion: (hostObj as ioBroker.HostObject | null | undefined)?.common?.installedVersion || '',
             adapters,
             logs: (logs.logs || []).slice(-LOG_LINES_LARGE),
         });
@@ -699,6 +705,13 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
         const loaded = this.state.loaded;
         // the repository is loaded by the app, not by this tab - it may still be empty here
         const updates = AdminUtils.countAdapterUpdates(this.props.installed, this.props.repository);
+        // the same comparison as on the hosts tab - nothing is shown while one of the versions is unknown
+        const controllerAvailable = this.props.repository?.['js-controller']?.version;
+        const controllerUpdate = AdminUtils.updateAvailable(
+            this.state.controllerVersion,
+            controllerAvailable,
+            `js-controller on ${this.props.currentHost}`,
+        );
 
         // no padding at the top: the page starts directly below the app bar
         return (
@@ -749,6 +762,15 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                                     ? theme.palette.success.main
                                     : theme.palette.error.main
                                 : theme.palette.text.secondary
+                        }
+                        // the tile leads to the hosts tab, where the js-controller is updated
+                        chip={
+                            controllerUpdate
+                                ? {
+                                      label: t('js-controller %s available', controllerAvailable),
+                                      color: 'warning',
+                                  }
+                                : undefined
                         }
                         icon={<StatusIcon />}
                         onClick={() => this.props.handleNavigation('tab-hosts')}

@@ -1763,6 +1763,7 @@
     "iot-system_group": "Sistemas IoT",
     "iot-systems_group": "Sistemas IoT",
     "javascript wizard description": "Com o adaptador JavaScript do ioBroker, é possível criar não apenas lógicas simples, mas também automações muito complexas. Quer pretenda escrever código JavaScript ou prefira trabalhar graficamente, o motor de regras permite que mesmo os não-programadores montem facilmente lógicas. Pode até utilizar Blockly, uma linguagem de programação visual, para concretizar as suas ideias. Para os especialistas, existe a opção de criar scripts em TypeScript, para além do suporte JavaScript.",
+    "js-controller %s available": "js-controller %s disponível",
     "js-controller upgrade instructions": "Instruções de atualização do js-controller",
     "keywords": "palavras-chave",
     "last 10 minutes": "últimos 10 minutos",
