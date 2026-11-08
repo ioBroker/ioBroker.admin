@@ -388,7 +388,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                               .catch(() => data.compactRepositories),
                       }))
                     : info;
-            await this.getAdaptersInfo(infoRead, indicateUpdate);
+            await this.getAdaptersInfo(infoRead, indicateUpdate, bigUpdate || indicateUpdate);
         }
         if (!allInstalled && readId === this.installedReadId) {
             // The list is shown: the hosts that did not answer yet follow, each one when it answers
@@ -1245,13 +1245,24 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         });
     }
 
-    async getAdaptersInfo(info: ReturnType<Adapters['readAdaptersInfo']>, indicateUpdate?: boolean): Promise<void> {
+    /**
+     * Reads what the list needs besides the adapters, the installed versions and the repository, and shows it
+     *
+     * @param info the running read, see `readAdaptersInfo`
+     * @param indicateUpdate show the progress
+     * @param force apply the result even if the list was calculated just now, e.g. the time stamp of a checked repository
+     */
+    async getAdaptersInfo(
+        info: ReturnType<Adapters['readAdaptersInfo']>,
+        indicateUpdate?: boolean,
+        force?: boolean,
+    ): Promise<void> {
         if (!this.state.currentHost) {
             return;
         }
 
         // Do not update too often
-        if (Date.now() - this.state.lastUpdate > 1_000) {
+        if (force || Date.now() - this.state.lastUpdate > 1_000) {
             console.log('[ADAPTERS] getAdaptersInfo');
 
             try {
