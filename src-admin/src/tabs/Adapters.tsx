@@ -377,7 +377,18 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         const installedRead = this.readInstalled(update, readId);
         const { repository, allInstalled } = await this.getAdapters(installedRead, update, bigUpdate, indicateUpdate);
         if (info) {
-            await this.getAdaptersInfo(info, indicateUpdate);
+            // The host just updated the repository: the time stamp in `system.repositories`, read in parallel, is old
+            const infoRead =
+                bigUpdate || indicateUpdate
+                    ? info.then(async data => ({
+                          ...data,
+                          compactRepositories: await this.props.socket
+                              .getCompactSystemRepositories(true)
+                              .then(repos => repos as unknown as CompactSystemRepository)
+                              .catch(() => data.compactRepositories),
+                      }))
+                    : info;
+            await this.getAdaptersInfo(infoRead, indicateUpdate);
         }
         if (!allInstalled && readId === this.installedReadId) {
             // The list is shown: the hosts that did not answer yet follow, each one when it answers
