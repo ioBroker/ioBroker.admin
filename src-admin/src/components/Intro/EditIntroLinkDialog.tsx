@@ -230,7 +230,7 @@ class EditIntroLinkDialog extends Component<EditIntroLinkDialogProps, EditIntroL
                         variant="h6"
                         sx={{ '&.MuiTypography-root': styles.typography }}
                     >
-                        {this.props.isNew ? this.props.t('Add new link: ') : this.props.t('Edit link')}
+                        {this.props.isNew ? this.props.t('Add new link') : this.props.t('Edit link')}
                         <IconButton
                             size="large"
                             sx={styles.closeButton}

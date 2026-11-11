@@ -224,7 +224,7 @@ class AddInstanceDialog extends Component<AddInstanceDialogProps, AddInstanceDia
             } else if (!adapter.rightVersion) {
                 array.push(
                     <div key={adapter.name}>
-                        {`${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version || 'unknown')}${adapter.installedVersion}`}
+                        {`${this.props.t('Invalid version of %s. Required %s. Current', adapter.name, adapter.version || 'unknown')} ${adapter.installedVersion}`}
                     </div>,
                 );
             }

@@ -469,17 +469,17 @@ iob start
                         sx={styles.standardText}
                     >
                         {I18n.t(
-                            'For updating ioBroker on Windows, download the appropriate installer with the desired js-controller version from the download page ',
-                        )}
+                            'For updating ioBroker on Windows, download the appropriate installer with the desired js-controller version from the download page',
+                        )}{' '}
                         <a
                             rel="noreferrer"
                             href="https://www.iobroker.net/#en/download"
                             target="_blank"
                         >
                             https://www.iobroker.net/#en/download
-                        </a>
+                        </a>{' '}
                         {I18n.t(
-                            ' and make the update with it. With the Windows Installer, previously manually installed servers or installations from other operating systems can be migrated to Windows and updated.',
+                            'and make the update with it. With the Windows Installer, previously manually installed servers or installations from other operating systems can be migrated to Windows and updated.',
                         )}
                     </Box>
 
@@ -517,18 +517,13 @@ iob upgrade self
                             <IconCopy />
                         </IconButton>
                         <div style={styles.standardTextSmall}>
-                            cd
-                            {(location || 'C:\\iobroker').replace(/\//g, '\\')}{' '}
+                            cd {(location || 'C:\\iobroker').replace(/\//g, '\\')}{' '}
                             {!location ? I18n.t('(or where ioBroker was installed)') : null}
                         </div>
                         <div style={styles.standardTextSmall}>iob backup</div>
+                        <div style={styles.standardTextSmall}>iob stop {I18n.t('to stop the ioBroker service')}</div>
                         <div style={styles.standardTextSmall}>
-                            iob stop
-                            {I18n.t('to stop the ioBroker service')}
-                        </div>
-                        <div style={styles.standardTextSmall}>
-                            iob status
-                            {I18n.t('to check if ioBroker has finished')}
+                            iob status {I18n.t('to check if ioBroker has finished')}
                         </div>
                         <div style={styles.standardTextSmall}>iob update</div>
                         <div style={styles.standardTextSmall}>iob upgrade self</div>

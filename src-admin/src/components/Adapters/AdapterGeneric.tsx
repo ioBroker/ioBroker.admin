@@ -517,7 +517,7 @@ export default abstract class AdapterGeneric<
                 );
             } else if (!adapter.rightVersion) {
                 array.push(
-                    `${this.props.context.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version || 'unknown')}${adapter.installedVersion}`,
+                    `${this.props.context.t('Invalid version of %s. Required %s. Current', adapter.name, adapter.version || 'unknown')} ${adapter.installedVersion}`,
                 );
             }
         }
