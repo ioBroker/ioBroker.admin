@@ -672,6 +672,10 @@
           "type": "boolean",
           "description": "Shows text as read only field"
         },
+        "translate": {
+          "type": "boolean",
+          "description": "The value is an i18n key. With readOnly the key is stored and shown translated. Without readOnly the key in default is translated once, when the default is written into the configuration"
+        },
         "copyToClipboard": {
           "type": "boolean",
           "description": "Shows copy to clipboard button, but only if disabled or read-only"
@@ -5549,6 +5553,10 @@
                 "readOnly": {
                   "type": "boolean",
                   "description": "Shows text as read only field"
+                },
+                "translate": {
+                  "type": "boolean",
+                  "description": "The value is an i18n key. With readOnly the key is stored and shown translated. Without readOnly the key in default (of the column and in the rows of default of the table) is translated once, when the default is written into the configuration"
                 },
                 "noClearButton": {
                   "type": "boolean",

@@ -360,6 +360,11 @@ Text component
 | `validateJson`    | if true, the text will be validated as JSON                                                            |
 | `allowEmpty`      | if true, the JSON will be validated only if the value is not empty                                     |
 | `time`            | the value is time in ms or a string. Used only with readOnly flag                                      |
+| `translate`       | the value is an i18n key, see below                                                                    |
+
+With `translate: true` the value is a key from the i18n files of the adapter:
+- with `readOnly: true` the key is stored and shown translated in the language of the user (like `staticText`, but in a table too)
+- without `readOnly` the key in `default` is translated once, when the default is written into the configuration, into the language of the user. From then on it is a normal text, which the user can edit, and it is not translated anymore. In a `table` this applies to the `default` of the column (new rows) and to the rows in `default` of the table. The default is only used if the attribute is not in `native` of `io-package.json`, so do not define it there.
 
 ### `number`
 
@@ -790,6 +795,26 @@ table with items that could be deleted, added, moved up, moved down
 | `useCardFor`          | [optional] - Breakpoint that will be rendered as cards: ["xs", "sm", "md", "lg", "xl"]                                                          |
 | `titleAttribute`      | [optional] - Define the name of the attribute of the item which should be shown as a title of the item in cards mode.                           |
 | `compact`             | [optional] - if true, the table will be shown in a compact mode                                                                                 |
+
+The cells of a `text` column with `translate: true` are i18n keys: shown translated with `readOnly`, otherwise the keys in `default` are translated once into texts. See [`text`](#text).
+
+```json
+{
+    "type": "table",
+    "attr": "columns",
+    "noDelete": true,
+    "allowReorder": true,
+    "items": [
+        { "type": "checkbox", "attr": "enabled", "title": "Enabled", "width": "20%" },
+        { "type": "text", "attr": "name", "title": "Name", "width": "40%", "translate": true },
+        { "type": "text", "attr": "desc", "title": "Description", "width": "40%" }
+    ],
+    "default": [
+        { "enabled": true, "name": "First_row", "desc": "this is 100" },
+        { "enabled": false, "name": "Second_row", "desc": "this is 200" }
+    ]
+}
+```
 
 ### `accordion`
 
@@ -2148,6 +2173,12 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.21 (2026-11-11)
+- (@GermanBluefox) Added: `translate` for `text`: i18n keys shown translated (`readOnly`) or translated once from `default`, also in tables (ioBroker/ioBroker.admin#3721)
+
+### 10.1.20 (2026-11-08)
+- (@GermanBluefox) Fixed: `cron` does not offer the wizard of schedules anymore: its OK wrote the JSON text `{}` into a field for CRON expressions
+
 ### 10.1.19 (2026-11-07)
 - (@krobipd) Fixed: saving the configuration writes only the top-level settings that were changed in the dialog; every other setting keeps the value the instance object holds when saving, so a setting the adapter wrote into its native while the dialog was open (e.g. its device list) is no longer set back to the state of the opening, unless the same setting was changed in the dialog
 

@@ -27,7 +27,7 @@
         "@iobroker/ai-gui": "^0.0.5",
         "@iobroker/dm-gui-components": "^10.1.0",
         "@iobroker/gui-components": "^10.4.6",
-        "@iobroker/json-config": "^10.1.20",
+        "@iobroker/json-config": "^10.1.21",
         "ace-builds": "^1.45.2",
         "remark-gfm": "^4.0.1"
     },
