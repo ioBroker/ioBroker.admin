@@ -2644,34 +2644,61 @@ class Admin extends Adapter {
             return;
         }
         const readTime = new Date(obj.ts).toISOString();
-        const stamps: Record<string, { json: { _repoInfo: { repoReadTime: string } } }> = {};
+        const stamped: string[] = [];
 
         for (const repo of Array.isArray(activeRepo) ? activeRepo : [activeRepo]) {
             const repoInfo = repositories[repo]?.json?._repoInfo;
             if (!repoInfo) {
-                // not read yet: an extend would create a `json`, and the host would not read it anymore
+                // not read yet
                 continue;
             }
-            const stamped = repoInfo.repoReadTime ? new Date(repoInfo.repoReadTime).getTime() : NaN;
+            const stampedTime = repoInfo.repoReadTime ? new Date(repoInfo.repoReadTime).getTime() : NaN;
             // also an invalid time is stamped again
-            if (!(obj.ts - stamped <= REPO_READ_TIME_TOLERANCE_MS)) {
+            if (!(obj.ts - stampedTime <= REPO_READ_TIME_TOLERANCE_MS)) {
                 repoInfo.repoReadTime = readTime;
-                stamps[repo] = { json: { _repoInfo: { repoReadTime: readTime } } };
+                stamped.push(repo);
             }
         }
 
-        if (Object.keys(stamps).length) {
-            this.extendForeignObject(
-                'system.repositories',
-                { native: { repositories: stamps } } as unknown as Partial<ioBroker.RepositoryObject>,
-                err => {
-                    if (err) {
-                        this.log.error(`Cannot write the read time of the repositories: ${err.message}`);
-                    } else {
-                        this.log.debug(`Read time of the repositories ${Object.keys(stamps).join(', ')}: ${readTime}`);
-                    }
-                },
+        if (stamped.length) {
+            this.writeRepositoryReadTime(stamped, readTime).catch(e =>
+                this.log.error(`Cannot write the read time of the repositories: ${(e as Error).message}`),
             );
+        }
+    }
+
+    /**
+     * Writes the read time of the given repositories into `system.repositories` in the database.
+     *
+     * The whole object is written. `extendForeignObject` cannot be used: js-controller replaces
+     * `native.repositories` completely with what is given, which would delete the links and the
+     * content of all repositories.
+     *
+     * @param repos the repositories that were read, e.g. `['stable']`
+     * @param readTime when they were read, ISO string
+     */
+    async writeRepositoryReadTime(repos: string[], readTime: string): Promise<void> {
+        const obj = await this.getForeignObjectAsync('system.repositories');
+        const repositories = obj?.native?.repositories as
+            Record<string, { link?: string; json?: { _repoInfo?: { repoReadTime?: string } } | null }> | undefined;
+        if (!obj || !repositories) {
+            return;
+        }
+        let changed = false;
+        for (const repo of repos) {
+            const repoInfo = repositories[repo]?.json?._repoInfo;
+            // the object in the database could be newer and read later: do not set an older time
+            if (
+                repoInfo &&
+                (!repoInfo.repoReadTime || new Date(repoInfo.repoReadTime).getTime() < new Date(readTime).getTime())
+            ) {
+                repoInfo.repoReadTime = readTime;
+                changed = true;
+            }
+        }
+        if (changed) {
+            await this.setForeignObjectAsync('system.repositories', obj);
+            this.log.debug(`Read time of the repositories ${repos.join(', ')}: ${readTime}`);
         }
     }
 
