@@ -73,6 +73,12 @@ const { getInstalledInfo } = commonTools;
 
 const ONE_HOUR_MS = 3_600_000;
 
+/**
+ * `repoReadTime` of a repository that is at most this much older than `ts` of `system.repositories` is the
+ * time of the last read already: it was written by admin, together with the object.
+ */
+const REPO_READ_TIME_TOLERANCE_MS = 10_000;
+
 /** How long another host may take to answer a request of the log search, e.g. to send a big log file */
 const LOG_SEARCH_HOST_TIMEOUT_MS = 60_000;
 
@@ -284,6 +290,10 @@ class Admin extends Adapter {
      */
     onObjectChange = (id: string, obj: ioBroker.Object | null | undefined): void => {
         if (obj) {
+            if (id === 'system.repositories') {
+                // before it goes into the objects in memory, which the GUI reads right after the update
+                this.stampRepositoryReadTime(obj as ioBroker.RepositoryObject);
+            }
             objects[id] = obj;
 
             if (id === 'system.config' && !this.config.language) {
@@ -2612,40 +2622,56 @@ class Admin extends Adapter {
     }
 
     /**
-     * Add the repository read timestamp to the repository data structure
+     * Writes into `system.repositories` when the host read the active repositories (`repoReadTime`).
+     *
+     * The host writes the object every time it was asked to read the repositories, with `ts` of that
+     * moment, but without `repoReadTime` - a new `json` of a changed repository even drops the old one.
+     * It was only written by the automatic update of admin, so after "Check adapters for updates" or
+     * `iobroker update` the GUI showed when the repository was generated, which does not change with a
+     * click (#3729). So every write of the object that is newer than its `repoReadTime` counts as a read.
+     * The write of the stamp itself has a `ts` close to it and is not stamped again.
+     *
+     * The given object is stamped in place, so the objects in memory, which the GUI reads right after
+     * the update, already have it. The database gets it with a small extend, not the whole object again.
+     *
+     * @param obj the new `system.repositories`
      */
-    async addRepositoryReadTimestamp(repository: Record<string, any>, activeRepo: string | string[]): Promise<void> {
-        try {
-            const readTime = new Date().toISOString();
+    stampRepositoryReadTime(obj: ioBroker.RepositoryObject): void {
+        const repositories = obj.native?.repositories as
+            Record<string, { json?: { _repoInfo?: { repoReadTime?: string } } | null }> | undefined;
+        const activeRepo = (objects['system.config'] as ioBroker.SystemConfigObject | undefined)?.common?.activeRepo;
+        if (!repositories || !obj.ts || !activeRepo) {
+            return;
+        }
+        const readTime = new Date(obj.ts).toISOString();
+        const stamps: Record<string, { json: { _repoInfo: { repoReadTime: string } } }> = {};
 
-            // Add read timestamp to the repository info structure
-            if (repository._repoInfo) {
-                repository._repoInfo.repoReadTime = readTime;
+        for (const repo of Array.isArray(activeRepo) ? activeRepo : [activeRepo]) {
+            const repoInfo = repositories[repo]?.json?._repoInfo;
+            if (!repoInfo) {
+                // not read yet: an extend would create a `json`, and the host would not read it anymore
+                continue;
             }
-
-            // Update the system.repositories object to store the read timestamp
-            const repos = await this.getForeignObjectAsync('system.repositories');
-            if (repos?.native?.repositories) {
-                if (Array.isArray(activeRepo)) {
-                    // Handle multiple repositories
-                    for (const repo of activeRepo) {
-                        if (repos.native.repositories[repo]?.json?._repoInfo) {
-                            repos.native.repositories[repo].json._repoInfo.repoReadTime = readTime;
-                        }
-                    }
-                } else {
-                    // Handle single repository
-                    if (repos.native.repositories[activeRepo]?.json?._repoInfo) {
-                        repos.native.repositories[activeRepo].json._repoInfo.repoReadTime = readTime;
-                    }
-                }
-
-                // Save the updated repositories object
-                await this.setForeignObjectAsync('system.repositories', repos);
-                this.log.debug(`Repository read timestamp updated: ${readTime}`);
+            const stamped = repoInfo.repoReadTime ? new Date(repoInfo.repoReadTime).getTime() : NaN;
+            // also an invalid time is stamped again
+            if (!(obj.ts - stamped <= REPO_READ_TIME_TOLERANCE_MS)) {
+                repoInfo.repoReadTime = readTime;
+                stamps[repo] = { json: { _repoInfo: { repoReadTime: readTime } } };
             }
-        } catch (err) {
-            this.log.error(`Cannot add repository read timestamp: ${(err as Error).toString()}`);
+        }
+
+        if (Object.keys(stamps).length) {
+            this.extendForeignObject(
+                'system.repositories',
+                { native: { repositories: stamps } } as unknown as Partial<ioBroker.RepositoryObject>,
+                err => {
+                    if (err) {
+                        this.log.error(`Cannot write the read time of the repositories: ${err.message}`);
+                    } else {
+                        this.log.debug(`Read time of the repositories ${Object.keys(stamps).join(', ')}: ${readTime}`);
+                    }
+                },
+            );
         }
     }
 
@@ -2847,17 +2873,15 @@ class Admin extends Adapter {
                                 repo: active,
                                 update: true,
                             },
-                            async _repository => {
+                            _repository => {
                                 if (
                                     (typeof _repository === 'string' || _repository instanceof Error) &&
                                     _repository.toString().includes(ERROR_PERMISSION)
                                 ) {
                                     this.log.error('May not read "getRepository"');
                                 } else {
+                                    // The read time is written with the new `system.repositories`, see `stampRepositoryReadTime`
                                     this.log.info('Repository received successfully.');
-
-                                    // Add repository read timestamp to the repository data
-                                    await this.addRepositoryReadTimestamp(_repository, active);
 
                                     socket?.repoUpdated();
                                     this.checkRevokedVersions(_repository).catch(e =>
