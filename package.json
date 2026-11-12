@@ -80,6 +80,7 @@
     "typescript": "~6.0.3"
   },
   "overrides": {
+    "@iobroker/types": "$@iobroker/types",
     "oauth2-server": {
       "type-is": "2.0.1"
     }
