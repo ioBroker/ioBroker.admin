@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Limit czasu logowania (s):",
     "Login/Email": "Zaloguj się/e-mail",
     "Login/password": "Login/hasło",
+    "loglevel_off": "wyłączony (brak logów)",
     "Logs": "Zaloguj wiadomości",
     "Longitude": "Długość geograficzna",
     "Longitude:": "Długość geograficzna:",

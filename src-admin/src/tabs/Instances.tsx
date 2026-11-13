@@ -18,6 +18,7 @@ import {
     List as ListIcon,
     Storage as StorageIcon,
     Memory as MemoryIcon,
+    DoNotDisturb as LogOffIcon,
 } from '@mui/icons-material';
 import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
@@ -55,6 +56,7 @@ import Config from './Config';
 import InstanceGeneric, {
     type InstanceEntry,
     type InstanceItem,
+    type InstanceLogLevel,
     type InstanceStatusType,
 } from '../components/Instances/InstanceGeneric';
 import InstanceCard from '../components/Instances/InstanceCard';
@@ -958,7 +960,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
     }
 
-    static getLogLevelIcon(level: ioBroker.LogLevel): JSX.Element | null {
+    static getLogLevelIcon(level: InstanceLogLevel): JSX.Element | null {
         if (level === 'debug') {
             return <BugReportIcon />;
         }
@@ -970,6 +972,9 @@ class Instances extends Component<InstancesProps, InstancesState> {
         }
         if (level === 'error') {
             return <ErrorIcon />;
+        }
+        if (level === 'off') {
+            return <LogOffIcon />;
         }
         return null;
     }
@@ -1002,7 +1007,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             const connectedToHost = this.isConnectedToHost(id);
             const connected: string | boolean | null = this.getConnected(id);
             const name = this.getName(instance.obj);
-            const logLevel = (this.states[`${id}.logLevel`]?.val as ioBroker.LogLevel) || instance.loglevel;
+            const logLevel = (this.states[`${id}.logLevel`]?.val as InstanceLogLevel) || instance.loglevel;
             const logLevelObject = instance.loglevel;
             const tier = instance?.obj?.common?.tier || 3;
             const loglevelIcon = Instances.getLogLevelIcon(logLevel);
@@ -1146,7 +1151,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                         break;
                     }
                     case 'loglevel': {
-                        const logOrder = { error: 4, warn: 3, info: 2, debug: 1, silly: 0 };
+                        const logOrder = { off: 5, error: 4, warn: 3, info: 2, debug: 1, silly: 0 };
                         comparison = (logOrder[a.logLevel] || 0) - (logOrder[b.logLevel] || 0);
                         break;
                     }

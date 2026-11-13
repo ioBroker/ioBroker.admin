@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Délai d'attente de connexion (s):",
     "Login/Email": "Pseudo/email",
     "Login/password": "Identifiant/mot de passe",
+    "loglevel_off": "désactivé (aucun journal)",
     "Logs": "Journal",
     "Longitude": "Longitude",
     "Longitude:": "Longitude",

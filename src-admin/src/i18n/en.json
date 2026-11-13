@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Login timeout (sec)",
     "Login/Email": "Login/Email",
     "Login/password": "Login/password",
+    "loglevel_off": "off (no log at all)",
     "Logs": "Logs",
     "Longitude": "Longitude",
     "Longitude:": "Longitude",

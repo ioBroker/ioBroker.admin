@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Логин таймаут(сек):",
     "Login/Email": "Логин/Email",
     "Login/password": "Логин/пароль",
+    "loglevel_off": "выкл. (без журнала)",
     "Logs": "Журнал",
     "Longitude": "Долгота",
     "Longitude:": "Долгота:",
