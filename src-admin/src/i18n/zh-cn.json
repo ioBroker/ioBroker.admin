@@ -786,6 +786,7 @@
     "Login timeout(sec):": "登录超时（秒）",
     "Login/Email": "登录/电子邮件",
     "Login/password": "登录名/密码",
+    "loglevel_off": "关闭（完全不记录日志）",
     "Logs": "日志信息",
     "Longitude": "经度",
     "Longitude:": "经度",

@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Час очікування входу (с)",
     "Login/Email": "Логін/Електронна пошта",
     "Login/password": "Логін/пароль",
+    "loglevel_off": "вимк. (без журналу)",
     "Logs": "Журнали",
     "Longitude": "Довгота",
     "Longitude:": "Довгота",

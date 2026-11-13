@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Límite de tiempo para el acceso (sec):",
     "Login/Email": "Ingreso/correo",
     "Login/password": "Usuario/contraseña",
+    "loglevel_off": "apagado (sin registro)",
     "Logs": "Registro",
     "Longitude": "Longitud",
     "Longitude:": "Longitud:",

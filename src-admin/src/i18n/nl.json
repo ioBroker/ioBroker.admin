@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Time-out bij aanmelding (sec):",
     "Login/Email": "Login/e-mail",
     "Login/password": "Login/wachtwoord",
+    "loglevel_off": "uit (helemaal geen log)",
     "Logs": "Log",
     "Longitude": "Lengtegraad",
     "Longitude:": "Lengtegraad:",

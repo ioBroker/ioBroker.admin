@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Tempo limite de login (seg):",
     "Login/Email": "Login/email",
     "Login/password": "Login/senha",
+    "loglevel_off": "desligado (sem registo)",
     "Logs": "Log",
     "Longitude": "Longitude",
     "Longitude:": "Longitude:",

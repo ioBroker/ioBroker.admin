@@ -786,6 +786,7 @@
     "Login timeout(sec):": "Timeout di logging (sec):",
     "Login/Email": "Accedi/E-mail",
     "Login/password": "Login/password",
+    "loglevel_off": "spento (nessun log)",
     "Logs": "Registra",
     "Longitude": "Longitudine",
     "Longitude:": "Longitudine:",
