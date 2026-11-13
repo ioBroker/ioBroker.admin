@@ -29,6 +29,9 @@ export interface OAuth2Response {
     refresh_token_expires_in: number;
 }
 
+/** Keeps the choice of "Stay logged in" in this tab while the browser is at the identity provider */
+const SSO_STAY_LOGGED_IN_KEY = 'iob_sso_stay_logged_in';
+
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 
 const styles: Record<string, any> = {
@@ -139,6 +142,27 @@ export default class Login extends Component<object, LoginState> {
         this.passwordRef = React.createRef();
     }
 
+    /**
+     * Store the tokens of a new login.
+     *
+     * The tokens of an earlier login are removed first: they are read from sessionStorage before
+     * localStorage, so old tokens of a login without "Stay logged in" would hide the new ones.
+     *
+     * @param data the tokens
+     * @param stayLoggedIn keep them in localStorage instead of sessionStorage
+     */
+    static saveTokens(data: OAuth2Response, stayLoggedIn: boolean): void {
+        Connection.deleteTokensStatic();
+        Connection.saveTokensStatic(data, stayLoggedIn);
+    }
+
+    /** Read and forget the choice of "Stay logged in" that was made before the single sign-on */
+    static takeSsoStayLoggedIn(): boolean {
+        const stayLoggedIn = window.sessionStorage.getItem(SSO_STAY_LOGGED_IN_KEY) === 'true';
+        window.sessionStorage.removeItem(SSO_STAY_LOGGED_IN_KEY);
+        return stayLoggedIn;
+    }
+
     static async processTokenAnswer(
         stayLoggedIn: boolean,
         response: Response,
@@ -150,7 +174,7 @@ export default class Login extends Component<object, LoginState> {
             if (data?.access_token) {
                 // Save expiration time of access token and refresh token
                 // Next loaded page with socket will take the ownership of the tokens
-                Connection.saveTokensStatic(data, stayLoggedIn);
+                Login.saveTokens(data, stayLoggedIn);
                 Login.redirectBack();
                 return true;
             }
@@ -407,6 +431,10 @@ export default class Login extends Component<object, LoginState> {
                         {window.ssoActive === 'true' ? (
                             <Button
                                 onClick={() => {
+                                    window.sessionStorage.setItem(
+                                        SSO_STAY_LOGGED_IN_KEY,
+                                        this.state.stayLoggedIn ? 'true' : 'false',
+                                    );
                                     window.location.href = adminHref(
                                         `sso?redirectUrl=${encodeURIComponent(`${window.origin}${adminHref('#tab-intro')}`)}&method=login`,
                                     );

@@ -866,6 +866,7 @@ class App extends Router<AppProps, AppState> {
         // Only a one-time code is in the URL, the tokens are fetched with it, so they end up neither in the
         // browser history nor in proxy logs
         if (searchParams.has('ssoCode')) {
+            const stayLoggedIn = Login.takeSsoStayLoggedIn();
             try {
                 const response = await fetch(adminHref('sso-token'), {
                     method: 'POST',
@@ -875,7 +876,7 @@ class App extends Router<AppProps, AppState> {
                 const result: Partial<OAuth2Response> & { id_token?: string } = await response.json();
                 // After connecting an identity only the ID token comes back. Nothing uses it, so it is not kept.
                 if (response.ok && result.access_token) {
-                    Connection.saveTokensStatic(result as OAuth2Response, true);
+                    Login.saveTokens(result as OAuth2Response, stayLoggedIn);
                 }
             } catch (e) {
                 console.error(`Cannot finish the single sign-on: ${e}`);
@@ -893,7 +894,7 @@ class App extends Router<AppProps, AppState> {
 
         if (searchParams.has('ssoLoginResponse')) {
             const res = JSON.parse(searchParams.get('ssoLoginResponse') as string);
-            Connection.saveTokensStatic(res, true);
+            Login.saveTokens(res, Login.takeSsoStayLoggedIn());
             window.location.search = '';
         }
     }
