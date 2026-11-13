@@ -1217,6 +1217,8 @@ Shows the drop-down menu with the given from the instance values.
 | `alsoDependsOn` | by change of which attributes, the command must be resent                                                                                                                                                        |
 | `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.  |
 
+If the instance is not alive, or gives no answer that is a list, the control shows a text field (with `manual: true`, the default), so the value stays editable.
+
 The backend handler can return items with an optional `description` field: `[{"value": 1, "label": "one", "description": "Some hint"}, ...]`. The description is shown below the label in the dropdown.
 An item with `"noTranslation": true` is shown as it is, even if `noTranslation` of the control is not set: `[{"value": "abc", "label": "My device", "noTranslation": true}, ...]`.
 
@@ -2173,6 +2175,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.22 (2026-11-13)
+- (@GermanBluefox) Fixed: `selectSendTo` showed an endless spinner when the instance it asks was not alive or gave no list - it shows a text field now, so the value stays editable; `autocompleteSendTo` shows its `options` (or a text field) instead of a spinner that never ends
+
 ### 10.1.21 (2026-11-11)
 - (@GermanBluefox) Added: `translate` for `text`: i18n keys shown translated (`readOnly`) or translated once from `default`, also in tables (ioBroker/ioBroker.admin#3721)
 
