@@ -34,6 +34,7 @@ import {
     Devices as DeviceManagerIcon,
     Settings as SystemSettingsIcon,
     PersonOutlined as UserIcon,
+    PhonelinkLock as TwoFactorIcon,
 } from '@mui/icons-material';
 
 import {
@@ -62,6 +63,7 @@ import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
 import DrawerItem from './DrawerItem';
+import TwoFactorDialog from './Users/TwoFactorDialog';
 import {
     CONFIG_MANAGER_PINS_CHANGED_EVENT,
     CONFIG_MANAGER_PINS_STORAGE_KEY,
@@ -343,6 +345,8 @@ interface DrawerState {
     deviceManagerVisible: boolean;
     /** Anchor of the logout menu below the user entry */
     userMenuAnchor: HTMLElement | null;
+    /** Dialog of the two-factor authentication of the logged-in user is open */
+    twoFactorOpen: boolean;
     /** The quick filter replaces the header content while it is open */
     filterOpened: boolean;
     /** Text of the quick filter above the navigation */
@@ -386,6 +390,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
             adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
             deviceManagerVisible: false,
             userMenuAnchor: null,
+            twoFactorOpen: false,
             filterOpened: false,
             filter: '',
         };
@@ -969,6 +974,14 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                             anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
                             transformOrigin={{ vertical: 'center', horizontal: 'left' }}
                         >
+                            {user?.id ? (
+                                <MenuItem onClick={() => this.setState({ userMenuAnchor: null, twoFactorOpen: true })}>
+                                    <ListItemIcon>
+                                        <TwoFactorIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText>{this.props.t('2fa_title')}</ListItemText>
+                                </MenuItem>
+                            ) : null}
                             <MenuItem
                                 onClick={() => {
                                     this.setState({ userMenuAnchor: null });
@@ -981,6 +994,13 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                 <ListItemText>{this.props.t('ra_Logout')}</ListItemText>
                             </MenuItem>
                         </Menu>
+                        {this.state.twoFactorOpen && user?.id ? (
+                            <TwoFactorDialog
+                                t={this.props.t}
+                                user={user.id}
+                                onClose={() => this.setState({ twoFactorOpen: false })}
+                            />
+                        ) : null}
                     </>
                 ) : null}
                 {this.props.menuButtons ? <Box sx={styles.footerButtons}>{this.props.menuButtons}</Box> : null}
