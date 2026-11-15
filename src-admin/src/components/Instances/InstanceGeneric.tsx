@@ -1,5 +1,6 @@
 import React, { Component, type JSX } from 'react';
 import cronstrue from 'cronstrue';
+import semver from 'semver';
 import { CronExpressionParser } from 'cron-parser';
 
 import 'cronstrue/locales/en';
@@ -90,7 +91,16 @@ function shallowEqual(a: object, b: object): boolean {
     );
 }
 
-const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+const arrayLogLevel: InstanceLogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
+
+/** Log level of an instance: with `off` the instance logs nothing at all, not even errors */
+export type InstanceLogLevel = ioBroker.LogLevel | 'off';
+
+/**
+ * First js-controller that knows the log level `off`. Older ones ignore it when it is set on the fly
+ * and would pass it to the logger unchecked from the object, so admin does not offer it there.
+ */
+const LOG_LEVEL_OFF_CONTROLLER = '8.0.0';
 export const arrayTier = [
     { value: 1, desc: '1: Logic adapters' },
     { value: 2, desc: '2: Data provider adapters' },
@@ -312,6 +322,9 @@ export const styles: Record<string, any> = {
     error: {
         backgroundColor: red[700],
     },
+    off: {
+        backgroundColor: grey[900],
+    },
     scheduleIcon: {
         color: '#dc8e00',
     },
@@ -371,7 +384,7 @@ export interface InstanceEntry {
     materialize: boolean;
     compactMode: boolean;
     schedule: null | string;
-    loglevel: ioBroker.LogLevel;
+    loglevel: InstanceLogLevel;
     stoppedWhenWebExtension: boolean | undefined;
     compact: boolean;
     name: string;
@@ -383,7 +396,7 @@ export type InstanceStatusType = 'green' | 'red' | 'orangeDevice' | 'orange' | '
 export interface InstanceItem {
     id: string; // system.adapter.accuweather.0
     nameId: string; // accuweather.0
-    logLevel: ioBroker.LogLevel;
+    logLevel: InstanceLogLevel;
     mode: string;
     compactGroup: number | null | string;
     tier: 1 | 2 | 3;
@@ -416,7 +429,7 @@ export interface InstanceItem {
     /** The memory used by the process of the instance in MB */
     memRss: number;
     loglevelIcon: JSX.Element | null;
-    logLevelObject: ioBroker.LogLevel;
+    logLevelObject: InstanceLogLevel;
     modeSchedule: boolean;
     checkCompact: boolean;
     compact: boolean;
@@ -495,7 +508,7 @@ export interface InstanceGenericState {
 
     showLinks: boolean;
     showStopAdminDialog: string | false;
-    logLevel: ioBroker.LogLevel;
+    logLevel: InstanceLogLevel;
     logOnTheFly: boolean;
     compactGroup: string | number;
     maxCompactGroupNumber: number;
@@ -748,11 +761,29 @@ export default abstract class InstanceGeneric<
         void this.setCommonValue(`system.adapter.${instance.id}`, { titleLang: value });
     }
 
-    setLogLevel(instance: InstanceEntry, loglevel: ioBroker.LogLevel, logOnTheFlyValue: boolean): void {
+    /**
+     * Log levels the instance can get: `off` only if js-controller on its host knows it, or if the
+     * instance has it already, so that the select is not empty
+     */
+    getLogLevels(): InstanceLogLevel[] {
+        const host = this.props.context.hosts.find(item => item._id === `system.host.${this.props.instance.host}`);
+        const version = semver.valid(host?.common?.installedVersion);
+        if (
+            (version && semver.gte(version, LOG_LEVEL_OFF_CONTROLLER)) ||
+            this.props.item.logLevel === 'off' ||
+            this.props.item.logLevelObject === 'off'
+        ) {
+            return [...arrayLogLevel, 'off'];
+        }
+        return arrayLogLevel;
+    }
+
+    setLogLevel(instance: InstanceEntry, loglevel: InstanceLogLevel, logOnTheFlyValue: boolean): void {
         if (logOnTheFlyValue) {
             void this.props.context.socket.setState(`system.adapter.${instance.id}.logLevel`, loglevel);
         } else {
-            void this.setCommonValue(`system.adapter.${instance.id}`, { loglevel });
+            // `off` is not in the types of js-controller yet, but the controllers that get it offered know it
+            void this.setCommonValue(`system.adapter.${instance.id}`, { loglevel: loglevel as ioBroker.LogLevel });
         }
     }
 
@@ -928,12 +959,12 @@ export default abstract class InstanceGeneric<
                         fullWidth
                         onChange={el => this.setState({ logLevel: el.target.value })}
                     >
-                        {arrayLogLevel.map(el => (
+                        {this.getLogLevels().map(el => (
                             <MenuItem
                                 key={el}
                                 value={el}
                             >
-                                {this.props.context.t(el)}
+                                {this.props.context.t(el === 'off' ? 'loglevel_off' : el)}
                             </MenuItem>
                         ))}
                     </Select>
