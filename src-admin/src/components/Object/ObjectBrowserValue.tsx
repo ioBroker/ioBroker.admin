@@ -163,7 +163,21 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
 
         if (this.props.states) {
             type = 'states';
-        } else if (type === 'string' || type === 'json') {
+        } else if (
+            type === 'string' ||
+            type === 'json' ||
+            // `common.type` of the object may also be one of these; the select knows only the types above
+            (type as string) === 'object' ||
+            (type as string) === 'array' ||
+            (type as string) === 'mixed'
+        ) {
+            if (typeof value === 'object' && value !== null) {
+                // not a state value, but just in case
+                value = JSON.stringify(value);
+            }
+            if ((type as string) !== 'json') {
+                type = 'string';
+            }
             if (
                 value &&
                 typeof value === 'string' &&
@@ -370,6 +384,58 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
         } catch {
             return true;
         }
+    }
+
+    /**
+     * Format a number of bytes as B, KB or MB in the language of the GUI
+     *
+     * @param bytes number of bytes
+     */
+    formatSize(bytes: number): string {
+        const format = (value: number, unit: string): string =>
+            `${value.toLocaleString(this.props.lang, { maximumFractionDigits: 1 })} ${unit}`;
+
+        if (bytes < 1024) {
+            return format(bytes, 'B');
+        }
+        if (bytes < 1024 * 1024) {
+            return format(bytes / 1024, 'KB');
+        }
+        return format(bytes / (1024 * 1024), 'MB');
+    }
+
+    /**
+     * Show how big the value is. It is written as it stands in the editor, so for JSON the
+     * indentation counts as well; the size without it shows how much smaller it could be.
+     */
+    renderSize(): JSX.Element | null {
+        if (this.state.type !== 'string' && this.state.type !== 'json') {
+            return null;
+        }
+        const value = (this.state.targetValue ?? '').toString();
+        const size = new TextEncoder().encode(value).length;
+
+        let compactSize: number | undefined;
+        if (this.state.type === 'json' && !this.state.jsonError) {
+            try {
+                compactSize = new TextEncoder().encode(JSON.stringify(JSON.parse(value))).length;
+            } catch {
+                // ignore
+            }
+        }
+
+        return (
+            <Typography
+                variant="caption"
+                component="div"
+                style={{ textAlign: 'right', opacity: 0.7, marginTop: 4 }}
+            >
+                {this.props.t('Value size')}: {this.formatSize(size)}
+                {compactSize !== undefined && compactSize < size
+                    ? ` (${this.props.t('without indentation')}: ${this.formatSize(compactSize)})`
+                    : ''}
+            </Typography>
+        );
     }
 
     renderJsonEditor(): JSX.Element {
@@ -622,7 +688,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                                 <MenuItem value="string">String</MenuItem>
                                                                 <MenuItem value="number">Number</MenuItem>
                                                                 <MenuItem value="boolean">Boolean</MenuItem>
-                                                                <MenuItem value="object">JSON/Object</MenuItem>
+                                                                <MenuItem value="json">JSON/Object</MenuItem>
                                                                 {this.props.states ? (
                                                                     <MenuItem value="states">States</MenuItem>
                                                                 ) : null}
@@ -745,6 +811,7 @@ class ObjectBrowserValue extends Component<ObjectBrowserValueProps, ObjectBrowse
                                                 onChange={e => this.setState({ targetValue: e.target.value })}
                                             />
                                         )}
+                                        {this.renderSize()}
                                     </Grid>
 
                                     {(this.props.role === 'date' || this.props.role?.startsWith('date.')) &&
