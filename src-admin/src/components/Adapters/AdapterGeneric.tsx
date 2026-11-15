@@ -47,6 +47,7 @@ import CustomModal from '@/components/CustomModal';
 import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdapterDeletionDialog from '@/components/Adapters/AdapterDeletionDialog';
 import AdminUtils from '@/helpers/AdminUtils';
+import { deleteAdapterWhereNotNeeded } from '@/helpers/adapterCleanup';
 import AdapterInstallDialog, {
     type AdapterInstallDialogState,
     type AdapterRating,
@@ -1181,8 +1182,25 @@ export default abstract class AdapterGeneric<
     }
 
     delete(deleteCustom?: boolean): void {
-        this.props.context.executeCommand(
-            `del ${this.props.adapterName}${deleteCustom ? ' --custom' : ''}${this.props.context.expertMode ? ' --debug' : ''}`,
+        const { context, adapterName } = this.props;
+        const host = context.currentHost;
+
+        context.executeCommand(
+            `del ${adapterName}${deleteCustom ? ' --custom' : ''}${context.expertMode ? ' --debug' : ''}`,
+            host,
+            exitCode => {
+                if (exitCode) {
+                    return;
+                }
+                // then on the other hosts which hold the package but no longer need it
+                deleteAdapterWhereNotNeeded({
+                    socket: context.socket,
+                    adapter: adapterName,
+                    exceptHost: host,
+                    executeCommand: context.executeCommand,
+                    debug: context.expertMode,
+                }).catch(e => console.warn(`Cannot delete "${adapterName}" on the other hosts: ${e as Error}`));
+            },
         );
     }
 

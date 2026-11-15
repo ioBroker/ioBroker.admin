@@ -13,6 +13,7 @@ import {
     Close as IconCancel,
     Check as IconCheck,
     PersonOff as PersonOffIcon,
+    PhonelinkErase as TwoFactorOffIcon,
 } from '@mui/icons-material';
 
 import { Utils, IconPicker, type Translate } from '@iobroker/gui-components';
@@ -296,6 +297,7 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                         </Grid>
                     </Grid>
                     {!this.props.isNew ? this.renderOidcButton() : null}
+                    {!this.props.isNew ? this.renderTwoFactorButton() : null}
                 </DialogContent>
 
                 <DialogActions>
@@ -319,6 +321,44 @@ export default class UserEditDialog extends Component<UserEditDialogProps, UserE
                     </Button>
                 </DialogActions>
             </Dialog>
+        );
+    }
+
+    /**
+     * Render the button that switches the two-factor authentication of the user off, e.g. after a lost phone.
+     * Users switch it on only for themselves (menu of the logged-in user), because only they can scan the QR code.
+     * It is switched off here like the single sign-on is disconnected: by removing it from the object and saving,
+     * so that a later "Save" of this dialog does not write it back.
+     */
+    renderTwoFactorButton(): JSX.Element | null {
+        if (!this.props.user.common?.externalAuthentication?.totp) {
+            return null;
+        }
+
+        return (
+            <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                startIcon={<TwoFactorOffIcon />}
+                sx={{ marginTop: 2 }}
+                onClick={async () => {
+                    if (
+                        !window.confirm(
+                            this.props.t(
+                                '2fa_disable_confirm',
+                                (this.state.originalId || this.props.user._id).replace(/^system\.user\./, ''),
+                            ),
+                        )
+                    ) {
+                        return;
+                    }
+                    delete this.props.user.common.externalAuthentication?.totp;
+                    await this.props.saveData(this.state.originalId);
+                }}
+            >
+                {this.props.t('2fa_disable_for_user')}
+            </Button>
         );
     }
 

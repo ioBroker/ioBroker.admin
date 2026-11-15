@@ -114,6 +114,9 @@ interface LoginState {
     showPassword: boolean;
     error: string;
     loggingIn: boolean;
+    /** The user has two-factor authentication: the code of the authenticator app is asked */
+    otpRequired: boolean;
+    otp: string;
 }
 
 export default class Login extends Component<object, LoginState> {
@@ -130,6 +133,8 @@ export default class Login extends Component<object, LoginState> {
             showPassword: false,
             username: '',
             password: '',
+            otpRequired: false,
+            otp: '',
             error: '',
             loggingIn,
         };
@@ -255,8 +260,27 @@ export default class Login extends Component<object, LoginState> {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
+                // `otp` is sent empty until the server asks for it: so it knows that this page can ask for a code
+                body: `grant_type=password&username=${encodeURIComponent(this.state.username)}&password=${encodeURIComponent(this.state.password)}&otp=${encodeURIComponent(this.state.otp.trim())}&stayloggedin=${this.state.stayLoggedIn}&client_id=ioBroker`,
             });
+            if (response.status === 401) {
+                // the password was right, the code of the second factor is missing or wrong
+                let error = '';
+                try {
+                    error = ((await response.json()) as { error?: string }).error || '';
+                } catch {
+                    // ignore
+                }
+                if (error === 'otp_required' || error === 'otp_invalid') {
+                    this.setState({
+                        inProcess: false,
+                        otpRequired: true,
+                        otp: '',
+                        error: error === 'otp_invalid' ? I18n.t('2fa_wrong_code') : '',
+                    });
+                    return;
+                }
+            }
             if (await Login.processTokenAnswer(this.state.stayLoggedIn, response)) {
                 // Do not allow entering again as redirection is running
                 // this.setState({ inProcess: false });
@@ -375,7 +399,12 @@ export default class Login extends Component<object, LoginState> {
                             value={this.state.password}
                             onChange={e => this.setState({ password: e.target.value })}
                             onKeyUp={e => {
-                                if (e.key === 'Enter' && this.state.username && this.state.password) {
+                                if (
+                                    e.key === 'Enter' &&
+                                    this.state.username &&
+                                    this.state.password &&
+                                    (!this.state.otpRequired || this.state.otp.trim())
+                                ) {
                                     this.onLogin();
                                 }
                             }}
@@ -403,6 +432,30 @@ export default class Login extends Component<object, LoginState> {
                             id="password"
                             autoComplete="current-password"
                         />
+                        {this.state.otpRequired ? (
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                disabled={this.state.inProcess}
+                                required
+                                fullWidth
+                                autoFocus
+                                value={this.state.otp}
+                                onChange={e => this.setState({ otp: e.target.value })}
+                                onKeyUp={e => {
+                                    if (e.key === 'Enter' && this.state.otp.trim()) {
+                                        this.onLogin();
+                                    }
+                                }}
+                                size="small"
+                                name="otp"
+                                id="otp"
+                                label={I18n.t('2fa_code')}
+                                helperText={I18n.t('2fa_enter_code')}
+                                autoComplete="one-time-code"
+                                slotProps={{ htmlInput: { inputMode: 'numeric' } }}
+                            />
+                        ) : null}
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -419,7 +472,12 @@ export default class Login extends Component<object, LoginState> {
                         />
                         <Button
                             type="submit"
-                            disabled={this.state.inProcess || !this.state.username || !this.state.password}
+                            disabled={
+                                this.state.inProcess ||
+                                !this.state.username ||
+                                !this.state.password ||
+                                (this.state.otpRequired && !this.state.otp.trim())
+                            }
                             onClick={() => this.onLogin()}
                             fullWidth
                             variant="contained"
