@@ -39,6 +39,7 @@ import type { HostInfo } from '@iobroker/socket-client';
 
 import AdminUtils from '@/helpers/AdminUtils';
 import { EXECUTE, hasPermission, lockedText, OBJECT_WRITE, SEND_TO_HOST } from '@/helpers/permissions';
+import { deleteAdapterWhereNotNeeded, type ExecuteCommand } from '@/helpers/adapterCleanup';
 import {
     replaceLink,
     applyReverseProxyToLink,
@@ -148,7 +149,7 @@ interface InstancesProps {
     theme: IobTheme;
     socket: AdminConnection;
     instancesWorker: InstancesWorker;
-    executeCommand: (command: string) => void;
+    executeCommand: ExecuteCommand;
     hosts: ioBroker.HostObject[];
     currentHost: string;
     currentHostName: string;
@@ -975,9 +976,26 @@ class Instances extends Component<InstancesProps, InstancesState> {
     }
 
     onDeleteInstance = (instance: InstanceEntry, deleteCustom: boolean, deleteAdapter?: boolean): void => {
+        const adapter = instance.id.split('.')[0];
+        const host = this.props.currentHost;
+
         this.setState({ deleting: instance.id }, () =>
             this.props.executeCommand(
-                `del ${deleteAdapter ? instance.id.split('.')[0] : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`,
+                `del ${deleteAdapter ? adapter : instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`,
+                host,
+                exitCode => {
+                    if (!deleteAdapter || exitCode) {
+                        return;
+                    }
+                    // then on the other hosts which hold the package but no longer need it
+                    deleteAdapterWhereNotNeeded({
+                        socket: this.props.socket,
+                        adapter,
+                        exceptHost: host,
+                        executeCommand: this.props.executeCommand,
+                        debug: this.props.expertMode,
+                    }).catch(e => console.warn(`Cannot delete "${adapter}" on the other hosts: ${e as Error}`));
+                },
             ),
         );
     };
