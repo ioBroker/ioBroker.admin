@@ -178,6 +178,14 @@ const styles: Record<string, any> = {
         marginLeft: 'auto',
         transition: 'opacity 0.5s',
     },
+    // The icons of the user menu come from different sets with different inner margins: centred in one
+    // column of the same width they line up
+    userMenuIcon: {
+        minWidth: 24,
+        width: 24,
+        mr: 1.5,
+        justifyContent: 'center',
+    },
     userAvatar: (theme: IobTheme) => ({
         width: 24,
         height: 24,
@@ -976,7 +984,7 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                         >
                             {user?.id ? (
                                 <MenuItem onClick={() => this.setState({ userMenuAnchor: null, twoFactorOpen: true })}>
-                                    <ListItemIcon>
+                                    <ListItemIcon sx={styles.userMenuIcon}>
                                         <TwoFactorIcon fontSize="small" />
                                     </ListItemIcon>
                                     <ListItemText>{this.props.t('2fa_title')}</ListItemText>
@@ -988,8 +996,9 @@ class Drawer extends Component<DrawerProps, DrawerState> {
                                     this.props.onLogout();
                                 }}
                             >
-                                <ListItemIcon>
-                                    <LogoutIcon fontSize="small" />
+                                <ListItemIcon sx={styles.userMenuIcon}>
+                                    {/* the glyph fills its box, unlike the Material icons: a bit smaller to match */}
+                                    <LogoutIcon width={18} />
                                 </ListItemIcon>
                                 <ListItemText>{this.props.t('ra_Logout')}</ListItemText>
                             </MenuItem>
