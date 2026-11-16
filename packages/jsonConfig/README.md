@@ -2175,6 +2175,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.23 (2026-11-16)
+- (@GermanBluefox) Changed: the dialog of `diskSelector` is now `DialogSelectDiskPath` of `@iobroker/gui-components` (`@iobroker/gui-components` 10.4.7)
+
 ### 10.1.22 (2026-11-13)
 - (@GermanBluefox) Fixed: `selectSendTo` showed an endless spinner when the instance it asks was not alive or gave no list - it shows a text field now, so the value stays editable; `autocompleteSendTo` shows its `options` (or a text field) instead of a spinner that never ends
 
