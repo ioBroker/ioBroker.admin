@@ -22,9 +22,10 @@ import {
     KeyboardArrowLeft as StepEndIcon,
 } from '@mui/icons-material';
 
-// Deliberately the ESM build: `echarts-for-react/lib/core` is CommonJS, and importing that subpath
-// hands us the module object instead of the component ("Element type is invalid ... but got: object").
-import ReactEchartsCore from 'echarts-for-react/esm/core';
+// Since echarts-for-react 3.1.0 its `exports` hand out `lib/core` as the ESM build (condition `module`)
+// and do not export `esm/core` anymore. The CommonJS build would give the module object instead of the
+// component ("Element type is invalid ... but got: object").
+import ReactEchartsCore from 'echarts-for-react/lib/core';
 import type { EChartsOption, XAXisComponentOption, YAXisComponentOption } from 'echarts/types/dist/echarts';
 
 import * as echarts from 'echarts/core';

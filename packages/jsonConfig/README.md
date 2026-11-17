@@ -816,6 +816,23 @@ The cells of a `text` column with `translate: true` are i18n keys: shown transla
 }
 ```
 
+`label`, `help`, `tooltip` and `placeholder` of a column are the same in every row, unless they are a pattern: in a cell,
+`data` is the row (the whole configuration is `globalData`). The result of the pattern is translated, so it can build an
+i18n key from a value of the row. Do not put help texts into the rows themselves: the rows are stored in the configuration,
+are not updated with the adapter and new rows do not get them.
+
+```json5
+{
+    "type": "text",
+    "attr": "desc",
+    "title": "Command description",
+    // i18n keys "help_%DATETIME%", "help_%CLASS%", ... in the translations of the adapter
+    "help": "help_${data.cmd}",
+    // or with a fallback text for unknown commands:
+    // "help": "${{'%DATETIME%': 'help_datetime', '%CLASS%': 'help_class'}[data.cmd] || 'help_other'}"
+}
+```
+
 ### `accordion`
 
 accordion with items that could be deleted, added, moved up, moved down (Admin 6.6.0 and newer)
