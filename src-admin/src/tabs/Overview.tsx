@@ -30,6 +30,7 @@ import type { ObjectsWorker } from '@/Workers/ObjectsWorker';
 import type { HostsWorker } from '@/Workers/HostsWorker';
 import type { LogsWorker, LogLineSaved } from '@/Workers/LogsWorker';
 import AdminUtils from '@/helpers/AdminUtils';
+import { raisedCardStyle } from '@/helpers/cardStyle';
 import { hasPermission, permissionLabel, SEND_TO_HOST } from '@/helpers/permissions';
 
 import ResourcesChart, { loadSeries, saveSeries, type ChartSeriesConfig } from '@/components/Overview/ResourcesChart';
@@ -715,7 +716,17 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
 
         // no padding at the top: the page starts directly below the app bar
         return (
-            <Box sx={{ height: '100%', overflow: 'auto', p: 3, pt: 0 }}>
+            <Box
+                sx={{
+                    height: '100%',
+                    overflow: 'auto',
+                    p: 3,
+                    pt: 0,
+                    // the tiles come from gui-components and take no `sx`, so their tone - the same as
+                    // on the quick access - is set from here
+                    '& .MuiCard-root': raisedCardStyle(theme),
+                }}
+            >
                 <Box
                     sx={{
                         display: 'flex',

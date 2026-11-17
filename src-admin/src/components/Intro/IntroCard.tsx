@@ -14,7 +14,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { alpha, darken, lighten } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles';
 
 import {
     Check as CheckIcon,
@@ -28,6 +28,7 @@ import {
 import { Utils, IconCopy as SaveIcon, type IobTheme, type Translate, IconTrash } from '@iobroker/gui-components';
 
 import AdminUtils from '../../helpers/AdminUtils';
+import { raisedCardStyle } from '../../helpers/cardStyle';
 
 /** Height floor of a card. All cards of a row are stretched to the highest one of the row. */
 const CARD_MIN_HEIGHT = 168;
@@ -73,15 +74,8 @@ export const styles: Record<string, any> = {
         p: '16px',
         position: 'relative',
         overflow: 'hidden',
-        // the cards lie on a `paper` colored panel, so they need a tone of their own to stand out
-        backgroundColor:
-            theme.palette.mode === 'dark'
-                ? lighten(theme.palette.background.paper, 0.08)
-                : darken(theme.palette.background.paper, 0.03),
-        // the modern themes draw the card border themselves, the older ones only have a shadow
-        border: '1px solid',
-        borderColor: theme.palette.divider,
-        backgroundImage: 'none',
+        // the same tone as the panels of the overview
+        ...raisedCardStyle(theme),
         transition: 'border-color 0.15s, background-color 0.15s',
         '@media (prefers-reduced-motion: reduce)': {
             transition: 'none',
