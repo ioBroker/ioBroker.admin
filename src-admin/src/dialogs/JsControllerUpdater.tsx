@@ -25,6 +25,34 @@ interface ServerResponse {
     success?: boolean;
 }
 
+function upgradeStartWasRejected(response: unknown): boolean {
+    if (response === false) {
+        return true;
+    }
+
+    return (
+        typeof response === 'object' &&
+        response !== null &&
+        'result' in response &&
+        (response as { result?: unknown }).result === false
+    );
+}
+
+function isServerResponse(response: unknown): response is ServerResponse {
+    if (typeof response !== 'object' || response === null) {
+        return false;
+    }
+
+    const candidate = response as Partial<ServerResponse>;
+    return (
+        typeof candidate.running === 'boolean' &&
+        Array.isArray(candidate.stderr) &&
+        candidate.stderr.every(line => typeof line === 'string') &&
+        Array.isArray(candidate.stdout) &&
+        candidate.stdout.every(line => typeof line === 'string')
+    );
+}
+
 interface JsControllerUpdaterProps {
     socket: AdminConnection;
     hostId: `system.host.${string}`;
@@ -36,7 +64,7 @@ interface JsControllerUpdaterProps {
 }
 
 interface JsControllerUpdaterState {
-    response: any;
+    response: ServerResponse | null;
     error: string | null;
     starting: boolean;
 }
@@ -148,11 +176,14 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
 
         try {
             // send update command to js-controller
-            await this.props.socket.upgradeController(
+            const result: unknown = await this.props.socket.upgradeController(
                 this.props.hostId,
                 this.props.version,
                 parseInt(this.props.adminInstance.split('.').pop() || '', 10),
             );
+            if (upgradeStartWasRejected(result)) {
+                throw new Error('Controller rejected the update request');
+            }
         } catch (e) {
             console.error(`Cannot update controller: ${(e as Error).message}`);
             this.setState({ error: I18n.t('Not updatable'), starting: false });
@@ -195,9 +226,17 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             const res = await fetch(this.link);
 
             const plainBody = await res.text();
-            console.log(`Received status: ${plainBody}`);
+            console.log(`Received update status (${res.status}, ${plainBody.length} bytes)`);
 
-            const response: ServerResponse = JSON.parse(plainBody);
+            if (!res.ok || !plainBody.trimStart().startsWith('{')) {
+                throw new Error(I18n.t('Update status is not available yet'));
+            }
+
+            const parsedResponse: unknown = JSON.parse(plainBody);
+            if (!isServerResponse(parsedResponse)) {
+                throw new Error(I18n.t('Invalid update status response'));
+            }
+            const response = parsedResponse;
 
             // sometimes stderr has only one empty string in it
             if (response?.stderr) {
@@ -284,9 +323,9 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                             value={
                                 this.state.error
                                     ? this.state.error
-                                    : this.state.response.stderr && this.state.response.stderr.length
+                                    : this.state.response?.stderr.length
                                       ? this.state.response.stderr.join('\n')
-                                      : this.state.response.stdout.join('\n')
+                                      : (this.state.response?.stdout.join('\n') ?? '')
                             }
                             readOnly
                         />
