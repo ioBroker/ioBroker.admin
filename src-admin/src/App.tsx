@@ -147,6 +147,12 @@ const ADMIN_OWN_TABS = [
     'tab-devicemanager',
 ];
 
+/**
+ * How long a request of the GUI waits for its answer before the ws client gives up on it. Before
+ * `@iobroker/ws` 3.1.0 it waited forever; the requests that need a limit have their own timeout.
+ */
+const CALLBACK_TIMEOUT_MS = 10 * 60_000;
+
 const Overview = lazyWithReload(() => import('./tabs/Overview'));
 const Adapters = lazyWithReload(() => import('./tabs/Adapters'));
 const Instances = lazyWithReload(() => import('./tabs/Instances'));
@@ -1237,6 +1243,10 @@ class App extends Router<AppProps, AppState> {
                 // moment, and those five seconds were over before it got around to answering -
                 // which left the app hanging on its loader (#3641)
                 cmdTimeout: this.state.readTimeoutMs,
+                // The ws client answers every request itself with 'timeout' after 30 s by default and
+                // drops the real answer. A `sendTo` of the configuration dialogs may take minutes (a
+                // device scan, for instance) and a slow connection may set a longer read timeout (#3737)
+                callbackTimeout: CALLBACK_TIMEOUT_MS,
                 autoSubscribes: ['system.adapter.*'], // Do not subscribe on '*' and really we don't need a 'system.adapter.*' either. Every tab must subscribe itself to everything that it needs
                 autoSubscribeLog: true,
                 // the rights of the user: tabs and actions he may not use are locked in advance

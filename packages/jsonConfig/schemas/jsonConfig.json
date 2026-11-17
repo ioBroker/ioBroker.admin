@@ -1561,7 +1561,7 @@
           "type": "object"
         },
         "timeout": {
-          "description": "timeout for request in ms. Default: none.",
+          "description": "timeout for request in ms: after it the button reports an error, and an answer that comes later is dropped. Default: none - the button waits as long as the connection of the GUI waits (`callbackTimeout` of the socket)",
           "type": "number"
         },
         "instance": {

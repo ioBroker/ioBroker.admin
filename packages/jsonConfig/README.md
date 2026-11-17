@@ -706,7 +706,7 @@ Button that sends a request to the current instance (<https://github.com/iobroke
 | `icon`          | if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`, `search`. You can use `base64` icons (like `data:image/svg+xml;base64,...`) or `jpg/png` images (ends with `.png`). (Request via issue if you need more icons)   |
 | `useNative`     | if adapter returns a result with `native` attribute it will be used for configuration. If `saveConfig` is true, the user will be requested to save the configuration.                                                                        |
 | `showProcess`   | Show spinner while request is in progress                                                                                                                                                                                                    |
-| `timeout`       | timeout for request in ms. Default: none.                                                                                                                                                                                                    |
+| `timeout`       | timeout for request in ms: after it the button reports an error, and an answer of the instance that comes later is dropped. Default: none - the button waits for the answer, at most as long as the connection of the GUI waits (`callbackTimeout` of the socket, 30 s in the ws client of ioBroker, 10 minutes in admin since 8.3.14). |
 | `onLoaded`      | execute the button logic once initially                                                                                                                                                                                                      |
 | `controlStyle`  | Styles for the button.                                                                                                                                                                                                                       |
 | `instance`      | Instance where to send the request to (e.g. `"admin.0"`). Overrides `oContext.instance`. If not defined, the request is sent to the current adapter instance. You can use `${data.number}` pattern in the text.                              |
@@ -2175,6 +2175,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.24 (2026-11-17)
+- (@GermanBluefox) Fixed: `sendTo` showed a success when the answer of the instance did not arrive in time or the connection was lost; an answer after the `timeout` of the schema is dropped (ioBroker.admin#3737)
+
 ### 10.1.23 (2026-11-16)
 - (@GermanBluefox) Changed: the dialog of `diskSelector` is now `DialogSelectDiskPath` of `@iobroker/gui-components` (`@iobroker/gui-components` 10.4.7)
 
