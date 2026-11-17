@@ -3,16 +3,11 @@ import { LinearProgress } from '@mui/material';
 import JSON5 from 'json5';
 
 import { I18n, Router, type AdminConnection, type IobTheme, type ThemeName } from '@iobroker/gui-components';
-import DeviceManager from '@iobroker/dm-gui-components';
-import {
-    type ConfigItemPanel,
-    type ConfigItemTabs,
-    type DeviceManagerPropsProps,
-    JsonConfigComponent,
-} from '@iobroker/json-config';
+import { type ConfigItemPanel, type ConfigItemTabs, JsonConfigComponent } from '@iobroker/json-config';
 
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
 import AdminUtils from '@/helpers/AdminUtils';
+import DeviceManagerWithPin from '@/components/DeviceManagerWithPin';
 import { adminHref } from '@/helpers/utils';
 import type { CompactHost } from '@/types';
 import AceEditor from '@/components/AceEditor';
@@ -254,7 +249,7 @@ export default class CustomTab extends Component<CustomTabProps, CustomTabState>
                     theme={this.props.theme}
                     withoutSaveButtons
                     expertMode={this.props.expertMode}
-                    DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
+                    DeviceManager={DeviceManagerWithPin}
                     AceEditor={AceEditor}
                     OsmMap={OsmMap}
                 />

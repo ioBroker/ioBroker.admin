@@ -1,17 +1,8 @@
 import React, { type JSX } from 'react';
 
-import { IconButton, Tooltip } from '@mui/material';
-import { PushPin, PushPinOutlined } from '@mui/icons-material';
-import {
-    I18n,
-    type AdminConnection,
-    type IobTheme,
-    type ThemeName,
-    type ThemeType,
-    Router,
-} from '@iobroker/gui-components';
+import { type AdminConnection, type IobTheme, type ThemeName, type ThemeType, Router } from '@iobroker/gui-components';
 import DeviceList from '@iobroker/dm-gui-components';
-import { isConfigManagerInstancePinned, setConfigManagerInstancePinned } from '@/helpers/configManagerPins';
+import ConfigManagerPinButton from '@/components/ConfigManagerPinButton';
 
 const styles: Record<string, React.CSSProperties> = {
     root: {
@@ -29,22 +20,6 @@ const styles: Record<string, React.CSSProperties> = {
             '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
         border: '0px solid #888',
     },
-    /** The pin of an instance that is in the menu. A color of its own is seen at a glance */
-    pinnedIcon: {
-        color: '#ffca28',
-    },
-};
-
-/**
- * Marks the pin as active.
- *
- * The toolbar is grey and everything in it is white, so the toggles of the device list mark their active
- * state with a translucent pill instead of a color. The pin uses the same pill, so that it does not look
- * like a different kind of button
- */
-const PIN_ACTIVE_SX = {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.35)' },
 };
 
 interface ConfigManagerTabProps {
@@ -59,8 +34,6 @@ interface ConfigManagerTabProps {
 interface ConfigManagerTabState {
     /** The instance the device list is showing, like `devices.0`. Empty on the instance overview */
     instance: string;
-    /** Is this instance pinned to the navigation? */
-    pinned: boolean;
     /** Changing it builds the device list anew - it reads the instance only when it is created */
     listKey: string;
 }
@@ -77,7 +50,6 @@ export default class ConfigManagerTab extends Router<ConfigManagerTabProps, Conf
         const instance = Router.getLocation().id || window.localStorage.getItem('dmSelectedInstance') || '';
         this.state = {
             instance,
-            pinned: instance ? isConfigManagerInstancePinned(instance) : false,
             listKey: instance,
         };
     }
@@ -118,7 +90,7 @@ export default class ConfigManagerTab extends Router<ConfigManagerTabProps, Conf
 
             // the list does not select anything if the user still has the choice between several instances
             if (running.length === 1 && !this.state.instance) {
-                this.setState({ instance: running[0], pinned: isConfigManagerInstancePinned(running[0]) });
+                this.setState({ instance: running[0] });
             }
         } catch (e) {
             console.error(`Cannot read the instances with a device manager: ${e as Error}`);
@@ -129,7 +101,7 @@ export default class ConfigManagerTab extends Router<ConfigManagerTabProps, Conf
     onHashChanged(): void {
         const instance = Router.getLocation().id;
         if (instance && instance !== this.state.instance) {
-            this.setState({ instance, pinned: isConfigManagerInstancePinned(instance), listKey: instance });
+            this.setState({ instance, listKey: instance });
         }
     }
 
@@ -144,25 +116,7 @@ export default class ConfigManagerTab extends Router<ConfigManagerTabProps, Conf
             return null;
         }
 
-        return (
-            <Tooltip
-                title={I18n.t(this.state.pinned ? 'Remove from navigation' : 'Pin to navigation')}
-                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
-            >
-                <IconButton
-                    color="inherit"
-                    size="small"
-                    sx={{ mr: 1, ...(this.state.pinned ? PIN_ACTIVE_SX : undefined) }}
-                    onClick={() => {
-                        const pinned = !this.state.pinned;
-                        setConfigManagerInstancePinned(this.state.instance, pinned);
-                        this.setState({ pinned });
-                    }}
-                >
-                    {this.state.pinned ? <PushPin style={styles.pinnedIcon} /> : <PushPinOutlined />}
-                </IconButton>
-            </Tooltip>
-        );
+        return <ConfigManagerPinButton instance={this.state.instance} />;
     }
 
     render(): JSX.Element {
@@ -183,10 +137,7 @@ export default class ConfigManagerTab extends Router<ConfigManagerTabProps, Conf
                     onInstanceChanged={instance => {
                         // the list has switched the instance itself, only the pin button has to follow -
                         // `listKey` stays as it is, so that the devices are not loaded a second time
-                        this.setState({
-                            instance,
-                            pinned: instance ? isConfigManagerInstancePinned(instance) : false,
-                        });
+                        this.setState({ instance });
                         Router.doNavigate(`tab-devicemanager`, 'tab', instance);
                     }}
                 />

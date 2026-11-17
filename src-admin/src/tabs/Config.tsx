@@ -40,8 +40,8 @@ import {
     IconPlayPause,
 } from '@iobroker/gui-components';
 
-import { type DeviceManagerPropsProps, JsonConfig } from '@iobroker/json-config';
-import DeviceManager from '@iobroker/dm-gui-components';
+import { JsonConfig } from '@iobroker/json-config';
+import DeviceManagerWithPin from '@/components/DeviceManagerWithPin';
 
 import AdminUtils from '../helpers/AdminUtils';
 import { adminHref } from '../helpers/utils';
@@ -464,7 +464,7 @@ export default class Config extends Component<ConfigProps, ConfigState> {
                     isFloatComma={this.props.isFloatComma}
                     configStored={this.props.configStored}
                     t={this.props.t}
-                    DeviceManager={DeviceManager as unknown as React.FC<DeviceManagerPropsProps>}
+                    DeviceManager={DeviceManagerWithPin}
                     AceEditor={AceEditor}
                     OsmMap={OsmMap}
                 />
