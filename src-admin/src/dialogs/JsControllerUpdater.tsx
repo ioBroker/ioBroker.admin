@@ -97,6 +97,9 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     /** Whether a terminal update result was received or reconstructed */
     private finished = false;
 
+    /** Whether npm finished successfully and the restarted controller still has to confirm its version */
+    private awaitingControllerRestart = false;
+
     /** Whether this component has been unmounted */
     private unmounted = false;
 
@@ -264,10 +267,36 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     }
 
     /**
+     * Finish the update after the restarted controller confirms the requested version.
+     */
+    finishSuccessfully(): void {
+        const response: ServerResponse = {
+            running: false,
+            stderr: [...(this.state.response?.stderr || [])],
+            stdout: [...(this.state.response?.stdout || [])],
+            success: true,
+        };
+        response.stdout.push('');
+        response.stdout.push('---------------------------------------------------');
+        response.stdout.push(I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version));
+        this.finished = true;
+        this.awaitingControllerRestart = false;
+        this.setUpdating(false);
+        this.setState({ response, error: null, starting: false });
+    }
+
+    /**
      * Request the current status from the server and show it in the textarea
      */
     async checkStatus(): Promise<void> {
         if (this.finished || this.unmounted) {
+            return;
+        }
+
+        if (this.awaitingControllerRestart && (await this.isTargetVersionInstalled())) {
+            if (!this.finished && !this.unmounted) {
+                this.finishSuccessfully();
+            }
             return;
         }
 
@@ -289,20 +318,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                     if (this.finished || this.unmounted) {
                         return;
                     }
-                    const response: ServerResponse = {
-                        running: false,
-                        stderr: [...(this.state.response?.stderr || [])],
-                        stdout: [...(this.state.response?.stdout || [])],
-                        success: true,
-                    };
-                    response.stdout.push('');
-                    response.stdout.push('---------------------------------------------------');
-                    response.stdout.push(
-                        I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version),
-                    );
-                    this.finished = true;
-                    this.setUpdating(false);
-                    this.setState({ response, error: null, starting: false });
+                    this.finishSuccessfully();
                     return;
                 }
                 throw new Error(I18n.t('Update status is not available yet'));
@@ -320,10 +336,12 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             if (response?.stderr) {
                 response.stderr = response.stderr.filter((line: string) => line.trim());
             }
-            if (response && !response.running && response.success && response.stdout) {
-                response.stdout.push('');
-                response.stdout.push('---------------------------------------------------');
-                response.stdout.push(I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version));
+            if (!response.running && response.success) {
+                // npm has finished, but the old controller is still the active source of version information.
+                // Keep polling until the restarted controller advertises the requested version.
+                this.awaitingControllerRestart = true;
+                response.running = true;
+                response.success = undefined;
             } else if (response?.stdout) {
                 response.stdout.unshift('');
                 response.stdout.unshift('---------------------------------------------------');
