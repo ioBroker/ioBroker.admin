@@ -7,6 +7,8 @@ import { Close as CloseIcon, Refresh as ReloadIcon } from '@mui/icons-material';
 
 import { type AdminConnection, I18n, type ThemeType } from '@iobroker/gui-components';
 
+const MAX_TRANSIENT_STATUS_FAILURES = 30;
+
 interface NetworkInterface {
     address: string;
     netmask: string;
@@ -79,11 +81,23 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     /** The address of the server to get update information from with protocol and port */
     private link = `${window.location.protocol}//${window.location.host}/`;
 
-    /** Interval to poll update status from server */
-    private interval: ReturnType<typeof setTimeout> | null = null;
+    /** Timer for the next update status request */
+    private pollTimer: ReturnType<typeof setTimeout> | null = null;
 
     /** Initial timeout to give server time to start without showing an error */
     private startTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    /** Whether at least one response from the upgrade manager was received */
+    private hasReceivedStatus = false;
+
+    /** Number of consecutive failed status requests after the upgrade manager was reached */
+    private failedStatusRequests = 0;
+
+    /** Whether a terminal update result was received or reconstructed */
+    private finished = false;
+
+    /** Whether this component has been unmounted */
+    private unmounted = false;
 
     constructor(props: JsControllerUpdaterProps) {
         super(props);
@@ -192,11 +206,13 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
         }
 
         this.setUpdating(true);
-        this.interval = setInterval(() => this.checkStatus(), 1_000); // poll every second
+        this.scheduleStatusCheck();
 
         this.startTimeout = setTimeout(() => {
             this.startTimeout = null;
-            this.setState({ starting: false });
+            if (!this.unmounted) {
+                this.setState({ starting: false });
+            }
         }, 10_000); // give 10 seconds to controller to start update
     }
 
@@ -205,14 +221,44 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
      * Clearing intervals and timers here
      */
     componentWillUnmount(): void {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
+        this.unmounted = true;
+
+        if (this.pollTimer) {
+            clearTimeout(this.pollTimer);
+            this.pollTimer = null;
         }
 
         if (this.startTimeout) {
             clearTimeout(this.startTimeout);
             this.startTimeout = null;
+        }
+
+        this.setUpdating(false);
+    }
+
+    /**
+     * Schedule the next status request only after the previous one has finished.
+     */
+    scheduleStatusCheck(): void {
+        if (this.finished || this.unmounted || this.pollTimer) {
+            return;
+        }
+
+        this.pollTimer = setTimeout(() => {
+            this.pollTimer = null;
+            void this.checkStatus();
+        }, 1_000);
+    }
+
+    /**
+     * Check whether the restarted host already reports the requested controller version.
+     */
+    async isTargetVersionInstalled(): Promise<boolean> {
+        try {
+            const host = await this.props.socket.getObject(this.props.hostId);
+            return host?.common?.installedVersion === this.props.version;
+        } catch {
+            return false;
         }
     }
 
@@ -220,6 +266,10 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
      * Request the current status from the server and show it in the textarea
      */
     async checkStatus(): Promise<void> {
+        if (this.finished || this.unmounted) {
+            return;
+        }
+
         console.log(`Request update status from: ${this.link}`);
 
         try {
@@ -228,7 +278,31 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             const plainBody = await res.text();
             console.log(`Received update status (${res.status}, ${plainBody.length} bytes)`);
 
+            if (this.finished || this.unmounted) {
+                return;
+            }
+
             if (!res.ok || !plainBody.trimStart().startsWith('{')) {
+                if (this.hasReceivedStatus && (await this.isTargetVersionInstalled())) {
+                    if (this.finished || this.unmounted) {
+                        return;
+                    }
+                    const response: ServerResponse = {
+                        running: false,
+                        stderr: [...(this.state.response?.stderr || [])],
+                        stdout: [...(this.state.response?.stdout || [])],
+                        success: true,
+                    };
+                    response.stdout.push('');
+                    response.stdout.push('---------------------------------------------------');
+                    response.stdout.push(
+                        I18n.t('%s was successfully updated to %s', 'js-controller', this.props.version),
+                    );
+                    this.finished = true;
+                    this.setUpdating(false);
+                    this.setState({ response, error: null, starting: false });
+                    return;
+                }
                 throw new Error(I18n.t('Update status is not available yet'));
             }
 
@@ -237,6 +311,8 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                 throw new Error(I18n.t('Invalid update status response'));
             }
             const response = parsedResponse;
+            this.hasReceivedStatus = true;
+            this.failedStatusRequests = 0;
 
             // sometimes stderr has only one empty string in it
             if (response?.stderr) {
@@ -251,17 +327,13 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                 response.stdout.unshift('---------------------------------------------------');
                 response.stdout.unshift(I18n.t('updating %s to %s...', 'js-controller', this.props.version));
             }
+            if (!response.running) {
+                this.finished = true;
+                this.setUpdating(false);
+            } else {
+                this.setUpdating(true);
+            }
             this.setState({ response, error: null }, () => {
-                if (response && !response.running) {
-                    this.setUpdating(false);
-                    if (this.interval) {
-                        clearInterval(this.interval);
-                        this.interval = null;
-                    }
-                } else if (response?.running) {
-                    this.setUpdating(true);
-                }
-
                 // scroll down
                 if (this.textareaRef.current) {
                     setTimeout(
@@ -273,9 +345,17 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                 }
             });
         } catch (e) {
-            if (!this.state.starting) {
+            this.failedStatusRequests++;
+            if (
+                !this.finished &&
+                !this.unmounted &&
+                !this.state.starting &&
+                (!this.hasReceivedStatus || this.failedStatusRequests >= MAX_TRANSIENT_STATUS_FAILURES)
+            ) {
                 this.setState({ error: (e as Error).toString() }, () => this.setUpdating(false));
             }
+        } finally {
+            this.scheduleStatusCheck();
         }
     }
 
