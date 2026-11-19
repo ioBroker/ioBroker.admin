@@ -350,7 +350,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                 !this.finished &&
                 !this.unmounted &&
                 !this.state.starting &&
-                (!this.hasReceivedStatus || this.failedStatusRequests >= MAX_TRANSIENT_STATUS_FAILURES)
+                this.failedStatusRequests >= MAX_TRANSIENT_STATUS_FAILURES
             ) {
                 this.setState({ error: (e as Error).toString() }, () => this.setUpdating(false));
             }
