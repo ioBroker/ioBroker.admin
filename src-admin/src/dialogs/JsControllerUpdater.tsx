@@ -8,6 +8,7 @@ import { Close as CloseIcon, Refresh as ReloadIcon } from '@mui/icons-material';
 import { type AdminConnection, I18n, type ThemeType } from '@iobroker/gui-components';
 
 const MAX_TRANSIENT_STATUS_FAILURES = 30;
+const UPGRADE_STATUS_PATH = '/controller-upgrade-status';
 
 interface NetworkInterface {
     address: string;
@@ -270,10 +271,11 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             return;
         }
 
-        console.log(`Request update status from: ${this.link}`);
+        const statusLink = new URL(UPGRADE_STATUS_PATH, this.link).toString();
+        console.log(`Request update status from: ${statusLink}`);
 
         try {
-            const res = await fetch(this.link);
+            const res = await fetch(statusLink);
 
             const plainBody = await res.text();
             console.log(`Received update status (${res.status}, ${plainBody.length} bytes)`);
