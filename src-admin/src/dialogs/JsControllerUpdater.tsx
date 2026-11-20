@@ -8,6 +8,7 @@ import { Close as CloseIcon, Refresh as ReloadIcon } from '@mui/icons-material';
 import { type AdminConnection, I18n, type ThemeType } from '@iobroker/gui-components';
 
 const MAX_TRANSIENT_STATUS_FAILURES = 30;
+const STATUS_REQUEST_TIMEOUT_MS = 5_000;
 const UPGRADE_STATUS_PATH = '/controller-upgrade-status';
 
 interface NetworkInterface {
@@ -302,9 +303,11 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
 
         const statusLink = new URL(UPGRADE_STATUS_PATH, this.link).toString();
         console.log(`Request update status from: ${statusLink}`);
+        const abortController = new AbortController();
+        const requestTimeout = setTimeout(() => abortController.abort(), STATUS_REQUEST_TIMEOUT_MS);
 
         try {
-            const res = await fetch(statusLink);
+            const res = await fetch(statusLink, { signal: abortController.signal });
 
             const plainBody = await res.text();
             console.log(`Received update status (${res.status}, ${plainBody.length} bytes)`);
@@ -372,9 +375,13 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                 !this.state.starting &&
                 this.failedStatusRequests >= MAX_TRANSIENT_STATUS_FAILURES
             ) {
-                this.setState({ error: (e as Error).toString() }, () => this.setUpdating(false));
+                const error = abortController.signal.aborted
+                    ? new Error(I18n.t('Update status is not available yet'))
+                    : (e as Error);
+                this.setState({ error: error.toString() }, () => this.setUpdating(false));
             }
         } finally {
+            clearTimeout(requestTimeout);
             this.scheduleStatusCheck();
         }
     }

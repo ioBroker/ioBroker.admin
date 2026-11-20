@@ -2113,5 +2113,7 @@
     "Link": "Link",
     "1 minute": "1 minuut",
     "Title:": "Titel:",
-    "All deleted": "Alles verwijderd"
+    "All deleted": "Alles verwijderd",
+    "Update status is not available yet": "De updatestatus is nog niet beschikbaar",
+    "Invalid update status response": "Ongeldig antwoord voor de updatestatus"
 }
