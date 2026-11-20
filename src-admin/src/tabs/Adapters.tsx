@@ -68,22 +68,18 @@ import type { AdminGuiConfig, CommandFile } from '@/types';
 import type { RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdminUpdater from '@/dialogs/AdminUpdater';
 import { addMissingNews, readRepository } from '@/helpers/repository';
+import {
+    analyseRepositories,
+    isSameRepositoryState,
+    type CompactSystemRepository,
+    type RepositoryState,
+    type RepositoryWorker,
+} from '@/Workers/RepositoryWorker';
 
 const ONE_DAY_MS = 3_600_000 * 24; // 1 day in milliseconds
 /** How long the list waits for the installed adapters of the hosts, after the repository was read */
 const INSTALLED_WAIT_MS = 5_000;
 const ONE_DAY_BY_10 = ONE_DAY_MS / 10; // 1 day in milliseconds * 10
-
-export type CompactSystemRepository = {
-    _id: string;
-    common: {
-        name: string;
-        dontDelete: boolean;
-    };
-    native: {
-        repositories: Record<string, ioBroker.RepositoryInformation>;
-    };
-};
 
 const styles: Record<string, any> = {
     grow: {
@@ -144,10 +140,11 @@ interface AdaptersProps extends AdapterInstallDialogProps {
     /** Current selected host */
     currentHost: string;
     forceUpdateAdapters: number;
-    triggerUpdate: number;
     /** Like admin.0 */
     adminGuiConfig: AdminGuiConfig;
     adaptersWorker: AdaptersWorker;
+    /** Tells when the repository changes */
+    repositoryWorker: RepositoryWorker;
     instancesWorker: InstancesWorker;
     hostsWorker: HostsWorker;
     expertMode: boolean;
@@ -206,7 +203,6 @@ interface AdaptersState extends AdapterInstallDialogState {
     showSlowConnectionWarning: boolean;
     currentHost: string;
     forceUpdateAdapters: number;
-    triggerUpdate: number;
     ratings: Ratings | null;
     categoriesExpanded: { [categoryName: string]: boolean };
     adminUpgradeTo: string;
@@ -241,6 +237,9 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
     private buildCacheTimer: ReturnType<typeof setTimeout> | null = null;
 
     private updateTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    /** Checks a change of the repository again, after the list was read */
+    private repositoryTimer: ReturnType<typeof setTimeout> | null = null;
 
     private typingTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -308,7 +307,6 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             showSlowConnectionWarning: false,
             currentHost: props.currentHost,
             forceUpdateAdapters: props.forceUpdateAdapters,
-            triggerUpdate: props.triggerUpdate,
             ratings: null,
             categoriesExpanded: {},
             adminUpgradeTo: '',
@@ -366,8 +364,44 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             }
             this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
             this.props.instancesWorker.registerHandler(this.onAdaptersChanged);
+            this.props.repositoryWorker.registerHandler(this.onRepositoryChanged);
         }
     }
+
+    /**
+     * The repository has changed: an update of it (`iobroker update`, the automatic update of admin), other
+     * repository URLs or other active repositories. The list is read anew if it shows another one.
+     *
+     * @param repositoryState the active repositories now
+     */
+    onRepositoryChanged = (repositoryState: RepositoryState): void => {
+        if (this.repositoryTimer) {
+            clearTimeout(this.repositoryTimer);
+            this.repositoryTimer = null;
+        }
+        if (this.state.update) {
+            // The list is being read, e.g. by "Check for updates", which updates the repository itself:
+            // whether it got the new one is seen when it is done
+            this.repositoryTimer = setTimeout(() => {
+                this.repositoryTimer = null;
+                void this.props.repositoryWorker.getState().then(this.onRepositoryChanged);
+            }, 1_000);
+            return;
+        }
+        const shown = analyseRepositories(
+            this.props.systemConfig.common.activeRepo,
+            this.state.compactRepositories,
+            this.props.lang,
+        );
+        if (isSameRepositoryState(repositoryState, shown)) {
+            return;
+        }
+        // Other active repositories reach the app in the same render as this state: the read in the
+        // callback asks with them
+        this.setState({ compactRepositories: repositoryState.repositories || this.state.compactRepositories }, () =>
+            this.updateAll(true),
+        );
+    };
 
     async updateAll(update?: boolean, bigUpdate?: boolean, indicateUpdate?: boolean): Promise<void> {
         // None of the information depends on the repository: it is read while the repository is loading
@@ -448,6 +482,11 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
 
         this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
         this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
+        this.props.repositoryWorker.unregisterHandler(this.onRepositoryChanged);
+        if (this.repositoryTimer) {
+            clearTimeout(this.repositoryTimer);
+            this.repositoryTimer = null;
+        }
         if (this.hostAdapterWorker) {
             this.hostAdapterWorker.destroy();
             this.hostAdapterWorker = null;
@@ -2299,13 +2338,6 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
             return <LinearProgress />;
         }
 
-        // update adapters because the repository could be changed
-        if (this.state.triggerUpdate !== this.props.triggerUpdate) {
-            setTimeout(() => {
-                this.setState({ triggerUpdate: this.props.triggerUpdate }, () => this.updateAll(true));
-            }, 100);
-        }
-
         // if the current host changed
         if (
             this.props.currentHost !== this.state.currentHost ||
@@ -2337,85 +2369,17 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 }, 200);
         }
 
-        // fast check if active repo is stable
-        let stableRepo = Utils.isStableRepository(this.props.systemConfig.common.activeRepo);
-
-        // if repositories are available
-        const repositories: Record<string, ioBroker.RepositoryInformation> =
-            this.state.compactRepositories?.native?.repositories || {};
-
-        // An active repository that is not configured (any more), e.g. after `system.repositories` was set back to
-        // its defaults: the host finds nothing in it, and every adapter is shown as "not maintained"
-        const activeRepos: string[] = Array.isArray(this.props.systemConfig.common.activeRepo)
-            ? this.props.systemConfig.common.activeRepo
-            : this.props.systemConfig.common.activeRepo
-              ? [this.props.systemConfig.common.activeRepo]
-              : [];
-        const missingRepos = this.state.compactRepositories?.native?.repositories
-            ? activeRepos.filter(repo => !repositories[repo])
-            : [];
-
-        if (repositories) {
-            // new style with multiple active repositories
-            if (this.props.systemConfig.common.activeRepo) {
-                if (Array.isArray(this.props.systemConfig.common.activeRepo)) {
-                    // if any active repo is not stable, show warning
-                    // a missing repository has its own note and is not the reason for this one
-                    stableRepo = this.props.systemConfig.common.activeRepo.every(
-                        repo =>
-                            missingRepos.includes(repo) ||
-                            repo.toLowerCase().startsWith('stable') ||
-                            repositories[repo]?.json?._repoInfo?.stable,
-                    );
-                } else if (typeof this.props.systemConfig.common.activeRepo === 'string') {
-                    // if active repo is not stable, show warning
-                    stableRepo =
-                        !!missingRepos.length ||
-                        // @ts-expect-error deprecated, but could still come
-                        this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') ||
-                        repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
-                }
-            }
-        }
-
-        let repoName = '';
-        if (!stableRepo) {
-            repoName = Array.isArray(this.props.systemConfig.common.activeRepo)
-                ? this.props.systemConfig.common.activeRepo.join(', ')
-                : this.props.systemConfig.common.activeRepo;
-
-            // old style with just one active repository
-            if (typeof this.props.systemConfig.common.activeRepo === 'string') {
-                const repoInfo =
-                    repositories && repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
-
-                if (repoInfo?.name) {
-                    if (repoInfo.name && typeof repoInfo.name === 'object') {
-                        repoName = repoInfo.name[this.props.lang] || repoInfo.name.en;
-                    } else {
-                        repoName = repoInfo.name;
-                    }
-                }
-            } else if (
-                // new style with multiple active repositories
-                this.props.systemConfig.common.activeRepo &&
-                typeof this.props.systemConfig.common.activeRepo !== 'string'
-            ) {
-                repoName = this.props.systemConfig.common.activeRepo
-                    .filter(repo => !missingRepos.includes(repo))
-                    .map(repo => {
-                        const repoInfo = repositories && repositories[repo]?.json?._repoInfo;
-                        if (repoInfo?.name) {
-                            if (repoInfo.name && typeof repoInfo.name === 'object') {
-                                return repoInfo.name[this.props.lang] || repoInfo.name.en;
-                            }
-                            return repoInfo.name;
-                        }
-                        return repo;
-                    })
-                    .join(', ');
-            }
-        }
+        // Is a not stable repository active, or one that is not configured (any more)?
+        const {
+            stable: stableRepo,
+            missing: missingRepos,
+            title,
+        } = analyseRepositories(
+            this.props.systemConfig.common.activeRepo,
+            this.state.compactRepositories,
+            this.props.lang,
+        );
+        const repoName = stableRepo ? '' : title;
 
         const context = this.getContext(this.state.descWidth < 50);
 

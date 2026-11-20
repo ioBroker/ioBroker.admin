@@ -99,6 +99,7 @@ import { LogsWorker } from './Workers/LogsWorker';
 import { InstancesWorker } from './Workers/InstancesWorker';
 import { HostsWorker, type HostEvent, type NotificationAnswer } from './Workers/HostsWorker';
 import { AdaptersWorker, type AdapterEvent } from './Workers/AdaptersWorker';
+import { RepositoryWorker, type RepositoryState } from './Workers/RepositoryWorker';
 import { ObjectsWorker } from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import type { DiscoveryObject } from './dialogs/GenerateInputsModal';
@@ -570,7 +571,6 @@ interface AppState {
     cloudReconnect: number;
     showRedirect: string | undefined;
     redirectCountDown: number;
-    triggerAdapterUpdate: number;
     updating: boolean;
     notificationsDialog: boolean;
     notifications: Record<string, any>;
@@ -604,6 +604,7 @@ class App extends Router<AppProps, AppState> {
     private instancesWorker: InstancesWorker | null = null;
     private hostsWorker: HostsWorker | null = null;
     private adaptersWorker: AdaptersWorker | null = null;
+    private repositoryWorker: RepositoryWorker | null = null;
     private objectsWorker: ObjectsWorker | null = null;
 
     /** The latest read of repository, installed versions and adapters. The start does not wait for it, the news do */
@@ -817,8 +818,6 @@ class App extends Router<AppProps, AppState> {
 
                 showRedirect: '',
                 redirectCountDown: 0,
-
-                triggerAdapterUpdate: 0,
 
                 updating: false, // js controller updating
                 /** If the notification dialog should be shown */
@@ -1424,6 +1423,7 @@ class App extends Router<AppProps, AppState> {
                         this.instancesWorker ||= new InstancesWorker(this.socket);
                         this.hostsWorker ||= new HostsWorker(this.socket);
                         this.adaptersWorker ||= new AdaptersWorker(this.socket);
+                        this.repositoryWorker ||= new RepositoryWorker(this.socket, I18n.getLanguage());
                         this.objectsWorker ||= new ObjectsWorker(this.socket);
 
                         const newState: Partial<AppState> = {
@@ -1450,7 +1450,7 @@ class App extends Router<AppProps, AppState> {
                             console.log(`Error reading repo in onReady: ${(e as Error).stack}`);
                         }
 
-                        this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
+                        this.repositoryWorker.registerHandler(this.repoChangeHandler);
                         this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
                         this.hostsWorker.registerHandler(this.updateHosts);
                         this.hostsWorker.registerNotificationHandler(this.handleNewNotifications);
@@ -1571,7 +1571,7 @@ class App extends Router<AppProps, AppState> {
         this.socket?.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
         void this.socket?.unsubscribeObject('system.discovery', this.onDiscoveryObject);
 
-        this.adaptersWorker?.unregisterRepositoryHandler(this.repoChangeHandler);
+        this.repositoryWorker?.unregisterHandler(this.repoChangeHandler);
         this.adaptersWorker?.unregisterHandler(this.adaptersChangeHandler);
         this.hostsWorker?.unregisterHandler(this.updateHosts);
 
@@ -1613,7 +1613,20 @@ class App extends Router<AppProps, AppState> {
         this.setState({ hosts });
     };
 
-    repoChangeHandler = (): void => {
+    repoChangeHandler = (repositoryState: RepositoryState): void => {
+        const systemConfig = this.state.systemConfig;
+        const activeRepo = systemConfig?.common.activeRepo as string | string[] | undefined;
+        const active = Array.isArray(activeRepo) ? activeRepo : activeRepo ? [activeRepo] : [];
+        if (systemConfig && JSON.stringify(active) !== JSON.stringify(repositoryState.active)) {
+            // Other active repositories, e.g. with `iobroker repo set`: the adapters tab reads with the ones of
+            // the system configuration. Its own handler reads after the next render, which has them already
+            this.setState({
+                systemConfig: {
+                    ...systemConfig,
+                    common: { ...systemConfig.common, activeRepo: repositoryState.active },
+                },
+            });
+        }
         void this.readRepoAndInstalledInfo(this.state.currentHost, { update: true }).then(() =>
             console.log('Repo updated!'),
         );
@@ -2476,6 +2489,7 @@ class App extends Router<AppProps, AppState> {
             !this.socket ||
             !this.hostsWorker ||
             !this.adaptersWorker ||
+            !this.repositoryWorker ||
             !this.instancesWorker ||
             !this.objectsWorker ||
             !this.state.systemConfig ||
@@ -2506,10 +2520,10 @@ class App extends Router<AppProps, AppState> {
                     <Suspense fallback={<Connecting loading />}>
                         <Adapters
                             theme={this.state.theme}
-                            triggerUpdate={this.state.triggerAdapterUpdate}
                             key="adapters"
                             forceUpdateAdapters={this.state.forceUpdateAdapters}
                             adaptersWorker={this.adaptersWorker}
+                            repositoryWorker={this.repositoryWorker}
                             instancesWorker={this.instancesWorker}
                             themeType={this.state.themeType}
                             systemConfig={this.state.systemConfig}
@@ -2560,6 +2574,7 @@ class App extends Router<AppProps, AppState> {
                             }
                             socket={this.socket}
                             instancesWorker={this.instancesWorker}
+                            repositoryWorker={this.repositoryWorker}
                             lang={I18n.getLanguage()}
                             hostname={this.state.hostname}
                             adminInstance={this.adminInstance}
@@ -2739,6 +2754,7 @@ class App extends Router<AppProps, AppState> {
                             socket={this.socket}
                             lang={I18n.getLanguage()}
                             hostsWorker={this.hostsWorker}
+                            repositoryWorker={this.repositoryWorker}
                             toggleTranslation={this.toggleTranslation}
                             noTranslation={this.state.noTranslation}
                             themeType={this.state.themeType}
@@ -2839,17 +2855,13 @@ class App extends Router<AppProps, AppState> {
                 themeType={this.state.themeType}
                 theme={this.state.theme}
                 key="systemSettings"
-                onClose={async (repoChanged?: boolean) => {
+                onClose={async () => {
                     Router.doNavigate(null);
-                    // read systemConfig anew
+                    // read systemConfig anew. Changed repositories reach the adapters tab from the repository worker
                     const systemConfig = await this.socket?.getObject('system.config');
 
                     if (systemConfig) {
-                        if (repoChanged) {
-                            this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1, systemConfig });
-                        } else {
-                            this.setState({ systemConfig });
-                        }
+                        this.setState({ systemConfig });
                     }
                 }}
                 lang={this.state.lang}

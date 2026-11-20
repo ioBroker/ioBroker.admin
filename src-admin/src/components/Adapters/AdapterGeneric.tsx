@@ -753,9 +753,7 @@ export default abstract class AdapterGeneric<
             <VersionNews
                 adapter={this.props.adapterName}
                 version={this.installedVersion}
-                news={this.props.context.repository[this.props.adapterName]?.news}
-                socket={this.props.context.socket}
-                host={this.props.context.currentHost}
+                news={this.props.context.repository[this.props.adapterName]?.news || null}
                 lang={this.props.context.lang}
                 noTranslation={this.props.noTranslation}
                 t={this.props.context.t}

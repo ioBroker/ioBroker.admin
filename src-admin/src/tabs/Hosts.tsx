@@ -26,6 +26,7 @@ import type { HostsWorker, NotificationAnswer, HostAliveEvent, HostEvent } from 
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
 import { blinkClasses } from '@/components/Hosts/HostGeneric';
 import { readRepository } from '@/helpers/repository';
+import type { RepositoryWorker } from '@/Workers/RepositoryWorker';
 import HostCard from '../components/Hosts/HostCard';
 // import NewHosts from '../components/Hosts/NewHosts';
 import HostRow from '../components/Hosts/HostRow';
@@ -130,6 +131,8 @@ interface HostsProps {
     systemConfig: ioBroker.SystemConfigObject;
     executeCommand: (command: string) => void;
     hostsWorker: HostsWorker;
+    /** Tells when the repository changes, e.g. with a new version of js-controller */
+    repositoryWorker: RepositoryWorker;
     showAdaptersWarning: (notifications: Record<string, NotificationAnswer>, hostId: string) => void;
     theme: IobTheme;
     noTranslation: boolean;
@@ -193,13 +196,33 @@ export default class Hosts extends Component<HostsProps, HostsState> {
         void this.readInfo().then(() => {
             this.props.hostsWorker.registerHandler(this.updateHosts);
             this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+            this.props.repositoryWorker.registerHandler(this.onRepositoryChanged);
         });
     }
 
     componentWillUnmount(): void {
         this.props.hostsWorker.unregisterHandler(this.updateHosts);
         this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
+        this.props.repositoryWorker.unregisterHandler(this.onRepositoryChanged);
     }
+
+    /** Only the controller is shown here, the other entries of the repository are not needed */
+    readControllerRepository(): Promise<Record<string, RepoAdapterObject>> {
+        return readRepository(
+            this.props.socket,
+            this.props.currentHost,
+            { update: false, lang: this.props.lang, adapters: ['js-controller'] },
+            false,
+            this.state.readTimeoutMs,
+        ) as unknown as Promise<Record<string, RepoAdapterObject>>;
+    }
+
+    /** E.g. after `iobroker update`: the hosts show whether a newer js-controller is there */
+    onRepositoryChanged = (): void => {
+        this.readControllerRepository()
+            .then(repository => this.setState({ repository }))
+            .catch((e: unknown) => console.warn(`Cannot read the repository: ${e as Error}`));
+    };
 
     getHostsData(
         hosts: ioBroker.HostObject[],
@@ -238,14 +261,7 @@ export default class Hosts extends Component<HostsProps, HostsState> {
     async readInfo(): Promise<void> {
         try {
             const hosts: ioBroker.HostObject[] = await this.props.socket.getHosts(true);
-            // only the controller is shown here, the other entries of the repository are not needed
-            const repository: Record<string, RepoAdapterObject> = (await readRepository(
-                this.props.socket,
-                this.props.currentHost,
-                { update: false, lang: this.props.lang, adapters: ['js-controller'] },
-                false,
-                this.state.readTimeoutMs,
-            )) as unknown as Record<string, RepoAdapterObject>;
+            const repository = await this.readControllerRepository();
             const alive = JSON.parse(JSON.stringify(this.state.alive));
 
             for (let h = 0; h < hosts.length; h++) {

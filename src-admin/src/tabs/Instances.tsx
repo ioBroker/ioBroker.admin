@@ -52,6 +52,7 @@ import {
     type ReverseProxyItem,
 } from '@/helpers/utils';
 import type { InstancesWorker } from '@/Workers/InstancesWorker';
+import type { RepositoryWorker } from '@/Workers/RepositoryWorker';
 import type { InstanceLink } from '@/components/Instances/LinksDialog';
 import Config from './Config';
 import InstanceGeneric, {
@@ -151,6 +152,8 @@ interface InstancesProps {
     theme: IobTheme;
     socket: AdminConnection;
     instancesWorker: InstancesWorker;
+    /** Reads the news of the installed versions */
+    repositoryWorker: RepositoryWorker;
     executeCommand: ExecuteCommand;
     hosts: ioBroker.HostObject[];
     currentHost: string;
@@ -1249,6 +1252,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
             expertMode: this.props.expertMode,
             hosts: this.props.hosts,
             socket: this.props.socket,
+            repositoryWorker: this.props.repositoryWorker,
             t: this.t,
             lang: this.props.lang,
             themeType: this.props.themeType,
@@ -1576,6 +1580,7 @@ class Instances extends Component<InstancesProps, InstancesState> {
                             themeType={this.props.themeType}
                             width={this.props.width}
                             version={instance.version}
+                            repositoryWorker={this.props.repositoryWorker}
                             onRegisterIframeRef={(ref: HTMLIFrameElement) => this.props.onRegisterIframeRef(ref)}
                             onUnregisterIframeRef={(ref: HTMLIFrameElement) => this.props.onUnregisterIframeRef(ref)}
                             handleNavigation={this.props.handleNavigation}

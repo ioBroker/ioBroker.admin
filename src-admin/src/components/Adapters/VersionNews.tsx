@@ -4,53 +4,10 @@ import semver from 'semver';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 
-import type { AdminConnection, IobTheme, Translate } from '@iobroker/gui-components';
+import type { IobTheme, Translate } from '@iobroker/gui-components';
 
+import type { AdapterNews, RepositoryWorker } from '@/Workers/RepositoryWorker';
 import NewsLine, { getNewsText, splitNews } from './NewsLine';
-
-/** The news of an adapter as the repository has them: version => changes of that version */
-export type AdapterNews = Record<string, ioBroker.Translated | string>;
-
-/** How long the news read for a tooltip are kept: the repository changes rarely, an update of the adapter does not change them */
-const NEWS_CACHE_MS = 10 * 60_000;
-
-const newsCache: Record<string, { ts: number; promise: Promise<AdapterNews | null> }> = {};
-
-/**
- * Reads the news of one adapter from the repository.
- *
- * The instances and the instance settings have only the compact repository, which comes without
- * news. Admin answers this from the repository it holds in its objects, the host is not asked. The
- * answer is kept for some minutes, so the tooltips of all instances of an adapter read once.
- *
- * @param socket connection to admin
- * @param host host of the adapter, e.g. `raspberrypi` or `system.host.raspberrypi`
- * @param adapter name of the adapter, e.g. `admin`
- * @param lang language of the GUI: the news come in that language and English only
- */
-export function readAdapterNews(
-    socket: AdminConnection,
-    host: string,
-    adapter: string,
-    lang: ioBroker.Languages,
-): Promise<AdapterNews | null> {
-    const key = `${adapter}|${lang}`;
-    const cached = newsCache[key];
-    if (cached && Date.now() - cached.ts < NEWS_CACHE_MS) {
-        return cached.promise;
-    }
-    const hostId = host.startsWith('system.host.') ? host : `system.host.${host}`;
-    const promise = socket
-        .getReducedRepository(hostId, { lang, adapters: [adapter] })
-        .then(repository => (repository?.[adapter] as { news?: AdapterNews } | undefined)?.news || null)
-        .catch((e: unknown): null => {
-            // e.g. a user without the right to ask the host: the version is shown as before then
-            console.warn(`Cannot read the news of "${adapter}": ${e as Error}`);
-            return null;
-        });
-    newsCache[key] = { ts: Date.now(), promise };
-    return promise;
-}
 
 /**
  * Versions of the news, the newest first. Versions that semver does not understand come last.
@@ -134,11 +91,12 @@ interface VersionNewsProps {
     adapter: string;
     /** The version that is shown, e.g. the installed one */
     version: string;
-    /** The news of the adapter if they are at hand, e.g. in the adapters tab. They are read from admin on the first hover if not given */
+    /** The news of the adapter if they are at hand, e.g. in the adapters tab: null if it has none */
     news?: AdapterNews | null;
-    socket: AdminConnection;
+    /** Reads the news when the version is hovered, if they are not given */
+    repositoryWorker?: RepositoryWorker;
     /** Host to read the news from, e.g. `raspberrypi` or `system.host.raspberrypi` */
-    host: string;
+    host?: string;
     lang: ioBroker.Languages;
     /** Show the news in English */
     noTranslation?: boolean;
@@ -156,12 +114,13 @@ interface VersionNewsProps {
  * @param props the version and where its news come from
  */
 export default function VersionNews(props: VersionNewsProps): JSX.Element {
-    const { adapter, version, socket, host, lang, t } = props;
+    const { adapter, version, repositoryWorker, host, lang, t } = props;
     const [readNews, setReadNews] = useState<AdapterNews | null | undefined>(undefined);
     const [loading, setLoading] = useState(false);
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const mounted = useRef(true);
+    const reading = useRef(false);
     const scrolled = useRef(false);
 
     useEffect(() => {
@@ -174,20 +133,27 @@ export default function VersionNews(props: VersionNewsProps): JSX.Element {
     // other adapter or language: the news read before do not fit anymore
     useEffect(() => setReadNews(undefined), [adapter, lang]);
 
-    const news = props.news !== undefined ? props.news : readNews;
+    // without a way to read them, there are none
+    const news = props.news !== undefined ? props.news : repositoryWorker && host ? readNews : null;
 
     const load = useCallback((): void => {
-        if (props.news !== undefined || readNews !== undefined || loading) {
+        if (props.news !== undefined || !repositoryWorker || !host || reading.current) {
             return;
         }
-        setLoading(true);
-        void readAdapterNews(socket, host, adapter, lang).then(result => {
+        // Asked on every hover: the connection keeps the news till the repository changes, then they come
+        // anew. The news read before stay in the tooltip meanwhile
+        reading.current = true;
+        if (readNews === undefined) {
+            setLoading(true);
+        }
+        void repositoryWorker.getNews(host, adapter, lang).then(result => {
+            reading.current = false;
             if (mounted.current) {
                 setReadNews(result);
                 setLoading(false);
             }
         });
-    }, [props.news, readNews, loading, socket, host, adapter, lang]);
+    }, [props.news, readNews, repositoryWorker, host, adapter, lang]);
 
     // Known as soon as the news are there: an adapter without any news (e.g. not in the repository) gets no dialog
     const hasNews = news === undefined ? true : !!news && Object.keys(news).length > 0;

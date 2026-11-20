@@ -48,6 +48,7 @@ import AdminUtils from '../helpers/AdminUtils';
 import { adminHref } from '../helpers/utils';
 import AceEditor from '../components/AceEditor';
 import OsmMap from '../components/LazyOsmMap';
+import type { RepositoryWorker } from '../Workers/RepositoryWorker';
 
 const arrayLogLevel: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 
@@ -168,6 +169,8 @@ interface ConfigProps {
     theme: IobTheme;
     width: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     version?: string;
+    /** Reads the news of the version for its tooltip */
+    repositoryWorker?: RepositoryWorker;
     handleNavigation: (tab: string, subTab?: string, param?: string) => void;
 }
 
@@ -614,7 +617,7 @@ export default class Config extends Component<ConfigProps, ConfigState> {
                         <VersionNews
                             adapter={this.props.adapter}
                             version={this.props.version}
-                            socket={this.props.socket}
+                            repositoryWorker={this.props.repositoryWorker}
                             host={this.state.common.host}
                             lang={this.props.lang}
                             t={this.props.t}

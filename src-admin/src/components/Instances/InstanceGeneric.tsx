@@ -78,6 +78,7 @@ import CustomModal from '../CustomModal';
 import LinksDialog, { type InstanceLink } from './LinksDialog';
 import AdminUtils from '../../helpers/AdminUtils';
 import { objectLockedText } from '../../helpers/permissions';
+import type { RepositoryWorker } from '../../Workers/RepositoryWorker';
 
 /** Whether both objects have the same attributes with identical values */
 function shallowEqual(a: object, b: object): boolean {
@@ -466,6 +467,8 @@ export interface InstanceContext {
     theme: IobTheme;
     getInstanceStatus: (obj: ioBroker.InstanceObject) => InstanceStatusType;
     socket: AdminConnection;
+    /** Reads the news of the installed versions */
+    repositoryWorker: RepositoryWorker;
     expertMode: boolean;
     maxCompactGroupNumber: number;
     states: Record<string, ioBroker.State>;
@@ -1907,7 +1910,7 @@ export default abstract class InstanceGeneric<
                 <VersionNews
                     adapter={this.props.instance.adapter}
                     version={this.props.instance.version}
-                    socket={this.props.context.socket}
+                    repositoryWorker={this.props.context.repositoryWorker}
                     host={this.props.instance.host}
                     lang={this.props.context.lang}
                     t={this.props.context.t}
