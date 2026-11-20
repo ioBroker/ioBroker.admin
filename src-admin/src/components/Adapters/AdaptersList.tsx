@@ -16,7 +16,7 @@ import {
 
 import { Update as UpdateIcon } from '@mui/icons-material';
 
-import { TabContent, InfoBox } from '@iobroker/gui-components';
+import { TabContent, InfoBox, Router } from '@iobroker/gui-components';
 
 import type { AdaptersContext } from '@/components/Adapters/AdapterInstallDialog';
 import AdapterCategoryRow from '@/components/Adapters/AdapterCategoryRow';
@@ -45,6 +45,9 @@ const styles: Record<string, any> = {
     },
     containerNotFullHeight: {
         height: 'calc(100% - 50px)',
+    },
+    containerTwoNotes: {
+        height: 'calc(100% - 100px)',
     },
     containerFullHeight: {
         height: '100%',
@@ -114,6 +117,8 @@ const styles: Record<string, any> = {
 interface AdaptersListProps {
     stableRepo: boolean;
     repoName: string;
+    /** Active repositories that are not configured (any more): nothing of them can be shown */
+    missingRepos: string[];
     context: AdaptersContext;
     systemConfig: ioBroker.SystemConfigObject;
     tableViewMode: boolean;
@@ -148,6 +153,7 @@ interface AdaptersListProps {
 interface AdaptersListState {
     descWidth: number;
     repoName: string;
+    missingRepos: string;
     systemConfig: boolean;
     tableViewMode: boolean;
     oneListView: boolean;
@@ -179,6 +185,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         this.state = {
             descWidth: props.descWidth,
             repoName: props.repoName,
+            missingRepos: props.missingRepos.join(','),
             systemConfig: !!props.systemConfig,
             tableViewMode: props.tableViewMode,
             oneListView: props.oneListView,
@@ -429,14 +436,52 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         return items;
     }
 
+    /**
+     * The notes above the list: an active repository that does not exist, and a repository that is not the stable one.
+     *
+     * @param stableRepo all active repositories are stable ones
+     * @param repoName names of the active repositories that are not stable
+     */
+    renderRepoNotes(stableRepo: boolean, repoName: string): JSX.Element | null {
+        const missing = this.props.missingRepos;
+        if (stableRepo && !missing.length) {
+            return null;
+        }
+        return (
+            <Box sx={{ marginX: 2, marginTop: 1, width: 'calc(100% - 32px)' }}>
+                {missing.length ? (
+                    // Otherwise every adapter is just "not maintained", and nothing tells why
+                    <InfoBox type="error">
+                        {[
+                            this.props.context.t(
+                                missing.length === 1
+                                    ? 'The active repository "%s" does not exist'
+                                    : 'The active repositories "%s" do not exist',
+                                missing.join('", "'),
+                            ),
+                            <Button
+                                key="settings"
+                                size="small"
+                                variant="contained"
+                                style={{ marginLeft: 16 }}
+                                onClick={() => Router.doNavigate(null, 'system', 'tabRepositories')}
+                            >
+                                {this.props.context.t('Select repository')}
+                            </Button>,
+                        ]}
+                    </InfoBox>
+                ) : null}
+                {!stableRepo && repoName ? (
+                    <InfoBox type="warning">{this.props.context.t('Active repo is "%s"', repoName)}</InfoBox>
+                ) : null}
+            </Box>
+        );
+    }
+
     renderTileView(stableRepo: boolean, repoName: string, context: AdaptersContext): JSX.Element {
         return (
             <>
-                {!stableRepo ? (
-                    <Box sx={{ marginX: 2, marginTop: 1, width: 'calc(100% - 32px)' }}>
-                        <InfoBox type={'warning'}>{this.props.context.t('Active repo is "%s"', repoName)}</InfoBox>
-                    </Box>
-                ) : null}
+                {this.renderRepoNotes(stableRepo, repoName)}
                 <div style={styles.viewModeDiv}>{this.getTiles(context)}</div>
             </>
         );
@@ -445,15 +490,15 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
     renderTableView(stableRepo: boolean, repoName: string, context: AdaptersContext): JSX.Element {
         return (
             <TabContent>
-                {!stableRepo ? (
-                    <Box sx={{ marginX: 2, marginTop: 1, width: 'calc(100% - 32px)' }}>
-                        <InfoBox type={'warning'}>{this.props.context.t('Active repo is "%s"', repoName)}</InfoBox>
-                    </Box>
-                ) : null}
+                {this.renderRepoNotes(stableRepo, repoName)}
                 <TableContainer
                     style={{
                         ...styles.container,
-                        ...(!stableRepo ? styles.containerNotFullHeight : styles.containerFullHeight),
+                        ...(!stableRepo && this.props.missingRepos.length
+                            ? styles.containerTwoNotes
+                            : !stableRepo || this.props.missingRepos.length
+                              ? styles.containerNotFullHeight
+                              : styles.containerFullHeight),
                     }}
                 >
                     <Table
@@ -511,6 +556,11 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
         }
         if (props.repoName !== state.repoName) {
             console.log('Render because of repoName');
+            changed = true;
+        }
+        const missingRepos = props.missingRepos.join(',');
+        if (missingRepos !== state.missingRepos) {
+            console.log('Render because of missingRepos');
             changed = true;
         }
         if (!!props.systemConfig !== state.systemConfig) {
@@ -579,6 +629,7 @@ class AdaptersList extends Component<AdaptersListProps, AdaptersListState> {
             return {
                 descWidth: props.descWidth,
                 repoName: props.repoName,
+                missingRepos,
                 systemConfig: !!props.systemConfig,
                 tableViewMode: props.tableViewMode,
                 oneListView: props.oneListView,

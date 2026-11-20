@@ -85,9 +85,9 @@ const styles: Record<string, any> = {
         width: '100%',
     },
     checkboxError: {
-        '& span:first-child': {
-            border: '2px solid #FF0000',
-            borderRadius: 4,
+        // the icon: the first child of the checkbox is its hidden input, not the box
+        '& .MuiSvgIcon-root': {
+            color: '#FF0000',
         },
     },
     fabButton: {
@@ -242,11 +242,12 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
 > {
     constructor(props: RepositoriesDialogProps) {
         super(props);
+        // an active repository that is not in the list (any more) does not count: nothing can be read from it
         const repos = (
             typeof this.props.dataAux.common.activeRepo === 'string'
                 ? [this.props.dataAux.common.activeRepo]
                 : this.props.dataAux.common.activeRepo
-        ).filter(r => r);
+        ).filter(r => r && this.props.data?.native?.repositories?.[r]);
 
         this.state = {
             error: !repos.length,
@@ -495,6 +496,11 @@ export default class RepositoriesDialog extends BaseSystemSettingsDialog<
                                 if (typeof newData.common.activeRepo === 'string') {
                                     newData.common.activeRepo = [newData.common.activeRepo];
                                 }
+                                // An active repository that is not in the list cannot be unchecked here: it goes
+                                // with any change, e.g. "Beta (latest)" after the list was set back to its defaults
+                                newData.common.activeRepo = newData.common.activeRepo.filter(
+                                    r => this.props.data.native.repositories[r],
+                                );
                                 let pos = newData.common.activeRepo.indexOf(item.title);
                                 if (pos === -1) {
                                     newData.common.activeRepo.push(item.title);

@@ -2343,17 +2343,34 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         // if repositories are available
         const repositories: Record<string, ioBroker.RepositoryInformation> =
             this.state.compactRepositories?.native?.repositories || {};
+
+        // An active repository that is not configured (any more), e.g. after `system.repositories` was set back to
+        // its defaults: the host finds nothing in it, and every adapter is shown as "not maintained"
+        const activeRepos: string[] = Array.isArray(this.props.systemConfig.common.activeRepo)
+            ? this.props.systemConfig.common.activeRepo
+            : this.props.systemConfig.common.activeRepo
+              ? [this.props.systemConfig.common.activeRepo]
+              : [];
+        const missingRepos = this.state.compactRepositories?.native?.repositories
+            ? activeRepos.filter(repo => !repositories[repo])
+            : [];
+
         if (repositories) {
             // new style with multiple active repositories
             if (this.props.systemConfig.common.activeRepo) {
                 if (Array.isArray(this.props.systemConfig.common.activeRepo)) {
                     // if any active repo is not stable, show warning
+                    // a missing repository has its own note and is not the reason for this one
                     stableRepo = this.props.systemConfig.common.activeRepo.every(
-                        repo => repo.toLowerCase().startsWith('stable') || repositories[repo]?.json?._repoInfo?.stable,
+                        repo =>
+                            missingRepos.includes(repo) ||
+                            repo.toLowerCase().startsWith('stable') ||
+                            repositories[repo]?.json?._repoInfo?.stable,
                     );
                 } else if (typeof this.props.systemConfig.common.activeRepo === 'string') {
                     // if active repo is not stable, show warning
                     stableRepo =
+                        !!missingRepos.length ||
                         // @ts-expect-error deprecated, but could still come
                         this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') ||
                         repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo?.stable;
@@ -2385,6 +2402,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 typeof this.props.systemConfig.common.activeRepo !== 'string'
             ) {
                 repoName = this.props.systemConfig.common.activeRepo
+                    .filter(repo => !missingRepos.includes(repo))
                     .map(repo => {
                         const repoInfo = repositories && repositories[repo]?.json?._repoInfo;
                         if (repoInfo?.name) {
@@ -2423,6 +2441,7 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
                 <AdaptersList
                     stableRepo={stableRepo}
                     repoName={repoName}
+                    missingRepos={missingRepos}
                     context={context}
                     noTranslation={this.props.noTranslation}
                     systemConfig={this.props.systemConfig}
