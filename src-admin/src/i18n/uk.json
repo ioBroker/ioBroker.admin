@@ -2113,5 +2113,7 @@
     "Link": "Посилання",
     "1 minute": "1 хвилина",
     "Title:": "Назва:",
-    "All deleted": "Усе видалено"
+    "All deleted": "Усе видалено",
+    "Update status is not available yet": "Стан оновлення ще недоступний",
+    "Invalid update status response": "Некоректна відповідь про стан оновлення"
 }

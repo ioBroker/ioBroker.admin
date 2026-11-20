@@ -2113,5 +2113,7 @@
     "Link": "Ссылка",
     "1 minute": "1 минута",
     "Title:": "Название:",
-    "All deleted": "Всё удалено"
+    "All deleted": "Всё удалено",
+    "Update status is not available yet": "Статус обновления пока недоступен",
+    "Invalid update status response": "Недопустимый ответ о статусе обновления"
 }

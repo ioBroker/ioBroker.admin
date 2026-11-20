@@ -2113,5 +2113,7 @@
     "Link": "Link",
     "1 minute": "1 minute",
     "Title:": "Title:",
-    "All deleted": "All deleted"
+    "All deleted": "All deleted",
+    "Update status is not available yet": "Update status is not available yet",
+    "Invalid update status response": "Invalid update status response"
 }
