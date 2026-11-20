@@ -42,6 +42,7 @@ import {
 
 import { JsonConfig } from '@iobroker/json-config';
 import DeviceManagerWithPin from '@/components/DeviceManagerWithPin';
+import VersionNews from '@/components/Adapters/VersionNews';
 
 import AdminUtils from '../helpers/AdminUtils';
 import { adminHref } from '../helpers/utils';
@@ -608,7 +609,22 @@ export default class Config extends Component<ConfigProps, ConfigState> {
                         ...styles[this.getInstanceStatus()],
                     }}
                 >
-                    v{this.props.version}
+                    {this.state.common?.host ? (
+                        // The tooltip shows the changes of the installed version, a click all of them
+                        <VersionNews
+                            adapter={this.props.adapter}
+                            version={this.props.version}
+                            socket={this.props.socket}
+                            host={this.state.common.host}
+                            lang={this.props.lang}
+                            t={this.props.t}
+                            label={this.props.t('Installed')}
+                        >
+                            v{this.props.version}
+                        </VersionNews>
+                    ) : (
+                        `v${this.props.version}`
+                    )}
                 </span>
             ) : null,
             <Tooltip

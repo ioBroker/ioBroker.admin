@@ -43,6 +43,7 @@ import {
 import { type IobTheme, Utils } from '@iobroker/gui-components';
 
 import AdapterUpdateDialog from '@/components/Adapters/AdapterUpdateDialog';
+import VersionNews from '@/components/Adapters/VersionNews';
 import CustomModal from '@/components/CustomModal';
 import RatingDialog, { type RatingDialogRepository } from '@/dialogs/RatingDialog';
 import AdapterDeletionDialog from '@/components/Adapters/AdapterDeletionDialog';
@@ -693,10 +694,12 @@ export default abstract class AdapterGeneric<
                 >
                     {this.installedVersion ? (
                         <Grid>
-                            {displayVersion +
-                                (installedCount
-                                    ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})`
-                                    : '')}
+                            {this.renderVersionNews(
+                                displayVersion +
+                                    (installedCount
+                                        ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})`
+                                        : ''),
+                            )}
                         </Grid>
                     ) : null}
                     {isGitHubInstall && (
@@ -734,10 +737,33 @@ export default abstract class AdapterGeneric<
                             />
                         </Tooltip>
                     )}
-                    {displayVersion}
+                    {this.renderVersionNews(displayVersion)}
                 </div>
             </Typography>
         ) : null;
+    }
+
+    /**
+     * The installed version with its changes as tooltip and the whole change log on click.
+     *
+     * @param text how the version is shown, e.g. with the commit of a GitHub installation
+     */
+    renderVersionNews(text: string): JSX.Element {
+        return (
+            <VersionNews
+                adapter={this.props.adapterName}
+                version={this.installedVersion}
+                news={this.props.context.repository[this.props.adapterName]?.news}
+                socket={this.props.context.socket}
+                host={this.props.context.currentHost}
+                lang={this.props.context.lang}
+                noTranslation={this.props.noTranslation}
+                t={this.props.context.t}
+                label={this.props.context.t('Installed')}
+            >
+                {text}
+            </VersionNews>
+        );
     }
 
     renderUploadButton(): JSX.Element | null {

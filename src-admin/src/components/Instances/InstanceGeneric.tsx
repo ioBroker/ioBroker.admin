@@ -69,6 +69,7 @@ import { amber, blue, green, grey, orange, red } from '@mui/material/colors';
 
 import State from '@/components/State';
 import InstanceInfo from '@/components/Instances/InstanceInfo';
+import VersionNews from '@/components/Adapters/VersionNews';
 import { usedResourceConflictText, usedResourceIcon, usedResourceTypeName } from '@/components/UsedResources';
 import { describeUsedResource, type HostUsedResource } from '@/helpers/usedResources';
 import sentry from '@/assets/sentry.svg';
@@ -1900,7 +1901,22 @@ export default abstract class InstanceGeneric<
 
     // eslint-disable-next-line react/no-unused-class-component-methods
     renderVersion(): JSX.Element {
-        return <InstanceInfo tooltip={this.props.context.t('Installed')}>v{this.props.instance.version}</InstanceInfo>;
+        // The tooltip shows the changes of the installed version, a click all of them
+        return (
+            <InstanceInfo>
+                <VersionNews
+                    adapter={this.props.instance.adapter}
+                    version={this.props.instance.version}
+                    socket={this.props.context.socket}
+                    host={this.props.instance.host}
+                    lang={this.props.context.lang}
+                    t={this.props.context.t}
+                    label={this.props.context.t('Installed')}
+                >
+                    v{this.props.instance.version}
+                </VersionNews>
+            </InstanceInfo>
+        );
     }
 
     // eslint-disable-next-line react/no-unused-class-component-methods

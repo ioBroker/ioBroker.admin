@@ -23,6 +23,46 @@ export function stripNewsMarker(line: string): string {
 }
 
 /**
+ * The text of the news of one version in a language: a translated object or, in old repositories, a
+ * plain string.
+ *
+ * @param entry news of one version as the repository has them
+ * @param lang language of the GUI
+ * @param noTranslation show the English text, as the user switched the translation off
+ */
+export function getNewsText(
+    entry: ioBroker.Translated | string | undefined | null,
+    lang: ioBroker.Languages,
+    noTranslation?: boolean,
+): string {
+    if (!entry) {
+        return '';
+    }
+    if (typeof entry === 'string') {
+        return entry;
+    }
+    return (noTranslation ? entry.en : entry[lang] || entry.en) || '';
+}
+
+/**
+ * The lines of the news of one version, without list markers, HTML comments and empty lines.
+ *
+ * @param text news of one version, lines separated by `\n`
+ */
+export function splitNews(text: string): string[] {
+    return (text || '')
+        .split('\n')
+        .map(line =>
+            stripNewsMarker(line.trim())
+                .replace(/<!--[^>]*->/g, '')
+                .replace(/<! -[^>]*->/g, '')
+                .replace(/<!--|--!?>/g, '')
+                .trim(),
+        )
+        .filter(line => !!line);
+}
+
+/**
  * One entry of the news of an adapter, rendered as the Markdown it is written in.
  *
  * Raw HTML is not rendered - the news come from the repository and are not trusted with markup -
