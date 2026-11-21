@@ -2113,5 +2113,7 @@
     "Link": "Lien",
     "1 minute": "1 minute",
     "Title:": "Titre :",
-    "All deleted": "Tout a été supprimé"
+    "All deleted": "Tout a été supprimé",
+    "Update status is not available yet": "L’état de la mise à jour n’est pas encore disponible",
+    "Invalid update status response": "Réponse d’état de mise à jour non valide"
 }

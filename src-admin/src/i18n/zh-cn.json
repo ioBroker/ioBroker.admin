@@ -2113,5 +2113,7 @@
     "Link": "链接",
     "1 minute": "1 分钟",
     "Title:": "标题：",
-    "All deleted": "已全部删除"
+    "All deleted": "已全部删除",
+    "Update status is not available yet": "更新状态尚不可用",
+    "Invalid update status response": "更新状态响应无效"
 }

@@ -56,6 +56,8 @@ export const boxShadow =
     '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 export const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
+const FEATURE_CHECK_TIMEOUT_MS = 4_000;
+
 export const blinkClasses = `
     @keyframes newValueAnimationHostDark {
         0% {
@@ -851,8 +853,29 @@ export default abstract class HostGeneric<
         );
     }
 
+    private async checkHostFeatureSupported(feature: string): Promise<boolean> {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+
+        try {
+            const result = await Promise.race([
+                this.props.socket.checkFeatureSupportedByHost(this.props.hostId, feature, true),
+                new Promise<false>(resolve => {
+                    timer = setTimeout(() => resolve(false), FEATURE_CHECK_TIMEOUT_MS);
+                }),
+            ]);
+
+            return result === true;
+        } catch {
+            return false;
+        } finally {
+            if (timer) {
+                clearTimeout(timer);
+            }
+        }
+    }
+
     async openHostUpdateDialog(): Promise<void> {
-        const updateAvailable = await this.props.socket.checkFeatureSupported('CONTROLLER_UI_UPGRADE');
+        const updateAvailable = await this.checkHostFeatureSupported('CONTROLLER_UI_UPGRADE');
 
         this.setState({
             hostUpdateDialog: true,
