@@ -2,7 +2,18 @@ import React, { type JSX } from 'react';
 
 import semver from 'semver';
 
-import { Box, Fab, Grid, Snackbar, Tooltip, LinearProgress, Skeleton } from '@mui/material';
+import {
+    Box,
+    Fab,
+    Grid,
+    IconButton,
+    InputAdornment,
+    Snackbar,
+    TextField,
+    Tooltip,
+    LinearProgress,
+    Skeleton,
+} from '@mui/material';
 
 import {
     Add as AddIcon,
@@ -21,6 +32,7 @@ import {
     Public as TimeZoneIcon,
     Refresh as RefreshIcon,
     Schedule as ClockIcon,
+    Search as SearchIcon,
     Speed as SpeedIcon,
     Storage as DiskIcon,
     Timer as UptimeIcon,
@@ -190,6 +202,22 @@ const styles: Record<string, any> = {
     tooltip: {
         pointerEvents: 'none',
     },
+    /** The quick filter sits above the cards, in line with their left edge */
+    filterBar: {
+        display: 'flex',
+        alignItems: 'center',
+        px: '8px',
+        pt: '8px',
+    },
+    filterField: {
+        width: 250,
+        maxWidth: '100%',
+    },
+    noMatch: (theme: IobTheme) => ({
+        color: theme.palette.text.secondary,
+        px: '8px',
+        pt: '24px',
+    }),
     cards: {
         alignContent: 'flex-start',
         // no own scrollbar - the panel around the tab already scrolls
@@ -436,7 +464,12 @@ interface IntroState {
     nodeUpdateSupported: boolean;
     /** If node update dialog should be shown */
     nodeUpdateDialog: null | NodeUpdateDialogInfo;
+    /** Quick filter: only the cards that contain every word of it are shown */
+    filter: string;
 }
+
+/** The filter lives as long as the browser tab, so it survives a switch to another admin tab, but a new visit starts with all cards */
+const FILTER_STORAGE_KEY = 'Intro.filter';
 
 class Intro extends React.Component<IntroProps, IntroState> {
     /** If server time differs more than MS from client time, show a warning */
@@ -481,9 +514,33 @@ class Intro extends React.Component<IntroProps, IntroState> {
             hostDataTimestampMap: new Map(),
             nodeUpdateSupported: false,
             nodeUpdateDialog: null,
+            filter: window.sessionStorage.getItem(FILTER_STORAGE_KEY) || '',
         };
 
         this.t = props.t;
+    }
+
+    setFilter(filter: string): void {
+        if (filter) {
+            window.sessionStorage.setItem(FILTER_STORAGE_KEY, filter);
+        } else {
+            window.sessionStorage.removeItem(FILTER_STORAGE_KEY);
+        }
+        this.setState({ filter });
+    }
+
+    /**
+     * Whether a card passes the quick filter: every word of the filter must appear in one of its texts
+     *
+     * @param texts everything the card shows or points to
+     */
+    matchesFilter(texts: (string | undefined)[]): boolean {
+        const words = this.state.filter.toLowerCase().split(/\s+/).filter(Boolean);
+        if (!words.length) {
+            return true;
+        }
+        const haystack = texts.filter(Boolean).join('\n').toLowerCase();
+        return words.every(word => haystack.includes(word));
     }
 
     /**
@@ -676,6 +733,12 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     return null;
                 }
 
+                if (
+                    !this.matchesFilter([instance.name, instance.id, instance.linkName, instance.description, linkText])
+                ) {
+                    return null;
+                }
+
                 let isShowInstance = window.isFinite(instance.id.split('.').pop() as any);
                 if (isShowInstance) {
                     // try to find second instance of a same type
@@ -761,6 +824,10 @@ class Intro extends React.Component<IntroProps, IntroState> {
     getLinkCards(): (JSX.Element | null)[] {
         return (this.state.introLinks || []).map((item, i) => {
             if (!item.enabled && !this.state.edit) {
+                return null;
+            }
+
+            if (!this.matchesFilter([item.name, item.linkName, item.link, item.desc])) {
                 return null;
             }
 
@@ -1838,10 +1905,55 @@ class Intro extends React.Component<IntroProps, IntroState> {
         );
     }
 
+    renderFilter(): JSX.Element {
+        return (
+            <Box sx={styles.filterBar}>
+                <TextField
+                    variant="standard"
+                    size="small"
+                    label={this.t('Filter')}
+                    value={this.state.filter}
+                    sx={styles.filterField}
+                    onChange={event => this.setFilter(event.target.value)}
+                    onKeyDown={event => {
+                        if (event.key === 'Escape' && this.state.filter) {
+                            event.stopPropagation();
+                            this.setFilter('');
+                        }
+                    }}
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon fontSize="small" />
+                                </InputAdornment>
+                            ),
+                            endAdornment: this.state.filter ? (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        tabIndex={-1}
+                                        size="small"
+                                        onClick={() => this.setFilter('')}
+                                    >
+                                        <CloseIcon fontSize="small" />
+                                    </IconButton>
+                                </InputAdornment>
+                            ) : null,
+                        },
+                    }}
+                />
+            </Box>
+        );
+    }
+
     render(): JSX.Element {
         if (!this.state.instances) {
             return <LinearProgress />;
         }
+
+        const instanceCards = this.getInstancesCards();
+        const linkCards = this.getLinkCards();
+        const nothingFound = !!this.state.filter.trim() && !instanceCards.some(Boolean) && !linkCards.some(Boolean);
 
         return (
             <TabContainer
@@ -1856,6 +1968,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
                         {...this.state.nodeUpdateDialog}
                     />
                 ) : null}
+                {this.renderFilter()}
+                {nothingFound ? <Box sx={styles.noMatch}>{this.t('No entries found')}</Box> : null}
                 {/* The cards are Grid items with a `size` prop, which MUI only resolves inside a
                     Grid container - without it they fall back to content width. */}
                 <Grid
@@ -1863,8 +1977,8 @@ class Intro extends React.Component<IntroProps, IntroState> {
                     spacing={2}
                     sx={styles.cards}
                 >
-                    {this.getInstancesCards()}
-                    {this.getLinkCards()}
+                    {instanceCards}
+                    {linkCards}
                 </Grid>
                 {this.getButtons()}
                 {this.editLinkCard()}
