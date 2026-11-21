@@ -283,7 +283,16 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
         this.finished = true;
         this.awaitingControllerRestart = false;
         this.setUpdating(false);
-        this.setState({ response, error: null, starting: false });
+        this.setState({ response, error: null, starting: false }, () => {
+            if (this.textareaRef.current) {
+                setTimeout(
+                    () =>
+                        this.textareaRef.current &&
+                        (this.textareaRef.current.scrollTop = this.textareaRef.current.scrollHeight),
+                    100,
+                );
+            }
+        });
     }
 
     /**
