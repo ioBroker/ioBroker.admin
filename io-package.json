@@ -460,6 +460,38 @@
           },
           "regex": [],
           "limit": 1
+        },
+        {
+          "category": "nodeJsNotRecommended",
+          "name": {
+            "en": "Node.js version not recommended",
+            "de": "Node.js-Version nicht empfohlen",
+            "ru": "Версия Node.js не рекомендуется",
+            "pt": "Versão do Node.js não recomendada",
+            "nl": "Node.js-versie niet aanbevolen",
+            "fr": "Version de Node.js non recommandée",
+            "it": "Versione di Node.js non consigliata",
+            "es": "Versión de Node.js no recomendada",
+            "pl": "Niezalecana wersja Node.js",
+            "uk": "Версія Node.js не рекомендована",
+            "zh-cn": "不推荐的 Node.js 版本"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "The installed Node.js version is older than the one recommended by the ioBroker repository. It is still supported for a while, but you should plan the update.",
+            "de": "Die installierte Node.js-Version ist älter als die vom ioBroker-Repository empfohlene. Sie wird noch eine Weile unterstützt, das Update sollte aber eingeplant werden.",
+            "ru": "Установленная версия Node.js старше рекомендованной репозиторием ioBroker. Она ещё некоторое время поддерживается, но обновление стоит запланировать.",
+            "pt": "A versão do Node.js instalada é mais antiga do que a recomendada pelo repositório do ioBroker. Ainda é suportada por algum tempo, mas deve planear a atualização.",
+            "nl": "De geïnstalleerde Node.js-versie is ouder dan de door de ioBroker-repository aanbevolen versie. Deze wordt nog een tijdje ondersteund, maar plan de update.",
+            "fr": "La version de Node.js installée est plus ancienne que celle recommandée par le dépôt ioBroker. Elle reste prise en charge pendant un certain temps, mais vous devriez prévoir la mise à jour.",
+            "it": "La versione di Node.js installata è più vecchia di quella consigliata dal repository di ioBroker. È ancora supportata per un po', ma dovresti pianificare l'aggiornamento.",
+            "es": "La versión de Node.js instalada es más antigua que la recomendada por el repositorio de ioBroker. Seguirá siendo compatible durante un tiempo, pero debería planificar la actualización.",
+            "pl": "Zainstalowana wersja Node.js jest starsza niż zalecana przez repozytorium ioBroker. Będzie jeszcze przez jakiś czas obsługiwana, ale warto zaplanować aktualizację.",
+            "uk": "Встановлена версія Node.js старша за рекомендовану репозиторієм ioBroker. Вона ще деякий час підтримується, але варто запланувати оновлення.",
+            "zh-cn": "已安装的 Node.js 版本低于 ioBroker 存储库推荐的版本。它在一段时间内仍受支持，但您应计划进行更新。"
+          },
+          "regex": [],
+          "limit": 1
         }
       ]
     }

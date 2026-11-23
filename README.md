@@ -98,6 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Quick access: filter field above the cards
+- (@GermanBluefox) Recurring notification if the Node.js major of a host is lower than the recommended one (#3746)
 
 ### 8.3.15 (2026-11-20)
 - (@GermanBluefox) Installed version: its changes as tooltip, the change log on click
