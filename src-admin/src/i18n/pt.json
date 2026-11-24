@@ -2113,5 +2113,17 @@
     "Link": "Link",
     "1 minute": "1 minuto",
     "Title:": "Título:",
-    "All deleted": "Tudo excluído"
+    "All deleted": "Tudo excluído",
+    "Recommended": "Recomendado",
+    "non_npm_install_warning": "Instale a partir do GitHub, de um URL personalizado ou de um arquivo apenas em sistemas de teste ou quando o mantenedor do adaptador pedir. Faça antes um backup: um downgrade não reverte as migrações de dados ou objetos.",
+    "Examples (click to use):": "Exemplos (clique para usar):",
+    "install_example_latest": "Versão mais recente do npm",
+    "install_example_version": "Versão específica do npm",
+    "install_example_tag": "Versão com uma tag npm (por ex. next)",
+    "install_example_github": "Branch padrão de um repositório GitHub",
+    "install_example_branch": "Branch específico de um repositório GitHub",
+    "install_example_path": "Tarball no host do ioBroker (não no computador com o navegador)",
+    "Equivalent CLI command": "Comando CLI equivalente",
+    "cli_file_note": "Para o comando CLI, o arquivo deve estar no host do ioBroker.",
+    "or drop the .tgz file here": "ou solte o arquivo .tgz aqui"
 }

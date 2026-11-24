@@ -98,6 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Quick access: filter field above the cards
+- (@GermanBluefox) Install dialog: npm marked as recommended, clearer warning for other sources, examples for custom URLs, drag & drop of .tgz and the equivalent CLI command (#3743)
 
 ### 8.3.15 (2026-11-20)
 - (@GermanBluefox) Installed version: its changes as tooltip, the change log on click
