@@ -98,6 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Quick access: filter field above the cards
+- (@GermanBluefox) Updated @iobroker/gui-components to 10.4.9 and @iobroker/json-config to 10.1.25: the folder buttons of the object browser do not open or close on hover anymore
 
 ### 8.3.15 (2026-11-20)
 - (@GermanBluefox) Installed version: its changes as tooltip, the change log on click
