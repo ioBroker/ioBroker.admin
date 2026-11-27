@@ -710,7 +710,7 @@
     "Installed from group": "Встановлено з групи",
     "Installed instances": "Встановлені екземпляри",
     "Installed version": "Встановлена версія",
-    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.",
+    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Встановлення іншої версії замінює лише код адаптера. Об’єкти, стани та конфігурація не повертаються до попереднього стану. Щоб повністю повернутися назад, відновіть резервну копію.",
     "Instance": "Екземпляр",
     "Instance %s already exists": "Примірник \"%s\" уже існує",
     "Instance link %s": "Посилання на екземпляр %s",

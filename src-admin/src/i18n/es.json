@@ -710,7 +710,7 @@
     "Installed from group": "Instalado por el grupo",
     "Installed instances": "Instancias instaladas",
     "Installed version": "Versión instalada",
-    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.",
+    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Instalar otra versión solo sustituye el código del adaptador. Los objetos, estados y la configuración no se revierten. Para volver atrás por completo, restaura una copia de seguridad.",
     "Instance": "Instancia",
     "Instance %s already exists": "La instancia \"%s\" ya existe",
     "Instance link %s": "Enlace de instancia %s",
