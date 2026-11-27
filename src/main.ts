@@ -1718,7 +1718,7 @@ class Admin extends Adapter {
                         uk: 'Останнє нагадування про нерекомендовану версію Node.js для кожного хоста',
                         'zh-cn': '每个主机关于不推荐的 Node.js 版本的最后提醒',
                     },
-                    type: 'json',
+                    type: 'object',
                     read: true,
                     write: false,
                     def: '{}',
@@ -1778,6 +1778,11 @@ class Admin extends Adapter {
             if (host === this.host) {
                 version = process.version;
             } else {
+                // a host that is switched off or gone would be reminded every week
+                const alive = await this.getForeignStateAsync(`${hostId}.alive`);
+                if (!alive?.val) {
+                    continue;
+                }
                 const nodeCurrent = await this.getForeignStateAsync(`${hostId}.versions.nodeCurrent`);
                 version =
                     (nodeCurrent?.val as string | undefined) ||
@@ -1798,6 +1803,11 @@ class Admin extends Adapter {
                 current,
                 recommended,
                 docker: host === this.host && isRunningInDocker(),
+                windows:
+                    host === this.host
+                        ? process.platform === 'win32'
+                        : (objects[hostId].native as { os?: { platform?: string } } | undefined)?.os?.platform ===
+                          'win32',
             });
             this.log.warn(text);
             await this.registerNotification('admin', 'nodeJsNotRecommended', text);
