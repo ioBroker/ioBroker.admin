@@ -18,6 +18,7 @@ import {
     TextField,
     Typography,
     Autocomplete,
+    Alert,
 } from '@mui/material';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
@@ -104,6 +105,9 @@ const styles: Record<string, any> = {
     tabSelected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#222 !important',
     }),
+    npmCheck: {
+        marginTop: 16,
+    },
 };
 
 // some older browsers do not have `flat`
@@ -183,11 +187,57 @@ interface GitHubInstallDialogState {
     selectedHost: string;
     /** Whether the controller supports sending files with cmdExec (feature CONTROLLER_CMD_EXEC_FILES) */
     cmdExecFilesSupported: boolean;
+    /** The text in the adapter field of the npm tab: a listed adapter or the name of an adapter on npm */
+    npmInput: string;
+    /** Result of the check on npm for an adapter that is not in the repository */
+    npmCheck: NpmCheck | null;
+}
+
+/** Result of the check, if `iobroker.<name>` exists on npm */
+interface NpmCheck {
+    /** Adapter name without `iobroker.` */
+    name: string;
+    status: 'checking' | 'found' | 'notFound' | 'error';
+    /** The latest version on npm */
+    version?: string;
+    error?: string;
 }
 
 const MAX_HISTORY_LENGTH = 10;
+/** Wait so long after the last key press before npm is asked */
+const NPM_CHECK_DELAY_MS = 500;
+/** Characters of an adapter name */
+const ADAPTER_NAME_REGEX = /^[a-z0-9][a-z0-9_-]*$/;
+
+/** Reads the adapter last selected in the npm or GitHub tab. Older versions stored "[object Object]" there */
+function readStoredAutoCompleteValue(): AutoCompleteValue | null {
+    const stored = ((window as any)._localstorage || window.localStorage).getItem('App.autocomplete');
+    if (!stored) {
+        return null;
+    }
+    try {
+        const value = JSON.parse(stored);
+        return value && typeof value === 'object' && typeof value.value === 'string' ? value : null;
+    } catch {
+        return null;
+    }
+}
+
+/** Stores the selected adapter of the npm or GitHub tab */
+function storeAutoCompleteValue(value: AutoCompleteValue | null): void {
+    const storage = (window as any)._localstorage || window.localStorage;
+    if (value) {
+        storage.setItem('App.autocomplete', JSON.stringify(value));
+    } else {
+        storage.removeItem('App.autocomplete');
+    }
+}
 
 class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitHubInstallDialogState> {
+    private npmCheckTimer: ReturnType<typeof setTimeout> | null = null;
+
+    private npmCheckAbort: AbortController | null = null;
+
     constructor(props: GitHubInstallDialogProps) {
         super(props);
 
@@ -200,9 +250,11 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 // ignore
             }
         }
+        const autoCompleteValue = readStoredAutoCompleteValue();
         this.state = {
-            autoCompleteValue:
-                ((window as any)._localstorage || window.localStorage).getItem('App.autocomplete') || null,
+            autoCompleteValue,
+            npmInput: autoCompleteValue?.name || '',
+            npmCheck: null,
             debug: ((window as any)._localstorage || window.localStorage).getItem('App.gitDebug') === 'true',
             // Opt-out: the instance is created by default, but the user's decision is remembered
             createInstance:
@@ -230,6 +282,110 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         } catch (e) {
             console.error(`Cannot read feature: ${e}`);
         }
+    }
+
+    componentWillUnmount(): void {
+        if (this.npmCheckTimer) {
+            clearTimeout(this.npmCheckTimer);
+            this.npmCheckTimer = null;
+        }
+        this.npmCheckAbort?.abort();
+        this.npmCheckAbort = null;
+    }
+
+    /**
+     * The adapter to install from the npm tab: the selected one of the list, or the typed name.
+     * A typed name can be written with or without `iobroker.`. `listed` is false if the adapter is not in the repository.
+     */
+    getNpmAdapter(): { name: string; listed: boolean } | null {
+        const selected = this.state.autoCompleteValue;
+        if (selected?.value && this.state.npmInput === selected.name) {
+            const fullAdapterName = selected.value.split('/')[0];
+            return {
+                name: fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName,
+                listed: true,
+            };
+        }
+        const name = this.state.npmInput
+            .trim()
+            .toLowerCase()
+            .replace(/^iobroker\./, '');
+        if (!ADAPTER_NAME_REGEX.test(name)) {
+            return null;
+        }
+        const adapter = this.props.repository[name];
+        return { name, listed: !!adapter && !adapter.controller };
+    }
+
+    /** Checks after a short delay if `iobroker.<name>` exists on npm, if the typed adapter is not in the repository */
+    scheduleNpmCheck(): void {
+        if (this.npmCheckTimer) {
+            clearTimeout(this.npmCheckTimer);
+            this.npmCheckTimer = null;
+        }
+        this.npmCheckAbort?.abort();
+        this.npmCheckAbort = null;
+
+        const adapter = this.getNpmAdapter();
+        if (!adapter || adapter.listed) {
+            if (this.state.npmCheck) {
+                this.setState({ npmCheck: null });
+            }
+            return;
+        }
+        this.setState({ npmCheck: { name: adapter.name, status: 'checking' } });
+        this.npmCheckTimer = setTimeout(() => {
+            this.npmCheckTimer = null;
+            void this.checkNpm(adapter.name);
+        }, NPM_CHECK_DELAY_MS);
+    }
+
+    /** Asks the npm registry for the package `iobroker.<name>` */
+    async checkNpm(name: string): Promise<void> {
+        const abort = new AbortController();
+        this.npmCheckAbort = abort;
+        let npmCheck: NpmCheck;
+        try {
+            // the abbreviated document is much smaller than the full one and has the dist-tags too
+            const response = await fetch(`https://registry.npmjs.org/iobroker.${encodeURIComponent(name)}`, {
+                headers: { Accept: 'application/vnd.npm.install-v1+json' },
+                signal: abort.signal,
+            });
+            if (response.status === 404) {
+                npmCheck = { name, status: 'notFound' };
+            } else if (!response.ok) {
+                npmCheck = { name, status: 'error', error: `HTTP ${response.status}` };
+            } else {
+                const data: { 'dist-tags'?: { latest?: string } } = await response.json();
+                npmCheck = { name, status: 'found', version: data['dist-tags']?.latest };
+            }
+        } catch (e: any) {
+            if (abort.signal.aborted) {
+                return;
+            }
+            // no internet in the browser: the host could still reach npm, so the installation is allowed
+            npmCheck = { name, status: 'error', error: e?.message || String(e) };
+        }
+        if (this.npmCheckAbort === abort) {
+            this.npmCheckAbort = null;
+            // only if the name was not changed meanwhile
+            if (this.getNpmAdapter()?.name === name) {
+                this.setState({ npmCheck });
+            }
+        }
+    }
+
+    /** True if the install button of the npm tab can be pressed */
+    isNpmInstallPossible(): boolean {
+        const adapter = this.getNpmAdapter();
+        if (!adapter) {
+            return false;
+        }
+        if (adapter.listed) {
+            return true;
+        }
+        const check = this.state.npmCheck;
+        return check?.name === adapter.name && (check.status === 'found' || check.status === 'error');
     }
 
     async uploadFileToServer(): Promise<string | null> {
@@ -371,8 +527,10 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         } else if (this.state.currentTab === 'File') {
             await this.installFile();
         } else if (this.state.currentTab === 'npm') {
-            const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
-            const adapterName = fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName;
+            const adapterName = this.getNpmAdapter()?.name;
+            if (!adapterName) {
+                return;
+            }
 
             try {
                 const installed = await this.props.installFromUrl(
@@ -414,6 +572,64 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
         );
     }
 
+    /** The result of the npm check for an adapter that is not in the repository */
+    renderNpmCheck(): JSX.Element | null {
+        const adapter = this.getNpmAdapter();
+        if (!adapter) {
+            return this.state.npmInput.trim() && !this.state.autoCompleteValue ? (
+                <Alert
+                    severity="error"
+                    style={styles.npmCheck}
+                >
+                    {this.props.t('This is not a valid adapter name')}
+                </Alert>
+            ) : null;
+        }
+        const check = this.state.npmCheck;
+        if (adapter.listed || check?.name !== adapter.name) {
+            return null;
+        }
+        const packageName = `iobroker.${adapter.name}`;
+        if (check.status === 'checking') {
+            return (
+                <Alert
+                    severity="info"
+                    icon={<CircularProgress size={20} />}
+                    style={styles.npmCheck}
+                >
+                    {this.props.t('Checking if %s exists on npm...', packageName)}
+                </Alert>
+            );
+        }
+        if (check.status === 'notFound') {
+            return (
+                <Alert
+                    severity="error"
+                    style={styles.npmCheck}
+                >
+                    {this.props.t('The package %s does not exist on npm', packageName)}
+                </Alert>
+            );
+        }
+        return (
+            <Alert
+                severity="warning"
+                style={styles.npmCheck}
+            >
+                <div>
+                    {check.status === 'found'
+                        ? this.props.t('Found on npm: %s, version %s', packageName, check.version || '?')
+                        : this.props.t(
+                              'Cannot reach npm from the browser (%s). You can still try to install %s',
+                              check.error || '',
+                              packageName,
+                          )}
+                </div>
+                <div>{this.props.t('unlisted_adapter_warning')}</div>
+            </Alert>
+        );
+    }
+
     renderNpm(): JSX.Element | null {
         return this.state.currentTab === 'npm' ? (
             <Paper
@@ -442,16 +658,30 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                     <SmsIcon style={{ marginRight: 10 }} />
                     <Autocomplete
                         fullWidth
+                        // also the name of an adapter that is only on npm and not in the repository (#3739)
+                        freeSolo
                         value={this.state.autoCompleteValue}
+                        inputValue={this.state.npmInput}
+                        onInputChange={(_, newInput) =>
+                            this.setState({ npmInput: newInput || '' }, () => this.scheduleNpmCheck())
+                        }
                         onChange={(_, newValue) => {
-                            ((window as any)._localstorage || window.localStorage).setItem(
-                                'App.autocomplete',
-                                newValue || undefined,
+                            // a typed text comes as string, it stays in npmInput
+                            const value = newValue && typeof newValue === 'object' ? newValue : null;
+                            storeAutoCompleteValue(value);
+                            this.setState(
+                                {
+                                    autoCompleteValue: value,
+                                    npmInput: value ? value.name : this.state.npmInput,
+                                },
+                                () => this.scheduleNpmCheck(),
                             );
-                            this.setState({ autoCompleteValue: newValue || null });
                         }}
                         options={this.getList()}
-                        getOptionLabel={option => option?.name ?? ''}
+                        getOptionLabel={option => (typeof option === 'string' ? option : (option?.name ?? ''))}
+                        isOptionEqualToValue={(option, value) =>
+                            typeof value === 'object' && option?.value === value?.value
+                        }
                         renderInput={params => (
                             <TextField
                                 variant="standard"
@@ -463,7 +693,12 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                         startAdornment: (
                                             <InputAdornment position="start">
                                                 <Icon
-                                                    src={this.state.autoCompleteValue?.icon || ''}
+                                                    src={
+                                                        this.state.autoCompleteValue &&
+                                                        this.state.npmInput === this.state.autoCompleteValue.name
+                                                            ? this.state.autoCompleteValue.icon || ''
+                                                            : ''
+                                                    }
                                                     style={styles.listIcon}
                                                 />
                                             </InputAdornment>
@@ -471,6 +706,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                     },
                                 }}
                                 label={I18n.t('Select adapter')}
+                                helperText={this.props.t('or enter the name of an adapter that is only on npm')}
                             />
                         )}
                         renderOption={(props, option) => (
@@ -488,6 +724,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         )}
                     />
                 </div>
+                {this.renderNpmCheck()}
                 <div
                     style={{
                         fontSize: 24,
@@ -554,11 +791,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                             </Box>
                         )}
                         onChange={(_, newValue) => {
-                            ((window as any)._localstorage || window.localStorage).setItem(
-                                'App.autocomplete',
-                                newValue,
-                            );
-                            this.setState({ autoCompleteValue: newValue });
+                            storeAutoCompleteValue(newValue);
+                            this.setState({ autoCompleteValue: newValue, npmInput: newValue?.name || '' });
                         }}
                         options={this.getList()}
                         getOptionLabel={option => option?.name ?? ''}
@@ -844,7 +1078,14 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
 
     render(): JSX.Element {
         const closeInit = (): void =>
-            this.setState({ autoCompleteValue: null, url: '', selectedFile: null, uploading: false });
+            this.setState({
+                autoCompleteValue: null,
+                npmInput: '',
+                npmCheck: null,
+                url: '',
+                selectedFile: null,
+                uploading: false,
+            });
 
         return (
             <Dialog
@@ -944,8 +1185,8 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         disabled={
                             this.state.uploading ||
                             this.props.commandRunning ||
-                            ((this.state.currentTab === 'GitHub' || this.state.currentTab === 'npm') &&
-                                !this.state.autoCompleteValue?.value) ||
+                            (this.state.currentTab === 'GitHub' && !this.state.autoCompleteValue?.value) ||
+                            (this.state.currentTab === 'npm' && !this.isNpmInstallPossible()) ||
                             (this.state.currentTab === 'URL' && !this.state.url) ||
                             (this.state.currentTab === 'File' && !this.state.selectedFile)
                         }
