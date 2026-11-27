@@ -275,9 +275,9 @@ export default abstract class AdapterInstallDialog<
             if (!options.context.installedGlobalHosts[options.adapterName]?.[host]) {
                 let nodeJsVersion: string | undefined;
                 if (host !== options.context.currentHost.replace(/^system\.host\./, '')) {
-                    const hostObj = (await options.context.socket
+                    const hostObj = await options.context.socket
                         .getObject(`system.host.${host}`)
-                        .catch((): null => null)) as ioBroker.HostObject | null | undefined;
+                        .catch((): null => null);
                     nodeJsVersion = hostObj?.native?.process?.versions?.node;
                 }
                 const nodeRefusal = AdapterInstallDialog.getNodeJsRefusal(
