@@ -37,6 +37,89 @@ const controllerUpdateText: Record<ioBroker.Languages, string> = {
     'zh-cn': '%adapter 可以从 %installedVersion 升级到 %newVersion。',
 };
 
+const nodeNotRecommendedText: Record<ioBroker.Languages, string> = {
+    en: 'Node.js %current is installed on host %host, recommended is Node.js %recommended.',
+    de: 'Auf dem Host %host ist Node.js %current installiert, empfohlen ist Node.js %recommended.',
+    ru: 'На хосте %host установлен Node.js %current, рекомендуется Node.js %recommended.',
+    pt: 'O Node.js %current está instalado no host %host, o recomendado é o Node.js %recommended.',
+    nl: 'Op host %host is Node.js %current geïnstalleerd, aanbevolen is Node.js %recommended.',
+    fr: "Node.js %current est installé sur l'hôte %host, la version recommandée est Node.js %recommended.",
+    it: "Sull'host %host è installato Node.js %current, è consigliato Node.js %recommended.",
+    es: 'En el host %host está instalado Node.js %current, se recomienda Node.js %recommended.',
+    pl: 'Na hoście %host zainstalowano Node.js %current, zalecany jest Node.js %recommended.',
+    uk: 'На хості %host встановлено Node.js %current, рекомендовано Node.js %recommended.',
+    'zh-cn': '主机 %host 上安装的是 Node.js %current，推荐使用 Node.js %recommended。',
+};
+
+const nodeUpdateDockerText: Record<ioBroker.Languages, string> = {
+    en: 'Please update to a newer ioBroker Docker image with Node.js %recommended.',
+    de: 'Bitte auf ein neueres ioBroker-Docker-Image mit Node.js %recommended aktualisieren.',
+    ru: 'Пожалуйста, обновитесь до более нового Docker-образа ioBroker с Node.js %recommended.',
+    pt: 'Atualize para uma imagem Docker do ioBroker mais recente com Node.js %recommended.',
+    nl: 'Werk bij naar een nieuwere ioBroker Docker-image met Node.js %recommended.',
+    fr: 'Veuillez passer à une image Docker ioBroker plus récente avec Node.js %recommended.',
+    it: "Aggiorna a un'immagine Docker di ioBroker più recente con Node.js %recommended.",
+    es: 'Actualice a una imagen Docker de ioBroker más reciente con Node.js %recommended.',
+    pl: 'Zaktualizuj do nowszego obrazu Docker ioBroker z Node.js %recommended.',
+    uk: 'Будь ласка, оновіться до новішого Docker-образу ioBroker з Node.js %recommended.',
+    'zh-cn': '请更新到包含 Node.js %recommended 的较新 ioBroker Docker 镜像。',
+};
+
+const nodeUpdateCommandText: Record<ioBroker.Languages, string> = {
+    en: 'You can update it with "iobroker nodejs-update %recommended".',
+    de: 'Sie können es mit "iobroker nodejs-update %recommended" aktualisieren.',
+    ru: 'Обновить можно командой "iobroker nodejs-update %recommended".',
+    pt: 'Pode atualizá-lo com "iobroker nodejs-update %recommended".',
+    nl: 'Je kunt het bijwerken met "iobroker nodejs-update %recommended".',
+    fr: 'Vous pouvez le mettre à jour avec "iobroker nodejs-update %recommended".',
+    it: 'Puoi aggiornarlo con "iobroker nodejs-update %recommended".',
+    es: 'Puede actualizarlo con "iobroker nodejs-update %recommended".',
+    pl: 'Możesz go zaktualizować poleceniem "iobroker nodejs-update %recommended".',
+    uk: 'Оновити можна командою "iobroker nodejs-update %recommended".',
+    'zh-cn': '可以使用 "iobroker nodejs-update %recommended" 进行更新。',
+};
+
+const nodeUpdateWindowsText: Record<ioBroker.Languages, string> = {
+    en: 'Please install Node.js %recommended from nodejs.org and update ioBroker as described for Windows.',
+    de: 'Bitte Node.js %recommended von nodejs.org installieren und ioBroker wie für Windows beschrieben aktualisieren.',
+    ru: 'Установите Node.js %recommended с nodejs.org и обновите ioBroker, как описано для Windows.',
+    pt: 'Instale o Node.js %recommended a partir de nodejs.org e atualize o ioBroker conforme descrito para Windows.',
+    nl: 'Installeer Node.js %recommended van nodejs.org en werk ioBroker bij zoals beschreven voor Windows.',
+    fr: 'Veuillez installer Node.js %recommended depuis nodejs.org et mettre à jour ioBroker comme décrit pour Windows.',
+    it: 'Installa Node.js %recommended da nodejs.org e aggiorna ioBroker come descritto per Windows.',
+    es: 'Instale Node.js %recommended desde nodejs.org y actualice ioBroker como se describe para Windows.',
+    pl: 'Zainstaluj Node.js %recommended ze strony nodejs.org i zaktualizuj ioBroker zgodnie z opisem dla Windows.',
+    uk: 'Встановіть Node.js %recommended з nodejs.org і оновіть ioBroker, як описано для Windows.',
+    'zh-cn': '请从 nodejs.org 安装 Node.js %recommended，并按照 Windows 的说明更新 ioBroker。',
+};
+
+/**
+ * Get text for a message that the installed Node.js major is lower than the recommended one
+ */
+export function getNodeNotRecommendedText(options: {
+    /** Language to translate text to */
+    lang: ioBroker.Languages;
+    /** The host with the old Node.js */
+    host: string;
+    /** The installed major */
+    current: number;
+    /** The recommended major */
+    recommended: number;
+    /** If the host runs in Docker */
+    docker: boolean;
+    /** If the host runs on Windows: there is no "iobroker nodejs-update" */
+    windows?: boolean;
+}): string {
+    const { lang, host, current, recommended, docker, windows } = options;
+    const hint = docker ? nodeUpdateDockerText : windows ? nodeUpdateWindowsText : nodeUpdateCommandText;
+    const text = `${nodeNotRecommendedText[lang] || nodeNotRecommendedText.en} ${hint[lang] || hint.en}`;
+
+    return text
+        .replace('%host', host)
+        .replace('%current', current.toString())
+        .replace(/%recommended/g, recommended.toString());
+}
+
 /**
  * Get text for a message about adapter update in given language
  */
