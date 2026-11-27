@@ -97,8 +97,13 @@ The icons may not be reused in other projects without the proper flaticon licens
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- (@GermanBluefox) Quick access: filter field above the cards
 - (@GermanBluefox) Added missing roles value.dimmer, level.dimmer and level.speed to the role selector (#3744)
+
+### 8.3.16 (2026-11-26)
+- (@GermanBluefox) Quick access: filter field above the cards
+- (@GermanBluefox) Log: "All hosts" shows the logs of all hosts together
+- (@GermanBluefox) Fixed: the note that an adapter allows only one instance per host showed "%s" instead of the host
+- (@GermanBluefox) Updated @iobroker/gui-components to 10.4.9 and @iobroker/json-config to 10.1.25: the folder buttons of the object browser do not open or close on hover anymore
 
 ### 8.3.15 (2026-11-20)
 - (@GermanBluefox) Installed version: its changes as tooltip, the change log on click
@@ -137,12 +142,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Fixed: about 70 texts were not translated, e.g. "Invalid version of ... Required ... Current"; missing spaces in the Windows update commands of js-controller
 - (@GermanBluefox) Fixed: a single sign-on ignored "Stay logged in" and always kept the login for 30 days in the browser. Tokens of an earlier login are removed before the new ones are stored, so they cannot hide them
 - (@GermanBluefox) Updated @iobroker/webserver to 3.4.1: a disabled user cannot sign in with single sign-on anymore, like with a password (apart from `admin`)
-
-### 8.3.11 (2026-11-07)
-- (@GermanBluefox) Fixed: in the file rights dialog, a "different" permission could not be set for all files
-- (@GermanBluefox) Updated @iobroker/json-config to 10.1.19: added the control `diskSelector` to select a file or a folder on the disk of the host where the instance runs (needs js-controller with `CONTROLLER_READ_DISK_DIR`)
-- (@krobipd) Fixed: saving the instance settings writes only the settings changed in the dialog, so a setting the adapter wrote into its native while the dialog was open (e.g. its device list) is no longer set back (json-config 10.1.19)
-- (@GermanBluefox) Updated @iobroker/socket-classes to 2.10.3: the host commands `readDiskDir` and `deleteDiskFile` need the permission for `cmdExec`
 
 ## License
 

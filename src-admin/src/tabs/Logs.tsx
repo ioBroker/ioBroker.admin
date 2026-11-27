@@ -24,6 +24,7 @@ import {
     Tooltip,
     type SelectChangeEvent,
     Box,
+    ListSubheader,
 } from '@mui/material';
 
 import {
@@ -286,6 +287,16 @@ const styles: Record<string, any> = {
         whiteSpace: 'nowrap',
         display: 'flex',
     },
+    /** With all hosts: the host under the source */
+    hostName: {
+        fontSize: 11,
+        opacity: 0.7,
+        marginTop: 2,
+        paddingLeft: 18,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+    },
     tooltip: {
         pointerEvents: 'none',
     },
@@ -342,9 +353,19 @@ interface LogLineSavedExtended extends LogLineSaved {
     icon?: string;
 }
 
+/** A log file that can be downloaded */
+interface LogFileEntry {
+    path: { fileName: string; size: number };
+    name: string;
+    /** Host the file belongs to */
+    host: string;
+}
+
 interface LogsProps {
     socket: AdminConnection;
     currentHost: string;
+    /** Show the entries of all hosts instead of those of the current one */
+    allHosts?: boolean;
     clearErrors: () => void;
     logsWorker: LogsWorker;
     themeType: ThemeType;
@@ -366,7 +387,7 @@ interface LogsState {
     reverse: boolean;
     logDeleteDialog: boolean;
     logDownloadDialog: HTMLButtonElement | null;
-    logFiles: { path: { fileName: string; size: number }; name: string }[];
+    logFiles: LogFileEntry[];
     logs: LogLineSavedExtended[] | null;
     logSize: number | null;
     logErrors: number;
@@ -378,6 +399,12 @@ interface LogsState {
     adapters: Record<string, CompactAdapterInfo>;
     sources: Record<string, { active: boolean; icon: string; color?: string }>;
     currentHost: string;
+    /** The shown entries are those of all hosts */
+    allHosts: boolean;
+    /** With all hosts: the hosts that delivered no entries */
+    missingHosts: string[];
+    /** With all hosts: older entries were left out, the list starts here. `0` if nothing was left out */
+    since: number;
     hosts: Record<string, CompactHost>;
     /** Time range of the shown search in the log files in hours, `0` while the latest entries of the host are shown */
     searchHours: number;
@@ -402,8 +429,6 @@ class Logs extends Component<LogsProps, LogsState> {
 
     private lastRowRenderTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    private readLogsInProcess = false;
-
     private hostsTimer: ReturnType<typeof setTimeout> | null = null;
 
     private scrollToEnd: boolean;
@@ -422,6 +447,9 @@ class Logs extends Component<LogsProps, LogsState> {
 
     /** Number of rows that no filter hides, counted while the rows are built */
     private visibleRows = 0;
+
+    /** Hosts whose entries are shown - their log files can be downloaded */
+    private logHosts: string[] = [];
 
     constructor(props: LogsProps) {
         super(props);
@@ -449,6 +477,9 @@ class Logs extends Component<LogsProps, LogsState> {
             adapters: {},
             sources: {},
             currentHost: this.props.currentHost,
+            allHosts: !!this.props.allHosts,
+            missingHosts: [],
+            since: 0,
             hosts: {},
             searchHours: 0,
             searching: false,
@@ -523,17 +554,12 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 
     /**
-     * Show the latest entries the host hands out. Leaves the search in the log files.
+     * Show the latest entries the host - or every host - hands out. Leaves the search in the log files.
      *
      * @param force read anew instead of taking the cached answer
-     * @param logFiles list of the log files to store together with the entries
      * @param cb called when the entries are shown
      */
-    readLogs(
-        force: boolean,
-        logFiles?: { path: { fileName: string; size: number }; name: string }[],
-        cb?: () => void,
-    ): void {
+    readLogs(force: boolean, cb?: () => void): void {
         const request = ++this.logsRequest;
         this.searchUntil = 0;
         if (this.state.searchHours || this.state.searching || this.state.searchError) {
@@ -548,13 +574,10 @@ class Logs extends Component<LogsProps, LogsState> {
                 if (!results) {
                     return;
                 }
+                this.logHosts = results.hosts;
                 if (request !== this.logsRequest) {
                     // a search that was started in the meantime shows its own entries
-                    if (logFiles) {
-                        this.setState({ logFiles }, () => cb && cb());
-                    } else if (cb) {
-                        cb();
-                    }
+                    cb?.();
                     return;
                 }
                 const logs: LogLineSavedExtended[] = [...results.logs];
@@ -566,21 +589,35 @@ class Logs extends Component<LogsProps, LogsState> {
                     logs,
                     logSize: results.logSize,
                     estimatedSize: false,
+                    missingHosts: results.missingHosts,
+                    since: results.since,
                     ...this.prepareLogs(logs),
                 };
-                if (logFiles) {
-                    newState.logFiles = logFiles;
-                }
                 this.setState(newState as LogsState, () => cb && cb());
             });
-        } else if (logFiles) {
-            this.setState({ logFiles }, () => cb && cb());
+        } else {
+            cb?.();
         }
     }
 
-    /** The log files can be searched as soon as the admin instance that does it is known */
+    /**
+     * The log files can be searched as soon as the admin instance that does it is known - and for one
+     * host only
+     */
     isSearchPossible(): boolean {
-        return !!this.state.searchInstance;
+        return !!this.state.searchInstance && !this.state.allHosts;
+    }
+
+    /**
+     * Name of a host, as the host selector shows it
+     *
+     * @param host id of the host, e.g. `system.host.raspi`
+     */
+    getHostName(host: string | undefined): string {
+        if (!host) {
+            return '';
+        }
+        return this.state.hosts[host]?.common?.name || host.replace(/^system\.host\./, '');
     }
 
     /** Time range for a search that is started without choosing one */
@@ -727,7 +764,9 @@ class Logs extends Component<LogsProps, LogsState> {
             const row = logs[i];
             if (row && !this.getRowView(row, sourceFilter, filterMessage).hidden) {
                 const message = typeof row.message === 'object' ? row.message.original : row.message;
-                lines.push(`${row.time}  - ${row.severity}: ${(message || '').replace(ANSI_COLOR, '')}`);
+                // with all hosts, the host of each entry goes in front of its source
+                const host = this.state.allHosts && row.host ? `[${this.getHostName(row.host)}] ` : '';
+                lines.push(`${row.time}  - ${row.severity}: ${host}${(message || '').replace(ANSI_COLOR, '')}`);
             }
         }
         if (!this.state.reverse) {
@@ -739,7 +778,8 @@ class Logs extends Component<LogsProps, LogsState> {
         );
         const link = document.createElement('a');
         link.href = url;
-        link.download = `iobroker-log-${this.state.currentHost.replace('system.host.', '')}-${new Date().toISOString().replace(/[:.]/g, '-')}.txt`;
+        const hostName = this.state.allHosts ? 'all-hosts' : this.state.currentHost.replace('system.host.', '');
+        link.download = `iobroker-log-${hostName}-${new Date().toISOString().replace(/[:.]/g, '-')}.txt`;
         document.body.appendChild(link);
         try {
             link.click();
@@ -750,10 +790,21 @@ class Logs extends Component<LogsProps, LogsState> {
         }
     }
 
-    async readLogFiles(): Promise<{ path: { fileName: string; size: number }; name: string }[]> {
-        const list: { fileName: string; size: number }[] = await this.props.socket.getLogsFiles(this.state.currentHost);
+    /**
+     * The log files of one host, the dated ones first, newest first
+     *
+     * @param host id of the host, e.g. `system.host.raspi`
+     */
+    async readLogFiles(host: string): Promise<LogFileEntry[]> {
+        let list: { fileName: string; size: number }[];
+        try {
+            list = await this.props.socket.getLogsFiles(host);
+        } catch (error) {
+            console.warn(`Cannot read the log files of ${host}: ${error}`);
+            return [];
+        }
         if (list?.length) {
-            const logFiles: { path: { fileName: string; size: number }; name: string }[] = [];
+            const logFiles: LogFileEntry[] = [];
 
             list.reverse();
             // first 2018-01-01
@@ -765,6 +816,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     logFiles.push({
                         path: file,
                         name,
+                        host,
                     });
                 }
             });
@@ -779,6 +831,7 @@ class Logs extends Component<LogsProps, LogsState> {
                     logFiles.push({
                         path: file,
                         name,
+                        host,
                     });
                 }
             });
@@ -786,6 +839,13 @@ class Logs extends Component<LogsProps, LogsState> {
             return logFiles;
         }
         return [];
+    }
+
+    /** Read the log files to download: those of the current host, or of every host whose entries are shown */
+    async updateLogFiles(): Promise<void> {
+        const hosts = this.state.allHosts ? this.logHosts : [this.state.currentHost];
+        const lists = await Promise.all(hosts.map(host => this.readLogFiles(host)));
+        this.setState({ logFiles: lists.flat() });
     }
 
     componentDidMount(): void {
@@ -801,14 +861,18 @@ class Logs extends Component<LogsProps, LogsState> {
             await new Promise<void>(resolve => {
                 this.setState({ adapters, hosts }, () => resolve());
             });
-            const logFiles = await this.readLogFiles();
-            this.readLogs(true, logFiles);
+            // the entries first: with all hosts they tell whose files there are
+            this.readLogs(true, () => void this.updateLogFiles());
         });
 
         void this.detectSearchInstance();
     }
 
     componentWillUnmount(): void {
+        if (this.hostsTimer) {
+            clearTimeout(this.hostsTimer);
+            this.hostsTimer = null;
+        }
         // this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
         this.props.logsWorker.unregisterHandler(this.logHandler);
         this.props.clearErrors();
@@ -961,7 +1025,7 @@ class Logs extends Component<LogsProps, LogsState> {
         this.props.socket
             .delLogs(this.state.currentHost)
             .then(() => this.clearLog())
-            .then(() => this.readLogs(true, undefined, () => this.setState({ logDeleteDialog: false })))
+            .then(() => this.readLogs(true, () => this.setState({ logDeleteDialog: false })))
             .catch((error: string) => {
                 this.setState({ logDeleteDialog: false });
                 window.alert(error);
@@ -977,24 +1041,36 @@ class Logs extends Component<LogsProps, LogsState> {
     }
 
     getLogFiles(): JSX.Element[] {
-        return this.state.logFiles.map(entry => (
-            <MenuItem
-                style={styles.downloadEntry}
-                key={entry.name}
-                onClick={() => {
-                    Logs.openTab(entry.path.fileName);
-                    this.setState({ logDownloadDialog: null });
-                }}
-            >
-                {entry.name}
-                <Typography
-                    style={styles.downloadLogSize}
-                    variant="caption"
+        const items: JSX.Element[] = [];
+        let lastHost = '';
+
+        for (const entry of this.state.logFiles) {
+            // with all hosts, the files are grouped by host
+            if (this.state.allHosts && entry.host !== lastHost) {
+                lastHost = entry.host;
+                items.push(<ListSubheader key={`host_${entry.host}`}>{this.getHostName(entry.host)}</ListSubheader>);
+            }
+            items.push(
+                <MenuItem
+                    style={styles.downloadEntry}
+                    key={`${entry.host}_${entry.name}`}
+                    onClick={() => {
+                        Logs.openTab(entry.path.fileName);
+                        this.setState({ logDownloadDialog: null });
+                    }}
                 >
-                    {AdminUtils.formatBytes(entry.path.size) || '-'}
-                </Typography>
-            </MenuItem>
-        ));
+                    {entry.name}
+                    <Typography
+                        style={styles.downloadLogSize}
+                        variant="caption"
+                    >
+                        {AdminUtils.formatBytes(entry.path.size) || '-'}
+                    </Typography>
+                </MenuItem>,
+            );
+        }
+
+        return items;
     }
 
     getSeverities(): JSX.Element[] {
@@ -1087,6 +1163,10 @@ class Logs extends Component<LogsProps, LogsState> {
                         />
                         <div style={styles.name}>{row.from}</div>
                     </div>
+                    {/* a controller names its host itself */}
+                    {this.state.allHosts && row.host && !row.from.startsWith('host.') ? (
+                        <div style={styles.hostName}>{this.getHostName(row.host)}</div>
+                    ) : null}
                 </TableCell>
                 {this.state.pid && (
                     <TableCell style={{ ...styles.cell, ...styles[`${this.props.themeType}_${severity}`] }}>
@@ -1287,7 +1367,7 @@ class Logs extends Component<LogsProps, LogsState> {
         if (this.state.searchHours) {
             void this.searchLogFiles().finally(done);
         } else {
-            this.readLogs(true, undefined, done);
+            this.readLogs(true, done);
         }
     }
 
@@ -1364,12 +1444,16 @@ class Logs extends Component<LogsProps, LogsState> {
                     title={this.props.t('Clear on disk permanent')}
                     slotProps={{ popper: { sx: styles.tooltip } }}
                 >
-                    <IconButton
-                        size="large"
-                        onClick={() => this.setState({ logDeleteDialog: true })}
-                    >
-                        <DeleteForeverIcon />
-                    </IconButton>
+                    {/* the log file of one host: with all hosts it would not be clear which one */}
+                    <span>
+                        <IconButton
+                            size="large"
+                            disabled={this.state.allHosts}
+                            onClick={() => this.setState({ logDeleteDialog: true })}
+                        >
+                            <DeleteForeverIcon />
+                        </IconButton>
+                    </span>
                 </Tooltip>
                 <Tooltip
                     title={this.props.t('Show/hide PID')}
@@ -1552,7 +1636,56 @@ class Logs extends Component<LogsProps, LogsState> {
                 <span style={this.state.estimatedSize ? styles.logEstimated : undefined}>
                     {this.state.logSize === null ? '-' : AdminUtils.formatBytes(this.state.logSize)}
                 </span>
+                {this.renderAllHostsInfo()}
             </Typography>
+        );
+    }
+
+    /**
+     * With all hosts: from when on the entries are complete, and which hosts delivered none.
+     * Both would otherwise go unnoticed in a list that looks complete.
+     */
+    renderAllHostsInfo(): JSX.Element | null {
+        if (!this.state.allHosts) {
+            return null;
+        }
+        let since: JSX.Element | null = null;
+        if (this.state.since) {
+            const date = new Date(this.state.since);
+            const time =
+                date.toDateString() === new Date().toDateString() ? date.toLocaleTimeString() : date.toLocaleString();
+            since = (
+                <Tooltip
+                    title={this.t('Older entries are left out: not every host delivered them')}
+                    slotProps={{ popper: { sx: styles.tooltip } }}
+                >
+                    <span>
+                        {' · '}
+                        {this.t('since %s', time)}
+                    </span>
+                </Tooltip>
+            );
+        }
+        const missing = this.state.missingHosts.length ? (
+            <Tooltip
+                title={this.t(
+                    'No entries from: %s',
+                    this.state.missingHosts.map(host => this.getHostName(host)).join(', '),
+                )}
+                slotProps={{ popper: { sx: styles.tooltip } }}
+            >
+                <Box
+                    component={WarningIcon}
+                    sx={styles.searchTruncated}
+                />
+            </Tooltip>
+        ) : null;
+
+        return (
+            <>
+                {since}
+                {missing}
+            </>
         );
     }
 
@@ -1560,7 +1693,11 @@ class Logs extends Component<LogsProps, LogsState> {
     renderTimeHeader(): JSX.Element {
         return (
             <Tooltip
-                title={this.t('Search the log files in this time range')}
+                title={
+                    this.state.allHosts
+                        ? this.t('The log files can only be searched for one host')
+                        : this.t('Search the log files in this time range')
+                }
                 placement="top"
                 slotProps={{ popper: { sx: styles.tooltip } }}
             >
@@ -1747,19 +1884,9 @@ class Logs extends Component<LogsProps, LogsState> {
             return <LinearProgress />;
         }
 
-        if (this.state.logFiles === null && !this.readLogsInProcess) {
-            this.readLogsInProcess = true;
-            setTimeout(
-                () =>
-                    this.readLogFiles().then(logFiles => {
-                        this.readLogsInProcess = false;
-                        this.setState({ logFiles });
-                    }),
-                100,
-            );
-        }
-
-        if (this.props.currentHost !== this.state.currentHost) {
+        // another host, or all hosts instead of one. While all are shown, the current host does not matter.
+        const allHosts = !!this.props.allHosts;
+        if (allHosts !== this.state.allHosts || (!allHosts && this.props.currentHost !== this.state.currentHost)) {
             this.hostsTimer =
                 this.hostsTimer ||
                 setTimeout(() => {
@@ -1768,10 +1895,13 @@ class Logs extends Component<LogsProps, LogsState> {
                     this.setState(
                         {
                             currentHost: this.props.currentHost,
+                            allHosts: !!this.props.allHosts,
                             logs: [],
                             logFiles: [],
+                            missingHosts: [],
+                            since: 0,
                         },
-                        () => this.readLogs(true),
+                        () => this.readLogs(true, () => void this.updateLogFiles()),
                     );
                 }, 200);
         }
