@@ -2009,6 +2009,7 @@
     "updating %s to %s...": "更新 %s 到 %s...",
     "Update status is not available yet": "更新状态尚不可用",
     "Invalid update status response": "更新状态响应无效",
+    "The update was installed, but js-controller does not report version %s yet. Please check the host.": "更新已安装，但 js-controller 尚未报告版本 %s。请检查主机。",
     "upload": "上传",
     "use GitHub for issues": "我们重视您对我们软件的评分和想法。对于错误报告，请使用我们的 GitHub 问题跟踪器，当您留下评论时，请考虑未解决的问题可能会影响您的体验。您的反馈有助于我们改善。感谢您成为我们社区的一部分！",
     "user permissions": "用户权限",

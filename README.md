@@ -105,6 +105,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Install from npm: also adapters that are not in the repository, after a check on npm (#3739)
 - (@GermanBluefox) The update dialogs and the overview show the last backup of BackItUp, a backup can be started before the update (#3750)
 - (@GermanBluefox) Recurring notification if the Node.js major of a host is lower than the recommended one (#3746)
+- (@Gaspode69) js-controller updates from admin also on Windows hosts that support it (js-controller 8) (#3740)
 
 ### 8.3.16 (2026-11-26)
 - (@GermanBluefox) Quick access: filter field above the cards

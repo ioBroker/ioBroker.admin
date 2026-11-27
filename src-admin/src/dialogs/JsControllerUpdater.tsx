@@ -10,6 +10,11 @@ import { type AdminConnection, I18n, type ThemeType } from '@iobroker/gui-compon
 const MAX_TRANSIENT_STATUS_FAILURES = 30;
 const STATUS_REQUEST_TIMEOUT_MS = 5_000;
 const UPGRADE_STATUS_PATH = '/controller-upgrade-status';
+/** How long the restarted js-controller may take to report the new version, before the dialog says so */
+const RESTART_TIMEOUT_MS = 5 * 60_000;
+const POLL_INTERVAL_MS = 1_000;
+/** After an error the dialog still looks for the result, but less often */
+const POLL_INTERVAL_AFTER_ERROR_MS = 5_000;
 
 interface NetworkInterface {
     address: string;
@@ -89,9 +94,6 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
     /** Initial timeout to give server time to start without showing an error */
     private startTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    /** Whether at least one response from the upgrade manager was received */
-    private hasReceivedStatus = false;
-
     /** Number of consecutive failed status requests after the upgrade manager was reached */
     private failedStatusRequests = 0;
 
@@ -100,6 +102,9 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
 
     /** Whether npm finished successfully and the restarted controller still has to confirm its version */
     private awaitingControllerRestart = false;
+
+    /** When npm finished successfully, the restart of the controller is measured from here */
+    private restartWaitStart = 0;
 
     /** Whether this component has been unmounted */
     private unmounted = false;
@@ -249,10 +254,13 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             return;
         }
 
-        this.pollTimer = setTimeout(() => {
-            this.pollTimer = null;
-            void this.checkStatus();
-        }, 1_000);
+        this.pollTimer = setTimeout(
+            () => {
+                this.pollTimer = null;
+                void this.checkStatus();
+            },
+            this.state.error ? POLL_INTERVAL_AFTER_ERROR_MS : POLL_INTERVAL_MS,
+        );
     }
 
     /**
@@ -303,7 +311,14 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             return;
         }
 
-        if (this.awaitingControllerRestart && (await this.isTargetVersionInstalled())) {
+        // The upgrade server shuts down after its final answer, and another request (e.g. the reconnect of
+        // the socket) may have got it, or the browser cannot reach it at all. So once npm is through, or the server
+        // does not answer, the restarted controller reporting the requested version is the success.
+        // Before the update the host still reports the old version.
+        if (
+            (this.awaitingControllerRestart || this.failedStatusRequests > 0) &&
+            (await this.isTargetVersionInstalled())
+        ) {
             if (!this.finished && !this.unmounted) {
                 this.finishSuccessfully();
             }
@@ -326,13 +341,7 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             }
 
             if (!res.ok || !plainBody.trimStart().startsWith('{')) {
-                if (this.hasReceivedStatus && (await this.isTargetVersionInstalled())) {
-                    if (this.finished || this.unmounted) {
-                        return;
-                    }
-                    this.finishSuccessfully();
-                    return;
-                }
+                // e.g. the restarted admin answers on the same port: the next request checks the version of the host
                 throw new Error(I18n.t('Update status is not available yet'));
             }
 
@@ -341,7 +350,6 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                 throw new Error(I18n.t('Invalid update status response'));
             }
             const response = parsedResponse;
-            this.hasReceivedStatus = true;
             this.failedStatusRequests = 0;
 
             // sometimes stderr has only one empty string in it
@@ -351,6 +359,9 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             if (!response.running && response.success) {
                 // npm has finished, but the old controller is still the active source of version information.
                 // Keep polling until the restarted controller advertises the requested version.
+                if (!this.awaitingControllerRestart) {
+                    this.restartWaitStart = Date.now();
+                }
                 this.awaitingControllerRestart = true;
                 response.running = true;
                 response.success = undefined;
@@ -378,12 +389,22 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
             });
         } catch (e) {
             this.failedStatusRequests++;
-            if (
-                !this.finished &&
-                !this.unmounted &&
-                !this.state.starting &&
-                this.failedStatusRequests >= MAX_TRANSIENT_STATUS_FAILURES
-            ) {
+            if (this.finished || this.unmounted || this.state.starting || this.state.error) {
+                // nothing to show (yet), or the error is already shown
+            } else if (this.awaitingControllerRestart) {
+                // npm is through, and while the controller restarts, its status server cannot be reached
+                if (Date.now() - this.restartWaitStart >= RESTART_TIMEOUT_MS) {
+                    this.setState(
+                        {
+                            error: I18n.t(
+                                'The update was installed, but js-controller does not report version %s yet. Please check the host.',
+                                this.props.version,
+                            ),
+                        },
+                        () => this.setUpdating(false),
+                    );
+                }
+            } else if (this.failedStatusRequests >= MAX_TRANSIENT_STATUS_FAILURES) {
                 const error = abortController.signal.aborted
                     ? new Error(I18n.t('Update status is not available yet'))
                     : (e as Error);
@@ -439,7 +460,8 @@ export default class JsControllerUpdater extends Component<JsControllerUpdaterPr
                             value={
                                 this.state.error
                                     ? this.state.error
-                                    : this.state.response?.stderr.length
+                                    : // after a successful update the result is at the end of stdout
+                                      this.state.response?.stderr.length && !this.state.response.success
                                       ? this.state.response.stderr.join('\n')
                                       : (this.state.response?.stdout.join('\n') ?? '')
                             }

@@ -2009,6 +2009,7 @@
     "updating %s to %s...": "updating %s to %s...",
     "Update status is not available yet": "Update status is not available yet",
     "Invalid update status response": "Invalid update status response",
+    "The update was installed, but js-controller does not report version %s yet. Please check the host.": "The update was installed, but js-controller does not report version %s yet. Please check the host.",
     "upload": "Upload",
     "use GitHub for issues": "We value your ratings and thoughts on our software. For bug reports, please use our GitHub issue tracker, and as you leave your review, please consider that open issues might impact your experience. Your feedback helps us improve. Thank you for being a part of our community!",
     "user permissions": "user permissions",

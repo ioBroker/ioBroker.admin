@@ -2009,6 +2009,7 @@
     "updating %s to %s...": "%s updaten naar %s...",
     "Update status is not available yet": "De updatestatus is nog niet beschikbaar",
     "Invalid update status response": "Ongeldig antwoord voor de updatestatus",
+    "The update was installed, but js-controller does not report version %s yet. Please check the host.": "De update is geïnstalleerd, maar js-controller meldt versie %s nog niet. Controleer de host.",
     "upload": "uploaden",
     "use GitHub for issues": "We waarderen uw beoordelingen en gedachten over onze software. Gebruik voor bugrapporten onze GitHub issue tracker, en als je je review achterlaat, houd er dan rekening mee dat openstaande problemen je ervaring kunnen beïnvloeden. Uw feedback helpt ons te verbeteren. Bedankt dat je deel uitmaakt van onze community!",
     "user permissions": "gebruikersrechten",
