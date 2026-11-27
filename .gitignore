@@ -23,7 +23,6 @@ testSentry.bat
 
 build-backend
 /admin/custom/
-README.md
 
 #ignore .commitinfo created by ioBroker release script
 .commitinfo
