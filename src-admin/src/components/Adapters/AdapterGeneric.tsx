@@ -909,6 +909,7 @@ export default abstract class AdapterGeneric<
                     this.setState({ showUpdateDialog: false, showDialog: false }, () => this.update(version))
                 }
                 isStable={(this.props.context.repository._repoInfo as unknown as RepoInfo).stable}
+                socket={this.props.context.socket}
                 onIgnore={
                     this.state.installRepositoryVersion
                         ? undefined

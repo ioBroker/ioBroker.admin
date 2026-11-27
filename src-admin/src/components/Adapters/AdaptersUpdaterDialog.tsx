@@ -30,6 +30,7 @@ import type { AdapterRatingInfo, InstalledInfo } from './AdapterInstallDialog';
 import type { RepoAdapterObject } from './Utils';
 import AdaptersUpdater from './AdaptersUpdater';
 import Command from '../Command';
+import { BackupInfo } from '../BackupInfo';
 
 /** The log slides in from the right, when the first update starts */
 const logIn = keyframes`
@@ -353,6 +354,12 @@ class AdaptersUpdaterDialog extends Component<AdaptersUpdaterDialogProps, Adapte
                         ) : null}
                     </div>
                     {this.renderProgress()}
+                    {!this.state.inProcess && !this.state.finished ? (
+                        <BackupInfo
+                            socket={this.props.socket}
+                            t={this.props.t}
+                        />
+                    ) : null}
                 </DialogTitle>
                 <DialogContent sx={{ '&.MuiDialogContent-root': styles.content }}>
                     <Grid
