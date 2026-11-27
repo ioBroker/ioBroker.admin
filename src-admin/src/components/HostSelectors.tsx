@@ -1,6 +1,7 @@
 import React, { Component, type JSX } from 'react';
 
 import { Box, Button, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Dns as AllHostsIcon } from '@mui/icons-material';
 
 import { type AdminConnection, I18n, Icon, Utils } from '@iobroker/gui-components';
 import type { CompactHost } from '@/types';
@@ -49,6 +50,10 @@ const styles: Record<string, any> = {
         background: '#FFFFFF',
         padding: 2,
     },
+    /** The box of a host icon is always white, so the text color of the theme would hide this one */
+    allHostsIcon: {
+        color: '#444',
+    },
     notAlive: {
         opacity: 0.3,
     },
@@ -89,6 +94,10 @@ interface HostSelectorsProps {
     /** Overrides the default tooltip. It used to explain why the selector is greyed out in the app bar */
     tooltip?: string;
     themeType?: string;
+    /** "All hosts" is chosen. Only used together with `onAllHostsChange` */
+    allHosts?: boolean;
+    /** Offer "All hosts" as the first entry - the Log tab can show them together */
+    onAllHostsChange?: (allHosts: boolean) => void;
 }
 
 interface HostSelectorsState {
@@ -348,8 +357,11 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
         if (!this.props.expertMode && this.state.hosts.length < 2) {
             return null;
         }
+        const onAllHostsChange = this.state.hosts.length > 1 ? this.props.onAllHostsChange : undefined;
+        const allHosts = !!onAllHostsChange && !!this.props.allHosts;
+
         let selectedHostObj;
-        if (this.state.hosts.length) {
+        if (this.state.hosts.length && !allHosts) {
             selectedHostObj = this.state.hosts.find(
                 host => host._id === this.props.currentHost || host._id === `system.host.${this.props.currentHost}`,
             );
@@ -380,7 +392,9 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                                 component="div"
                                 sx={{
                                     ...styles.width,
-                                    ...(!this.state.alive[this.props.currentHost] ? styles.notAlive : undefined),
+                                    ...(!allHosts && !this.state.alive[this.props.currentHost]
+                                        ? styles.notAlive
+                                        : undefined),
                                     ...styles.imgDiv,
                                 }}
                                 style={{
@@ -391,15 +405,19 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                                     alignItems: 'center',
                                 }}
                             >
-                                <Icon
-                                    style={styles.img}
-                                    src={selectedHostObj?.common?.icon || 'img/no-image.svg'}
-                                />
+                                {allHosts ? (
+                                    <AllHostsIcon style={{ ...styles.img, ...styles.allHostsIcon }} />
+                                ) : (
+                                    <Icon
+                                        style={styles.img}
+                                        src={selectedHostObj?.common?.icon || 'img/no-image.svg'}
+                                    />
+                                )}
                                 <Box
                                     component="div"
                                     sx={styles.name}
                                 >
-                                    {selectedHostObj?.common?.name}
+                                    {allHosts ? I18n.t('All hosts') : selectedHostObj?.common?.name}
                                 </Box>
                             </Box>
                         </Button>
@@ -411,14 +429,38 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                     open={!!this.state.anchorEl}
                     onClose={() => this.setState({ anchorEl: null })}
                 >
+                    {onAllHostsChange ? (
+                        <MenuItem
+                            key="_allHosts"
+                            selected={allHosts}
+                            onClick={() => {
+                                if (!allHosts) {
+                                    onAllHostsChange(true);
+                                }
+                                this.setState({ anchorEl: null });
+                            }}
+                        >
+                            <Box
+                                component="div"
+                                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                            >
+                                <div style={styles.selector}>{allHosts ? 'ᐅ' : ''}</div>
+                                <AllHostsIcon style={{ ...styles.img, ...styles.allHostsIcon }} />
+                                {I18n.t('All hosts')}
+                            </Box>
+                        </MenuItem>
+                    ) : null}
                     {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) => (
                         <MenuItem
                             key={_id}
                             // button
                             disabled={!this.state.alive[_id]}
-                            selected={_id === this.props.currentHost}
+                            selected={!allHosts && _id === this.props.currentHost}
                             style={{ background: color || 'inherit' }}
                             onClick={() => {
+                                if (allHosts) {
+                                    onAllHostsChange?.(false);
+                                }
                                 if (this.props.currentHost !== this.state.hosts[idx]._id) {
                                     this.props.setCurrentHost(
                                         this.state.hosts[idx].common.name,
@@ -438,7 +480,9 @@ class HostSelectors extends Component<HostSelectorsProps, HostSelectorsState> {
                                     gap: 8,
                                 }}
                             >
-                                <div style={styles.selector}>{_id === this.props.currentHost ? 'ᐅ' : ''}</div>
+                                <div style={styles.selector}>
+                                    {!allHosts && _id === this.props.currentHost ? 'ᐅ' : ''}
+                                </div>
                                 <Icon
                                     style={styles.img}
                                     src={icon || 'img/no-image.svg'}

@@ -1739,7 +1739,10 @@ class Admin extends Adapter {
      * @param repoInfo `_repoInfo` of the active repository
      */
     async checkRecommendedNodeVersion(repoInfo: Record<string, any> | undefined): Promise<void> {
-        const recommended = parseInt(repoInfo?.recommendedVersions?.nodeJsRecommended ?? repoInfo?.nodeJsRecommended, 10);
+        const recommended = parseInt(
+            repoInfo?.recommendedVersions?.nodeJsRecommended ?? repoInfo?.nodeJsRecommended,
+            10,
+        );
         if (!recommended) {
             return;
         }
@@ -1750,7 +1753,7 @@ class Admin extends Adapter {
                 id =>
                     id.startsWith('system.adapter.admin.') &&
                     objects[id]?.type === 'instance' &&
-                    (objects[id] as ioBroker.InstanceObject).common?.enabled,
+                    objects[id].common?.enabled,
             )
             .map(id => parseInt(id.split('.').pop() || '', 10));
         if (adminInstances.length && this.instance !== Math.min(...adminInstances)) {

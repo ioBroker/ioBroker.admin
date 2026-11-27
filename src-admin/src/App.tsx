@@ -488,6 +488,8 @@ interface AppState {
     hosts: CompactHost[];
     currentHost: string;
     currentHostName: string;
+    /** The Log tab shows the entries of all hosts instead of those of the current one */
+    logsAllHosts: boolean;
     ownHost: string;
     currentTab: {
         tab: string;
@@ -758,6 +760,7 @@ class App extends Router<AppProps, AppState> {
                 hosts: [],
                 currentHost: '',
                 currentHostName: '',
+                logsAllHosts: LogsWorker.isAllHostsStored(),
                 ownHost: '',
                 currentTab: Router.getLocation(),
                 systemConfig: null,
@@ -1419,8 +1422,9 @@ class App extends Router<AppProps, AppState> {
                         }
 
                         // create Workers
-                        this.logsWorker ||= new LogsWorker(this.socket, 1_000);
+                        // the log worker asks the instances worker which host an instance runs on
                         this.instancesWorker ||= new InstancesWorker(this.socket);
+                        this.logsWorker ||= new LogsWorker(this.socket, 1_000, this.instancesWorker);
                         this.hostsWorker ||= new HostsWorker(this.socket);
                         this.adaptersWorker ||= new AdaptersWorker(this.socket);
                         this.repositoryWorker ||= new RepositoryWorker(this.socket, I18n.getLanguage());
@@ -1610,7 +1614,8 @@ class App extends Router<AppProps, AppState> {
             }
         });
 
-        this.setState({ hosts });
+        // "All hosts" in the Log tab needs a second host
+        this.setState({ hosts }, () => this.applyLogsAllHosts());
     };
 
     repoChangeHandler = (repositoryState: RepositoryState): void => {
@@ -2438,8 +2443,10 @@ class App extends Router<AppProps, AppState> {
      * them puts it at the right end of its header - so the app bar can be emptied step by step.
      * The element is built here because switching the host also has to reload the repository and
      * the notifications, and that logic must not be duplicated in four tabs.
+     *
+     * @param forLogs the Log tab also offers "All hosts"
      */
-    renderHostSelector(): JSX.Element | null {
+    renderHostSelector(forLogs?: boolean): JSX.Element | null {
         if (!this.socket || !this.hostsWorker) {
             return null;
         }
@@ -2455,6 +2462,15 @@ class App extends Router<AppProps, AppState> {
                     socket={this.socket}
                     hostsWorker={this.hostsWorker}
                     currentHost={this.state.currentHost}
+                    allHosts={forLogs ? this.isLogsAllHosts() : undefined}
+                    onAllHostsChange={
+                        forLogs
+                            ? (logsAllHosts: boolean) => {
+                                  LogsWorker.storeAllHosts(logsAllHosts);
+                                  this.setState({ logsAllHosts }, () => this.applyLogsAllHosts());
+                              }
+                            : undefined
+                    }
                     setCurrentHost={(hostName, host) => {
                         this.setState(
                             {
@@ -2474,6 +2490,19 @@ class App extends Router<AppProps, AppState> {
                 />
             </IsVisible>
         );
+    }
+
+    /**
+     * Does the Log tab show the entries of all hosts? Only with more than one host: with a single one the
+     * host selector is hidden, and the setting could not be switched off any more.
+     */
+    isLogsAllHosts(): boolean {
+        return this.state.logsAllHosts && this.state.hosts.length > 1;
+    }
+
+    /** Tell the log worker whether to read all hosts - it also feeds the overview and the error badge */
+    applyLogsAllHosts(): void {
+        this.logsWorker?.setAllHosts(this.isLogsAllHosts());
     }
 
     setCurrentTabTitle(): void {
@@ -2672,9 +2701,10 @@ class App extends Router<AppProps, AppState> {
                             logsWorker={this.logsWorker}
                             expertMode={this.state.expertMode}
                             currentHost={this.state.currentHost}
+                            allHosts={this.isLogsAllHosts()}
                             hostsWorker={this.hostsWorker}
                             clearErrors={() => this.clearLogErrors()}
-                            hostSelector={this.renderHostSelector()}
+                            hostSelector={this.renderHostSelector(true)}
                             menuButtonSpace={this.needsMenuButtonSpace()}
                         />
                     </Suspense>

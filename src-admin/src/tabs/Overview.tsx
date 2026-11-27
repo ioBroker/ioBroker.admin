@@ -276,9 +276,22 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
 
     onLogs = (events: LogLineSaved[]): void => {
         if (this.mounted) {
-            this.setState(state => ({ logs: [...state.logs, ...events].slice(-LOG_LINES_LARGE) }));
+            const own = this.ownLogs(events);
+            if (own.length) {
+                this.setState(state => ({ logs: [...state.logs, ...own].slice(-LOG_LINES_LARGE) }));
+            }
         }
     };
+
+    /**
+     * The entries of the shown host. The Log tab can have the worker read all hosts; an entry whose host is
+     * not known stays.
+     *
+     * @param logs entries of the log worker
+     */
+    ownLogs(logs: LogLineSaved[]): LogLineSaved[] {
+        return logs.filter(line => !line.host || line.host === this.props.currentHost);
+    }
 
     async readAll(): Promise<void> {
         const { socket, currentHost } = this.props;
@@ -353,7 +366,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
             hostInfo,
             controllerVersion: (hostObj as ioBroker.HostObject | null | undefined)?.common?.installedVersion || '',
             adapters,
-            logs: (logs.logs || []).slice(-LOG_LINES_LARGE),
+            logs: this.ownLogs(logs.logs || []).slice(-LOG_LINES_LARGE),
         });
     }
 

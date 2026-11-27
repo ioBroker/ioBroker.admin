@@ -318,12 +318,11 @@ export default class Adapters extends AdapterInstallDialog<AdaptersProps, Adapte
         this.t = this.translate;
     }
 
-    translate = (word: string, arg1?: string | boolean | number, arg2?: string | boolean | number): string => {
-        if (arg1 !== undefined) {
-            if (arg2 !== undefined) {
-                return this.props.t(word, arg1, arg2);
-            }
-            return this.props.t(word, arg1);
+    translate = (word: string, ...args: (string | boolean | number | undefined)[]): string => {
+        // every argument goes on: with only two, a third `%s` stayed in the text
+        const used = args.filter((arg): arg is string | boolean | number => arg !== undefined);
+        if (used.length) {
+            return this.props.t(word, ...used);
         }
 
         this.wordCache[word] ||= this.props.t(word);

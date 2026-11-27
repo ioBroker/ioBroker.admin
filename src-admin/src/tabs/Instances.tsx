@@ -336,9 +336,10 @@ class Instances extends Component<InstancesProps, InstancesState> {
         this.refTabContent = createRef();
     }
 
-    translate = (word: string, arg1?: any, arg2?: any): string => {
-        if (arg1 !== undefined) {
-            return this.props.t(word, arg1, arg2);
+    translate = (word: string, ...args: (string | boolean | number | undefined)[]): string => {
+        const used = args.filter((arg): arg is string | boolean | number => arg !== undefined);
+        if (used.length) {
+            return this.props.t(word, ...used);
         }
 
         if (!this.wordCache[word]) {
