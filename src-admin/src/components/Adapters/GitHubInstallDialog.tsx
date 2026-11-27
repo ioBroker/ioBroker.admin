@@ -18,6 +18,8 @@ import {
     TextField,
     Typography,
     Autocomplete,
+    Alert,
+    Chip,
 } from '@mui/material';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
@@ -30,7 +32,16 @@ import {
     UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
-import { I18n, Icon, type IobTheme, type AdminConnection, type ThemeType, IconTrash } from '@iobroker/gui-components';
+import {
+    I18n,
+    Icon,
+    Utils,
+    type IobTheme,
+    type AdminConnection,
+    type ThemeType,
+    IconTrash,
+    IconCopy,
+} from '@iobroker/gui-components';
 
 import { extractAdapterName, type RepoAdapterObject } from '@/components/Adapters/Utils';
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
@@ -104,7 +115,52 @@ const styles: Record<string, any> = {
     tabSelected: (theme: IobTheme) => ({
         color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#222 !important',
     }),
+    nonNpmWarning: {
+        marginBottom: 8,
+    },
+    examples: {
+        marginTop: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+    },
+    example: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+    },
+    exampleChip: {
+        fontFamily: 'monospace',
+    },
+    dropZone: {
+        outline: '2px dashed transparent',
+        outlineOffset: -4,
+    },
+    dropZoneActive: (theme: IobTheme) => ({
+        outline: `2px dashed ${theme.palette.primary.main}`,
+        outlineOffset: -4,
+    }),
+    cliBox: (theme: IobTheme) => ({
+        mt: 2,
+        p: 1,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        fontFamily: 'monospace',
+        borderRadius: 1,
+        backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f0f0f0',
+    }),
 };
+
+/** Examples for the custom tab: the value to insert and the i18n key of its explanation */
+const CUSTOM_EXAMPLES: { value: string; description: string }[] = [
+    { value: 'iobroker.<adapter>', description: 'install_example_latest' },
+    { value: 'iobroker.<adapter>@1.2.3', description: 'install_example_version' },
+    { value: 'iobroker.<adapter>@next', description: 'install_example_tag' },
+    { value: 'https://github.com/<user>/ioBroker.<adapter>', description: 'install_example_github' },
+    { value: 'https://github.com/<user>/ioBroker.<adapter>/tree/<branch>', description: 'install_example_branch' },
+    { value: '/path/on/host/iobroker.<adapter>-1.2.3.tgz', description: 'install_example_path' },
+];
 
 // some older browsers do not have `flat`
 function arrayFlat(arr: (string[] | string)[]): string[] {
@@ -183,6 +239,8 @@ interface GitHubInstallDialogState {
     selectedHost: string;
     /** Whether the controller supports sending files with cmdExec (feature CONTROLLER_CMD_EXEC_FILES) */
     cmdExecFilesSupported: boolean;
+    /** Whether a file is dragged over the file tab */
+    dragOver: boolean;
 }
 
 const MAX_HISTORY_LENGTH = 10;
@@ -218,6 +276,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             // Default target host is the currently selected host
             selectedHost: props.currentHost,
             cmdExecFilesSupported: false,
+            dragOver: false,
         };
     }
 
@@ -364,7 +423,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 JSON.stringify(customHistory),
             );
 
-            const url = this.state.url.includes('.') ? this.state.url : `iobroker.${this.state.url}`;
+            const url = this.getCustomUrl();
             if (await this.props.installFromUrl(url, this.state.debug, true)) {
                 await this.createInstanceIfDesired(extractAdapterName(url));
             }
@@ -389,6 +448,104 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 console.error(`Installation from url failed: ${e.message}`);
             }
         }
+    }
+
+    /** The custom URL as it is installed: a bare adapter name gets the prefix "iobroker." */
+    getCustomUrl(): string {
+        return this.state.url.includes('.') ? this.state.url : `iobroker.${this.state.url}`;
+    }
+
+    /** Returns the CLI command equivalent to the installation in the current tab, or an empty string */
+    getCliCommand(): string {
+        let target = '';
+        if (this.state.currentTab === 'npm') {
+            const fullAdapterName = (this.state.autoCompleteValue?.value || '').split('/')[0];
+            const adapterName = fullAdapterName.includes('.') ? fullAdapterName.split('.')[1] : fullAdapterName;
+            target = adapterName ? `iobroker.${adapterName}@latest` : '';
+        } else if (this.state.currentTab === 'GitHub') {
+            const parts = (this.state.autoCompleteValue?.value || '').split('/');
+            target = parts[0] && parts[1] ? `${parts[1]}/ioBroker.${parts[0]}` : '';
+        } else if (this.state.currentTab === 'URL') {
+            target = this.state.url ? this.getCustomUrl() : '';
+        } else if (this.state.currentTab === 'File') {
+            target = this.state.selectedFile?.name || '';
+        }
+        return target ? `iob url ${target}${this.state.debug ? ' --debug' : ''}` : '';
+    }
+
+    /** Clear warning for all sources except npm */
+    renderNonNpmWarning(): JSX.Element {
+        return (
+            <Alert
+                severity="warning"
+                style={styles.nonNpmWarning}
+            >
+                {this.props.t('non_npm_install_warning')}
+            </Alert>
+        );
+    }
+
+    /** Clickable examples of the supported formats below the custom URL input */
+    renderCustomExamples(): JSX.Element {
+        return (
+            <div style={styles.examples}>
+                <Typography variant="body2">{this.props.t('Examples (click to use):')}</Typography>
+                {CUSTOM_EXAMPLES.map(example => (
+                    <div
+                        key={example.value}
+                        style={styles.example}
+                    >
+                        <Chip
+                            size="small"
+                            style={styles.exampleChip}
+                            label={example.value}
+                            onClick={() => {
+                                ((window as any)._localstorage || window.localStorage).setItem(
+                                    'App.userUrl',
+                                    example.value,
+                                );
+                                this.setState({ url: example.value });
+                            }}
+                        />
+                        <Typography variant="caption">{this.props.t(example.description)}</Typography>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    /** The equivalent CLI command with a copy button */
+    renderCliCommand(): JSX.Element | null {
+        const command = this.getCliCommand();
+        if (!command) {
+            return null;
+        }
+        return (
+            <>
+                <Box
+                    component="div"
+                    sx={styles.cliBox}
+                >
+                    <Typography variant="caption">{this.props.t('Equivalent CLI command')}:</Typography>
+                    <Typography
+                        variant="body2"
+                        style={{ flexGrow: 1, fontFamily: 'monospace', wordBreak: 'break-all' }}
+                    >
+                        {command}
+                    </Typography>
+                    <IconButton
+                        size="small"
+                        title={this.props.t('Copy to clipboard')}
+                        onClick={() => Utils.copyToClipboard(command)}
+                    >
+                        <IconCopy />
+                    </IconButton>
+                </Box>
+                {this.state.currentTab === 'File' ? (
+                    <Typography variant="caption">{this.props.t('cli_file_note')}</Typography>
+                ) : null}
+            </>
+        );
     }
 
     /** The opt-out for the automatic creation of the first instance after the installation */
@@ -509,6 +666,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 style={styles.tabPaper}
                 id="github-install-dialog-panel-github"
             >
+                {this.renderNonNpmWarning()}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <FormControlLabel
                         control={
@@ -606,6 +764,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                 style={styles.tabPaper}
                 id="github-install-dialog-panel-custom"
             >
+                {this.renderNonNpmWarning()}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <FormControlLabel
                         control={
@@ -686,6 +845,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         )}
                     />
                 </div>
+                {this.renderCustomExamples()}
                 <div
                     style={{
                         fontSize: 24,
@@ -706,7 +866,32 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
             <Paper
                 style={styles.tabPaper}
                 id="github-install-dialog-panel-file"
+                sx={this.state.dragOver ? styles.dropZoneActive : styles.dropZone}
+                onDragOver={e => {
+                    e.preventDefault();
+                    if (!this.state.dragOver) {
+                        this.setState({ dragOver: true });
+                    }
+                }}
+                onDragLeave={e => {
+                    // ignore the events from the children of the panel
+                    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                        this.setState({ dragOver: false });
+                    }
+                }}
+                onDrop={e => {
+                    e.preventDefault();
+                    const file =
+                        Array.from(e.dataTransfer.files).find(f => f.name.toLowerCase().endsWith('.tgz')) || null;
+                    if (file && !this.state.uploading) {
+                        this.setState({ selectedFile: file, url: '', dragOver: false });
+                        ((window as any)._localstorage || window.localStorage).setItem('App.userUrl', '');
+                    } else {
+                        this.setState({ dragOver: false });
+                    }
+                }}
             >
+                {this.renderNonNpmWarning()}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Button
                         variant="outlined"
@@ -742,6 +927,9 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 <CloseIcon />
                             </IconButton>
                         </>
+                    )}
+                    {!this.state.selectedFile && (
+                        <Typography variant="body2">{this.props.t('or drop the .tgz file here')}</Typography>
                     )}
                     {this.state.uploading && <CircularProgress size={24} />}
                 </div>
@@ -874,7 +1062,17 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                                 indicatorColor="secondary"
                             >
                                 <Tab
-                                    label={this.props.t('From npm')}
+                                    label={
+                                        <span>
+                                            {this.props.t('From npm')}
+                                            <Chip
+                                                size="small"
+                                                color="success"
+                                                label={this.props.t('Recommended')}
+                                                style={{ marginLeft: 6, height: 18, fontSize: 11 }}
+                                            />
+                                        </span>
+                                    }
                                     wrapped
                                     sx={{ '&.Mui-selected': styles.tabSelected }}
                                     icon={
@@ -935,6 +1133,7 @@ class GitHubInstallDialog extends React.Component<GitHubInstallDialogProps, GitH
                         {this.renderGitHub()}
                         {this.renderCustom()}
                         {this.renderFile()}
+                        {this.renderCliCommand()}
                     </Box>
                 </DialogContent>
                 <DialogActions>

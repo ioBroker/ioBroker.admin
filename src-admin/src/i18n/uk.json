@@ -2123,5 +2123,17 @@
     "Link": "Посилання",
     "1 minute": "1 хвилина",
     "Title:": "Назва:",
-    "All deleted": "Усе видалено"
+    "All deleted": "Усе видалено",
+    "Recommended": "Рекомендовано",
+    "non_npm_install_warning": "Встановлюйте з GitHub, за власною URL-адресою або з файлу лише на тестових системах або на прохання розробника адаптера. Спочатку зробіть резервну копію: пониження версії не скасовує міграції даних чи об'єктів.",
+    "Examples (click to use):": "Приклади (натисніть, щоб використати):",
+    "install_example_latest": "Остання версія з npm",
+    "install_example_version": "Певна версія з npm",
+    "install_example_tag": "Версія з тегом npm (наприклад, next)",
+    "install_example_github": "Гілка за замовчуванням репозиторію GitHub",
+    "install_example_branch": "Певна гілка репозиторію GitHub",
+    "install_example_path": "Tarball на хості ioBroker (не на комп'ютері з браузером)",
+    "Equivalent CLI command": "Відповідна команда CLI",
+    "cli_file_note": "Для команди CLI файл має знаходитися на хості ioBroker.",
+    "or drop the .tgz file here": "або перетягніть сюди файл .tgz"
 }

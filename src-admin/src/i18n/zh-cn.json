@@ -2123,5 +2123,17 @@
     "Link": "链接",
     "1 minute": "1 分钟",
     "Title:": "标题：",
-    "All deleted": "已全部删除"
+    "All deleted": "已全部删除",
+    "Recommended": "推荐",
+    "non_npm_install_warning": "仅在测试系统上或适配器维护者要求时，才从 GitHub、自定义 URL 或文件安装。请先备份：降级不会撤销数据或对象的迁移。",
+    "Examples (click to use):": "示例（点击使用）：",
+    "install_example_latest": "npm 上的最新版本",
+    "install_example_version": "npm 上的指定版本",
+    "install_example_tag": "带 npm 标签的版本（例如 next）",
+    "install_example_github": "GitHub 仓库的默认分支",
+    "install_example_branch": "GitHub 仓库的指定分支",
+    "install_example_path": "ioBroker 主机上的 Tarball（不是浏览器所在的计算机）",
+    "Equivalent CLI command": "对应的 CLI 命令",
+    "cli_file_note": "使用 CLI 命令时，文件必须位于 ioBroker 主机上。",
+    "or drop the .tgz file here": "或将 .tgz 文件拖放到此处"
 }
