@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added missing roles value.dimmer, level.dimmer and level.speed to the role selector (#3744)
+
 ### 8.3.16 (2026-11-26)
 - (@GermanBluefox) Quick access: filter field above the cards
 - (@GermanBluefox) Log: "All hosts" shows the logs of all hosts together
