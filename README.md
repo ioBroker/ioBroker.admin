@@ -102,6 +102,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added a hint to the 'Install a specific version' dialog that a downgrade does not revert objects and configuration (#3751)
 - (@GermanBluefox) Added a confirmation dialog and marking for major adapter upgrades (#3161)
 - (@GermanBluefox) Install dialog: npm recommended, clearer warnings, examples and CLI command (#3743)
+- (@GermanBluefox) Install from npm: also adapters that are not in the repository, after a check on npm (#3739)
 
 ### 8.3.16 (2026-11-26)
 - (@GermanBluefox) Quick access: filter field above the cards
