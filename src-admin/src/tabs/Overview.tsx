@@ -35,6 +35,7 @@ import { hasPermission, permissionLabel, SEND_TO_HOST } from '@/helpers/permissi
 
 import ResourcesChart, { loadSeries, saveSeries, type ChartSeriesConfig } from '@/components/Overview/ResourcesChart';
 import ResourcesChartSettings from '@/components/Overview/ResourcesChartSettings';
+import { LastBackupValue } from '@/components/BackupInfo';
 
 /** How often the counters are refreshed */
 const REFRESH_MS = 30_000;
@@ -467,6 +468,16 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                         {`${t('No permission')} (${permissionLabel(SEND_TO_HOST, t)})`}
                     </Typography>
                 )}
+                {/* the backups are made for the whole system, not per host (#3750) */}
+                <InfoRow
+                    name={t('Last backup')}
+                    value={
+                        <LastBackupValue
+                            socket={this.props.socket}
+                            t={t}
+                        />
+                    }
+                />
             </Card>
         );
     }

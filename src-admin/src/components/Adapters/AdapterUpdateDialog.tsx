@@ -25,10 +25,11 @@ import {
     Language as LanguageIcon,
 } from '@mui/icons-material';
 
-import { I18n, Utils, type IobTheme, type Translate } from '@iobroker/gui-components';
+import { I18n, Utils, type AdminConnection, type IobTheme, type Translate } from '@iobroker/gui-components';
 
 import { MOBILE_WIDTH } from '@/helpers/MobileDialog';
 import type { RepoAdapterObject } from '@/components/Adapters/Utils';
+import { BackupInfo } from '@/components/BackupInfo';
 
 import State from '../State';
 
@@ -372,6 +373,8 @@ interface AdapterUpdateDialogProps {
     instances?: Record<string, CompactInstanceInfo>;
     theme: IobTheme;
     isStable?: boolean;
+    /** To show the last backup and to make one before the update (#3750) */
+    socket?: AdminConnection;
 }
 
 interface AdapterUpdateDialogState {
@@ -766,6 +769,12 @@ class AdapterUpdateDialog extends Component<AdapterUpdateDialogProps, AdapterUpd
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
+                    {this.props.socket ? (
+                        <BackupInfo
+                            socket={this.props.socket}
+                            t={this.t}
+                        />
+                    ) : null}
                     {this.renderMessages()}
                     <Grid
                         container
