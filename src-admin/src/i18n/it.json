@@ -710,6 +710,7 @@
     "Installed from group": "Installato dal gruppo",
     "Installed instances": "Istanze installate",
     "Installed version": "Versione installata",
+    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.",
     "Instance": "Esempio",
     "Instance %s already exists": "L'istanza \"%s\" esiste già",
     "Instance link %s": "Collegamento istanza %s",

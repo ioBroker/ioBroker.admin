@@ -710,6 +710,7 @@
     "Installed from group": "从组安装",
     "Installed instances": "已安装的程序",
     "Installed version": "已安装的版本",
+    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.",
     "Instance": "实例",
     "Instance %s already exists": "实例“%s”已存在",
     "Instance link %s": "实例链接%s",

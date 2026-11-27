@@ -710,6 +710,7 @@
     "Installed from group": "Установлено из группы",
     "Installed instances": "создано инстанций",
     "Installed version": "установленная версия",
+    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.",
     "Instance": "Экземпляр",
     "Instance %s already exists": "Экземпляр \"%s\" уже существует",
     "Instance link %s": "Ссылка на экземпляр %s",
