@@ -100,6 +100,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 - (@GermanBluefox) Added missing roles value.dimmer, level.dimmer and level.speed to the role selector (#3744)
 - (@GermanBluefox) Do not start the installation of an adapter if Node.js of the host does not satisfy the adapter requirement (#3753)
 - (@GermanBluefox) Added a hint to the 'Install a specific version' dialog that a downgrade does not revert objects and configuration (#3751)
+- (@GermanBluefox) Added a confirmation dialog and marking for major adapter upgrades (#3161)
 
 ### 8.3.16 (2026-11-26)
 - (@GermanBluefox) Quick access: filter field above the cards
