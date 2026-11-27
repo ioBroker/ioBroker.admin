@@ -710,6 +710,7 @@
     "Installed from group": "Installed from group",
     "Installed instances": "Installed instances",
     "Installed version": "Installed version",
+    "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.": "Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.",
     "Instance": "Instance",
     "Instance %s already exists": "Instance \"%s\" already exists",
     "Instance link %s": "Instance link %s",

@@ -1044,7 +1044,15 @@ export default abstract class AdapterGeneric<
                     >
                         {this.props.context.t('Or select from the list')}
                     </Box>
-                    <div style={{ ...this.styles.containerVersion, height: 'calc(100% - 122px)', overflowY: 'auto' }}>
+                    <Typography
+                        variant="body2"
+                        style={this.styles.versionWarn}
+                    >
+                        {this.props.context.t(
+                            'Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.',
+                        )}
+                    </Typography>
+                    <div style={{ ...this.styles.containerVersion, height: 'calc(100% - 162px)', overflowY: 'auto' }}>
                         {this.getNews(true).map(({ version, news }) => (
                             <Card
                                 variant="outlined"
