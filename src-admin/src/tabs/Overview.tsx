@@ -35,6 +35,7 @@ import { hasPermission, permissionLabel, SEND_TO_HOST } from '@/helpers/permissi
 
 import ResourcesChart, { loadSeries, saveSeries, type ChartSeriesConfig } from '@/components/Overview/ResourcesChart';
 import ResourcesChartSettings from '@/components/Overview/ResourcesChartSettings';
+import { LastBackupValue } from '@/components/BackupInfo';
 
 /** How often the counters are refreshed */
 const REFRESH_MS = 30_000;
@@ -276,9 +277,22 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
 
     onLogs = (events: LogLineSaved[]): void => {
         if (this.mounted) {
-            this.setState(state => ({ logs: [...state.logs, ...events].slice(-LOG_LINES_LARGE) }));
+            const own = this.ownLogs(events);
+            if (own.length) {
+                this.setState(state => ({ logs: [...state.logs, ...own].slice(-LOG_LINES_LARGE) }));
+            }
         }
     };
+
+    /**
+     * The entries of the shown host. The Log tab can have the worker read all hosts; an entry whose host is
+     * not known stays.
+     *
+     * @param logs entries of the log worker
+     */
+    ownLogs(logs: LogLineSaved[]): LogLineSaved[] {
+        return logs.filter(line => !line.host || line.host === this.props.currentHost);
+    }
 
     async readAll(): Promise<void> {
         const { socket, currentHost } = this.props;
@@ -353,7 +367,7 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
             hostInfo,
             controllerVersion: (hostObj as ioBroker.HostObject | null | undefined)?.common?.installedVersion || '',
             adapters,
-            logs: (logs.logs || []).slice(-LOG_LINES_LARGE),
+            logs: this.ownLogs(logs.logs || []).slice(-LOG_LINES_LARGE),
         });
     }
 
@@ -454,6 +468,16 @@ export default class Overview extends Component<OverviewProps, OverviewState> {
                         {`${t('No permission')} (${permissionLabel(SEND_TO_HOST, t)})`}
                     </Typography>
                 )}
+                {/* the backups are made for the whole system, not per host (#3750) */}
+                <InfoRow
+                    name={t('Last backup')}
+                    value={
+                        <LastBackupValue
+                            socket={this.props.socket}
+                            t={t}
+                        />
+                    }
+                />
             </Card>
         );
     }

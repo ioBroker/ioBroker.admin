@@ -2,6 +2,7 @@ import { type AdminConnection } from '@iobroker/gui-components';
 
 import { hasPermission, SEND_TO_HOST } from '@/helpers/permissions';
 import AdminUtils, { type Style } from '../helpers/AdminUtils';
+import type { InstancesWorker } from './InstancesWorker';
 
 interface LogLine {
     severity: string;
@@ -9,14 +10,86 @@ interface LogLine {
     message: string | { original: string; parts: { text: string; style: Style }[] };
     from: string;
     _id: number;
+    /** Host the entry comes from, e.g. `system.host.raspi`. Empty if it is not known */
+    host?: string;
 }
 
 export interface LogLineSaved extends LogLine {
     key?: number;
 }
 
+/** What `getLogs` delivers */
+export interface LogsResult {
+    /** The entries, oldest first */
+    logs: LogLineSaved[];
+    /** Size of the log file; with all hosts the sum of their files */
+    logSize: number;
+    /** Hosts whose entries are in `logs` */
+    hosts: string[];
+    /** With all hosts: the hosts that delivered nothing - not running, or no answer in time */
+    missingHosts: string[];
+    /**
+     * With all hosts: older entries were left out, the list starts here. The hosts hand out their latest
+     * entries, which reach back minutes on a chatty host and days on a quiet one. `0` if nothing was left out
+     */
+    since: number;
+}
+
+/** The entries of one host, as it handed them out */
+interface HostEntries {
+    host: string;
+    /** In the order of the file */
+    entries: LogLineSaved[];
+    logSize: number;
+    /** The host left out older entries of its file */
+    cut: boolean;
+}
+
 /** A host that does not know `checkFeatureSupported` never answers it */
 const FEATURE_CHECK_TIMEOUT_MS = 5_000;
+
+/** How many lines each host is asked for */
+const LOG_LINES = 200;
+
+/** With all hosts, one that does not answer must not hold up the others */
+const ALL_HOSTS_TIMEOUT_MS = 15_000;
+
+/** Remembers whether the logs of all hosts are shown */
+const ALL_HOSTS_STORAGE_KEY = 'Log.allHosts';
+
+/** The host refused the request: the user may not read its logs */
+const NO_PERMISSION = 'no permission';
+
+function getStorage(): Storage {
+    return ((window as any)._localStorage as Storage) || window.localStorage;
+}
+
+/** Number of bytes of a text in UTF-8, as the host counts the size of its file */
+function utf8Length(text: string): number {
+    return new TextEncoder().encode(text).length;
+}
+
+/**
+ * Reject if the promise is not settled in time
+ *
+ * @param promise the promise to wait for
+ * @param ms how long to wait
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('timeout')), ms);
+        promise.then(
+            value => {
+                clearTimeout(timer);
+                resolve(value);
+            },
+            (error: unknown) => {
+                clearTimeout(timer);
+                reject(error instanceof Error ? error : new Error(String(error)));
+            },
+        );
+    });
+}
 
 /** Safari cannot parse `2020-01-01T10:00:00.000` as local time, so every number is parsed apart there */
 const IS_SAFARI =
@@ -78,12 +151,62 @@ export function parseLogFileLine(line: string): LogLineSaved | null {
     };
 }
 
+/**
+ * Parse the lines a host handed out for `getLogs`.
+ *
+ * A line without a time stamp continues the entry above it, e.g. a stack trace. Such lines at the start
+ * belong to an entry the host cut away and are dropped.
+ *
+ * @param lines the lines, without the size of the file behind them
+ * @param host the host they come from
+ * @returns the entries in the order of the file
+ */
+function parseLogFileLines(lines: string[], host: string): LogLineSaved[] {
+    const entries: LogLineSaved[] = [];
+
+    for (const line of lines) {
+        const entry = parseLogFileLine(line);
+        if (entry) {
+            entry.host = host;
+            entries.push(entry);
+        } else if (entries.length) {
+            // the colors are split later, until then the message is the text of the file
+            const last = entries[entries.length - 1];
+            last.message = `${last.message as string}${line}`;
+        }
+    }
+
+    return entries;
+}
+
+/**
+ * Sort the entries by time, give each a key of its own and split the colors of the messages.
+ *
+ * The keys only grow: entries of the same millisecond - common when several hosts are merged - would
+ * otherwise share one.
+ *
+ * @param entries changed in place
+ */
+function prepareEntries(entries: LogLineSaved[]): void {
+    // a stable sort: entries of the same millisecond keep the order of their file
+    entries.sort((a, b) => a.ts - b.ts);
+
+    let lastKey = 0;
+    for (const entry of entries) {
+        entry.key = Math.max(entry.ts, lastKey + 1);
+        lastKey = entry.key;
+        if (typeof entry.message !== 'object') {
+            entry.message = AdminUtils.parseColorMessage(entry.message);
+        }
+    }
+}
+
 export class LogsWorker {
     private readonly socket: AdminConnection;
 
     private readonly handlers: ((events: LogLineSaved[], messageSize: number) => void)[];
 
-    private promise: Promise<{ logs: LogLineSaved[]; logSize: number }> | null;
+    private promise: Promise<LogsResult> | null;
 
     private connected: boolean;
 
@@ -117,10 +240,28 @@ export class LogsWorker {
     /** Level the cached request was made with */
     private lastLogLevel: ioBroker.LogLevel | undefined;
 
-    constructor(socket: AdminConnection, maxLogs?: number) {
+    /** Show the entries of all hosts instead of those of the current one */
+    private allHosts: boolean;
+
+    /** Tells which host an instance runs on */
+    private readonly instancesWorker: InstancesWorker | null;
+
+    /** Host of each instance, `zigbee.0` -> `system.host.raspi` */
+    private instanceHosts: Record<string, string> = {};
+
+    /**
+     * @param socket connection to the admin
+     * @param maxLogs how many entries to keep
+     * @param instancesWorker tells which host an instance runs on. Without it, the entries of an instance
+     * cannot be told apart by host and are shown for every host
+     */
+    constructor(socket: AdminConnection, maxLogs?: number, instancesWorker?: InstancesWorker) {
         this.socket = socket;
         this.handlers = [];
         this.promise = null;
+        this.instancesWorker = instancesWorker || null;
+        // the app switches it on once it knows that there is more than one host
+        this.allHosts = false;
 
         this.errorCountHandlers = [];
         this.warningCountHandlers = [];
@@ -140,8 +281,74 @@ export class LogsWorker {
     setCurrentHost(currentHost: string): void {
         if (currentHost !== this.currentHost) {
             this.currentHost = currentHost;
-            void this.getLogs(true);
+            // the entries of all hosts do not depend on the current one
+            if (!this.allHosts) {
+                void this.getLogs(true);
+            }
         }
+    }
+
+    /** Did the user choose "All hosts" in the Log tab? */
+    static isAllHostsStored(): boolean {
+        return getStorage().getItem(ALL_HOSTS_STORAGE_KEY) === 'true';
+    }
+
+    /**
+     * Remember the choice of the user. Kept apart from `setAllHosts`: with a single host the entries
+     * of all hosts are not shown, but the choice stays for the time a second one is back.
+     *
+     * @param allHosts the user chose "All hosts"
+     */
+    static storeAllHosts(allHosts: boolean): void {
+        getStorage().setItem(ALL_HOSTS_STORAGE_KEY, allHosts ? 'true' : 'false');
+    }
+
+    isAllHosts(): boolean {
+        return this.allHosts;
+    }
+
+    /**
+     * Show the entries of all hosts, or only those of the current one.
+     *
+     * Nothing is read here: the next `getLogs` reads anew. The Log tab does that as soon as it sees the
+     * change, with its log level.
+     *
+     * @param allHosts show the entries of all hosts
+     */
+    setAllHosts(allHosts: boolean): void {
+        if (allHosts !== this.allHosts) {
+            this.allHosts = allHosts;
+            // the cached answer belongs to the other mode
+            this.promise = null;
+        }
+    }
+
+    /**
+     * The host an entry comes from.
+     *
+     * @param from source of the entry, e.g. `zigbee.0` or `host.raspi`
+     * @returns id of the host, e.g. `system.host.raspi`, or `''` for an instance that is not known (yet)
+     */
+    getHostOfSource(from: string): string {
+        if (from.startsWith('host.')) {
+            return `system.${from}`;
+        }
+        return this.instanceHosts[from] || '';
+    }
+
+    /** Learn which host each instance runs on, from `common.host` of the instance objects */
+    private async readInstanceHosts(): Promise<void> {
+        const instances = await this.instancesWorker?.getObjects(false, true);
+        if (!instances) {
+            return;
+        }
+        const hosts: Record<string, string> = {};
+        for (const [id, obj] of Object.entries(instances)) {
+            if (obj?.common?.host) {
+                hosts[id.replace('system.adapter.', '')] = `system.host.${obj.common.host}`;
+            }
+        }
+        this.instanceHosts = hosts;
     }
 
     enableCountErrors(isEnabled: boolean): void {
@@ -185,6 +392,15 @@ export class LogsWorker {
     }
 
     logHandler = (line: LogLine | string): void => {
+        // The controllers and instances of every host send their entries here, through the common states
+        // database. While one host is shown, the entries of the others do not belong to it.
+        if (line && typeof line === 'object') {
+            line.host = this.getHostOfSource(line.from);
+            if (!this.allHosts && line.host && line.host !== this.currentHost) {
+                return;
+            }
+        }
+
         const result = this._processLine(line);
 
         if (result?.objLine) {
@@ -434,35 +650,149 @@ export class LogsWorker {
     }
 
     /**
-     * Ask the host for the last log lines, with the level filter if the controller can do it.
+     * Ask a host for its last log lines, with the level filter if its controller can do it.
      *
      * `socket.getLogs` types the message as a number, but it passes it through unchanged, so the
      * object form of the host message can be used once the controller announces the feature.
+     *
+     * @param host id of the host, e.g. `system.host.raspi`
+     * @param logLevel only entries of this level and above
+     * @returns `null` if the host answered with something else than its log lines
+     * @throws {Error} with the message `NO_PERMISSION` if the user may not read the logs
      */
-    private async readLogLines(
-        logLevel?: ioBroker.LogLevel,
-    ): Promise<(string | number)[] | string | { error: string } | null> {
-        const lines = 200;
-        const host = this.currentHost;
+    private async readHost(host: string, logLevel?: ioBroker.LogLevel): Promise<HostEntries | null> {
+        const filtered = !!logLevel && (await this.isLogLevelFilterSupported(host));
+        const lines: (string | number)[] | string | { error: string } | null = filtered
+            ? await this.socket.getLogs(host, { lines: LOG_LINES, logLevel } as unknown as number)
+            : await this.socket.getLogs(host, LOG_LINES);
 
-        if (logLevel && (await this.isLogLevelFilterSupported(host))) {
-            return this.socket.getLogs(host, { lines, logLevel } as unknown as number);
+        // the answer can be the string `permissionError` or an object `{ error: 'permissionError' }`
+        if (lines === 'permissionError' || (lines && typeof lines === 'object' && 'error' in lines)) {
+            throw new Error(NO_PERMISSION);
         }
 
-        return this.socket.getLogs(host, lines);
+        // A host that answered with anything but its log lines - a request that ran into its
+        // timeout, or a controller that reported something else entirely - must not end in
+        // a `TypeError: e.pop is not a function` while the answer is taken apart
+        if (!Array.isArray(lines)) {
+            console.warn(`Cannot get logs of ${host}: unexpected answer ${JSON.stringify(lines)}`);
+            return null;
+        }
+
+        // the host appends the size of the log file behind the last line
+        const logSize = parseInt(String(lines[lines.length - 1] ?? ''), 10) || 0;
+        const textLines = lines.slice(0, -1).filter((line): line is string => typeof line === 'string');
+
+        // Did the host leave out older entries of its file? With a level it reads back until it has the
+        // wanted number of lines. Without one it reads a fixed window at the end and drops the first line,
+        // which the window cuts - then the text is shorter than the file.
+        const cut = filtered ? textLines.length >= LOG_LINES : utf8Length(textLines.join('\n')) < logSize;
+
+        return { host, entries: parseLogFileLines(textLines, host), logSize, cut };
     }
 
     /**
-     * Read the log history of the current host.
+     * Ask all running hosts for their last log lines at once and merge them.
+     *
+     * The list starts where the shortest history of a host that left out older entries starts: before
+     * that point it would hold only the entries of the quiet hosts and look complete.
+     *
+     * @param logLevel only entries of this level and above
+     */
+    private async readAllHosts(logLevel?: ioBroker.LogLevel): Promise<LogsResult> {
+        const hosts = (await this.socket.getCompactHosts(true)).map(host => host._id as string);
+        const alive = await Promise.all(
+            hosts.map(host =>
+                this.socket
+                    .getState(`${host}.alive`)
+                    .then(state => !!state?.val)
+                    .catch(() => false),
+            ),
+        );
+
+        let noPermission = false;
+        const answers = await Promise.all(
+            hosts.map((host, i): Promise<HostEntries | null> =>
+                // a host that is not running is not asked: it would only run into the timeout
+                alive[i]
+                    ? withTimeout(this.readHost(host, logLevel), ALL_HOSTS_TIMEOUT_MS).catch((error: unknown): null => {
+                          if ((error as Error)?.message === NO_PERMISSION) {
+                              noPermission = true;
+                          } else {
+                              console.warn(`Cannot get logs of ${host}: ${error as Error}`);
+                          }
+                          return null;
+                      })
+                    : Promise.resolve(null),
+            ),
+        );
+        if (noPermission) {
+            throw new Error(NO_PERMISSION);
+        }
+
+        const delivered = answers.filter((answer): answer is HostEntries => !!answer);
+
+        let start = 0;
+        if (delivered.length > 1) {
+            for (const answer of delivered) {
+                if (answer.cut && answer.entries.length) {
+                    start = Math.max(start, Math.min(...answer.entries.map(entry => entry.ts)));
+                }
+            }
+        }
+
+        const all = delivered.flatMap(answer => answer.entries);
+        let logs = start ? all.filter(entry => entry.ts >= start) : all;
+        prepareEntries(logs);
+
+        // One less than the limit: `_processLine` drops the oldest entry when the list reaches it
+        if (logs.length >= this.maxLogs) {
+            logs = logs.slice(logs.length - this.maxLogs + 1);
+        }
+
+        return {
+            logs,
+            logSize: delivered.reduce((sum, answer) => sum + answer.logSize, 0),
+            hosts: delivered.map(answer => answer.host),
+            missingHosts: hosts.filter(host => !delivered.some(answer => answer.host === host)),
+            since: logs.length < all.length && logs.length ? logs[0].ts : 0,
+        };
+    }
+
+    /**
+     * Read the last entries of the current host or of all hosts.
+     *
+     * @param logLevel only entries of this level and above
+     */
+    private async readLogEntries(logLevel?: ioBroker.LogLevel): Promise<LogsResult> {
+        // to tell which host the entries that come in later belong to
+        await this.readInstanceHosts().catch((error: unknown) =>
+            console.warn(`Cannot read the hosts of the instances: ${error as Error}`),
+        );
+
+        if (this.allHosts) {
+            return this.readAllHosts(logLevel);
+        }
+
+        const host = this.currentHost;
+        const answer = await this.readHost(host, logLevel);
+        const logs = answer?.entries || [];
+        prepareEntries(logs);
+
+        return { logs, logSize: answer?.logSize || 0, hosts: answer ? [host] : [], missingHosts: [], since: 0 };
+    }
+
+    /**
+     * Read the log history of the current host, or of all hosts.
      *
      * @param update ignore the cached request and read anew
      * @param logLevel only return entries of this level and above. Needs a controller with
      * `CONTROLLER_GET_LOGS_LOG_LEVEL`; without it everything is read as before and the caller filters.
      */
-    getLogs(update?: boolean, logLevel?: ioBroker.LogLevel): Promise<{ logs: LogLineSaved[]; logSize: number }> {
+    getLogs(update?: boolean, logLevel?: ioBroker.LogLevel): Promise<LogsResult> {
         // the log history comes from the host: without `sendTo` the answer is a permission error anyway
-        if (!this.currentHost || !hasPermission(this.socket, SEND_TO_HOST)) {
-            return Promise.resolve({ logs: [], logSize: 0 });
+        if ((!this.allHosts && !this.currentHost) || !hasPermission(this.socket, SEND_TO_HOST)) {
+            return Promise.resolve({ logs: [], logSize: 0, hosts: [], missingHosts: [], since: 0 });
         }
 
         // a different level means a different result, so the cached request cannot be reused
@@ -484,64 +814,23 @@ export class LogsWorker {
         // complete while they are part of the answer - with `error` the badge would drop to zero.
         const warningsAreComplete = logLevel !== 'error';
 
-        this.promise = this.readLogLines(logLevel)
-            .then(lines => {
-                // @ts-expect-error it can return error string or error object { error: 'permissionError' }
-                if ((lines as string) === 'permissionError' || lines?.error !== undefined) {
-                    const empty: LogLineSaved[] = [];
-                    this.logs = empty;
-
-                    window.alert('Cannot get logs: no permission');
-
-                    return { logs: empty, logSize: 0 };
-                }
-
-                // A host that answered with anything but its log lines - a request that ran into its
-                // timeout, or a controller that reported something else entirely - must not end in
-                // a `TypeError: e.pop is not a function` while the answer is taken apart
-                if (!Array.isArray(lines)) {
-                    const empty: LogLineSaved[] = [];
-                    this.logs = empty;
-
-                    console.warn(`Cannot get logs: unexpected answer ${JSON.stringify(lines)}`);
-
-                    return { logs: empty, logSize: 0 };
-                }
-
-                // the host appends the size of the log file behind the last line
-                const logSizeStr: string | number | undefined = lines.pop();
-                let logSize = 0;
-
-                if (typeof logSizeStr === 'string') {
-                    logSize = parseInt(logSizeStr, 10);
-                }
-
-                const logs: LogLineSaved[] = [];
+        this.promise = this.readLogEntries(logLevel)
+            .then(result => {
+                const logs = result.logs;
                 this.logs = logs;
-                let lastKey: number | undefined;
 
-                (lines as string[]).forEach(line => {
-                    const result = this._processLine(line, lastKey);
-                    if (result?.objLine) {
-                        lastKey = result.objLine.key;
-                        if (result.isNew && result.objLine.severity === 'error' && this.countErrors) {
-                            this.errors++;
-                        }
-
-                        if (result.isNew && result.objLine.severity === 'warn' && this.countWarnings) {
-                            this.warnings++;
-                        }
+                for (const entry of logs) {
+                    if (entry.severity === 'error' && this.countErrors) {
+                        this.errors++;
+                    } else if (entry.severity === 'warn' && this.countWarnings) {
+                        this.warnings++;
                     }
-                });
-
-                if (logs.length && logs[0].ts) {
-                    logs.sort((a, b) => (a.ts > b.ts ? 1 : a.ts < b.ts ? -1 : 0));
                 }
 
-                this.logSize = logSize;
+                this.logSize = result.logSize;
 
                 // inform subscribes about each line
-                this.handlers.forEach(cb => cb && cb(logs, logSize));
+                this.handlers.forEach(cb => cb && cb(logs, result.logSize));
 
                 if (oldErrors !== this.errors) {
                     this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
@@ -555,11 +844,16 @@ export class LogsWorker {
                     this.warnings = oldWarnings;
                 }
 
-                return { logs, logSize };
+                return result;
             })
-            .catch((e: unknown): { logs: LogLineSaved[]; logSize: number } => {
-                window.alert(`Cannot get logs: ${e as Error}`);
-                return { logs: this.logs || [], logSize: 0 };
+            .catch((e: unknown): LogsResult => {
+                if ((e as Error)?.message === NO_PERMISSION) {
+                    this.logs = [];
+                    window.alert('Cannot get logs: no permission');
+                } else {
+                    window.alert(`Cannot get logs: ${e as Error}`);
+                }
+                return { logs: this.logs || [], logSize: 0, hosts: [], missingHosts: [], since: 0 };
             });
 
         return this.promise;

@@ -916,6 +916,7 @@ export default abstract class HostGeneric<
                     window.open(CONTROLLER_CHANGELOG_URL, '_blank');
                 }}
                 onClose={() => this.setState({ hostUpdateDialog: false })}
+                socket={this.props.socket}
             />
         );
     }

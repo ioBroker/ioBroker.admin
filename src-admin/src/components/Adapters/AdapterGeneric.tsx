@@ -257,6 +257,10 @@ export default abstract class AdapterGeneric<
         const allowAdapterInstall = this.props.context.repository[this.props.adapterName]
             ? this.props.context.repository[this.props.adapterName].allowAdapterInstall
             : true;
+        // only a new installation needs the Node.js of the repository version
+        const nodeRefusal = this.props.context.installed[this.props.adapterName]
+            ? null
+            : AdapterInstallDialog.getNodeJsRefusal(this.props.adapterName, this.props.context);
 
         return (
             <IsVisible
@@ -266,21 +270,23 @@ export default abstract class AdapterGeneric<
                 }
             >
                 <Tooltip
-                    title={this.props.context.t('Add instance')}
+                    title={nodeRefusal || this.props.context.t('Add instance')}
                     slotProps={{ popper: { sx: this.styles.tooltip } }}
                 >
-                    <IconButton
-                        size="small"
-                        disabled={this.props.commandRunning}
-                        style={!this.props.cached.rightOs ? this.styles.hidden : undefined}
-                        onClick={
-                            this.props.cached.rightOs
-                                ? () => this.onAddInstance(this.props.adapterName, this.props.context)
-                                : undefined
-                        }
-                    >
-                        <AddIcon />
-                    </IconButton>
+                    <span>
+                        <IconButton
+                            size="small"
+                            disabled={this.props.commandRunning || !!nodeRefusal}
+                            style={!this.props.cached.rightOs ? this.styles.hidden : undefined}
+                            onClick={
+                                this.props.cached.rightOs
+                                    ? () => this.onAddInstance(this.props.adapterName, this.props.context)
+                                    : undefined
+                            }
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             </IsVisible>
         );
@@ -903,6 +909,7 @@ export default abstract class AdapterGeneric<
                     this.setState({ showUpdateDialog: false, showDialog: false }, () => this.update(version))
                 }
                 isStable={(this.props.context.repository._repoInfo as unknown as RepoInfo).stable}
+                socket={this.props.context.socket}
                 onIgnore={
                     this.state.installRepositoryVersion
                         ? undefined
@@ -1038,7 +1045,15 @@ export default abstract class AdapterGeneric<
                     >
                         {this.props.context.t('Or select from the list')}
                     </Box>
-                    <div style={{ ...this.styles.containerVersion, height: 'calc(100% - 122px)', overflowY: 'auto' }}>
+                    <Typography
+                        variant="body2"
+                        style={this.styles.versionWarn}
+                    >
+                        {this.props.context.t(
+                            'Installing another version only replaces the adapter code. Objects, states and configuration are not reverted. To go back completely, restore a backup.',
+                        )}
+                    </Typography>
+                    <div style={{ ...this.styles.containerVersion, height: 'calc(100% - 162px)', overflowY: 'auto' }}>
                         {this.getNews(true).map(({ version, news }) => (
                             <Card
                                 variant="outlined"

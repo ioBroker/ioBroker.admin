@@ -27,7 +27,7 @@ import { SocketAdmin, type Server, type Store as SocketStore, type SocketSetting
 import type { SocketACL } from '@iobroker/ws-server';
 import type { Store } from 'express-session';
 import { SocketIO } from '@iobroker/ws-server';
-import { getAdapterUpdateText } from './lib/translations';
+import { getAdapterUpdateText, getNodeNotRecommendedText } from './lib/translations';
 import Web from './lib/web';
 import { checkWellKnownPasswords, setLinuxPassword } from './lib/checkLinuxPass';
 import { DockerManager } from '@iobroker/plugin-docker';
@@ -111,6 +111,14 @@ const CHAT_NO_EXECUTE_RIGHTS =
 
 const CURRENT_MAX_MAJOR_NODEJS = 22;
 const CURRENT_MAX_MAJOR_NPM = 10;
+
+/** How often the reminder about a not recommended Node.js version is repeated for one host */
+const NODE_RECOMMENDED_REMINDER_MS = 7 * 24 * ONE_HOUR_MS;
+
+/** If this process runs in a container (Docker, or Podman) */
+function isRunningInDocker(): boolean {
+    return existsSync('/.dockerenv') || existsSync('/run/.containerenv');
+}
 
 /**
  * Detect whether this process runs on a CI system (GitHub Actions, Travis, AppVeyor or anything else that sets `CI`).
@@ -1691,7 +1699,125 @@ class Admin extends Adapter {
             promises.push(this.setObjectAsync(obj._id, obj));
         }
 
+        if (!objects[`${this.namespace}.info.nodeRecommendedNotified`]) {
+            const obj: ioBroker.StateObject = {
+                _id: 'info.nodeRecommendedNotified',
+                type: 'state',
+                common: {
+                    role: 'json',
+                    name: {
+                        en: 'Last reminder about a not recommended Node.js version per host',
+                        de: 'Letzte Erinnerung an eine nicht empfohlene Node.js-Version je Host',
+                        ru: 'Последнее напоминание о нерекомендуемой версии Node.js для каждого хоста',
+                        pt: 'Último lembrete sobre uma versão do Node.js não recomendada por host',
+                        nl: 'Laatste herinnering over een niet aanbevolen Node.js-versie per host',
+                        fr: 'Dernier rappel concernant une version de Node.js non recommandée par hôte',
+                        it: 'Ultimo promemoria su una versione di Node.js non consigliata per host',
+                        es: 'Último recordatorio sobre una versión de Node.js no recomendada por host',
+                        pl: 'Ostatnie przypomnienie o niezalecanej wersji Node.js dla każdego hosta',
+                        uk: 'Останнє нагадування про нерекомендовану версію Node.js для кожного хоста',
+                        'zh-cn': '每个主机关于不推荐的 Node.js 版本的最后提醒',
+                    },
+                    type: 'object',
+                    read: true,
+                    write: false,
+                    def: '{}',
+                },
+                native: {},
+            };
+
+            promises.push(this.setObjectAsync(obj._id, obj));
+        }
+
         await Promise.all(promises);
+    }
+
+    /**
+     * Reminds (log and notification) if the Node.js major of a host is lower than the one the active
+     * repository recommends. Not more often than once in `NODE_RECOMMENDED_REMINDER_MS` per host.
+     *
+     * @param repoInfo `_repoInfo` of the active repository
+     */
+    async checkRecommendedNodeVersion(repoInfo: Record<string, any> | undefined): Promise<void> {
+        const recommended = parseInt(
+            repoInfo?.recommendedVersions?.nodeJsRecommended ?? repoInfo?.nodeJsRecommended,
+            10,
+        );
+        if (!recommended) {
+            return;
+        }
+
+        // only one admin instance reminds: the lowest enabled one
+        const adminInstances = Object.keys(objects)
+            .filter(
+                id =>
+                    id.startsWith('system.adapter.admin.') &&
+                    objects[id]?.type === 'instance' &&
+                    objects[id].common?.enabled,
+            )
+            .map(id => parseInt(id.split('.').pop() || '', 10));
+        if (adminInstances.length && this.instance !== Math.min(...adminInstances)) {
+            return;
+        }
+
+        let notified: Record<string, number> = {};
+        const state = await this.getStateAsync('info.nodeRecommendedNotified');
+        if (typeof state?.val === 'string') {
+            try {
+                notified = JSON.parse(state.val) || {};
+            } catch {
+                // ignore
+            }
+        }
+
+        let changed = false;
+        const hosts = Object.keys(objects).filter(id => objects[id]?.type === 'host');
+        for (const hostId of hosts) {
+            const host = hostId.replace(/^system\.host\./, '');
+            let version: string | undefined;
+            if (host === this.host) {
+                version = process.version;
+            } else {
+                // a host that is switched off or gone would be reminded every week
+                const alive = await this.getForeignStateAsync(`${hostId}.alive`);
+                if (!alive?.val) {
+                    continue;
+                }
+                const nodeCurrent = await this.getForeignStateAsync(`${hostId}.versions.nodeCurrent`);
+                version =
+                    (nodeCurrent?.val as string | undefined) ||
+                    (objects[hostId].native as { process?: { versions?: { node?: string } } } | undefined)?.process
+                        ?.versions?.node;
+            }
+            const current = parseInt((version || '').replace(/^v/, ''), 10);
+            if (!current || current >= recommended) {
+                continue;
+            }
+            if (notified[host] && Date.now() - notified[host] < NODE_RECOMMENDED_REMINDER_MS) {
+                continue;
+            }
+            // Docker can only be detected for the own host
+            const text = getNodeNotRecommendedText({
+                lang: systemLanguage,
+                host,
+                current,
+                recommended,
+                docker: host === this.host && isRunningInDocker(),
+                windows:
+                    host === this.host
+                        ? process.platform === 'win32'
+                        : (objects[hostId].native as { os?: { platform?: string } } | undefined)?.os?.platform ===
+                          'win32',
+            });
+            this.log.warn(text);
+            await this.registerNotification('admin', 'nodeJsNotRecommended', text);
+            notified[host] = Date.now();
+            changed = true;
+        }
+
+        if (changed) {
+            await this.setState('info.nodeRecommendedNotified', JSON.stringify(notified), true);
+        }
     }
 
     upToDate(v1: string, v2: string): boolean {
@@ -1783,6 +1909,10 @@ class Admin extends Adapter {
             }
             return;
         }
+
+        await this.checkRecommendedNodeVersion(sources._repoInfo as unknown as Record<string, any> | undefined).catch(
+            e => this.log.warn(`Cannot check the recommended node.js version: ${e}`),
+        );
 
         const installed = getInstalledInfo();
         const list: string[] = [];
@@ -2851,8 +2981,8 @@ class Admin extends Adapter {
 
         if (repoInfo?.recommendedVersions) {
             return {
-                node: repoInfo.recommendedVersions?.nodeJsRecommended,
-                npm: repoInfo.recommendedVersions?.npmRecommended,
+                node: parseInt(String(repoInfo.recommendedVersions.nodeJsRecommended), 10) || CURRENT_MAX_MAJOR_NODEJS,
+                npm: parseInt(String(repoInfo.recommendedVersions.npmRecommended), 10) || CURRENT_MAX_MAJOR_NPM,
             };
         }
         return {

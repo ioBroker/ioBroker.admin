@@ -19,14 +19,19 @@ import {
     Box,
 } from '@mui/material';
 
-import { Close as CloseIcon, Language as LanguageIcon, Info as InfoIcon } from '@mui/icons-material';
+import {
+    Close as CloseIcon,
+    Language as LanguageIcon,
+    Info as InfoIcon,
+    Warning as WarningIcon,
+} from '@mui/icons-material';
 
 import { alpha } from '@mui/material/styles';
 
 import { I18n, IconResult, type IobTheme, Utils } from '@iobroker/gui-components';
 
 import type { AdapterRatingInfo, InstalledInfo } from '@/components/Adapters/AdapterInstallDialog';
-import { checkCondition } from '@/components/Adapters/AdapterUpdateDialog';
+import { checkCondition, isMajorUpgrade } from '@/components/Adapters/AdapterUpdateDialog';
 import type { RepoAdapterObject, RepoInfo } from '@/components/Adapters/Utils';
 import NewsLine, { stripNewsMarker } from '@/components/Adapters/NewsLine';
 import UpdatingRing from '@/components/Adapters/UpdatingRing';
@@ -102,9 +107,18 @@ const styles: Record<string, any> = {
         fontWeight: 'bold',
         ml: '4px',
     }),
+    /** Major upgrade: orange instead of green, the change log should be read */
+    toVersionMajor: (theme: IobTheme) => ({
+        color: theme.palette.warning.main,
+    }),
     /** The new version was not installed: not green anymore */
     toVersionFailed: {
         color: 'text.secondary',
+    },
+    majorIcon: {
+        fontSize: 16,
+        verticalAlign: 'middle',
+        ml: '4px',
     },
     minWidthCss: {
         '@media screen and (max-width: 400px)': {
@@ -333,6 +347,7 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
         const localIcon = this.props.installed[adapter].localIcon;
         const image = localIcon ? `.${localIcon}` : this.props.repository[adapter]?.extIcon || 'img/no-image.svg';
         const status = this.getStatus(adapter);
+        const isMajor = isMajorUpgrade(this.initialVersions[adapter], this.props.repository[adapter].version);
 
         return (
             <ListItem
@@ -407,10 +422,21 @@ class AdaptersUpdater extends Component<AdaptersUpdaterProps, AdaptersUpdaterSta
                                 →
                                 <Box
                                     component="span"
-                                    sx={[styles.toVersion, status === 'error' && styles.toVersionFailed]}
+                                    sx={[
+                                        styles.toVersion,
+                                        isMajor && styles.toVersionMajor,
+                                        status === 'error' && styles.toVersionFailed,
+                                    ]}
                                 >
                                     {this.props.repository[adapter].version}
                                 </Box>
+                                {isMajor ? (
+                                    <WarningIcon
+                                        color="warning"
+                                        sx={styles.majorIcon}
+                                        titleAccess={I18n.t('Major upgrade, please read the change log')}
+                                    />
+                                ) : null}
                             </div>
                             <IconButton
                                 title={I18n.t('Show change log')}
