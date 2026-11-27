@@ -176,20 +176,12 @@ export default class Hosts extends Component<HostsProps, HostsState> {
     }
 
     // cache translations
-    t = (word: string, arg1?: any, arg2?: any): string => {
-        if (arg1 !== undefined && arg2 !== undefined && !wordCache[`${word} ${arg1} ${arg2}`]) {
-            wordCache[`${word} ${arg1} ${arg2}`] = this.props.t(word, arg1, arg2);
-        } else if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
-            wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
-        } else if (!wordCache[word]) {
-            wordCache[word] = this.props.t(word);
-        }
+    t = (word: string, ...args: (string | boolean | number | undefined)[]): string => {
+        const used = args.filter((arg): arg is string | boolean | number => arg !== undefined);
+        const key = used.length ? `${word} ${used.join(' ')}` : word;
+        wordCache[key] ||= this.props.t(word, ...used);
 
-        return arg1 !== undefined && arg2 !== undefined
-            ? wordCache[`${word} ${arg1} ${arg2}`]
-            : arg1 !== undefined
-              ? wordCache[`${word} ${arg1}`]
-              : wordCache[word];
+        return wordCache[key];
     };
 
     componentDidMount(): void {
@@ -543,7 +535,10 @@ export default class Hosts extends Component<HostsProps, HostsState> {
                     {!Utils.isStableRepository(this.props.systemConfig.common.activeRepo) ? (
                         <Box sx={{ marginX: 2, width: 'calc(100% - 32px)', alignSelf: 'center' }}>
                             <InfoBox type={'warning'}>
-                                {this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}
+                                {this.t(
+                                    'Active repo is "%s"',
+                                    ([] as string[]).concat(this.props.systemConfig.common.activeRepo).join(','),
+                                )}
                             </InfoBox>
                         </Box>
                     ) : null}

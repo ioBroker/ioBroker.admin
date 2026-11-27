@@ -2192,6 +2192,9 @@ The schema is used here: https://github.com/SchemaStore/schemastore/blob/6da29cd
 	### **WORK IN PROGRESS**
 -->
 ## Changelog
+### 10.1.25 (2026-11-24)
+- (@GermanBluefox) Updated `@iobroker/gui-components` to 10.4.9: the folder buttons of the object browser do not open or close on hover anymore
+
 ### 10.1.24 (2026-11-17)
 - (@GermanBluefox) Fixed: `sendTo` showed a success when the answer of the instance did not arrive in time or the connection was lost; an answer after the `timeout` of the schema is dropped (ioBroker.admin#3737)
 
