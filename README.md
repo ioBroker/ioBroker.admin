@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Do not start the installation of an adapter if Node.js of the host does not satisfy the adapter requirement (#3753)
+
 ### 8.3.16 (2026-11-26)
 - (@GermanBluefox) Quick access: filter field above the cards
 - (@GermanBluefox) Log: "All hosts" shows the logs of all hosts together

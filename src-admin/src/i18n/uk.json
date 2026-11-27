@@ -2041,6 +2041,7 @@
     "No instance has registered a resource": "Жоден екземпляр не зареєстрував ресурс",
     "Adapter \"%s\" allows only one instance, and %s exists already": "Адаптер \"%s\" дозволяє лише один екземпляр, і %s вже існує",
     "Adapter \"%s\" allows only one instance per host, and %s exists already on host \"%s\"": "Адаптер \"%s\" дозволяє лише один екземпляр на хост, і %s вже існує на хості \"%s\"",
+    "Adapter \"%s\" requires Node.js %s, but the host has %s": "Адаптеру \"%s\" потрібен Node.js %s, але на хості встановлено %s",
     "The admin was updated. Please load the page anew.": "Адмін оновлено. Будь ласка, перезавантажте сторінку.",
     "%s adapter(s) updated": "Оновлено адаптерів: %s",
     "%s of %s adapter(s) updated": "Оновлено адаптерів: %s з %s",

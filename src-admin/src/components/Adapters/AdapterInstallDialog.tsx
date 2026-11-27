@@ -270,6 +270,26 @@ export default abstract class AdapterInstallDialog<
                 window.alert(refusal);
                 return false;
             }
+
+            // If not installed on the host, npm would abort with exit 25, as engines.node is not satisfied (#3753)
+            if (!options.context.installedGlobalHosts[options.adapterName]?.[host]) {
+                let nodeJsVersion: string | undefined;
+                if (host !== options.context.currentHost.replace(/^system\.host\./, '')) {
+                    const hostObj = (await options.context.socket
+                        .getObject(`system.host.${host}`)
+                        .catch((): null => null)) as ioBroker.HostObject | null | undefined;
+                    nodeJsVersion = hostObj?.native?.process?.versions?.node;
+                }
+                const nodeRefusal = AdapterInstallDialog.getNodeJsRefusal(
+                    options.adapterName,
+                    options.context,
+                    nodeJsVersion,
+                );
+                if (nodeRefusal) {
+                    window.alert(nodeRefusal);
+                    return false;
+                }
+            }
         }
 
         try {
@@ -345,6 +365,32 @@ export default abstract class AdapterInstallDialog<
             );
         }
         return null;
+    }
+
+    /**
+     * Why the host cannot install the repository version of the adapter: its Node.js does not
+     * satisfy `common.node` of the adapter, so npm would abort with exit 25
+     *
+     * @param adapterName the adapter name, e.g. `anomaly-detection`
+     * @param context the adapters context
+     * @param nodeJsVersion the Node.js version of the target host. Default is the one of the current host
+     * @returns the text for the user, or `null` if the adapter may be installed
+     */
+    static getNodeJsRefusal(adapterName: string, context: AdaptersContext, nodeJsVersion?: string): string | null {
+        const node = context.repository[adapterName]?.node;
+        const version = nodeJsVersion || context.nodeJsVersion;
+        if (!node || !version) {
+            return null;
+        }
+        try {
+            if (semver.satisfies(version, node)) {
+                return null;
+            }
+        } catch {
+            // an invalid range is not a reason to refuse the installation
+            return null;
+        }
+        return context.t('Adapter "%s" requires Node.js %s, but the host has %s', adapterName, node, version);
     }
 
     /**

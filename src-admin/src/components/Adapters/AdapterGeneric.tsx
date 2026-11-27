@@ -257,6 +257,10 @@ export default abstract class AdapterGeneric<
         const allowAdapterInstall = this.props.context.repository[this.props.adapterName]
             ? this.props.context.repository[this.props.adapterName].allowAdapterInstall
             : true;
+        // only a new installation needs the Node.js of the repository version
+        const nodeRefusal = this.props.context.installed[this.props.adapterName]
+            ? null
+            : AdapterInstallDialog.getNodeJsRefusal(this.props.adapterName, this.props.context);
 
         return (
             <IsVisible
@@ -266,21 +270,23 @@ export default abstract class AdapterGeneric<
                 }
             >
                 <Tooltip
-                    title={this.props.context.t('Add instance')}
+                    title={nodeRefusal || this.props.context.t('Add instance')}
                     slotProps={{ popper: { sx: this.styles.tooltip } }}
                 >
-                    <IconButton
-                        size="small"
-                        disabled={this.props.commandRunning}
-                        style={!this.props.cached.rightOs ? this.styles.hidden : undefined}
-                        onClick={
-                            this.props.cached.rightOs
-                                ? () => this.onAddInstance(this.props.adapterName, this.props.context)
-                                : undefined
-                        }
-                    >
-                        <AddIcon />
-                    </IconButton>
+                    <span>
+                        <IconButton
+                            size="small"
+                            disabled={this.props.commandRunning || !!nodeRefusal}
+                            style={!this.props.cached.rightOs ? this.styles.hidden : undefined}
+                            onClick={
+                                this.props.cached.rightOs
+                                    ? () => this.onAddInstance(this.props.adapterName, this.props.context)
+                                    : undefined
+                            }
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             </IsVisible>
         );
