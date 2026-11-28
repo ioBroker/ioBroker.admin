@@ -98,6 +98,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) MCP server (`@iobroker/mcp-server` 1.10.1): `set_object` stores a new password of an instance (`encryptedNative`) encrypted and writes the current user and time
+- (@GermanBluefox) MCP server (`@iobroker/mcp-server` 1.10.2): the memory no longer grows with every MCP session; a session that gets no request for an hour is closed, because many clients never end their sessions
 
 ### 8.3.17 (2026-11-27)
 - (@GermanBluefox) Added missing roles value.dimmer, level.dimmer and level.speed to the role selector (#3744)
