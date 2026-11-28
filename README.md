@@ -96,6 +96,9 @@ The icons may not be reused in other projects without the proper flaticon licens
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) MCP server (`@iobroker/mcp-server` 1.10.1): `set_object` stores a new password of an instance (`encryptedNative`) encrypted and writes the current user and time
+
 ### 8.3.17 (2026-11-27)
 - (@GermanBluefox) Added missing roles value.dimmer, level.dimmer and level.speed to the role selector (#3744)
 - (@GermanBluefox) Do not start the installation of an adapter if Node.js of the host does not satisfy the adapter requirement (#3753)
